@@ -1,0 +1,48 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.0] - 2026-05-06
+
+Initial public release.
+
+Raincloud is a client-reproducible pipeline for building a curated catalog
+of public datasets as analytics-ready Parquet + Vortex files. See
+[`README.md`](README.md) for the user-facing overview,
+[`AGENTS.md`](AGENTS.md) for the architecture, and
+[`SKILLS.md`](SKILLS.md) for procedural playbooks.
+
+This release bundles:
+
+- The 7-stage build pipeline (fetch → extract → parse → transform → write
+  → validate → convert) plus the optional opt-in hydrate stage.
+- 249 dataset specs across 5 families (`direct`, `kaggle-upstream`,
+  `nyc-tlc`, `public-bi`, `uci`).
+- 24 named transform handlers covering CSV / Parquet / JSONL / XML / PBF /
+  custom-format upstreams plus streaming variants for memory-constrained
+  shapes.
+- A read-only Textual TUI for browsing the catalog
+  (`python -m scripts.pipeline.browse`, requires `--extra tui`).
+- Per-dataset Vortex conversion via the `convert.vortex` flag.
+- Apache License 2.0, with SPDX file headers on all Python sources.
+- Governance: `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`
+  (Contributor Covenant 2.1), `DISCLAIMER.md` (AS IS posture, content
+  and license disclaimers, dataset-removal reporting), and
+  `HYDRATING.md` (policy for the optional hydrate stage).
+- Tooling: `ruff` lint (rules `E`, `F`, `W`, `I`) + GitHub Actions CI
+  (`.github/workflows/ci.yml`) running lint, manifest validation, and
+  `pytest` on every push and PR to `develop`.
+- Dataset-removal issue template
+  (`.github/ISSUE_TEMPLATE/dataset-removal.yml`) — structured form for
+  the channel `DISCLAIMER.md` points readers at.
+- Pull-request template (`.github/pull_request_template.md`) prompting
+  for summary, test-plan checkbox list against the standard pre-PR gate,
+  and change-type tags.
+- `CITATION.cff` — GitHub-native citation metadata; surfaces the "Cite
+  this repository" button in the repo sidebar with BibTeX / APA / Chicago
+  exports.
+
+[0.1.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.0

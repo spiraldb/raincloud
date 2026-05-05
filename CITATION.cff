@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: Raincloud
+abstract: >-
+  Raincloud is a client-reproducible pipeline for assembling a curated catalog
+  of public datasets as analytics-ready files in modern columnar and structured
+  formats. A single hand-authored manifest declares per-dataset fetch, parse,
+  transform, validate, and convert behaviour, supporting verifiable provenance
+  and consistent re-derivation of dataset artefacts across users and machines.
+type: software
+version: 0.1.0
+date-released: 2026-05-06
+url: "https://github.com/spiraldb/raincloud"
+repository-code: "https://github.com/spiraldb/raincloud"
+license: Apache-2.0
+authors:
+  - given-names: Martin
+    family-names: Prammer
+    email: "raincloud@spiraldb.com"
+    affiliation: Spiral
+  - given-names: Nicholas
+    family-names: Gates
+    email: "raincloud@spiraldb.com"
+    affiliation: Spiral
+  - given-names: Robert
+    family-names: Kruszewski
+    email: "raincloud@spiraldb.com"
+    affiliation: Spiral
+  - given-names: Will
+    family-names: Manning
+    email: "raincloud@spiraldb.com"
+    affiliation: Spiral
+keywords:
+  - parquet
+  - vortex
+  - datasets
+  - data-pipeline
+  - public-data
+  - reproducibility
+message: >-
+  If you use Raincloud or its curated dataset catalog in academic work,
+  please cite it using the metadata in this file.

@@ -1,0 +1,82 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# uv lock file — raincloud is published as a library, so consumers
+# should resolve transitive deps against their own constraint set.
+# Local resolutions live untracked alongside pyproject.toml.
+uv.lock
+
+# Python build artifacts (anchored to repo root so they don't shadow
+# nested directories named `build`/`dist`/etc., e.g. .agents/skills/build/).
+/build/
+/dist/
+/downloads/
+/eggs/
+/.eggs/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Packaging and installer logs
+pip-wheel-metadata/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+!.env.example
+
+# Test, coverage, and type-checking caches
+.pytest_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Local runtime output
+*.log
+*.sqlite
+*.sqlite3
+
+# Pipeline build artifacts — regenerate with scripts/pipeline/build.py
+outputs/
+
+# Archived notes from prior iterations (Kaggle triage, attribution audit,
+# conversation logs). Kept locally for reference but not tracked.
+.archive/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Zed IDE local workspace state
+.zed/tasks.json
+.zed/debug.json
+.zed/local_settings.json
+
+.agents/scheduled_tasks.lock
+.agents/settings.local.json
+
+# scratch directories
+_workdir/
+.tmp
+
+# scratch (top-level docs/*.md / *.json mirror; canonical copies live in docs/v1/)
+docs/datasets.md
+docs/handlers.md
+docs/snapshot.json

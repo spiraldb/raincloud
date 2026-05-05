@@ -1,0 +1,49 @@
+name: Dataset removal request
+description: Request that a dataset be removed from sources.json — license, copyright, takedown, content concerns, or any other reason.
+title: "[removal] <slug>"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to request that a dataset be removed from `sources.json`.
+        See [`DISCLAIMER.md`](https://github.com/spiraldb/raincloud/blob/develop/DISCLAIMER.md) for the full policy and rationale.
+
+        For **security vulnerabilities** in the pipeline code itself, see [`SECURITY.md`](https://github.com/spiraldb/raincloud/blob/develop/SECURITY.md) — those go through a private channel, not here.
+
+        If you'd rather not file publicly (e.g., the concern itself is sensitive), email `raincloud@spiraldb.com` with subject prefix `[compliance]`. Anonymous reports are welcome.
+  - type: input
+    id: slug
+    attributes:
+      label: Dataset slug
+      description: The `slug` field of the entry in `sources.json` you'd like removed.
+      placeholder: uci-auto-mpg
+    validations:
+      required: true
+  - type: dropdown
+    id: reason
+    attributes:
+      label: Reason
+      description: Pick the closest match. Free-form details go below.
+      options:
+        - License / copyright concern
+        - Takedown request from upstream
+        - Content concern (offensive or questionable material)
+        - Privacy concern
+        - Broken / non-resolvable URL
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Explain the concern. If license/copyright, link to the relevant terms. If content-based, describe the issue without reproducing the material itself.
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      options:
+        - label: I understand that Raincloud does not redistribute dataset bytes — `sources.json` only documents where to fetch upstream data. (See [`DISCLAIMER.md`](https://github.com/spiraldb/raincloud/blob/develop/DISCLAIMER.md).)
+          required: true

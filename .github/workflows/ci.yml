@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+# Cancel in-progress runs when a new commit lands on the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Pin Python
+        run: uv python install 3.11
+
+      # `--extra dev` brings in pytest + ruff. `--extra tui` brings in
+      # textual so the test_browse suite runs instead of skipping. Skip
+      # kaggle/huggingface — those deps are only needed at fetch time and
+      # neither test path imports them.
+      - name: Install dependencies
+        run: uv sync --extra dev --extra tui
+
+      - name: Lint (ruff)
+        run: uv run ruff check
+
+      - name: Validate manifest
+        run: uv run python -m scripts.pipeline.validate_manifest
+
+      - name: Test (pytest)
+        run: uv run pytest -q

@@ -1,0 +1,57 @@
+{
+  "_comment": "Copy-paste this object into the `datasets` array in sources.json and edit the placeholder values. Validates against sources.schema.json. Use the Python load-edit-dump pattern from AGENTS.md to insert it — never `sed`.",
+  "slug": "my-dataset",
+  "short_name": "My Dataset",
+  "full_name": "My Dataset (Publisher Attribution, Year)",
+  "description": "One-line summary describing what this dataset contains.",
+  "family": "direct",
+  "license": {
+    "spdx": "CC0-1.0",
+    "source_url": "https://example.com/LICENSE",
+    "redistribution_permitted": true,
+    "attribution_required": false,
+    "notes": null,
+    "scrape_advisory": null
+  },
+  "fetch": {
+    "type": "http",
+    "urls": ["https://example.com/data.csv"],
+    "auth": null,
+    "expected_bytes": null,
+    "expected_sha256": null
+  },
+  "extract": {
+    "type": "passthrough",
+    "include": null,
+    "exclude": null,
+    "post": null
+  },
+  "parse": {
+    "reader": "csv",
+    "options": {
+      "delimiter": ",",
+      "has_header": true,
+      "encoding": "utf-8"
+    }
+  },
+  "transform": {
+    "handler": "tighten_types",
+    "params": {}
+  },
+  "write": {
+    "output": "my-dataset.parquet",
+    "compression": "zstd",
+    "row_group_size_rows": 1048576,
+    "statistics": true,
+    "page_index": false
+  },
+  "expect": {
+    "rows": null,
+    "schema_hash": null,
+    "notes": "Populate `rows` after the first successful build."
+  },
+  "convert": {
+    "vortex": true,
+    "vortex_skip_reason": null
+  }
+}

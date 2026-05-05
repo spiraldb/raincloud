@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/spiraldb/raincloud/sources.schema.json",
+  "title": "raincloud manifest (sources.json)",
+  "description": "JSON Schema for sources.json, the manifest that drives the raincloud pipeline. Companion to sources.schema.md (the human-friendly reference). Validated by `python -m scripts.pipeline.validate_manifest`. Note: `transform.handler` is intentionally not enum-constrained here — the validator cross-checks it against the live handler registry in scripts/pipeline/handlers/__init__.py so this schema doesn't need updating every time a handler is added.",
+  "type": "object",
+  "required": ["schema_version", "datasets"],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "description": "Manifest schema version. Bumping this would create outputs/v{n}/ alongside outputs/v1/. The within-version layout is outputs/v{n}/<slug>/<format>/<filename> (e.g. parquet/<slug>.parquet, vortex/<slug>.vortex)."
+    },
+    "generated_at": { "type": "string" },
+    "audit_cutoff": { "type": "string" },
+    "notes": {
+      "description": "Free-form metadata about the manifest itself. Object or string.",
+      "type": ["object", "string", "null"]
+    },
+    "datasets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/DatasetSpec" }
+    }
+  },
+  "$defs": {
+    "DatasetSpec": {
+      "type": "object",
+      "required": [
+        "slug", "short_name", "full_name", "description", "family",
+        "license", "fetch", "extract", "parse", "transform", "write", "expect"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$",
+          "description": "kebab-case identifier (a few legacy nyc-tlc slugs use snake_case); matches outputs/v{n}/<slug>/parquet/<slug>.parquet."
+        },
+        "short_name": { "type": "string", "minLength": 1 },
+        "full_name":  { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "family": {
+          "type": "string",
+          "enum": ["direct", "kaggle-upstream", "nyc-tlc", "public-bi", "uci"],
+          "description": "Curatorial grouping. Adding a new family is a deliberate choice — discuss before extending the enum."
+        },
+        "license": { "$ref": "#/$defs/License" },
+        "fetch":   { "$ref": "#/$defs/Fetch" },
+        "extract": { "$ref": "#/$defs/Extract" },
+        "parse":   { "$ref": "#/$defs/Parse" },
+        "transform": { "$ref": "#/$defs/Transform" },
+        "write":   { "$ref": "#/$defs/Write" },
+        "expect":  { "$ref": "#/$defs/Expect" },
+        "convert": { "$ref": "#/$defs/Convert" },
+        "hydrate": { "$ref": "#/$defs/Hydrate" },
+        "references": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "required": ["kind", "url"],
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": ["paper", "blog", "homepage", "github", "dataset_card"],
+                "description": "Reference type. `dataset_card` rarely needs a separate entry since `license.source_url` typically points there; reserve `references` for canonical paper / blog / homepage / source-repo links."
+              },
+              "url":  { "type": "string", "format": "uri" }
+            }
+          },
+          "description": "Optional canonical references for the dataset beyond `license.source_url`. Most useful for surfacing the underlying paper or the project homepage in the TUI."
+        }
+      }
+    },
+    "License": {
+      "type": "object",
+      "required": ["spdx", "source_url", "redistribution_permitted", "attribution_required", "notes", "scrape_advisory"],
+      "additionalProperties": false,
+      "properties": {
+        "spdx": { "type": "string", "description": "SPDX id, or free-form token if no SPDX assignment exists. Describes the aggregator's declared license — see `scrape_advisory` for the gap between that and any uncleared underlying content." },
+        "source_url": { "type": ["string", "null"], "format": "uri" },
+        "redistribution_permitted": { "type": "boolean" },
+        "attribution_required": { "type": "boolean" },
+        "notes": { "type": ["string", "null"] },
+        "scrape_advisory": {
+          "type": ["string", "null"],
+          "description": "Heavy asterisk for datasets that aggregate or reference content whose underlying licenses have not been individually cleared (public-web scrapes, Common Crawl derivatives, image/code corpora distributed under takedown models). When non-null, the text renders as a prominent warning in datasets.md, list_datasets --long, and the TUI. `spdx` still describes the aggregator's declared license; this field captures the gap between that and the unclaimed status of the underlying content."
+        }
+      }
+    },
+    "Fetch": {
+      "type": "object",
+      "required": ["type", "urls", "auth", "expected_bytes", "expected_sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["http", "kaggle", "huggingface", "uci", "custom"]
+        },
+        "urls": {
+          "description": "List of upstream URLs to fetch in order. May be empty when fetch.type=\"custom\" and the handler resolves URLs at runtime (e.g. Public BI workloads).",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "auth": {
+          "type": ["string", "null"],
+          "enum": [null, "kaggle", "huggingface"]
+        },
+        "requires_interactive_accept": {
+          "type": "boolean",
+          "description": "Marks datasets gated behind a one-time terms-of-use click-through on the upstream's web UI. Valid on fetch.type=kaggle (Kaggle dataset ToS) and fetch.type=huggingface (HF gated repos like LAION). Both fetchers catch the 401/403 and surface a 'visit URL, click Accept, re-run' message regardless of this flag — setting it lets the orchestrator announce the requirement up front."
+        },
+        "hf_allow_patterns": {
+          "type": ["array", "null"],
+          "items": { "type": "string" },
+          "description": "huggingface-only: glob patterns passed through to snapshot_download(allow_patterns=...). Lets a slug fetch a subset of a giant repo (e.g. just one config or sample of fineweb) without paying for the whole corpus. Null/omitted = whole repo."
+        },
+        "hf_revision": {
+          "type": ["string", "null"],
+          "description": "huggingface-only: git revision (branch, tag, or commit SHA) passed through to snapshot_download(revision=...). Null/omitted = whatever main resolves to at fetch time."
+        },
+        "expected_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "expected_sha256": { "type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$" },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "Extract": {
+      "type": "object",
+      "required": ["type", "include", "exclude", "post"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["passthrough", "zip", "tar", "bz2", "gzip", "7z", "custom"]
+        },
+        "include": {
+          "type": ["array", "null"],
+          "items": { "type": "string" }
+        },
+        "exclude": {
+          "type": ["array", "null"],
+          "items": { "type": "string" }
+        },
+        "post": { "type": ["string", "null"] }
+      }
+    },
+    "Parse": {
+      "type": "object",
+      "required": ["reader", "options"],
+      "additionalProperties": false,
+      "properties": {
+        "reader": {
+          "type": "string",
+          "enum": ["csv", "parquet", "jsonl", "xml", "pbf", "custom"]
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Reader-specific kwargs. Shape varies by reader — see scripts/pipeline/parse.py."
+        }
+      }
+    },
+    "Transform": {
+      "type": "object",
+      "required": ["handler", "params"],
+      "additionalProperties": false,
+      "properties": {
+        "handler": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of a registered handler in scripts/pipeline/handlers/__init__.py. Validated by validate_manifest.py."
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "Write": {
+      "type": "object",
+      "required": ["output", "compression", "row_group_size_rows", "statistics", "page_index"],
+      "additionalProperties": false,
+      "properties": {
+        "output": {
+          "type": "string",
+          "pattern": "\\.parquet$",
+          "description": "Output filename. Ignored for multi-output handlers — they emit per-output_slug filenames."
+        },
+        "compression": {
+          "type": "string",
+          "enum": ["zstd", "snappy", "gzip", "lz4", "brotli", "none"]
+        },
+        "row_group_size_rows": { "type": "integer", "minimum": 1 },
+        "statistics": { "type": "boolean" },
+        "page_index": { "type": "boolean" }
+      }
+    },
+    "Expect": {
+      "type": "object",
+      "required": ["rows", "schema_hash", "notes"],
+      "additionalProperties": false,
+      "properties": {
+        "rows": { "type": ["integer", "null"], "minimum": 0 },
+        "schema_hash": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] },
+        "row_stability": {
+          "enum": ["static", "grow_only", "mutable", null],
+          "description": "How the upstream row count evolves over time:\n  static     — frozen snapshot (Kaggle dump, archived release, Wikipedia 2024 dump). expect.rows is contractual; drift is a bug.\n  grow_only  — append-only live source (NYC OpenData, NOAA observations); past rows don't change.\n  mutable    — past records may be revised or deleted (some live CKAN portals).\n  null/absent — unclassified."
+        }
+      }
+    },
+    "Convert": {
+      "type": "object",
+      "required": ["vortex", "vortex_skip_reason"],
+      "additionalProperties": false,
+      "properties": {
+        "vortex": { "type": "boolean" },
+        "vortex_skip_reason": {
+          "type": ["string", "null"],
+          "description": "Free-form explanation of why the Vortex sibling is opted out. Required (non-null string) when vortex=false; must be null when vortex=true. Surfaced in docs/v{n}/vortex_skip.md, the TUI detail pane, and list_datasets --json. Use this for known type-support gaps in the current Vortex release (e.g. FixedSizeBinary(16) UUIDs, nested list<struct> on chunked-array writes) so the catalog records *why* a slug doesn't have a `.vortex` rather than leaving it ambiguous."
+        }
+      }
+    },
+    "Hydrate": {
+      "type": ["object", "null"],
+      "description": "Opt-in hydration config. When non-null, the slug carries a URL column whose contents can be dereferenced into a sibling parquet at outputs/v{n}/<slug>/parquet-hydrated/<slug>.parquet. The base slug ships only the URL index — hydration is a separate, deliberately sketchy artefact tier with no file-size guarantees. Run `python -m scripts.pipeline.hydrate <slug>` to produce the hydrated copy.",
+      "required": ["url_column", "output_column", "output_type", "advisory"],
+      "additionalProperties": false,
+      "properties": {
+        "url_column": {
+          "type": "string",
+          "description": "Name of the existing string column whose values are URLs to dereference."
+        },
+        "output_column": {
+          "type": "string",
+          "description": "Name of the new column to add to the hydrated copy (typically `content` or `bytes`)."
+        },
+        "output_type": {
+          "type": "string",
+          "enum": ["binary", "string"],
+          "description": "Wire shape of the dereferenced payload — `binary` for image/audio/PDF bytes, `string` for HTML/text. Embeddings or other model-derived representations belong on a sibling slug, not on this column."
+        },
+        "advisory": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form per-slug warning describing the hydration's pitfalls — takedown rates, copyright posture, expected null-row prevalence. Rendered in HYDRATING.md alongside the global 'this dereferences arbitrary URLs' preamble."
+        },
+        "blocked_hosts_extra": {
+          "type": ["array", "null"],
+          "items": { "type": "string" },
+          "description": "Optional per-slug list of hostnames to add to the hydrate stage's blocklist. Stacks on top of the user-supplied --block files and (if enabled) URLhaus. Use for slug-specific bans the dataset author wants to enforce regardless of run-time flags. Hostnames only — no schemes, no paths."
+        }
+      }
+    }
+  }
+}
