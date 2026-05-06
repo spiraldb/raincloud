@@ -1,5 +1,10 @@
 # 🌧️ Raincloud
 
+[![CI](https://github.com/spiraldb/raincloud/actions/workflows/ci.yml/badge.svg)](https://github.com/spiraldb/raincloud/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/spiraldb/raincloud)](https://github.com/spiraldb/raincloud/releases)
+[![License](https://img.shields.io/github/license/spiraldb/raincloud)](LICENSE)
+[![Cite](https://img.shields.io/badge/cite-CITATION.cff-blue)](CITATION.cff)
+
 A reproducible pipeline for building a curated catalog of public datasets as analytics-ready Parquet and Vortex files.
 
 Raincloud is a reproducible baseline of public datasets in modern columnar formats, curated from research papers and existing community efforts. The project's motivation comes from file-format research, where consistent test corpora are needed to compare encoding, compression, and layout choices on real-world inputs. Beyond file-format research, we see broader value in providing a community-curated set of real-world data, as we expect it to be useful for other tasks such as analytical benchmarking and model evaluation.
