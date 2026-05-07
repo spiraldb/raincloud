@@ -651,8 +651,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested list<struct> geometry column is not supported by vortex-data 0.69 chunked-array output. Re-enable when vortex adds the path."
+        "vortex": true,
+        "vortex_skip_reason": null
       }
     },
     {
