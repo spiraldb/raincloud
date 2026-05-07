@@ -19,11 +19,12 @@ source hasn't changed since the last convert).
 
 Vortex (https://github.com/spiraldb/vortex) is a columnar file format built
 around Apache Arrow's type system, with richer compression and pushdown than
-Parquet. Conversion goes through `pyarrow.Table` → `vortex.Array` → file,
-so Arrow-supported types round-trip cleanly. Types the current Vortex
-release doesn't accept (e.g. any `FixedSizeBinary` in 0.69) raise at
-`vortex.Array.from_arrow(...)`; this module reports the failure and
-continues with the next slug when run in `--all` / `--family` mode.
+Parquet. Conversion streams `pf.iter_batches() → pa.RecordBatchReader →
+vxio.write`, so Arrow-supported types round-trip cleanly without ever
+materialising the full table. Types the current Vortex release doesn't
+accept (e.g. any `FixedSizeBinary` in 0.69) raise at `vortex.Array.from_arrow`;
+this module reports the failure and continues with the next slug when run
+in `--all` / `--family` mode.
 
 Caveats:
   - Parquet VARIANT columns surface in Vortex as their shredded struct
@@ -65,32 +66,39 @@ from .spec import (
 )
 
 
-def _uniquify_columns(table: pa.Table) -> pa.Table:
+def _uniquify_names(names: list[str]) -> list[str] | None:
     """Disambiguate duplicate top-level column names by suffixing ` [N]`.
 
     Vortex's StructLayout rejects duplicates (e.g. the OSMI survey parquets
-    have repeated `Anxiety Disorder` headers from matrix questions). Rename
-    in-place before.
+    have repeated `Anxiety Disorder` headers from matrix questions).
+
+    Returns the rewritten list, or None if `names` is already unique.
     """
-    names = table.column_names
     if len(set(names)) == len(names):
-        return table
+        return None
     counts: dict[str, int] = {}
-    new_names = []
+    out: list[str] = []
     for n in names:
         if n in counts:
             counts[n] += 1
-            new_names.append(f"{n} [{counts[n]}]")
+            out.append(f"{n} [{counts[n]}]")
         else:
             counts[n] = 0
-            new_names.append(n)
-    return table.rename_columns(new_names)
+            out.append(n)
+    return out
 
 
 def _convert_one(parquet: Path, vortex_path: Path, label: str) -> Path:
     """Read `parquet`, write `vortex_path`. Idempotent: returns immediately
     when the vortex file is newer than the parquet. Used for both the base
     parquet (vortex/) and the hydrated companion (vortex-hydrated/).
+
+    Streams the parquet via `iter_batches` rather than `read()` so we never
+    ask pyarrow to materialise a single Arrow array large enough to need
+    chunked output for a nested column — that path is unimplemented in
+    pyarrow and raises `ArrowNotImplementedError: Nested data conversions
+    not implemented for chunked array outputs` for parquets with sizeable
+    nested fields (list/struct).
     """
     vortex_path.parent.mkdir(parents=True, exist_ok=True)
     if vortex_path.exists() and vortex_path.stat().st_mtime >= parquet.stat().st_mtime:
@@ -106,17 +114,39 @@ def _convert_one(parquet: Path, vortex_path: Path, label: str) -> Path:
 
     t0 = time.monotonic()
     pf = pq.ParquetFile(str(parquet))
-    # `vxio.write` expects unique top-level column names — OSMI parquets
-    # have matrix-question duplicates (`Anxiety Disorder` × 3, etc.) that
-    # trip Vortex's `StructLayout` invariant.
-    vxio.write(_uniquify_columns(pf.read()), str(tmp))
+    schema = pf.schema_arrow
+    new_names = _uniquify_names(schema.names)
+    if new_names is not None:
+        schema = pa.schema(
+            [f.with_name(n) for f, n in zip(schema, new_names)],
+            metadata=schema.metadata,
+        )
+
+    # Smaller than pyarrow's 65536 default: with large nested cells (audio
+    # bytes, list<struct<string,string>>), 65536 rows can build a per-column
+    # buffer past i32-offset limits and trigger pyarrow's chunked-output
+    # NotImplementedError in the C-stream export. 1024 keeps batches under
+    # that ceiling for every slug we currently ship; the per-batch overhead
+    # is negligible vs. the parquet-decode and vortex-encode costs.
+    BATCH_SIZE = 1024
+
+    def batches():
+        for b in pf.iter_batches(batch_size=BATCH_SIZE):
+            yield b.rename_columns(new_names) if new_names is not None else b
+
+    reader = pa.RecordBatchReader.from_batches(schema, batches())
+    vxio.write(reader, str(tmp))
     tmp.replace(vortex_path)
     elapsed = time.monotonic() - t0
 
     sz_p = parquet.stat().st_size
     sz_v = vortex_path.stat().st_size
+    try:
+        log_path = vortex_path.relative_to(REPO_ROOT)
+    except ValueError:
+        log_path = vortex_path
     print(
-        f"  wrote {vortex_path.relative_to(REPO_ROOT)}  "
+        f"  wrote {log_path}  "
         f"{sz_v / 1e6:.1f} MB (ratio {sz_v / sz_p:.3f}) in {elapsed:.1f}s"
     )
     return vortex_path

@@ -651,8 +651,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested list<struct> geometry column is not supported by vortex-data 0.69 chunked-array output. Re-enable when vortex adds the path."
+        "vortex": true,
+        "vortex_skip_reason": null
       }
     },
     {
@@ -12042,8 +12042,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Vortex 0.69 raises 'Nested data conversions not implemented for chunked array outputs' on the `messages: list<struct<role, content>>` column when the parquet has multiple row groups. The single-row-group path works for similar shapes; re-enable once the chunked-output path supports nested types."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {
@@ -13580,8 +13580,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested struct columns (image as struct<bytes,path>) \u2014 Vortex chunked-array writer not yet supports nested-struct conversion."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {
@@ -13865,8 +13865,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested struct columns (image_1..image_7 as struct<bytes,path>) \u2014 Vortex chunked-array writer not yet supports nested-struct conversion."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {
@@ -14430,7 +14430,7 @@
       },
       "convert": {
         "vortex": false,
-        "vortex_skip_reason": "Nested struct columns (public_tests / private_tests / solutions) \u2014 Vortex chunked-array writer not yet supports nested-list-of-struct conversion."
+        "vortex_skip_reason": "Vortex FSST string compression overflows i32 offsets on the `solutions.solution: list<string>` payload once cumulative UTF-8 across the file passes 2 GB. Tracking upstream at vortex-data/vortex#7833; re-enable when that lands. A `large_string` cast hits the same hardcoded builder, and a `string_view` cast segfaults during write."
       },
       "references": [
         {
@@ -14571,8 +14571,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested struct columns (audio as struct<bytes,path>) \u2014 Vortex chunked-array writer not yet supports nested-struct conversion."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {

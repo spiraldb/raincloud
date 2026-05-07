@@ -19,7 +19,7 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from scripts.pipeline.convert import convert_hydrated
+from scripts.pipeline.convert import _convert_one, convert_hydrated
 from scripts.pipeline.spec import (
     prepared_parquet_hydrated,
     prepared_vortex_hydrated,
@@ -117,6 +117,56 @@ def test_convert_hydrated_is_idempotent_when_vortex_newer():
         assert vortex.stat().st_mtime == first_mtime
     finally:
         _cleanup(slug)
+
+
+def test_convert_one_streams_multi_row_group_nested(tmp_path: Path):
+    """A multi-row-group parquet with a nested column converts end-to-end.
+
+    Regression for the `pf.read()` path that fails on nested columns whose
+    Arrow representation would need to be chunked across the row groups —
+    pyarrow raises `ArrowNotImplementedError: Nested data conversions not
+    implemented for chunked array outputs` from `read_all`. Streaming
+    `iter_batches` produces single-chunk RecordBatches and sidesteps it.
+    """
+    parquet = tmp_path / "nested.parquet"
+    vortex_path = tmp_path / "nested.vortex"
+
+    schema = pa.schema([
+        ("msgs", pa.list_(pa.struct([("role", pa.string()), ("content", pa.string())]))),
+    ])
+    rows = [[{"role": "u", "content": "hi"}], [{"role": "a", "content": "hello"}]]
+    batch = pa.record_batch([pa.array(rows, type=schema.field(0).type)], schema=schema)
+
+    with pq.ParquetWriter(parquet, schema) as w:
+        w.write_batch(batch)
+        w.write_batch(batch)
+        w.write_batch(batch)
+    assert pq.ParquetFile(parquet).num_row_groups == 3
+
+    out = _convert_one(parquet, vortex_path, "test-nested")
+    assert out == vortex_path
+    assert vortex_path.exists()
+    assert vortex_path.stat().st_size > 0
+
+
+def test_convert_one_renames_duplicate_columns(tmp_path: Path):
+    """Top-level duplicate column names get suffixed before write.
+
+    Vortex's StructLayout rejects duplicates; raincloud needs to rename
+    them in-stream rather than via a `pa.Table.rename_columns` call on
+    the materialised table.
+    """
+    import vortex as vx
+    parquet = tmp_path / "dup.parquet"
+    vortex_path = tmp_path / "dup.vortex"
+
+    schema = pa.schema([("x", pa.int64()), ("x", pa.int64()), ("x", pa.int64())])
+    batch = pa.record_batch([pa.array([1, 2]), pa.array([3, 4]), pa.array([5, 6])], schema=schema)
+    with pq.ParquetWriter(parquet, schema) as w:
+        w.write_batch(batch)
+
+    _convert_one(parquet, vortex_path, "test-dup")
+    assert vx.open(str(vortex_path)).dtype.names() == ["x", "x [1]", "x [2]"]
 
 
 def test_convert_hydrated_rebuilds_when_parquet_newer():
