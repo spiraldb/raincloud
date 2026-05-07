@@ -12042,8 +12042,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Vortex 0.69 raises 'Nested data conversions not implemented for chunked array outputs' on the `messages: list<struct<role, content>>` column when the parquet has multiple row groups. The single-row-group path works for similar shapes; re-enable once the chunked-output path supports nested types."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {
@@ -13580,8 +13580,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested struct columns (image as struct<bytes,path>) \u2014 Vortex chunked-array writer not yet supports nested-struct conversion."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {
@@ -13865,8 +13865,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested struct columns (image_1..image_7 as struct<bytes,path>) \u2014 Vortex chunked-array writer not yet supports nested-struct conversion."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {
@@ -14571,8 +14571,8 @@
         "row_stability": "static"
       },
       "convert": {
-        "vortex": false,
-        "vortex_skip_reason": "Nested struct columns (audio as struct<bytes,path>) \u2014 Vortex chunked-array writer not yet supports nested-struct conversion."
+        "vortex": true,
+        "vortex_skip_reason": null
       },
       "references": [
         {
