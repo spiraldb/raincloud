@@ -10,6 +10,13 @@ Three files are produced, all derived artefacts — never hand-edit:
                           built state. Read by the TUI as a fallback when a
                           local parquet isn't built, so the columns / types
                           modals can still show *expected* contents.
+                          ALSO read by `generate_datasets_md` below as the
+                          fallback for row count / row-group count / file
+                          sizes when a slug's parquet isn't present locally
+                          — without it, regen by a maintainer who hasn't
+                          built every slug would dash-out the whole table.
+                          Keep snapshot.json regenerated whenever a new
+                          slug lands or a build's row count / size changes.
 
 Per-column / per-coverage / vortex-skip / hydrated detail used to live as
 markdown too, but the rendering was unscannable and duplicated state
@@ -68,8 +75,12 @@ _KIND_BY_FAMILY = {
 }
 
 
-def _data_kind(spec: dict, pq_schema=None) -> str:
-    """Best-effort inference of the 'Data Kind' label."""
+def _data_kind(spec: dict, column_names: set[str] | None = None) -> str:
+    """Best-effort inference of the 'Data Kind' label.
+
+    `column_names` may come from a live parquet schema OR from the snapshot
+    fallback — both cases need to recognise the `content` blob convention.
+    """
     family = spec.get("family", "")
     if family in _KIND_BY_FAMILY:
         return _KIND_BY_FAMILY[family]
@@ -93,12 +104,37 @@ def _data_kind(spec: dict, pq_schema=None) -> str:
         base = "Custom"
     else:
         base = "Tabular (CSV)"
-    # Blob column bumps the label
-    if pq_schema is not None:
-        names = {f.name for f in pq_schema}
-        if "content" in names:
-            base = f"{base.split(' (')[0]} + Blobs"
+    if column_names and "content" in column_names:
+        base = f"{base.split(' (')[0]} + Blobs"
     return base
+
+
+def _load_snapshot_slugs(schema_version: int | None = None) -> dict[str, dict]:
+    """Return the `slugs` mapping from the on-disk snapshot, or `{}`.
+
+    Used by `generate_datasets_md` to fall back to the last-known row count
+    / sizes when a slug's parquet isn't present locally. Tries:
+
+        1. `docs/snapshot.json`                 (gitignored scratch — wins
+           if a maintainer regenerated locally)
+        2. `docs/v{schema_version}/snapshot.json`  (tracked canonical — what
+           a fresh clone has)
+
+    Returns `{}` on a missing or malformed snapshot — callers degrade to
+    the dash placeholder.
+    """
+    import json
+    candidates = [SNAPSHOT_JSON]
+    if schema_version is not None:
+        candidates.append(REPO_ROOT / "docs" / f"v{schema_version}" / "snapshot.json")
+    for path in candidates:
+        if not path.exists():
+            continue
+        try:
+            return json.loads(path.read_text()).get("slugs", {})
+        except (json.JSONDecodeError, OSError):
+            continue
+    return {}
 
 
 def _size_label(bytes_: int | None) -> str:
@@ -112,24 +148,37 @@ def _size_label(bytes_: int | None) -> str:
 
 def generate_datasets_md():
     manifest = load_manifest()
+    snapshot_slugs = _load_snapshot_slugs(manifest.get("schema_version"))
     rows = []
     advisories: list[tuple[str, str, str]] = []  # (slug, short_name, advisory text)
     for spec in manifest["datasets"]:
         slug = spec["slug"]
         parquet = prepared_parquet(slug)
+        snap = snapshot_slugs.get(slug, {})
         if parquet.exists():
             meta = pq.ParquetFile(parquet).metadata
             schema = pq.ParquetFile(parquet).schema_arrow
             row_count = f"{meta.num_rows:,}"
             row_groups = f"{meta.num_row_groups:,}"
             parquet_size = _size_label(parquet.stat().st_size)
-            kind = _data_kind(spec, schema)
+            kind = _data_kind(spec, column_names={f.name for f in schema})
         else:
-            row_count = row_groups = parquet_size = "—"
-            kind = _data_kind(spec)
+            # Fall back to the last-known snapshot entry so partial-build
+            # maintainers don't dash-out everything they haven't built locally.
+            r = snap.get("last_built_rows")
+            rg = snap.get("last_built_row_groups")
+            row_count = f"{r:,}" if isinstance(r, int) else "—"
+            row_groups = f"{rg:,}" if isinstance(rg, int) else "—"
+            parquet_size = _size_label(snap.get("parquet_bytes"))
+            cols = snap.get("columns") or []
+            names = {c["name"] for c in cols if isinstance(c, dict) and "name" in c}
+            kind = _data_kind(spec, column_names=names or None)
 
         vortex = prepared_vortex(slug)
-        vortex_size = _size_label(vortex.stat().st_size) if vortex.exists() else "—"
+        if vortex.exists():
+            vortex_size = _size_label(vortex.stat().st_size)
+        else:
+            vortex_size = _size_label(snap.get("vortex_bytes"))
 
         short = spec["short_name"]
         advisory = spec_field(spec, "license.scrape_advisory")
@@ -342,7 +391,8 @@ def generate_snapshot(*, overwrite_missing: bool = False):
         expected_rows = spec_field(spec, "expect.rows")
         fresh: dict = {
             "expected_rows": expected_rows,
-            "last_built_rows": None,  # populated below from parquet metadata
+            "last_built_rows": None,        # populated below from parquet metadata
+            "last_built_row_groups": None,  # populated below from parquet metadata
             "parquet_bytes": parquet.stat().st_size if parquet.exists() else None,
             "vortex_bytes": vortex.stat().st_size if vortex.exists() else None,
             "columns": None,  # populated below when schema is readable
@@ -358,6 +408,7 @@ def generate_snapshot(*, overwrite_missing: bool = False):
                     {"name": f.name, "type": str(f.type)} for f in pf.schema_arrow
                 ]
                 fresh["last_built_rows"] = int(pf.metadata.num_rows)
+                fresh["last_built_row_groups"] = int(pf.metadata.num_row_groups)
                 n_with_schema += 1
             except Exception as e:
                 fresh["columns_error"] = f"{type(e).__name__}: {str(e)[:120]}"

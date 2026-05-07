@@ -380,14 +380,17 @@ df -h .                                           # disk headroom
 ## Regenerating specific docs
 
 ```bash
-python -m scripts.pipeline.docs            # both files (datasets.md + handlers.md)
+python -m scripts.pipeline.docs            # all three (datasets.md + handlers.md + snapshot.json)
 python -m scripts.pipeline.docs datasets   # just datasets.md
 python -m scripts.pipeline.docs handlers   # just handlers.md (registry + manifest usage)
+python -m scripts.pipeline.docs snapshot   # just snapshot.json (per-slug schema + sizes)
 ```
 
-Writes land in `docs/*.md` (gitignored scratch). To promote a snapshot to the tracked canonical path, copy to `docs/v{schema_version}/`.
+Writes land in `docs/{datasets.md, handlers.md, snapshot.json}` (gitignored scratch). To promote, copy to the tracked `docs/v{schema_version}/`.
 
 Regenerate **after** any of: build, convert run, in-place tightening, manifest edit that changes short_name / license / description / family / expect.rows. Skip if the change doesn't affect the catalog or the handler registry.
+
+**`snapshot.json` is the load-bearing fallback** — `datasets.md` regen reads it for any slug whose parquet isn't on disk locally (otherwise the row would dash out the row count, sizes, and column-derived "Data Kind" tag). The no-args form keeps snapshot + datasets in lockstep; if you do a partial regen with `docs.py datasets`, run `docs.py snapshot` first (or just use the no-args form) so the table doesn't drift.
 
 The other catalog views (columns, coverage, vortex-skip, hydration candidates) are no longer markdown — query them via `python -m scripts.pipeline.list_datasets --columns / --coverage / --no-vortex / --hydrate` or interactively in the TUI (`python -m scripts.pipeline.browse`).
 
