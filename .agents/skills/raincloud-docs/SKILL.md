@@ -1,6 +1,6 @@
 ---
 name: raincloud-docs
-description: Regenerate the derived docs (datasets.md, handlers.md, snapshot.json). Use after a build, a manifest edit, or a handler add/remove/rename. The snapshot file is what the TUI falls back to for unbuilt-locally slugs in its columns / types modals. Other catalog views (columns, coverage, vortex-skip, hydrate candidates) are queryable via `/raincloud-list-datasets` and the TUI.
+description: Regenerate the derived docs (datasets.md, handlers.md, snapshot.json). Use after a build, a manifest edit, or a handler add/remove/rename. snapshot.json is load-bearing — it's the fallback both for the TUI's columns / types modals AND for `datasets.md` regen on slugs not built locally, so partial-build maintainers don't dash-out the table. Other catalog views (columns, coverage, vortex-skip, hydrate candidates) are queryable via `/raincloud-list-datasets` and the TUI.
 argument-hint: [datasets | handlers | snapshot]...
 allowed-tools: Bash(python -m scripts.pipeline.docs *)
 ---
@@ -15,7 +15,7 @@ Targets:
 - *(no args)* — regenerates all three: `datasets.md`, `handlers.md`, `snapshot.json`.
 - `datasets` — just `docs/datasets.md` (one row per dataset).
 - `handlers` — just `docs/handlers.md` (one row per registered transform handler).
-- `snapshot` — just `docs/snapshot.json` (per-slug schema + file sizes; read by the TUI as a fallback for slugs whose parquet isn't built locally).
+- `snapshot` — just `docs/snapshot.json` (per-slug schema + file sizes; read by the TUI for unbuilt-locally slugs AND by `datasets.md` regen as the row-count / size fallback). Run alongside `datasets` if you ever invoke `datasets` on its own — otherwise the markdown table will drift from the manifest.
 
 Output lands in **`docs/*.md` / `docs/*.json`** (gitignored scratch). Promote to the tracked canonical path with a manual copy:
 

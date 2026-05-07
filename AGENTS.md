@@ -63,7 +63,7 @@ Hydration policy / philosophy lives in the hand-maintained [`HYDRATING.md`](HYDR
 
 ## What this repo does
 
-Raincloud is a **client-reproducible pipeline** for building a curated catalog of public datasets as Parquet + optional Vortex files. The single source of truth is `sources.json`. Everything under `outputs/`, the two derived docs (`docs/datasets.md`, `docs/handlers.md`), and the JSON catalog snapshot (`docs/snapshot.json`, read by the TUI as a fallback for unbuilt-locally slugs) is **derived** — regenerate, never hand-edit. Column-level / coverage / vortex-skip / hydrate-candidate views are queryable via `list_datasets` flags rather than markdown.
+Raincloud is a **client-reproducible pipeline** for building a curated catalog of public datasets as Parquet + optional Vortex files. The single source of truth is `sources.json`. Everything under `outputs/`, the two derived docs (`docs/datasets.md`, `docs/handlers.md`), and the JSON catalog snapshot (`docs/snapshot.json` — read by the TUI as a fallback for unbuilt-locally slugs, AND used by `docs.py` itself as the row-count / file-size fallback when regenerating `datasets.md` on a partial build) is **derived** — regenerate, never hand-edit. Column-level / coverage / vortex-skip / hydrate-candidate views are queryable via `list_datasets` flags rather than markdown.
 
 The pipeline flow is: **fetch → extract → parse → transform → write → validate → convert** (stage 7 opt-in per-spec), orchestrated by `scripts.pipeline.build`.
 
@@ -122,10 +122,12 @@ Small (<100 MB) parquets are fine to rebuild without asking.
 ## Regenerate derived docs after any pipeline change
 
 ```bash
-python -m scripts.pipeline.docs    # datasets.md + columns_{parquet,vortex}.md + coverage_{parquet,vortex}.md + handlers.md
+python -m scripts.pipeline.docs    # datasets.md + handlers.md + snapshot.json
 ```
 
-All six derived docs are regenerated in one pass by default. Run this after any build, convert run, in-place parquet mutation, or when a handler is added/removed/renamed (handlers.md regenerates from the registry + manifest).
+All three derived artefacts regenerate in one pass by default. Run this after any build, convert run, in-place parquet mutation, or when a handler is added/removed/renamed (handlers.md regenerates from the registry + manifest).
+
+**Keep `docs/snapshot.json` fresh — it's load-bearing.** `datasets.md` regen reads from disk for slugs you've built locally and falls back to `docs/snapshot.json` (or `docs/v{schema_version}/snapshot.json` on a fresh clone) for everything else. Without that fallback, regenerating on a partial build would dash-out 200+ rows and silently destroy ground truth in the tracked snapshot. The default no-args invocation regens snapshot + datasets in lockstep, so it's only at risk if you do partial regens — `docs.py datasets` alone won't refresh the snapshot. After a build, prefer the no-args form.
 
 ## Style and scope
 
