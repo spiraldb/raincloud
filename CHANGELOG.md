@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-05-07
+
+### Added
+
+- README badges (CI status, latest release, license, citation).
+
+### Changed
+
+- **Convert stage now streams parquet batches** via `pf.iter_batches() →
+  RecordBatchReader → vxio.write` instead of materialising whole tables.
+  Resolves `ArrowNotImplementedError: Nested data conversions not implemented
+  for chunked array outputs` from pyarrow on slugs whose nested columns
+  (`list<struct>`, `struct<bytes,…>`) would need to be chunked across multiple
+  Arrow arrays. Re-enables Vortex output for `osm-germany-ways`,
+  `ultrachat-200k`, `mmmu`, `websight-v01`, `peoples-speech-clean-validation`.
+- `code-contests` Vortex skip re-diagnosed: not the chunked-array path; a
+  separate upstream FSST i32-offset overflow on `list<string>` >2 GB.
+- `open-food-facts` description aligned with shipped output (currently a
+  single `raw_json: string` column via `jsonl_as_string_parse`; VARIANT
+  promotion deferred).
+- PR template: dropped the "Test plan" checklist (CI runs the same gates on
+  every PR; CONTRIBUTING.md documents them once).
+- Agent-tooling docs (AGENTS.md, SKILLS.md, `raincloud-docs` skill) now flag
+  `docs/snapshot.json` as load-bearing — TUI fallback _and_ the
+  row-count / file-size fallback for `datasets.md` regen. Stale "six derived
+  docs" reference in AGENTS.md cleaned up to three.
+
+### Fixed
+
+- `docs/datasets.md` regeneration now falls back to `docs/snapshot.json`
+  (top-level scratch, then `docs/v{schema_version}/snapshot.json` on a fresh
+  clone) for slugs whose parquet isn't built locally. Previously,
+  partial-build regen would silently dash-out row counts and file sizes for
+  any slug not on disk, destroying ground truth in the v1 snapshot. Snapshot
+  regen now also captures `last_built_row_groups`. Five regression tests
+  added in `tests/test_docs.py`.
+
 ## [0.1.0] - 2026-05-06
 
 Initial public release.
@@ -45,4 +82,5 @@ This release bundles:
   this repository" button in the repo sidebar with BibTeX / APA / Chicago
   exports.
 
+[0.1.1]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.1
 [0.1.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.0
