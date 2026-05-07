@@ -14430,7 +14430,7 @@
       },
       "convert": {
         "vortex": false,
-        "vortex_skip_reason": "Vortex FSST string compression (`encodings/fsst/src/compress.rs`, `VarBinBuilder<i32>`) overflows on `solutions.solution: list<string>` once cumulative UTF-8 across the file passes 2 GB. The streaming-batch convert lifted the original chunked-array blocker for nested types; this is a separate FSST hardcoded-offset bug. A `large_string` cast hits the same builder, and a `string_view` cast segfaults during write. Re-enable when the FSST builder widens its offset type or vortex exposes a knob to skip FSST on the affected column."
+        "vortex_skip_reason": "Vortex FSST string compression overflows i32 offsets on the `solutions.solution: list<string>` payload once cumulative UTF-8 across the file passes 2 GB. Tracking upstream at vortex-data/vortex#7833; re-enable when that lands. A `large_string` cast hits the same hardcoded builder, and a `string_view` cast segfaults during write."
       },
       "references": [
         {
