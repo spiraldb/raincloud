@@ -185,7 +185,7 @@
       "slug": "open-food-facts",
       "short_name": "Open Food Facts",
       "full_name": "Open Food Facts product database",
-      "description": "Crowd-sourced product facts for 4.4M packaged food products. Each row carries deeply nested nutrition, ingredient, allergen, and labelling metadata (origin, packaging, traffic-light scores). One of the larger heavily-nested JSON-shaped corpora in the catalog; raincloud emits the bulk fields as VARIANT.",
+      "description": "Crowd-sourced product facts for 4.4M packaged food products. Each row carries deeply nested nutrition, ingredient, allergen, and labelling metadata (origin, packaging, traffic-light scores). One of the larger heavily-nested JSON-shaped corpora in the catalog; the current build ships the canonical JSONL as a single `raw_json: string` column.",
       "family": "direct",
       "license": {
         "spdx": "ODbL-1.0",
