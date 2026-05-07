@@ -7,8 +7,8 @@ abstract: >-
   transform, validate, and convert behaviour, supporting verifiable provenance
   and consistent re-derivation of dataset artefacts across users and machines.
 type: software
-version: 0.1.0
-date-released: 2026-05-06
+version: 0.1.1
+date-released: 2026-05-07
 url: "https://github.com/spiraldb/raincloud"
 repository-code: "https://github.com/spiraldb/raincloud"
 license: Apache-2.0
