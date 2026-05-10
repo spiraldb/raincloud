@@ -25,7 +25,7 @@ Steps:
 
    Use the [Python load-edit-dump pattern](../../context/AGENTS.md#safe-ways-to-edit-sourcesjson) — never `sed`.
 
-2. **Confirm Kaggle creds are set up:** `~/.kaggle/kaggle.json` with `chmod 600`, and the project synced via `uv sync --extra kaggle`.
+2. **Confirm Kaggle creds are set up:** `~/.kaggle/kaggle.json` with `chmod 600`, and the project synced via `uv sync --extra kaggle --inexact`.
 
 3. **Try the first build via `/raincloud-build <slug> --loose`.** Pre-flight will print `kaggle (ToS-gated): ...`. Expect a 403 on the first try. The error message will point at the exact Kaggle URL the user must visit.
 

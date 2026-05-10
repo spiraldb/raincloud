@@ -2,7 +2,7 @@
 
 Playbooks for common operations in this repo. Each section is a self-contained recipe — copy and adapt.
 
-Prereqs: Python 3.11+ and [uv](https://docs.astral.sh/uv/). Run `uv sync` in the repo root to install the pinned core deps (`pyarrow`, `duckdb`, `vortex-data`, `zstandard`, `py7zr`, `unlzw3`, `pandas`, `openpyxl`, `pyreadstat`, `osmium`, `jsonschema`). Add `--extra kaggle` for Kaggle-hosted datasets, `--extra huggingface` for Hugging Face ones, or `--extra dev` for `pytest` — see [`README.md`](README.md#upstream-specific-extras). Invoke Python as `.venv/bin/python` (or activate the venv).
+Prereqs: Python 3.11+ and [uv](https://docs.astral.sh/uv/). Run `uv sync --inexact` in the repo root to install the pinned core deps (`pyarrow`, `duckdb`, `vortex-data`, `zstandard`, `py7zr`, `unlzw3`, `pandas`, `openpyxl`, `pyreadstat`, `osmium`, `jsonschema`). Add `--extra kaggle` for Kaggle-hosted datasets, `--extra huggingface` for Hugging Face ones, or `--extra dev` for `pytest` — see [`README.md`](README.md#upstream-specific-extras). Always pass `--inexact` so subsequent extras accumulate instead of overwriting prior ones (uv's default is "exact" sync, which removes anything not requested by the current invocation). Invoke Python as `.venv/bin/python` (or activate the venv).
 
 ## Index
 
@@ -51,8 +51,8 @@ Env vars the helper honours (see [`README.md`](README.md#duckdb-resource-limits)
 ## Running the test suite
 
 ```bash
-uv sync --extra dev   # one-time — installs pytest
-pytest                # ~0.5 s on the full suite
+uv sync --extra dev --inexact   # one-time — installs pytest, preserves other extras
+pytest                          # ~0.5 s on the full suite
 ```
 
 `tests/` carries a sub-second smoke suite for the manifest, the schema, the handler registry, and the example templates. No fetch, no build, no filesystem writes. Run after any change to `sources.json`, `sources.schema.json`, `scripts/pipeline/handlers/__init__.py`, or `examples/`. Tests exercise the same `validate_manifest` codepath the `/raincloud-validate-manifest` skill runs.

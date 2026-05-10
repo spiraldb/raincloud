@@ -10,11 +10,14 @@ pipeline itself, see [`README.md`](README.md), [`AGENTS.md`](AGENTS.md), and
 ```bash
 git clone git@github.com:spiraldb/raincloud.git
 cd raincloud
-uv sync --extra dev
+uv sync --extra dev --inexact
 ```
 
 `--extra dev` pulls in `pytest`. Add `--extra kaggle` or `--extra huggingface`
 if your work touches those upstream types, or `--extra all` for everything.
+Always pass `--inexact` — without it, each `uv sync --extra X` removes the
+extras from the previous one (e.g. syncing `--extra dev` after `--extra
+huggingface` uninstalls `huggingface_hub`).
 
 ## Before you open a PR
 

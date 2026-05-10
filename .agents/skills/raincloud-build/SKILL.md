@@ -24,7 +24,7 @@ Modifiers:
 Before running:
 - **Confirm with the user** before triggering anything non-trivial. JSONBench 100M ≈ 6 h, Wikipedia Structured Contents → 34 GB parquet, OSM Germany ~45 min per kind. Small (<100 MB) parquets are fine without asking. (See [AGENTS.md "Rebuilding is expensive"](../../context/AGENTS.md).)
 - For large builds, set `RAINCLOUD_DUCKDB_MEMORY_LIMIT` and `RAINCLOUD_DUCKDB_TEMP_DIRECTORY` — see `/raincloud-large-build` for the full pattern.
-- For Kaggle/HF datasets, ensure `uv sync --extra kaggle` (or `--extra huggingface`) was run.
+- For Kaggle/HF datasets, ensure `uv sync --extra kaggle --inexact` (or `--extra huggingface --inexact`) was run. The `--inexact` flag is important: without it, syncing one extra removes the others.
 
 After a successful build, suggest running `/raincloud-docs` to regenerate derived docs.
 

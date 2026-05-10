@@ -7,7 +7,7 @@ spawns `python -m scripts.pipeline.build <slug>` as a subprocess and
 streams output into a modal log; cancellation kills the subprocess.
 
 Run: `python -m scripts.pipeline.browse`
-Install: `uv sync --extra tui`
+Install: `uv sync --extra tui --inexact`
 
 Keybindings:
     q       — quit (orphans any in-flight build subprocesses)
@@ -37,7 +37,7 @@ try:
     from textual.widgets import DataTable, Footer, Header, RichLog, Static
 except ImportError:
     print(
-        "textual is not installed. Install with: uv sync --extra tui",
+        "textual is not installed. Install with: uv sync --extra tui --inexact",
         file=sys.stderr,
     )
     raise SystemExit(2)
@@ -214,6 +214,30 @@ def _read_column_stats(parquet: Path) -> list[dict] | None:
     """Thin wrapper around `spec.read_column_stats` for in-module reuse."""
     from .spec import read_column_stats
     return read_column_stats(parquet)
+
+
+def _required_extras(spec: dict) -> list[str]:
+    """Optional pyproject extras the build needs based on fetch.type.
+
+    Handler-specific format deps (pandas, openpyxl, pyreadstat, osmium,
+    zstandard, py7zr, unlzw3) all live in core deps, so the only extras
+    we ever need to pull in on demand are the upstream-fetch backends:
+    `kaggle` for fetch.type=kaggle, `huggingface` for fetch.type=huggingface.
+    Returns [] for http / custom — no sync needed before build.
+    """
+    ftype = (spec.get("fetch") or {}).get("type")
+    if ftype == "kaggle":      return ["kaggle"]
+    if ftype == "huggingface": return ["huggingface"]
+    return []
+
+
+def _uv_sync_command(extras: list[str]) -> list[str]:
+    """Argv for `uv sync --extra X [--extra Y...] --inexact`."""
+    cmd = ["uv", "sync"]
+    for e in extras:
+        cmd += ["--extra", e]
+    cmd.append("--inexact")
+    return cmd
 
 
 def _build_time_estimate(spec: dict, snapshot: dict | None = None) -> str:
@@ -549,6 +573,18 @@ class BuildConfirmModal(_DatasetModal):
             if advisory else ""
         )
 
+        extras = _required_extras(spec)
+        sync_line = (
+            f"  [reverse] {' '.join(_uv_sync_command(extras))} [/reverse]\n"
+            if extras else ""
+        )
+        sync_note = (
+            f"[dim]First syncs the {'/'.join(extras)} extra (preserving any "
+            f"others installed) so the {(spec.get('fetch') or {}).get('type')} "
+            f"backend is available; then runs the build.[/dim]\n\n"
+            if extras else ""
+        )
+
         body = (
             f"[dim]{full_name}[/dim]\n\n"
             f"{description}\n\n"
@@ -557,7 +593,9 @@ class BuildConfirmModal(_DatasetModal):
             f"[b]est. time[/b]  {est}\n"
             f"{advisory_block}\n"
             f"Will run from the repo root:\n"
+            f"{sync_line}"
             f"  [reverse] python -m scripts.pipeline.build {self.slug} [/reverse]\n\n"
+            f"{sync_note}"
             f"[dim]The TUI will stream the subprocess output. Cancelling the "
             f"build modal terminates the subprocess. Quitting the TUI "
             f"orphans any in-flight builds — use the CLI for hours-long "
@@ -622,9 +660,10 @@ class BuildLogModal(ModalScreen):
         Binding("q", "request_close", "cancel + close"),
     ]
 
-    def __init__(self, slug: str) -> None:
+    def __init__(self, slug: str, spec: dict | None = None) -> None:
         super().__init__()
         self.slug = slug
+        self.spec = spec or {}
         self._process: asyncio.subprocess.Process | None = None
         self._task: asyncio.Task | None = None
 
@@ -641,23 +680,41 @@ class BuildLogModal(ModalScreen):
     def on_mount(self) -> None:
         self._task = asyncio.create_task(self._run_build())
 
+    async def _stream_subprocess(self, argv: list[str], log: "RichLog") -> int:
+        """Spawn argv, stream stdout/stderr line-by-line into `log`, return exit code.
+        Stores the process on self so cancellation can SIGTERM/SIGKILL it."""
+        self._process = await asyncio.create_subprocess_exec(
+            *argv,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+            cwd=str(REPO_ROOT),
+        )
+        assert self._process.stdout is not None
+        while True:
+            line = await self._process.stdout.readline()
+            if not line:
+                break
+            log.write(line.decode("utf-8", errors="replace").rstrip("\n"))
+        return await self._process.wait()
+
     async def _run_build(self) -> None:
         log = self.query_one("#build-log", RichLog)
         status = self.query_one("#status", Static)
         try:
-            self._process = await asyncio.create_subprocess_exec(
-                sys.executable, "-u", "-m", "scripts.pipeline.build", self.slug,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.STDOUT,
-                cwd=str(REPO_ROOT),
-            )
-            assert self._process.stdout is not None
-            while True:
-                line = await self._process.stdout.readline()
-                if not line:
-                    break
-                log.write(line.decode("utf-8", errors="replace").rstrip("\n"))
-            rc = await self._process.wait()
+            extras = _required_extras(self.spec)
+            if extras:
+                sync_cmd = _uv_sync_command(extras)
+                status.update(f"[yellow]syncing {'/'.join(extras)}…[/yellow]")
+                log.write(f"$ {' '.join(sync_cmd)}")
+                rc = await self._stream_subprocess(sync_cmd, log)
+                if rc != 0:
+                    status.update(f"[red]✗ uv sync failed (exit {rc}) — build skipped[/red]")
+                    return
+                log.write("")  # blank line between sync and build output
+            status.update("[yellow]running…[/yellow]")
+            build_cmd = [sys.executable, "-u", "-m", "scripts.pipeline.build", self.slug]
+            log.write(f"$ {' '.join(build_cmd)}")
+            rc = await self._stream_subprocess(build_cmd, log)
             if rc == 0:
                 status.update("[green]✓ build succeeded[/green]")
             else:
@@ -887,7 +944,7 @@ class DatasetBrowser(App):
                 _vortex_cell(spec, parquet, vortex),
                 _hydrate_cell(spec, hydrated),
             )
-            self.push_screen(BuildLogModal(slug))
+            self.push_screen(BuildLogModal(slug, spec))
 
         self.push_screen(BuildConfirmModal(slug, spec, snapshot=self._snapshot), _on_confirm)
 

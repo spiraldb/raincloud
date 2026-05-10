@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-05-10
+
+### Fixed
+
+- All `uv sync` instructions across the docs (README, AGENTS, CONTRIBUTING,
+  SKILLS, in-code install hints, and skill files) now pass `--inexact` so
+  installing one extra no longer uninstalls the others. Without this, the
+  documented sequential setup (`uv sync --extra tui` → bare `uv sync` →
+  `uv sync --extra huggingface`) silently left the user with only the last
+  extra installed, and subsequent builds of HF/Kaggle slugs failed with
+  `ImportError`. uv has no project-level toggle for this — `--inexact` is
+  per-command — so the fix is documentation-wide.
+
+### Changed
+
+- TUI build action (`python -m scripts.pipeline.browse`, then `b` on a row)
+  now runs `uv sync --extra <kaggle|huggingface> --inexact` automatically
+  before the build subprocess when the dataset's `fetch.type` requires an
+  upstream-fetch backend. Sync output streams into the same RichLog as the
+  build; sync failure aborts the build with a visible exit code. Pure-HTTP
+  and custom-fetch slugs see the same flow as before (no extra sync).
+  `BuildConfirmModal` surfaces the sync command line above the build command
+  line so the user sees both before confirming.
+
 ## [0.1.1] - 2026-05-07
 
 ### Added
@@ -82,5 +106,6 @@ This release bundles:
   this repository" button in the repo sidebar with BibTeX / APA / Chicago
   exports.
 
+[0.1.2]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.2
 [0.1.1]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.1
 [0.1.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.0
