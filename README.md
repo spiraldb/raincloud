@@ -24,7 +24,7 @@ Nothing downstream of `sources.json` is hand-maintained; `docs/datasets.md` and 
 **Browse the catalog at a glance** — sortable columns, parquet/vortex presence per slug, no builds required:
 
 ```bash
-uv sync --extra tui
+uv sync --extra tui --inexact
 python -m scripts.pipeline.browse
 ```
 
@@ -33,7 +33,7 @@ A read-only Textual TUI over `sources.json`. Click any column header to sort; ri
 **Tell Raincloud which dataset you want; get back a Parquet + Vortex file on disk.**
 
 ```bash
-uv sync
+uv sync --inexact
 python -m scripts.pipeline.status --fast --missing-only   # read-only env check
 python -m scripts.pipeline.build countries-of-the-world
 ```
@@ -59,15 +59,17 @@ python -m scripts.pipeline.build --family public-bi         # all 46 Public BI w
 
 ```bash
 # Kaggle-hosted (33 slugs). One-time credential setup:
-uv sync --extra kaggle
+uv sync --extra kaggle --inexact
 mkdir -p ~/.kaggle && mv /path/to/kaggle.json ~/.kaggle/ && chmod 600 ~/.kaggle/kaggle.json
 
 # Hugging Face-hosted (59 slugs):
-uv sync --extra huggingface
+uv sync --extra huggingface --inexact
 
 # Everything:
-uv sync --extra all
+uv sync --extra all --inexact
 ```
+
+The `--inexact` flag matters: by default `uv sync` removes any extras you installed previously. Pass it on every `uv sync` so the tui / kaggle / huggingface / dev extras accumulate instead of overwriting each other.
 
 ## For AI coding agents
 
@@ -75,7 +77,7 @@ If you're an AI coding agent landing in this repo:
 
 1. Read [`AGENTS.md`](AGENTS.md) (auto-loaded from `CLAUDE.md → AGENTS.md`) for the invariants and architecture.
 2. Run `python -m scripts.pipeline.status --fast --missing-only` to verify the env, then `python -m scripts.pipeline.validate_manifest` to confirm `sources.json` is well-formed. Both are sub-second and side-effect-free.
-3. Run `pytest` (after `uv sync --extra dev`) for a regression net before any non-trivial change to the manifest, schema, or handler registry.
+3. Run `pytest` (after `uv sync --extra dev --inexact`) for a regression net before any non-trivial change to the manifest, schema, or handler registry.
 4. For catalog questions ("which slugs use handler X", "what's CC0-licensed"), use `python -m scripts.pipeline.list_datasets` rather than greping `sources.json` or scrolling [`docs/v1/datasets.md`](docs/v1/datasets.md).
 5. Copy-pasteable templates for new manifest entries and streaming handlers live in [`examples/`](examples/).
 6. Harnesses that follow the [Agent Skills](https://agentskills.io) standard get 16 invokable skills under [`.agents/skills/`](.agents/skills/) (the `.claude → .agents` symlink means Claude Code sees the same files). Tracked safe-default permissions in [`.agents/settings.json`](.agents/settings.json) — see [`.agents/README.md`](.agents/README.md) for the full layout.
@@ -175,7 +177,7 @@ python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
 python -m scripts.pipeline.browse                             # interactive TUI (requires --extra tui)
 
 # Run the test suite (sub-second, no fetch / no build)
-uv sync --extra dev && pytest
+uv sync --extra dev --inexact && pytest
 ```
 
 Each stage is independently invokable — e.g. `python -m scripts.pipeline.fetch <slug>` to download raw bytes without running the rest. Stages are idempotent: fetch skips when `expected_bytes`/`expected_sha256` already matches on disk, write skips when the output parquet is already current.

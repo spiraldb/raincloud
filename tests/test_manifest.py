@@ -6,7 +6,7 @@ These tests are deliberately fast and side-effect-free — no fetch, no
 build, no filesystem writes. They're the regression net for changes to
 the manifest, the schema, or the handler registry.
 
-Run: `uv sync --extra dev && pytest`.
+Run: `uv sync --extra dev --inexact && pytest`.
 """
 from __future__ import annotations
 

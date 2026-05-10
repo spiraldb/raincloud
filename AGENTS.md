@@ -12,7 +12,7 @@ On a fresh clone `outputs/` is empty — that's expected. The `outputs/v1/<slug>
 python -m scripts.pipeline.status --fast --missing-only
 ```
 
-It loads `sources.json`, walks the manifest, and prints per-slug filesystem state in seconds with no side effects. If it errors, fix the env (`uv sync`) before running any build.
+It loads `sources.json`, walks the manifest, and prints per-slug filesystem state in seconds with no side effects. If it errors, fix the env (`uv sync --inexact`) before running any build. Always pass `--inexact` to `uv sync`: without it, syncing one extra (e.g. `--extra dev`) silently uninstalls the others (kaggle, huggingface, tui), so a subsequent build of an HF/Kaggle slug will fail.
 
 For a manifest sanity check that doesn't touch the filesystem at all:
 
@@ -33,12 +33,12 @@ python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
 
 Filters compose with AND across `--family`, `--handler`, `--license`, `--fetch-type`, `--reader`, `--vortex` / `--no-vortex`, `--kaggle-tos`, `--grep`. Output modes: default (one slug per line), `--long` (wide table), `--json` (jq-friendly), `--count`.
 
-If the user wants to *browse* interactively rather than query, point them at `python -m scripts.pipeline.browse` (read-only Textual TUI over the same data; requires `uv sync --extra tui`). It's a human-facing tool — don't try to run it from an agent context, since it won't render and will hang waiting for keystrokes.
+If the user wants to *browse* interactively rather than query, point them at `python -m scripts.pipeline.browse` (read-only Textual TUI over the same data; requires `uv sync --extra tui --inexact`). It's a human-facing tool — don't try to run it from an agent context, since it won't render and will hang waiting for keystrokes.
 
 For a slightly broader regression net, the `tests/` directory carries a sub-second pytest smoke suite (manifest shape, schema self-consistency, handler registry, example template). Run it after any change to the manifest, the schema, or the handler registry:
 
 ```bash
-uv sync --extra dev   # one-time — installs pytest
+uv sync --extra dev --inexact   # one-time — installs pytest, preserves other extras
 pytest
 ```
 
