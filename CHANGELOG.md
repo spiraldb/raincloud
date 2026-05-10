@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] - 2026-05-10
+
+### Changed
+
+- **Validate stage no longer hard-fails on row/schema_hash drift by
+  default.** A mismatch now emits a `[WARN]` line to stderr and the build
+  continues. Users invoking `python -m scripts.pipeline.build <slug>` have
+  already opted into "fetch whatever is upstream now"; an upstream Arrow-
+  conversion bump or a slightly-grown row count shouldn't turn that into a
+  failed build. Pass `--strict` (new flag on `scripts.pipeline.build`) to
+  upgrade warnings to errors — recommended for CI / pre-release gates.
+- The previous `--loose` flag has been removed; its behaviour (warn, don't
+  raise) is now the default. Migrate `--loose` invocations to dropping the
+  flag entirely; replace any "default-strict" CI invocations with
+  `--strict`.
+
+### Fixed
+
+- **`validate.py` now compares `expect.schema_hash` as a prefix when the
+  manifest value is shorter than the full 64-char SHA-256.** All 37 slugs
+  with `schema_hash` set in `sources.json` use a 12-char short hash
+  (matching the `[validate] schema_hash=` print convention, akin to git
+  short SHAs); the previous full-string equality made every one of them
+  fail validation on rebuild. Equal-length values still use strict
+  equality, so full hashes remain enforceable for callers that prefer
+  them.
+- `sources.schema.md` updated to document the prefix-match rule and the
+  new warn-vs-`--strict` semantics for the `expect` block.
+
 ## [0.1.2] - 2026-05-10
 
 ### Fixed
@@ -106,6 +135,7 @@ This release bundles:
   this repository" button in the repo sidebar with BibTeX / APA / Chicago
   exports.
 
+[0.1.3]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.3
 [0.1.2]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.2
 [0.1.1]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.1
 [0.1.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.0

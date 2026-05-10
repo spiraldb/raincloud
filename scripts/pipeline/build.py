@@ -3,10 +3,17 @@
 """End-to-end orchestrator. Runs fetch → extract → parse → transform →
 write → validate for one or more datasets selected from sources.json.
 
+By default the validate stage treats row/schema_hash drift as a warning
+(`[WARN]` to stderr) and continues — users invoking a build already opted
+into "download whatever's upstream now," so an upstream Arrow-conversion
+bump shouldn't brick their build. Pass `--strict` to upgrade those
+warnings to errors; that's the recommended setting for CI / pre-release
+gates where drift should block.
+
 Examples:
     python -m scripts.pipeline.build clickbench-hits
     python -m scripts.pipeline.build --family uci
-    python -m scripts.pipeline.build --all --loose
+    python -m scripts.pipeline.build --all --strict   # CI mode
 """
 from __future__ import annotations
 
@@ -57,7 +64,9 @@ def main() -> int:
     ap.add_argument("slugs", nargs="*", help="specific slugs to build")
     ap.add_argument("--family", help="build all datasets in this family")
     ap.add_argument("--all", action="store_true", help="build every dataset")
-    ap.add_argument("--loose", action="store_true", help="warn on validation failures instead of erroring")
+    ap.add_argument("--strict", action="store_true",
+                    help="upgrade validate-stage drift warnings to hard errors "
+                         "(off by default; recommended for CI / pre-release gates)")
     ap.add_argument("--clean-workdir", action="store_true",
                     help="after each successful build, remove _workdir/<slug>/ "
                          "so large decompressed intermediates (e.g. Public BI bz2→csv) "
@@ -80,7 +89,7 @@ def main() -> int:
 
     ok = failed = 0
     for spec in selected:
-        if run_one(spec, strict=not args.loose, clean_workdir=args.clean_workdir):
+        if run_one(spec, strict=args.strict, clean_workdir=args.clean_workdir):
             ok += 1
         else:
             failed += 1

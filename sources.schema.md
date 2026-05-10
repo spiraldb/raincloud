@@ -83,8 +83,12 @@ This document defines the shape of `sources.json`, the manifest that drives the 
 
   /* Stage 6 — validate (scripts/pipeline/validate.py) */
   "expect": {
-    "rows": 99997497,                   // exact; pipeline errors on mismatch unless --loose
-    "schema_hash": null,                // optional; SHA-256 of canonicalised Arrow schema
+    "rows": 99997497,                   // exact; mismatch emits [WARN], does not fail unless --strict
+    "schema_hash": null,                // optional; SHA-256 of canonicalised Arrow schema.
+                                        // May be the full 64-char hex or a leading prefix
+                                        // (manifest convention is 12 chars, matching the
+                                        // schema_hash= line printed by the validate stage).
+                                        // Mismatch emits [WARN] only; pass --strict to fail.
     "notes": null
   },
 
