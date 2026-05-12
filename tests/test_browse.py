@@ -491,6 +491,130 @@ def test_browse_app_mounts_and_renders():
 
             table = app.query_one("#table", DataTable)
             assert table.row_count == 2
-            assert len(table.columns) == 8
+            assert len(table.columns) == 11
 
     asyncio.run(_run())
+
+
+def test_collect_filter_state_from_facet_selections():
+    """_filter_state_from_selections collects checkbox selections from each
+    group into a FilterState (multi-select within axis, AND across axes)."""
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _filter_state_from_selections
+
+    selections = {
+        "showcase": {"start-here"},
+        "tag": {"geospatial", "scientific"},
+        "size": {"l", "xl"},
+        "license": set(),
+        "family": {"uci"},
+        "fetch_type": {"http"},
+        "vortex": True,
+    }
+    state = _filter_state_from_selections(selections)
+    assert state.showcase == {"start-here"}
+    assert state.tag == {"geospatial", "scientific"}
+    assert state.size == {"l", "xl"}
+    assert state.family == {"uci"}
+    assert state.fetch_type == {"http"}
+    assert state.vortex is True
+    # Empty axis stays empty.
+    assert state.license == set()
+
+
+def test_filter_state_from_selections_handles_vortex_none():
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _filter_state_from_selections
+    state = _filter_state_from_selections({"vortex": None})
+    assert state.vortex is None
+
+
+def test_trait_tri_state_to_filter_state():
+    """A tri-state widget maps {yes, no, unknown} → {trait, trait_negated, ignore}."""
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _trait_state_to_filter
+
+    state = _trait_state_to_filter({
+        "has_nested": "yes",
+        "has_timestamp": "no",
+        "string_heavy": "unknown",
+    })
+    assert state.trait == {"has_nested"}
+    assert state.trait_negated == {"has_timestamp"}
+    # "unknown" doesn't filter on either side
+    assert "string_heavy" not in state.trait
+    assert "string_heavy" not in state.trait_negated
+
+
+def test_combine_filters_merges_axes():
+    """The combine helper preserves set fields from both sources."""
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _combine_filters, _filter_state_from_selections
+    from scripts.pipeline.discovery import FilterState
+
+    a = _filter_state_from_selections({"showcase": {"start-here"}})
+    b = FilterState(trait={"has_nested"})
+    out = _combine_filters(a, b)
+    assert out.showcase == {"start-here"}
+    assert out.trait == {"has_nested"}
+
+
+def test_apply_view_preset_matches_filter_state():
+    """Applying a preset programmatically yields the expected FilterState shape."""
+    pytest.importorskip("textual")
+    from scripts.pipeline.discovery import apply_preset, FilterState
+
+    state = apply_preset("stress-test")
+    assert state.showcase == {"stress-test"}
+    assert state.size == {"l", "xl"}
+    # And presets that aren't stress-test still produce clean states.
+    state2 = apply_preset("start-here")
+    assert state2.showcase == {"start-here"}
+    assert state2.size == set()
+
+
+def test_row_helper_renders_tags_and_size_cells():
+    """_row now emits cells for the new sortable columns (tags, showcase, size_bucket)."""
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _row
+
+    spec = {"slug": "x", "tags": ["geospatial"], "showcase": ["start-here"],
+            "convert": {"vortex": True},
+            "license": {"spdx": "MIT"}, "short_name": "X", "family": "uci"}
+    snapshot = {"size_bucket": "m"}
+    cells = _row(spec, parquet_cell="·", vortex_cell="·", hydrate_cell="—",
+                 snapshot=snapshot)
+    text = " ".join(str(c) for c in cells)
+    # New cells should appear in the row output.
+    assert "geospatial" in text
+    assert "start-here" in text
+    assert "m" in cells   # size bucket as a literal cell
+
+
+def test_render_profile_section_renders_one_line_per_column():
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _render_profile_section
+
+    profile = {
+        "row_count": 100,
+        "columns": {
+            "n": {"dtype": "int32", "null_count": 0, "min": 0, "max": 9,
+                  "mean": 4.5, "ndv_approx": 10,
+                  "histogram": {"buckets": list(range(11)),
+                                "counts": [10, 5, 1, 0, 3, 9, 8, 7, 4, 2]}},
+            "s": {"dtype": "string", "null_count": 0, "ndv_approx": 3,
+                  "mean_length": 4.0,
+                  "top_values": [{"value": "a", "count": 50}]},
+        },
+    }
+    text = _render_profile_section(profile)
+    assert "n" in text and "s" in text
+    assert "NDV" in text or "ndv" in text.lower()
+
+
+def test_render_profile_section_missing_returns_pointer():
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _render_profile_section
+    text = _render_profile_section(None)
+    assert "profile" in text.lower()
+    assert "scripts.pipeline.profile" in text

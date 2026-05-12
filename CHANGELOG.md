@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-05-12
+
+### Added
+
+- **Catalog discoverability** — newcomers can now find "interesting"
+  datasets without scrolling the 158 KB `datasets.md`.
+- **TUI faceted side panel** (`browse.py`) — filter groups for showcase,
+  domain tags, size, shape traits, license, family, fetch type, vortex.
+  View-preset bar (`Start Here`, `Encoding Research`, `Vortex Wins`,
+  `Stress Test`) on top, accessible via keys `1`–`4`. Counts header shows
+  `N of 249`.
+- **Per-column profiles** — new opt-in stage
+  `python -m scripts.pipeline.profile [<slug>]` produces
+  `outputs/v1/<slug>/profile.json` with per-dtype stats (numeric
+  histograms, string NDV + top-K, bool T/F/null, date/timestamp ranges,
+  list/map length stats). Surfaced in the TUI's detail pane and via
+  `list_datasets --inspect <slug>`.
+- **Editorial metadata** in `sources.json` — optional `tags` (closed
+  vocab, 12 entries) and `showcase` (closed vocab, 4 tiers) per
+  `DatasetSpec`. Empty by default; curation pass lands separately.
+- **Derived signals** in `docs/snapshot.json` — per-slug `shape_traits`
+  (has_nested, has_timestamp, has_variant, string_heavy, wide_row,
+  high_cardinality_present) and `size_bucket` (xs/s/m/l/xl), derived by
+  `docs.py` from on-disk parquets.
+- **CLI parity** — `list_datasets` gains `--tag`, `--showcase`, `--size`,
+  `--trait` (with `!` negation), `--view`, `--inspect`, `--tags-help`,
+  `--showcase-help`.
+- **Curated-picks header** in `docs/v1/datasets.md` — one block per
+  showcase tier, regenerated from `sources.json`.
+- **README "Discover" subsection** — directs newcomers at the TUI first.
+- **Skills**: new `raincloud-profile`, new `raincloud-discover`; updated
+  `raincloud-list-datasets`, `raincloud-build`.
+
+### Schema
+
+- `sources.schema.json` adds optional `tags` and `showcase` to
+  `DatasetSpec` (defaults to `[]`; backwards-compatible read).
+- New `profile.schema.json` (Draft 2020-12) for per-slug profile output.
+
 ## [0.1.3] - 2026-05-10
 
 ### Changed

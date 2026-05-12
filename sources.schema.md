@@ -110,9 +110,13 @@ This document defines the shape of `sources.json`, the manifest that drives the 
     "advisory": "Many LAION URLs return 404 (10-30% takedown rate); ..."  // per-slug pitfalls
   },
 
-  /* Optional curatorial labels — list_datasets --tag filters by membership;
-     TUI renders as chips. Kebab-case. Free-form (no enum) but kept short. */
-  "tags": ["nlp", "rlhf", "preference-data"],
+  /* Optional curatorial domain tags — closed vocab from
+     scripts/pipeline/discovery.py:TAG_VOCAB. At most 3 per spec; unique. */
+  "tags": ["nlp-text", "benchmark"],
+
+  /* Optional editorial showcase tiers — closed vocab from
+     scripts/pipeline/discovery.py:SHOWCASE_TIERS. Multi-tier membership allowed. */
+  "showcase": ["start-here", "vortex-wins"],
 
   /* Optional canonical references beyond license.source_url. kind ∈
      {paper, blog, homepage, github, dataset_card}. */
@@ -122,6 +126,16 @@ This document defines the shape of `sources.json`, the manifest that drives the 
   ]
 }
 ```
+
+### `tags` *(array of string, optional, default `[]`)*
+
+Closed-vocab domain tags drawn from the discovery module's `TAG_VOCAB`. At most 3 per spec; values must be unique. Used by the TUI's "Domain" facet group and `list_datasets --tag`. Current vocab:
+
+`geospatial`, `nlp-text`, `web-analytics`, `e-commerce`, `finance`, `social`, `scientific`, `healthcare`, `sports`, `transportation`, `government`, `benchmark`.
+
+### `showcase` *(array of string, optional, default `[]`)*
+
+Editorial showcase tiers from `SHOWCASE_TIERS`: `start-here`, `encoding-research`, `vortex-wins`, `stress-test`. Multi-tier membership allowed. Drives the TUI view presets, the `--view` CLI flag, and the curated-picks block in `docs/v1/datasets.md`.
 
 ## Handlers
 

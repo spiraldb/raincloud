@@ -332,3 +332,88 @@ def test_validate_manifest_cli_exits_zero():
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     assert "manifest is valid" in proc.stdout
+
+
+def test_schema_has_tags_and_showcase(schema):
+    """DatasetSpec advertises the new editorial discovery fields."""
+    props = schema["$defs"]["DatasetSpec"]["properties"]
+    assert "tags" in props and props["tags"]["type"] == "array"
+    assert "showcase" in props and props["showcase"]["type"] == "array"
+
+
+def test_schema_tags_use_closed_vocab(schema):
+    from scripts.pipeline.discovery import TAG_VOCAB
+    props = schema["$defs"]["DatasetSpec"]["properties"]
+    assert set(props["tags"]["items"]["enum"]) == set(TAG_VOCAB)
+    assert props["tags"]["uniqueItems"] is True
+    assert props["tags"]["maxItems"] == 3
+
+
+def test_schema_showcase_use_closed_vocab(schema):
+    from scripts.pipeline.discovery import SHOWCASE_TIERS
+    props = schema["$defs"]["DatasetSpec"]["properties"]
+    assert set(props["showcase"]["items"]["enum"]) == set(SHOWCASE_TIERS)
+    assert props["showcase"]["uniqueItems"] is True
+
+
+def test_validate_manifest_rejects_unknown_tag(manifest):
+    """Cross-check surfaces an out-of-vocab tag clearly."""
+    bad = json.loads(json.dumps(manifest))   # deep copy
+    bad["datasets"][0]["tags"] = ["not-a-real-tag"]
+    errors, _warnings = _cross_checks(bad)
+    assert any("tags entry" in e and "not-a-real-tag" in e for e in errors)
+
+
+def test_validate_manifest_rejects_unknown_showcase(manifest):
+    bad = json.loads(json.dumps(manifest))
+    bad["datasets"][0]["showcase"] = ["nonexistent-tier"]
+    errors, _warnings = _cross_checks(bad)
+    assert any("showcase entry" in e and "nonexistent-tier" in e for e in errors)
+
+
+def test_validate_manifest_no_empty_tier_warnings_when_uncurated(manifest):
+    """All tiers empty = scaffolding state; no empty-tier warnings."""
+    from scripts.pipeline.discovery import SHOWCASE_TIERS
+
+    empty = json.loads(json.dumps(manifest))
+    for d in empty["datasets"]:
+        d["showcase"] = []
+    errors, warnings = _cross_checks(empty)
+    for tier in SHOWCASE_TIERS:
+        assert not any(tier in w for w in warnings), (
+            f"unexpected empty-tier warning for {tier} when all tiers are empty"
+        )
+
+
+def test_validate_manifest_warns_on_partially_curated_empty_tiers(manifest):
+    """If at least one tier has members, every other empty tier warns."""
+    from scripts.pipeline.discovery import SHOWCASE_TIERS
+
+    partial = json.loads(json.dumps(manifest))
+    for d in partial["datasets"]:
+        d["showcase"] = []
+    partial["datasets"][0]["showcase"] = ["start-here"]   # populate exactly one tier
+
+    errors, warnings = _cross_checks(partial)
+    # start-here is populated → no warning for it
+    assert not any("start-here" in w for w in warnings)
+    # the other 3 tiers are empty → one warning each
+    for tier in SHOWCASE_TIERS:
+        if tier == "start-here":
+            continue
+        assert any(tier in w for w in warnings), f"missing warning for empty tier {tier}"
+    # And these are warnings, not errors.
+    assert not any("encoding-research" in e for e in errors)
+
+
+def test_validate_manifest_strict_passes_on_live_manifest():
+    """`--strict` must exit 0 against the uncurated live manifest."""
+    rc = subprocess.run(
+        [sys.executable, "-m", "scripts.pipeline.validate_manifest", "--strict"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+    )
+    assert rc.returncode == 0, (
+        f"validate_manifest --strict failed:\n"
+        f"stdout:\n{rc.stdout.decode()}\nstderr:\n{rc.stderr.decode()}"
+    )

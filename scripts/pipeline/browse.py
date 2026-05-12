@@ -32,9 +32,22 @@ from typing import Any
 try:
     from textual.app import App, ComposeResult
     from textual.binding import Binding
-    from textual.containers import Container, Horizontal, VerticalScroll
+    from textual.containers import Container, Horizontal, Vertical, VerticalScroll
     from textual.screen import ModalScreen
-    from textual.widgets import DataTable, Footer, Header, RichLog, Static
+    from textual.widgets import (
+        Button,
+        Collapsible,
+        DataTable,
+        Footer,
+        Header,
+        Label,
+        RadioButton,
+        RadioSet,
+        RichLog,
+        SelectionList,
+        Static,
+    )
+    from textual.widgets.selection_list import Selection
 except ImportError:
     print(
         "textual is not installed. Install with: uv sync --extra tui --inexact",
@@ -42,16 +55,103 @@ except ImportError:
     )
     raise SystemExit(2)
 
+from .discovery import (
+    SHOWCASE_TIERS,
+    SIZE_BUCKETS,
+    TAG_VOCAB,
+    TRAIT_FLAGS,
+    VIEW_PRESETS,
+    FilterState,
+    apply_preset,
+    format_column_line,
+)
 from .list_datasets import _canonicalize_type
 from .spec import (
     REPO_ROOT,
     iter_datasets,
     load_manifest,
+    outputs_root,
     prepared_parquet,
     prepared_parquet_hydrated,
     prepared_vortex,
     spec_field,
 )
+
+
+def _filter_state_from_selections(selections: dict) -> FilterState:
+    """Build a FilterState from raw {axis_name: set-of-values} selections.
+
+    Each axis name corresponds to a SelectionList in the facet panel. The
+    vortex axis is special: it's a single Optional[bool] rather than a set.
+    """
+    state = FilterState()
+    for axis in ("showcase", "tag", "size", "license", "family", "fetch_type"):
+        getattr(state, axis).update(selections.get(axis) or set())
+    v = selections.get("vortex")
+    if v is True or v is False:
+        state.vortex = v
+    return state
+
+
+def _trait_state_to_filter(trait_states: dict[str, str]) -> FilterState:
+    """Convert {flag: "yes"|"no"|"unknown"} → FilterState fragment.
+
+    Used by the Shape-traits facet group. "unknown" leaves the flag out of
+    both `trait` and `trait_negated`, i.e. don't filter on this trait.
+    """
+    state = FilterState()
+    for flag, val in trait_states.items():
+        if val == "yes":
+            state.trait.add(flag)
+        elif val == "no":
+            state.trait_negated.add(flag)
+    return state
+
+
+def _combine_filters(a: FilterState, b: FilterState) -> FilterState:
+    """Union of two FilterStates across every axis. b takes precedence for vortex."""
+    out = FilterState()
+    out.showcase = a.showcase | b.showcase
+    out.tag = a.tag | b.tag
+    out.size = a.size | b.size
+    out.trait = a.trait | b.trait
+    out.trait_negated = a.trait_negated | b.trait_negated
+    out.license = a.license | b.license
+    out.family = a.family | b.family
+    out.fetch_type = a.fetch_type | b.fetch_type
+    out.vortex = b.vortex if b.vortex is not None else a.vortex
+    return out
+
+
+def _live_vocabs(manifest: dict) -> dict[str, list[str]]:
+    """Discover the values present in the live manifest for facets whose
+    vocab isn't closed (license, family, fetch_type)."""
+    licenses: set[str] = set()
+    families: set[str] = set()
+    fetch_types: set[str] = set()
+    for spec in manifest.get("datasets", []):
+        lic = (spec.get("license") or {}).get("spdx")
+        if lic:
+            licenses.add(lic)
+        fam = spec.get("family")
+        if fam:
+            families.add(fam)
+        ft = (spec.get("fetch") or {}).get("type")
+        if ft:
+            fetch_types.add(ft)
+    return {
+        "license": sorted(licenses),
+        "family": sorted(families),
+        "fetch_type": sorted(fetch_types),
+    }
+
+
+def _selection_list(group_id: str, options: list[str]) -> SelectionList:
+    """Build a SelectionList for a facet group; nothing pre-selected."""
+    return SelectionList[str](
+        *[Selection(o, o) for o in options],
+        id=f"facet-{group_id}",
+    )
 
 COLUMNS: tuple[tuple[str, str], ...] = (
     ("slug", "slug"),
@@ -62,6 +162,9 @@ COLUMNS: tuple[tuple[str, str], ...] = (
     ("vortex", "vortex"),
     ("scrape", "scrape"),
     ("hydrate", "hydrate"),
+    ("Tags", "tags"),
+    ("Showcase", "showcase"),
+    ("Size", "size_bucket"),
 )
 
 
@@ -330,6 +433,26 @@ def _references_block(spec: dict) -> str:
     return f"[b]references[/b]\n{lines}\n"
 
 
+def _render_profile_section(profile: dict | None) -> str:
+    """Render the right-pane Columns section from a per-slug profile.json blob.
+
+    None / missing profile → suggestion to run the profile stage.
+    """
+    if profile is None:
+        return (
+            "No profile yet — run "
+            "`python -m scripts.pipeline.profile <slug>` "
+            "to populate per-column statistics."
+        )
+    lines = [
+        f"rows: {profile.get('row_count', '?')}",
+        f"columns ({len(profile.get('columns', {}))}):",
+    ]
+    for name, col in profile.get("columns", {}).items():
+        lines.append(format_column_line(name, col))
+    return "\n".join(lines)
+
+
 def _columns_block(spec: dict, columns: list[tuple[str, str]] | None) -> str:
     """Render the `[b]columns[/b]` section for the detail pane.
 
@@ -348,8 +471,18 @@ def _columns_block(spec: dict, columns: list[tuple[str, str]] | None) -> str:
 
 
 def _row(spec: dict, parquet_cell: str, vortex_cell: str,
-         hydrate_cell: str) -> tuple[str, ...]:
+         hydrate_cell: str, *, snapshot: dict | None = None) -> tuple[str, ...]:
+    """Build one DataTable row from a spec + its snapshot record.
+
+    Returns cell values matching the order of COLUMNS. The `snapshot` kwarg
+    carries per-slug snapshot data (e.g. `size_bucket`) for fields that aren't
+    on the spec itself; callers outside `_rebuild_table` can omit it.
+    """
+    snapshot = snapshot or {}
     scrape_cell = "⚠" if spec_field(spec, "license.scrape_advisory") else "·"
+    tags_cell = ", ".join(spec.get("tags") or []) or "·"
+    showcase_cell = ", ".join(spec.get("showcase") or []) or "·"
+    size_bucket_cell = snapshot.get("size_bucket") or "·"
     return (
         spec["slug"],
         spec.get("family") or "",
@@ -359,6 +492,9 @@ def _row(spec: dict, parquet_cell: str, vortex_cell: str,
         vortex_cell,
         scrape_cell,
         hydrate_cell,
+        tags_cell,
+        showcase_cell,
+        size_bucket_cell,
     )
 
 
@@ -787,6 +923,34 @@ class DatasetBrowser(App):
 
     CSS = """
     Screen { layout: vertical; }
+    #root-row { height: 1fr; }
+    #facets {
+        width: 28;
+        height: 1fr;
+        border-right: solid $accent;
+        padding: 0 1;
+    }
+    #facets .facets-title {
+        text-style: bold;
+        padding: 0 0 1 0;
+    }
+    #counts-label {
+        padding: 0 0 1 0;
+        color: $text-muted;
+    }
+    #main-col { width: 1fr; height: 1fr; }
+    #preset-bar {
+        height: 3;
+        padding: 0 1;
+        align: left middle;
+    }
+    .preset-btn {
+        min-width: 14;
+        margin: 0 1;
+    }
+    .clear-btn {
+        margin-left: 2;
+    }
     #body { height: 1fr; }
     DataTable { width: 60%; height: 1fr; }
     #detail {
@@ -795,6 +959,16 @@ class DatasetBrowser(App):
         padding: 1 2;
         border-left: solid $accent;
     }
+    SelectionList { height: auto; max-height: 12; }
+    .trait-row {
+        height: auto;
+        align: left middle;
+        margin: 0 1;
+    }
+    .trait-name {
+        width: 22;
+        content-align: left middle;
+    }
     """
 
     BINDINGS = [
@@ -802,6 +976,12 @@ class DatasetBrowser(App):
         Binding("c", "show_columns", "Columns"),
         Binding("t", "show_types", "Types"),
         Binding("b", "show_build_confirm", "Build"),
+        Binding("f", "focus_facets", "Focus facets"),
+        Binding("C", "clear_facets", "Clear facets"),
+        Binding("1", "preset('start-here')",        "Start Here"),
+        Binding("2", "preset('encoding-research')", "Encoding Research"),
+        Binding("3", "preset('vortex-wins')",       "Vortex Wins"),
+        Binding("4", "preset('stress-test')",       "Stress Test"),
     ]
 
     def __init__(
@@ -840,24 +1020,169 @@ class DatasetBrowser(App):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        with Horizontal(id="body"):
-            yield DataTable(id="table", cursor_type="row", zebra_stripes=True)
-            with VerticalScroll(id="detail"):
-                yield Static("", id="detail-content")
+        live_vocabs = _live_vocabs(self._manifest)
+        with Horizontal(id="root-row"):
+            with VerticalScroll(id="facets"):
+                yield Label("Filters", classes="facets-title")
+                yield Label(
+                    f"{len(self._specs)} of {len(self._specs)}",
+                    id="counts-label",
+                )
+                with Collapsible(title="Showcase", id="facet-group-showcase"):
+                    yield _selection_list("showcase", list(SHOWCASE_TIERS))
+                with Collapsible(title="Domain", id="facet-group-tag"):
+                    yield _selection_list("tag", list(TAG_VOCAB))
+                with Collapsible(title="Size", id="facet-group-size"):
+                    yield _selection_list("size", list(SIZE_BUCKETS))
+                with Collapsible(title="Shape traits", id="facet-group-traits"):
+                    for flag in TRAIT_FLAGS:
+                        with Horizontal(classes="trait-row"):
+                            yield Label(flag, classes="trait-name")
+                            yield RadioSet(
+                                RadioButton("Any", id=f"trait-{flag}-any", value=True),
+                                RadioButton("Yes", id=f"trait-{flag}-yes"),
+                                RadioButton("No",  id=f"trait-{flag}-no"),
+                                id=f"trait-radioset-{flag}",
+                            )
+                with Collapsible(title="License", id="facet-group-license"):
+                    yield _selection_list("license", live_vocabs["license"])
+                with Collapsible(title="Family", id="facet-group-family"):
+                    yield _selection_list("family", live_vocabs["family"])
+                with Collapsible(title="Fetch type", id="facet-group-fetch_type"):
+                    yield _selection_list("fetch_type", live_vocabs["fetch_type"])
+                with Collapsible(title="Vortex", id="facet-group-vortex"):
+                    yield _selection_list("vortex", ["available", "skipped"])
+            with Vertical(id="main-col"):
+                with Horizontal(id="preset-bar"):
+                    for preset_name in VIEW_PRESETS:
+                        yield Button(
+                            preset_name.replace("-", " ").title(),
+                            id=f"preset-{preset_name}",
+                            classes="preset-btn",
+                        )
+                    yield Button("Clear", id="preset-clear", classes="preset-btn clear-btn")
+                with Horizontal(id="body"):
+                    yield DataTable(id="table", cursor_type="row", zebra_stripes=True)
+                    with VerticalScroll(id="detail"):
+                        yield Static("", id="detail-content")
         yield Footer()
 
     def on_mount(self) -> None:
         table = self.query_one("#table", DataTable)
         for label, key in COLUMNS:
             table.add_column(label, key=key)
-        for spec in self._specs:
-            parquet_cell, vortex_cell, hydrate_cell = self._presence[spec["slug"]]
-            table.add_row(
-                *_row(spec, parquet_cell, vortex_cell, hydrate_cell),
-                key=spec["slug"],
-            )
+        self._rebuild_table(self._specs)
         if self._specs:
             self._update_detail(self._specs[0]["slug"])
+
+    def _rebuild_table(self, specs: list[dict]) -> None:
+        """Repopulate the slug table with the given (already-filtered) specs."""
+        table = self.query_one("#table", DataTable)
+        table.clear()
+        snapshot_slugs: dict = {}
+        if isinstance(self._snapshot, dict):
+            snapshot_slugs = self._snapshot.get("slugs") or {}
+        for spec in specs:
+            cells = self._presence.get(spec["slug"])
+            if cells is None:
+                # Defensive — for fixtures or specs missing from _presence
+                # (shouldn't happen in normal use, but the test path can
+                # construct specs the app didn't stat).
+                parquet, vortex = _output_paths(spec, self._manifest)
+                hydrated = _hydrated_parquet(spec, self._manifest)
+                cells = (
+                    _parquet_cell(parquet),
+                    _vortex_cell(spec, parquet, vortex),
+                    _hydrate_cell(spec, hydrated),
+                )
+                self._presence[spec["slug"]] = cells
+            parquet_cell, vortex_cell, hydrate_cell = cells
+            snap = snapshot_slugs.get(spec["slug"]) or {}
+            table.add_row(
+                *_row(spec, parquet_cell, vortex_cell, hydrate_cell, snapshot=snap),
+                key=spec["slug"],
+            )
+
+    def _current_selections(self) -> dict:
+        """Read all SelectionLists into a {axis_name: set | bool | None} dict."""
+        sel: dict = {}
+        for axis in ("showcase", "tag", "size", "license", "family", "fetch_type"):
+            try:
+                widget = self.query_one(f"#facet-{axis}", SelectionList)
+                sel[axis] = set(widget.selected)
+            except Exception:
+                sel[axis] = set()
+        try:
+            vortex_widget = self.query_one("#facet-vortex", SelectionList)
+            chosen = set(vortex_widget.selected)
+            if chosen == {"available"}:
+                sel["vortex"] = True
+            elif chosen == {"skipped"}:
+                sel["vortex"] = False
+            elif not chosen:
+                sel["vortex"] = None
+            else:
+                # Both selected → don't filter (no useful intersection)
+                sel["vortex"] = None
+        except Exception:
+            sel["vortex"] = None
+
+        # Tri-state shape-trait radios. Each trait's RadioSet has three
+        # buttons (Any / Yes / No); "Any" maps to "unknown" (no filter).
+        trait_states: dict[str, str] = {}
+        for flag in TRAIT_FLAGS:
+            try:
+                rs = self.query_one(f"#trait-radioset-{flag}", RadioSet)
+                pressed = rs.pressed_button
+                if pressed is None:
+                    trait_states[flag] = "unknown"
+                elif pressed.id and pressed.id.endswith("-yes"):
+                    trait_states[flag] = "yes"
+                elif pressed.id and pressed.id.endswith("-no"):
+                    trait_states[flag] = "no"
+                else:
+                    trait_states[flag] = "unknown"
+            except Exception:
+                trait_states[flag] = "unknown"
+        sel["_traits"] = trait_states
+        return sel
+
+    def _refresh_filter(self) -> None:
+        """Apply current FilterState to the slug table; update counts label."""
+        selections = self._current_selections()
+        trait_states = selections.pop("_traits", {})
+        primary = _filter_state_from_selections(selections)
+        traits_fs = _trait_state_to_filter(trait_states)
+        state = _combine_filters(primary, traits_fs)
+        snapshot_slugs: dict = {}
+        if isinstance(self._snapshot, dict):
+            snapshot_slugs = self._snapshot.get("slugs") or {}
+        visible: list[dict] = []
+        for spec in self._specs:
+            snap = snapshot_slugs.get(spec["slug"]) or {}
+            if state.matches(spec=spec, snapshot=snap):
+                visible.append(spec)
+        self._rebuild_table(visible)
+        try:
+            label = self.query_one("#counts-label", Label)
+            label.update(f"{len(visible)} of {len(self._specs)}")
+        except Exception:
+            pass
+
+    def on_selection_list_selected_changed(
+        self, event: SelectionList.SelectedChanged
+    ) -> None:
+        """A checkbox in any facet group changed — re-filter the slug table."""
+        self._refresh_filter()
+
+    def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
+        """A shape-trait tri-state radio toggled — re-filter the slug table.
+
+        Ignores RadioSets outside the trait group (currently none exist, but
+        guards against future additions)."""
+        rs_id = event.radio_set.id or ""
+        if rs_id.startswith("trait-radioset-"):
+            self._refresh_filter()
 
     def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted) -> None:
         if event.row_key is not None and event.row_key.value:
@@ -875,6 +1200,23 @@ class DatasetBrowser(App):
             self._sort_reverse = False
         self.query_one("#table", DataTable).sort(key, reverse=self._sort_reverse)
 
+    def _profile_for(self, slug: str) -> dict | None:
+        """Load and cache the per-slug profile.json (None when missing/malformed)."""
+        if not hasattr(self, "_profile_cache"):
+            self._profile_cache: dict[str, dict | None] = {}
+        if slug in self._profile_cache:
+            return self._profile_cache[slug]
+        path = outputs_root(self._manifest) / slug / "profile.json"
+        if not path.exists():
+            self._profile_cache[slug] = None
+            return None
+        try:
+            import json as _json
+            self._profile_cache[slug] = _json.loads(path.read_text())
+        except Exception:
+            self._profile_cache[slug] = None
+        return self._profile_cache[slug]
+
     def _update_detail(self, slug: str) -> None:
         spec = self._by_slug.get(slug)
         if spec is None:
@@ -885,9 +1227,11 @@ class DatasetBrowser(App):
                 slug, self._manifest, self._snapshot
             )
         columns, _src = self._columns_cache[slug]
+        body = _detail(spec, parquet_cell, vortex_cell, hydrate_cell, columns,
+                       snapshot=self._snapshot)
+        profile_section = _render_profile_section(self._profile_for(slug))
         self.query_one("#detail-content", Static).update(
-            _detail(spec, parquet_cell, vortex_cell, hydrate_cell, columns,
-                    snapshot=self._snapshot)
+            f"{body}\n--- Columns ---\n{profile_section}"
         )
 
     def _ensure_stats(self, slug: str) -> tuple[list[dict] | None, str | None]:
@@ -918,6 +1262,74 @@ class DatasetBrowser(App):
             return
         stats, source = self._ensure_stats(slug)
         self.push_screen(TypesModal(slug, spec, stats, source))
+
+    def _apply_state_to_facets(self, state: FilterState) -> None:
+        """Update facet widgets so their selections match `state`."""
+        axis_to_values = {
+            "showcase": state.showcase,
+            "tag": state.tag,
+            "size": state.size,
+            "license": state.license,
+            "family": state.family,
+            "fetch_type": state.fetch_type,
+        }
+        for axis, values in axis_to_values.items():
+            try:
+                widget = self.query_one(f"#facet-{axis}", SelectionList)
+                widget.deselect_all()
+                for v in values:
+                    widget.select(v)
+            except Exception:
+                pass
+
+        # Vortex: SelectionList with two options.
+        try:
+            widget = self.query_one("#facet-vortex", SelectionList)
+            widget.deselect_all()
+            if state.vortex is True:
+                widget.select("available")
+            elif state.vortex is False:
+                widget.select("skipped")
+        except Exception:
+            pass
+
+        # Trait RadioSets: reset all to "Any", then set Yes/No for active traits.
+        for flag in TRAIT_FLAGS:
+            try:
+                rs = self.query_one(f"#trait-radioset-{flag}", RadioSet)
+                rs.query_one(f"#trait-{flag}-any", RadioButton).value = True
+                if flag in state.trait:
+                    rs.query_one(f"#trait-{flag}-yes", RadioButton).value = True
+                elif flag in state.trait_negated:
+                    rs.query_one(f"#trait-{flag}-no", RadioButton).value = True
+            except Exception:
+                pass
+
+    def action_preset(self, name: str) -> None:
+        new_state = apply_preset(name)
+        self._apply_state_to_facets(new_state)
+        self._refresh_filter()
+
+    def action_clear_facets(self) -> None:
+        self._apply_state_to_facets(FilterState())
+        self._refresh_filter()
+
+    def action_focus_facets(self) -> None:
+        try:
+            self.query_one("#facets").focus()
+        except Exception:
+            pass
+
+    def on_button_pressed(self, event) -> None:
+        bid = event.button.id or ""
+        if bid == "preset-clear":
+            self.action_clear_facets()
+            return
+        if bid.startswith("preset-"):
+            preset_name = bid[len("preset-"):]
+            if preset_name in VIEW_PRESETS:
+                self.action_preset(preset_name)
+                return
 
     def action_show_build_confirm(self) -> None:
         slug = self._highlighted_slug

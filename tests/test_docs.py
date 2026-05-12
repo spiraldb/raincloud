@@ -185,3 +185,172 @@ def test_snapshot_captures_row_groups_for_built_slugs(tmp_path, monkeypatch):
     entry = snap["slugs"]["fake-slug"]
     assert entry["last_built_rows"] == 3
     assert entry["last_built_row_groups"] == 2
+
+
+def test_snapshot_has_size_bucket_per_slug(tmp_path):
+    """_snapshot_for_slug emits size_bucket from on-disk parquet bytes."""
+    from scripts.pipeline import docs as docs_mod
+    from scripts.pipeline.discovery import SIZE_BUCKETS
+
+    parquet = tmp_path / "outputs" / "v1" / "fake" / "parquet" / "fake.parquet"
+    parquet.parent.mkdir(parents=True)
+    parquet.write_bytes(b"x" * (50 * 1024 * 1024))   # 50 MB → "s"
+
+    snapshot = docs_mod._snapshot_for_slug(
+        slug="fake",
+        parquet_path=parquet,
+        prior_snapshot=None,
+    )
+    assert snapshot["size_bucket"] == "s"
+    assert snapshot["size_bucket"] in SIZE_BUCKETS
+
+
+def test_snapshot_size_bucket_falls_back_to_prior(tmp_path):
+    """When the parquet is missing, the prior snapshot's value is preserved."""
+    from scripts.pipeline import docs as docs_mod
+
+    prior = {"size_bucket": "xl"}
+    snapshot = docs_mod._snapshot_for_slug(
+        slug="fake",
+        parquet_path=tmp_path / "absent.parquet",
+        prior_snapshot=prior,
+    )
+    assert snapshot["size_bucket"] == "xl"
+
+
+def test_snapshot_size_bucket_unknown_when_no_data(tmp_path):
+    """No parquet, no prior — bucket is null."""
+    from scripts.pipeline import docs as docs_mod
+
+    snapshot = docs_mod._snapshot_for_slug(
+        slug="fake",
+        parquet_path=tmp_path / "absent.parquet",
+        prior_snapshot=None,
+    )
+    assert snapshot.get("size_bucket") is None
+
+
+def test_shape_traits_from_schema_flat_string_only():
+    import pyarrow as pa
+    from scripts.pipeline.docs import _shape_traits_from_schema
+
+    schema = pa.schema([("a", pa.string()), ("b", pa.string())])
+    traits = _shape_traits_from_schema(schema)
+    assert traits["has_nested"] is False
+    assert traits["has_timestamp"] is False
+    assert traits["has_variant"] is False
+    assert traits["string_heavy"] is True
+    assert traits["wide_row"] is False
+    assert traits["high_cardinality_present"] is None
+
+
+def test_shape_traits_from_schema_nested_timestamp_wide():
+    import pyarrow as pa
+    from scripts.pipeline.docs import _shape_traits_from_schema
+
+    fields = [(f"col{i}", pa.int32()) for i in range(60)] + [
+        ("nested", pa.list_(pa.int32())),
+        ("ts", pa.timestamp("us")),
+    ]
+    schema = pa.schema(fields)
+    traits = _shape_traits_from_schema(schema)
+    assert traits["has_nested"] is True
+    assert traits["has_timestamp"] is True
+    assert traits["wide_row"] is True
+    assert traits["string_heavy"] is False
+    assert traits["high_cardinality_present"] is None
+
+
+def test_shape_traits_detects_variant_via_metadata():
+    """VARIANT in raincloud is stored as a struct with a `__variant_type` marker
+    in pyarrow field metadata."""
+    import pyarrow as pa
+    from scripts.pipeline.docs import _shape_traits_from_schema
+
+    inner = pa.struct([("v", pa.binary())])
+    meta_field = pa.field("data", inner, metadata={b"__variant_type": b"1"})
+    schema = pa.schema([meta_field])
+    traits = _shape_traits_from_schema(schema)
+    assert traits["has_variant"] is True
+    assert traits["has_nested"] is True   # struct is nested
+
+
+def test_high_cardinality_present_from_profile(tmp_path):
+    """When profile.json exists, docs.py sets the trait flag from string NDVs."""
+    from scripts.pipeline import docs as docs_mod
+
+    profile = tmp_path / "profile.json"
+    profile.write_text(json.dumps({
+        "schema_version": 1, "slug": "fake", "row_count": 1_000_000,
+        "parquet_sha256": "0" * 64, "computed_at": "2026-05-12T00:00:00Z",
+        "sample_rows": None,
+        "columns": {
+            "id":   {"dtype": "string", "null_count": 0, "ndv_approx": 950_000,
+                     "mean_length": 12.0, "top_values": None},
+            "kind": {"dtype": "string", "null_count": 0, "ndv_approx": 5,
+                     "mean_length": 4.0,
+                     "top_values": [{"value": "a", "count": 200_000}]},
+        },
+    }) + "\n")
+
+    flag = docs_mod._high_cardinality_from_profile(profile)
+    assert flag is True
+
+
+def test_high_cardinality_present_false_when_all_low(tmp_path):
+    from scripts.pipeline import docs as docs_mod
+
+    profile = tmp_path / "profile.json"
+    profile.write_text(json.dumps({
+        "schema_version": 1, "slug": "fake", "row_count": 1_000_000,
+        "parquet_sha256": "0" * 64, "computed_at": "2026-05-12T00:00:00Z",
+        "sample_rows": None,
+        "columns": {
+            "kind": {"dtype": "string", "null_count": 0, "ndv_approx": 5,
+                     "mean_length": 4.0,
+                     "top_values": [{"value": "a", "count": 200_000}]},
+        },
+    }) + "\n")
+    assert docs_mod._high_cardinality_from_profile(profile) is False
+
+
+def test_high_cardinality_present_null_when_no_profile(tmp_path):
+    from scripts.pipeline import docs as docs_mod
+    assert docs_mod._high_cardinality_from_profile(tmp_path / "missing.json") is None
+
+
+def test_datasets_md_carries_curated_picks_header():
+    """docs.py emits a curated-picks block keyed by SHOWCASE_TIERS before the table."""
+    from scripts.pipeline import docs as docs_mod
+    from scripts.pipeline.discovery import SHOWCASE_TIERS
+
+    manifest = {"schema_version": 1, "datasets": [
+        {"slug": "s1", "short_name": "S1", "full_name": "S1",
+         "description": "lorem", "family": "uci",
+         "license": {"spdx": "MIT"},
+         "fetch": {"type": "http", "urls": []}, "extract": {}, "parse": {},
+         "transform": {}, "write": {}, "expect": {},
+         "tags": [], "showcase": ["start-here"]},
+        {"slug": "s2", "short_name": "S2", "full_name": "S2",
+         "description": "ipsum", "family": "uci",
+         "license": {"spdx": "MIT"},
+         "fetch": {"type": "http", "urls": []}, "extract": {}, "parse": {},
+         "transform": {}, "write": {}, "expect": {},
+         "tags": [], "showcase": ["encoding-research"]},
+    ]}
+    md = docs_mod._render_curated_picks(manifest)
+    # All 4 tiers appear (either by slug or by titled form).
+    for tier in SHOWCASE_TIERS:
+        assert tier in md or tier.replace("-", " ").title() in md
+    assert "s1" in md
+    assert "s2" in md
+
+
+def test_curated_picks_empty_tier_placeholder():
+    """Tiers with no members render with a placeholder, not an empty block."""
+    from scripts.pipeline import docs as docs_mod
+
+    manifest = {"schema_version": 1, "datasets": []}
+    md = docs_mod._render_curated_picks(manifest)
+    # Each of the 4 tiers should have the "no picks yet" placeholder text.
+    assert md.count("No picks yet") >= 4

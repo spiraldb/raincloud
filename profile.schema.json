@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raincloud.dev/profile.schema.json",
+  "title": "Raincloud per-column profile",
+  "description": "Schema for outputs/v{n}/<slug>/profile.json, produced by `python -m scripts.pipeline.profile`. Source of truth for the dtype tags and stat menus lives in scripts/pipeline/profile.py.",
+  "type": "object",
+  "required": ["schema_version", "slug", "row_count", "parquet_sha256", "computed_at", "columns"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "slug": { "type": "string" },
+    "row_count": { "type": "integer", "minimum": 0 },
+    "parquet_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "computed_at": { "type": "string", "format": "date-time" },
+    "sample_rows": { "type": ["integer", "null"], "minimum": 1 },
+    "columns": {
+      "type": "object",
+      "description": "Map of column name → per-dtype profile object. struct/variant entries are `null`.",
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "null" },
+          { "$ref": "#/$defs/NumericProfile" },
+          { "$ref": "#/$defs/StringProfile" },
+          { "$ref": "#/$defs/BoolProfile" },
+          { "$ref": "#/$defs/TemporalProfile" },
+          { "$ref": "#/$defs/ListMapProfile" }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "Histogram": {
+      "type": "object",
+      "required": ["buckets", "counts"],
+      "additionalProperties": false,
+      "properties": {
+        "buckets": { "type": "array", "minItems": 2 },
+        "counts":  { "type": "array", "items": { "type": "integer", "minimum": 0 } }
+      }
+    },
+    "NumericProfile": {
+      "type": "object",
+      "required": ["dtype", "null_count", "min", "max", "mean", "ndv_approx", "histogram"],
+      "additionalProperties": false,
+      "properties": {
+        "dtype": { "type": "string", "pattern": "^(int|uint|float|decimal)" },
+        "null_count": { "type": "integer", "minimum": 0 },
+        "min": {},
+        "max": {},
+        "mean": { "type": "number" },
+        "ndv_approx": { "type": "integer", "minimum": 0 },
+        "histogram": { "$ref": "#/$defs/Histogram" }
+      }
+    },
+    "StringProfile": {
+      "type": "object",
+      "required": ["dtype", "null_count", "ndv_approx", "mean_length", "top_values"],
+      "additionalProperties": false,
+      "properties": {
+        "dtype": { "type": "string", "enum": ["string", "binary", "large_string", "large_binary"] },
+        "null_count": { "type": "integer", "minimum": 0 },
+        "ndv_approx": { "type": "integer", "minimum": 0 },
+        "mean_length": { "type": ["number", "null"] },
+        "top_values": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "maxItems": 5,
+              "items": {
+                "type": "object",
+                "required": ["value", "count"],
+                "additionalProperties": false,
+                "properties": {
+                  "value": { "type": ["string", "null"] },
+                  "count": { "type": "integer", "minimum": 0 }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "BoolProfile": {
+      "type": "object",
+      "required": ["dtype", "true_count", "false_count", "null_count"],
+      "additionalProperties": false,
+      "properties": {
+        "dtype": { "type": "string", "const": "bool" },
+        "true_count":  { "type": "integer", "minimum": 0 },
+        "false_count": { "type": "integer", "minimum": 0 },
+        "null_count":  { "type": "integer", "minimum": 0 }
+      }
+    },
+    "TemporalProfile": {
+      "type": "object",
+      "required": ["dtype", "null_count", "min", "max", "histogram"],
+      "additionalProperties": false,
+      "properties": {
+        "dtype": { "type": "string", "pattern": "^(date|time|timestamp)" },
+        "null_count": { "type": "integer", "minimum": 0 },
+        "min": { "type": "string" },
+        "max": { "type": "string" },
+        "histogram": { "$ref": "#/$defs/Histogram" }
+      }
+    },
+    "ListMapProfile": {
+      "type": "object",
+      "required": ["dtype", "null_count", "length_min", "length_max", "length_mean"],
+      "additionalProperties": false,
+      "properties": {
+        "dtype": { "type": "string", "pattern": "^(list|map)" },
+        "null_count": { "type": "integer", "minimum": 0 },
+        "length_min": { "type": "integer", "minimum": 0 },
+        "length_max": { "type": "integer", "minimum": 0 },
+        "length_mean": { "type": "number" }
+      }
+    }
+  }
+}

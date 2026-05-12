@@ -51,3 +51,7 @@ python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
 Pair with `/raincloud-status <slug>` to check filesystem state of any returned slug, and `/raincloud-validate-manifest` after editing the manifest based on findings.
 
 Context: [SKILLS.md](../../context/SKILLS.md), [sources.schema.md](../../context/sources.schema.md), [`docs/v1/datasets.md`](../../../docs/v1/datasets.md) for full-row metadata.
+
+## New discovery axes (0.1.4)
+
+`--showcase`, `--tag`, `--size`, `--trait`, `--view`, `--inspect`, `--tags-help`, `--showcase-help`. See the `raincloud-discover` skill for the full vocabulary and patterns.

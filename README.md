@@ -45,7 +45,21 @@ outputs/v1/countries-of-the-world/vortex/countries-of-the-world.vortex
 
 The command runs every pipeline stage — fetch, extract, parse, transform, write, validate, convert — and leaves both a Parquet file and its converted Vortex sibling under per-format subdirectories of `outputs/v1/<slug>/`.
 
-**Pick any other dataset from [`docs/v1/datasets.md`](docs/v1/datasets.md)** (249 curated) and pass its slug the same way. Examples spanning the size range:
+### Discover
+
+Run `python -m scripts.pipeline.browse` and start with **Start Here**. The left panel filters by domain, size, shape traits, license, or family; click a slug to see its description, on-disk state, and per-column profile (run `python -m scripts.pipeline.profile <slug>` first to populate it).
+
+Headless? The same axes are flags on `list_datasets`:
+
+```bash
+python -m scripts.pipeline.list_datasets --view start-here --long
+python -m scripts.pipeline.list_datasets --tag geospatial
+python -m scripts.pipeline.list_datasets --trait has_nested --size m
+python -m scripts.pipeline.list_datasets --inspect clickbench-hits
+python -m scripts.pipeline.list_datasets --tags-help
+```
+
+The curated-picks header at the top of [`docs/v1/datasets.md`](docs/v1/datasets.md) groups slugs into four editorial tiers (Start Here, Encoding Research, Vortex Wins, Stress Test) drawn from each spec's `showcase` field — pick any slug and pass it to `build` the same way. Examples spanning the size range, all members of the **Start Here** tier:
 
 ```bash
 python -m scripts.pipeline.build uci-seeds                  # 210 rows, ~200 ms

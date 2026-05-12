@@ -29,3 +29,9 @@ Before running:
 After a successful build, suggest running `/raincloud-docs` to regenerate derived docs.
 
 Context: [SKILLS.md](../../context/SKILLS.md), [AGENTS.md](../../context/AGENTS.md).
+
+## Note (0.1.4)
+
+Per-column profiles are a separate opt-in stage:
+`python -m scripts.pipeline.profile <slug>` after a build. Not part of the
+default build pipeline. See `raincloud-profile` skill.

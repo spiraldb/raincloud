@@ -69,6 +69,31 @@
             }
           },
           "description": "Optional canonical references for the dataset beyond `license.source_url`. Most useful for surfacing the underlying paper or the project homepage in the TUI."
+        },
+        "tags": {
+          "type": "array",
+          "default": [],
+          "uniqueItems": true,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "enum": [
+              "geospatial", "nlp-text", "web-analytics", "e-commerce",
+              "finance", "social", "scientific", "healthcare",
+              "sports", "transportation", "government", "benchmark"
+            ]
+          },
+          "description": "Closed-vocab domain tags (0–3) used by the TUI faceted side panel and `list_datasets --tag`. See `scripts/pipeline/discovery.py:TAG_VOCAB` for the authoritative list."
+        },
+        "showcase": {
+          "type": "array",
+          "default": [],
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["start-here", "encoding-research", "vortex-wins", "stress-test"]
+          },
+          "description": "Editorial showcase tiers. Members of `start-here` are surfaced in the README + curated-picks header. See `scripts/pipeline/discovery.py:SHOWCASE_TIERS`."
         }
       }
     },

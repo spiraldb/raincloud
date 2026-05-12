@@ -34,6 +34,7 @@ import json
 import sys
 from collections import Counter, defaultdict
 
+from .discovery import SHOWCASE_TIERS, TAG_VOCAB
 from .spec import REPO_ROOT, load_manifest
 
 SCHEMA_PATH = REPO_ROOT / "sources.schema.json"
@@ -63,6 +64,50 @@ def _schema_errors(manifest: dict) -> tuple[list[str], str | None]:
 def _registry_handlers() -> set[str]:
     from .handlers import _REGISTRY
     return set(_REGISTRY)
+
+
+def _check_discovery_vocab(manifest: dict) -> tuple[list[str], list[str]]:
+    """Per-spec validation of `tags` + `showcase`, plus an empty-tier warning.
+
+    Schema-level enums already cover unknown values, but this cross-check pass
+    produces clearer error formatting AND adds the empty-tier warning, which
+    can't be expressed in JSON schema.
+
+    Returns (errors, warnings).
+    """
+    errors: list[str] = []
+    warnings: list[str] = []
+    tier_members: dict[str, list[str]] = {t: [] for t in SHOWCASE_TIERS}
+
+    for spec in manifest.get("datasets", []):
+        slug = spec.get("slug", "<unknown>")
+
+        for tag in spec.get("tags") or []:
+            if tag not in TAG_VOCAB:
+                errors.append(
+                    f"{slug}: tags entry {tag!r} is not in TAG_VOCAB "
+                    f"(see scripts/pipeline/discovery.py)"
+                )
+
+        for tier in spec.get("showcase") or []:
+            if tier not in SHOWCASE_TIERS:
+                errors.append(
+                    f"{slug}: showcase entry {tier!r} is not in SHOWCASE_TIERS"
+                )
+            else:
+                tier_members[tier].append(slug)
+
+    # Only flag empty tiers once *any* tier has at least one member.
+    # All-empty = "not curated yet" (scaffolding state); no warnings then.
+    any_populated = any(members for members in tier_members.values())
+    if any_populated:
+        for tier, members in tier_members.items():
+            if not members:
+                warnings.append(
+                    f"showcase tier {tier!r} has zero members across the manifest"
+                )
+
+    return errors, warnings
 
 
 def _cross_checks(manifest: dict) -> tuple[list[str], list[str]]:
@@ -154,6 +199,10 @@ def _cross_checks(manifest: dict) -> tuple[list[str], list[str]]:
                 f"{slug}: convert.vortex=false requires a non-null "
                 f"convert.vortex_skip_reason explaining the opt-out"
             )
+
+    discovery_errors, discovery_warnings = _check_discovery_vocab(manifest)
+    errors.extend(discovery_errors)
+    warnings.extend(discovery_warnings)
 
     return errors, warnings
 
