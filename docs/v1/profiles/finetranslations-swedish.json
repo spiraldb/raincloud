@@ -3,7 +3,7 @@
   "slug": "finetranslations-swedish",
   "row_count": 321000,
   "parquet_sha256": "e0fa14e94a3a8b13b189e18fd2309fa2cc3a3f1bada5f5a9cc37496f46571a29",
-  "computed_at": "2026-05-13T16:44:31Z",
+  "computed_at": "2026-05-16T22:39:59Z",
   "sample_rows": null,
   "columns": {
     "id": {
@@ -25,14 +25,14 @@
       "length_min": 1,
       "length_max": 479,
       "length_mean": 2.122080996884735,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "og_chunks": {
       "null_count": 0,
       "length_min": 1,
       "length_max": 479,
       "length_mean": 2.122080996884735,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "og_full_text": {
       "null_count": 0,

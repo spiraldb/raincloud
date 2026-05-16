@@ -3,7 +3,7 @@
   "slug": "finepdfs-en-test",
   "row_count": 373,
   "parquet_sha256": "b54e8f4ab980f80ebe6be48356a6dd904dadfc10e4d35dde8a14e3f800dc2792",
-  "computed_at": "2026-05-13T16:44:37Z",
+  "computed_at": "2026-05-16T22:39:28Z",
   "sample_rows": null,
   "columns": {
     "text": {
@@ -30,11 +30,11 @@
           "count": 17
         },
         {
-          "value": "CC-MAIN-2023-50",
+          "value": "CC-MAIN-2024-10",
           "count": 15
         },
         {
-          "value": "CC-MAIN-2024-10",
+          "value": "CC-MAIN-2023-50",
           "count": 15
         },
         {
@@ -42,7 +42,7 @@
           "count": 13
         },
         {
-          "value": "CC-MAIN-2020-40",
+          "value": "CC-MAIN-2023-40",
           "count": 13
         }
       ],
@@ -216,6 +216,10 @@
           "count": 369
         },
         {
+          "value": "frp_Latn",
+          "count": 1
+        },
+        {
           "value": "mal_Latn",
           "count": 1
         },
@@ -225,10 +229,6 @@
         },
         {
           "value": "enm_Latn",
-          "count": 1
-        },
-        {
-          "value": "frp_Latn",
           "count": 1
         }
       ],
@@ -274,7 +274,7 @@
       "length_min": 1,
       "length_max": 1759,
       "length_mean": 29.62734584450402,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "is_truncated": {
       "dtype": "bool",
@@ -288,35 +288,35 @@
       "length_min": 1,
       "length_max": 1759,
       "length_mean": 29.62734584450402,
-      "dtype": "list"
+      "dtype": "list<int64>"
     },
     "fw_edu_scores": {
       "null_count": 0,
       "length_min": 1,
       "length_max": 2,
       "length_mean": 1.3994638069705094,
-      "dtype": "list"
+      "dtype": "list<float64>"
     },
     "fw_edu_v2_scores": {
       "null_count": 0,
       "length_min": 1,
       "length_max": 2,
       "length_mean": 1.3994638069705094,
-      "dtype": "list"
+      "dtype": "list<float64>"
     },
     "dclm_scores": {
       "null_count": 0,
       "length_min": 1,
       "length_max": 2,
       "length_mean": 1.3994638069705094,
-      "dtype": "list"
+      "dtype": "list<float64>"
     },
     "ocr_quality_scores": {
       "null_count": 0,
       "length_min": 1,
       "length_max": 2,
       "length_mean": 1.3994638069705094,
-      "dtype": "list"
+      "dtype": "list<float64>"
     },
     "minhash_cluster_size": {
       "null_count": 0,

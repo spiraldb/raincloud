@@ -3,7 +3,7 @@
   "slug": "coig",
   "row_count": 178246,
   "parquet_sha256": "35516084f5f51199e1459eb1ffba0e8d9dcdbb64b2dd9e2248a85dd276adf941",
-  "computed_at": "2026-05-13T16:44:21Z",
+  "computed_at": "2026-05-16T22:39:28Z",
   "sample_rows": null,
   "columns": {
     "instruction": {
@@ -18,7 +18,7 @@
       "length_min": 1,
       "length_max": 5,
       "length_mean": 1.306206029868833,
-      "dtype": "list"
+      "dtype": "list<struct>"
     },
     "split": {
       "null_count": 0,

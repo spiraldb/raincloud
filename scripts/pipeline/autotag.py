@@ -24,8 +24,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
+
+# Word-bounded embedding triggers. The previous list used bare " embed" and
+# bare "vector" substrings, which false-positived on "sensors embedded …" and
+# would match unrelated mentions of "vector" (attack vector, supply vector).
+_EMBED_PAT = re.compile(
+    r"\b(embeddings?|word\s*vectors?|dense\s*vectors?|glove|word2vec|fasttext|encoder\s+output)\b"
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SOURCES = REPO_ROOT / "sources.json"
@@ -52,10 +60,10 @@ def _classify_column(name: str, col: dict, row_count: int) -> str | None:
     if "binary" in dtype:
         return "binary-payload"
     if "list" in dtype:
-        # list<float|double> = embeddings; otherwise it's a list of structs/
-        # strings which we classify as nested-json. (profile.py drops the
-        # element type today so we get "list" with no hint — relying on
-        # name and the slug-name fallback path to surface embeddings.)
+        # profile.py renders list element dtypes (e.g. "list<float32>",
+        # "fixed_size_list<float>[100]", "list<struct>"), so we can detect
+        # embedding-shaped columns directly. Anything else (list<struct>,
+        # list<string>, list<int>) classifies as nested-json.
         if "float" in dtype or "double" in dtype:
             return "embeddings"
         return "nested-json"
@@ -158,8 +166,7 @@ def _slug_name_fallback(spec: dict) -> list[str]:
     handler = ((spec.get("transform") or {}).get("handler") or "").lower()
     text = " ".join([slug, short, desc, handler])
     tags: list[str] = []
-    if any(k in text for k in (" embed", "embedding", "glove", "vector", "word2vec",
-                                "fasttext", "encoder output", "dense vector")):
+    if _EMBED_PAT.search(text):
         tags.append("embeddings")
     if any(k in text for k in ("image", " photo", "laion", "websight", " audio",
                                 "blob", "pdf binary", " weights")):

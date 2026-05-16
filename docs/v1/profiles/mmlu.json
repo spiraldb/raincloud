@@ -3,7 +3,7 @@
   "slug": "mmlu",
   "row_count": 115700,
   "parquet_sha256": "a079040cebf707cc6ae94cb36880ecf5562350e2c4fda5e9b94e6b61613a1708",
-  "computed_at": "2026-05-13T16:44:38Z",
+  "computed_at": "2026-05-16T22:39:28Z",
   "sample_rows": null,
   "columns": {
     "answer": {
@@ -46,7 +46,7 @@
       "length_min": 4,
       "length_max": 4,
       "length_mean": 4.0,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "question": {
       "null_count": 0,

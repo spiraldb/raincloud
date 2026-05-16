@@ -3,14 +3,14 @@
   "slug": "osm-germany-ways",
   "row_count": 70097667,
   "parquet_sha256": "18749a23f34f9f8ff4d9341d695ad6c22154d604ccd31ca3cbc739efaaf53d21",
-  "computed_at": "2026-05-12T18:35:01Z",
+  "computed_at": "2026-05-16T22:40:17Z",
   "sample_rows": null,
   "columns": {
     "id": {
       "null_count": 0,
       "min": 92,
       "max": 1509625119,
-      "mean": 544498442.078485,
+      "mean": 544498442.0784851,
       "ndv_approx": 70948205,
       "histogram": {
         "buckets": [
@@ -88,14 +88,14 @@
       "length_min": 2,
       "length_max": 2000,
       "length_mean": 8.403377333513824,
-      "dtype": "list"
+      "dtype": "list<int64>"
     },
     "tags": {
       "null_count": 0,
       "length_min": 0,
       "length_max": 113,
       "length_mean": 3.4293662013031048,
-      "dtype": "list"
+      "dtype": "list<struct>"
     },
     "geometry": {
       "null_count": 0,

@@ -14070,8 +14070,8 @@
         }
       ],
       "tags": [
+        "embeddings",
         "enums",
-        "nested-json",
         "prose"
       ]
     },

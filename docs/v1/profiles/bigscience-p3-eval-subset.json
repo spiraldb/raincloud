@@ -3,7 +3,7 @@
   "slug": "bigscience-p3-eval-subset",
   "row_count": 102963,
   "parquet_sha256": "4a0b6e364f0271940bb6c4182602890491b41516c87cc0e4e043905b196bee90",
-  "computed_at": "2026-05-13T16:44:20Z",
+  "computed_at": "2026-05-16T22:39:28Z",
   "sample_rows": null,
   "columns": {
     "answer_choices": {
@@ -11,14 +11,14 @@
       "length_min": 2,
       "length_max": 3,
       "length_mean": 2.0053999980575545,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "inputs": {
       "null_count": 0,
       "length_min": 17,
       "length_max": 600,
       "length_mean": 99.11925643192215,
-      "dtype": "list"
+      "dtype": "list<int32>"
     },
     "inputs_pretokenized": {
       "null_count": 0,
@@ -32,7 +32,7 @@
       "length_min": 2,
       "length_max": 17,
       "length_mean": 2.5876771267348464,
-      "dtype": "list"
+      "dtype": "list<int32>"
     },
     "targets_pretokenized": {
       "null_count": 0,

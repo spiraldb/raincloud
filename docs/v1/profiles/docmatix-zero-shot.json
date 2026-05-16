@@ -3,7 +3,7 @@
   "slug": "docmatix-zero-shot",
   "row_count": 1900,
   "parquet_sha256": "e8f14b8ce7e80b6c2f2de9c7c06676d90901b89b06b8afb7af1e40a3aa8831e7",
-  "computed_at": "2026-05-13T16:44:27Z",
+  "computed_at": "2026-05-16T22:39:42Z",
   "sample_rows": null,
   "columns": {
     "images": {
@@ -11,14 +11,14 @@
       "length_min": 1,
       "length_max": 4,
       "length_mean": 1.906842105263158,
-      "dtype": "list"
+      "dtype": "list<struct>"
     },
     "texts": {
       "null_count": 0,
       "length_min": 1,
       "length_max": 56,
       "length_mean": 7.766315789473684,
-      "dtype": "list"
+      "dtype": "list<struct>"
     },
     "split": {
       "null_count": 0,

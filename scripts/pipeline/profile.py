@@ -85,8 +85,12 @@ def _arrow_dtype_label(arrow_type) -> str:
         return f"timestamp[{arrow_type.unit}]"
     if pa.types.is_time(arrow_type):
         return "time"
-    if pa.types.is_list(arrow_type) or pa.types.is_large_list(arrow_type):
-        return "list"
+    if pa.types.is_list(arrow_type):
+        return f"list<{_arrow_dtype_label(arrow_type.value_type)}>"
+    if pa.types.is_large_list(arrow_type):
+        return f"large_list<{_arrow_dtype_label(arrow_type.value_type)}>"
+    if pa.types.is_fixed_size_list(arrow_type):
+        return f"fixed_size_list<{_arrow_dtype_label(arrow_type.value_type)}>[{arrow_type.list_size}]"
     if pa.types.is_map(arrow_type):
         return "map"
     if pa.types.is_struct(arrow_type):
@@ -401,8 +405,26 @@ def _column_profile(con, table_name: str, field, row_count: int,
         p = _list_profile(con, table_name, field.name, length_fn="len")
         if p is None:
             return None
-        p["dtype"] = "list"
+        p["dtype"] = dtype_label
         return p
+    if pa.types.is_fixed_size_list(t):
+        # Fixed-size lists have a constant element count = list_size. DuckDB's
+        # `len()` still works on them, but recording the constant directly
+        # avoids a SQL pass and is correct by construction.
+        quoted = _quote_ident(field.name)
+        n_total, nulls = con.execute(
+            f"SELECT count(*), count(*) - count({quoted}) FROM {table_name}"
+        ).fetchone()
+        if n_total > 0 and nulls == n_total:
+            return None
+        size = int(t.list_size)
+        return {
+            "dtype": dtype_label,
+            "null_count": int(nulls),
+            "length_min": size,
+            "length_max": size,
+            "length_mean": float(size),
+        }
     if pa.types.is_map(t):
         # MAP columns: `len()` is undefined on MAP in DuckDB ≥ 1.5, so use
         # `cardinality` (entry count).

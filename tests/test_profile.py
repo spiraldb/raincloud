@@ -174,7 +174,9 @@ def test_profile_list_column_length_stats(tmp_path):
 
     result = profile_slug(slug="tmp", parquet_path=parquet)
     col = result["columns"]["xs"]
-    assert col["dtype"] == "list"
+    # Element dtype is rendered recursively so autotag can distinguish
+    # list<float|double> embeddings from list<struct> nested JSON.
+    assert col["dtype"] == "list<int64>"
     assert col["length_min"] == 0
     assert col["length_max"] == 3
     assert 0 < col["length_mean"] < 3

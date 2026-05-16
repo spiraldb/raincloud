@@ -3,7 +3,7 @@
   "slug": "mbpp",
   "row_count": 974,
   "parquet_sha256": "e8f476fc08222703d6f77da35178c1888b06e0a3f814c161293688fb8b16d9b2",
-  "computed_at": "2026-05-13T16:44:38Z",
+  "computed_at": "2026-05-16T22:39:28Z",
   "sample_rows": null,
   "columns": {
     "task_id": {
@@ -60,7 +60,7 @@
       "length_min": 3,
       "length_max": 3,
       "length_mean": 3.0,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "test_setup_code": {
       "null_count": 0,
@@ -87,7 +87,7 @@
       "length_min": 0,
       "length_max": 3,
       "length_mean": 0.01642710472279261,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "split": {
       "null_count": 0,

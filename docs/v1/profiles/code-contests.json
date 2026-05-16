@@ -3,7 +3,7 @@
   "slug": "code-contests",
   "row_count": 13610,
   "parquet_sha256": "029e8c97e41a971d5d6bc91dd1dde7c934a7f9abfdbc05842b25b0a84885526d",
-  "computed_at": "2026-05-13T15:52:19Z",
+  "computed_at": "2026-05-16T22:40:09Z",
   "sample_rows": null,
   "columns": {
     "name": {
@@ -233,7 +233,7 @@
       "length_min": 0,
       "length_max": 11,
       "length_mean": 1.8141807494489346,
-      "dtype": "list"
+      "dtype": "list<string>"
     },
     "is_description_translated": {
       "dtype": "bool",
