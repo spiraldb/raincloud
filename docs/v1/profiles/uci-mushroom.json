@@ -1,0 +1,538 @@
+{
+  "schema_version": 1,
+  "slug": "uci-mushroom",
+  "row_count": 8124,
+  "parquet_sha256": "fb011b066530f7e4a5d70fcc3db8aa4451d0e29eed6eb535d8c4a8c3871b0af3",
+  "computed_at": "2026-05-16T10:23:31Z",
+  "sample_rows": null,
+  "columns": {
+    "cap_shape": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "x",
+          "count": 3656
+        },
+        {
+          "value": "f",
+          "count": 3152
+        },
+        {
+          "value": "k",
+          "count": 828
+        },
+        {
+          "value": "b",
+          "count": 452
+        },
+        {
+          "value": "s",
+          "count": 32
+        }
+      ],
+      "dtype": "string"
+    },
+    "cap_surface": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "y",
+          "count": 3244
+        },
+        {
+          "value": "s",
+          "count": 2556
+        },
+        {
+          "value": "f",
+          "count": 2320
+        },
+        {
+          "value": "g",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "cap_color": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "n",
+          "count": 2284
+        },
+        {
+          "value": "g",
+          "count": 1840
+        },
+        {
+          "value": "e",
+          "count": 1500
+        },
+        {
+          "value": "y",
+          "count": 1072
+        },
+        {
+          "value": "w",
+          "count": 1040
+        }
+      ],
+      "dtype": "string"
+    },
+    "bruises": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 4748
+        },
+        {
+          "value": "t",
+          "count": 3376
+        }
+      ],
+      "dtype": "string"
+    },
+    "odor": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "n",
+          "count": 3528
+        },
+        {
+          "value": "f",
+          "count": 2160
+        },
+        {
+          "value": "y",
+          "count": 576
+        },
+        {
+          "value": "s",
+          "count": 576
+        },
+        {
+          "value": "l",
+          "count": 400
+        }
+      ],
+      "dtype": "string"
+    },
+    "gill_attachment": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 7914
+        },
+        {
+          "value": "a",
+          "count": 210
+        }
+      ],
+      "dtype": "string"
+    },
+    "gill_spacing": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "c",
+          "count": 6812
+        },
+        {
+          "value": "w",
+          "count": 1312
+        }
+      ],
+      "dtype": "string"
+    },
+    "gill_size": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "b",
+          "count": 5612
+        },
+        {
+          "value": "n",
+          "count": 2512
+        }
+      ],
+      "dtype": "string"
+    },
+    "gill_color": {
+      "null_count": 0,
+      "ndv_approx": 11,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "b",
+          "count": 1728
+        },
+        {
+          "value": "p",
+          "count": 1492
+        },
+        {
+          "value": "w",
+          "count": 1202
+        },
+        {
+          "value": "n",
+          "count": 1048
+        },
+        {
+          "value": "g",
+          "count": 752
+        }
+      ],
+      "dtype": "string"
+    },
+    "stalk_shape": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "t",
+          "count": 4608
+        },
+        {
+          "value": "e",
+          "count": 3516
+        }
+      ],
+      "dtype": "string"
+    },
+    "stalk_root": {
+      "null_count": 2480,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "b",
+          "count": 3776
+        },
+        {
+          "value": "e",
+          "count": 1120
+        },
+        {
+          "value": "c",
+          "count": 556
+        },
+        {
+          "value": "r",
+          "count": 192
+        }
+      ],
+      "dtype": "string"
+    },
+    "stalk_surface_above_ring": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "s",
+          "count": 5176
+        },
+        {
+          "value": "k",
+          "count": 2372
+        },
+        {
+          "value": "f",
+          "count": 552
+        },
+        {
+          "value": "y",
+          "count": 24
+        }
+      ],
+      "dtype": "string"
+    },
+    "stalk_surface_below_ring": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "s",
+          "count": 4936
+        },
+        {
+          "value": "k",
+          "count": 2304
+        },
+        {
+          "value": "f",
+          "count": 600
+        },
+        {
+          "value": "y",
+          "count": 284
+        }
+      ],
+      "dtype": "string"
+    },
+    "stalk_color_above_ring": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "w",
+          "count": 4464
+        },
+        {
+          "value": "p",
+          "count": 1872
+        },
+        {
+          "value": "g",
+          "count": 576
+        },
+        {
+          "value": "n",
+          "count": 448
+        },
+        {
+          "value": "b",
+          "count": 432
+        }
+      ],
+      "dtype": "string"
+    },
+    "stalk_color_below_ring": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "w",
+          "count": 4384
+        },
+        {
+          "value": "p",
+          "count": 1872
+        },
+        {
+          "value": "g",
+          "count": 576
+        },
+        {
+          "value": "n",
+          "count": 512
+        },
+        {
+          "value": "b",
+          "count": 432
+        }
+      ],
+      "dtype": "string"
+    },
+    "veil_type": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "p",
+          "count": 8124
+        }
+      ],
+      "dtype": "string"
+    },
+    "veil_color": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "w",
+          "count": 7924
+        },
+        {
+          "value": "o",
+          "count": 96
+        },
+        {
+          "value": "n",
+          "count": 96
+        },
+        {
+          "value": "y",
+          "count": 8
+        }
+      ],
+      "dtype": "string"
+    },
+    "ring_number": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "o",
+          "count": 7488
+        },
+        {
+          "value": "t",
+          "count": 600
+        },
+        {
+          "value": "n",
+          "count": 36
+        }
+      ],
+      "dtype": "string"
+    },
+    "ring_type": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "p",
+          "count": 3968
+        },
+        {
+          "value": "e",
+          "count": 2776
+        },
+        {
+          "value": "l",
+          "count": 1296
+        },
+        {
+          "value": "f",
+          "count": 48
+        },
+        {
+          "value": "n",
+          "count": 36
+        }
+      ],
+      "dtype": "string"
+    },
+    "spore_print_color": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "w",
+          "count": 2388
+        },
+        {
+          "value": "n",
+          "count": 1968
+        },
+        {
+          "value": "k",
+          "count": 1872
+        },
+        {
+          "value": "h",
+          "count": 1632
+        },
+        {
+          "value": "r",
+          "count": 72
+        }
+      ],
+      "dtype": "string"
+    },
+    "population": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "v",
+          "count": 4040
+        },
+        {
+          "value": "y",
+          "count": 1712
+        },
+        {
+          "value": "s",
+          "count": 1248
+        },
+        {
+          "value": "n",
+          "count": 400
+        },
+        {
+          "value": "a",
+          "count": 384
+        }
+      ],
+      "dtype": "string"
+    },
+    "habitat": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "d",
+          "count": 3148
+        },
+        {
+          "value": "g",
+          "count": 2148
+        },
+        {
+          "value": "p",
+          "count": 1144
+        },
+        {
+          "value": "l",
+          "count": 832
+        },
+        {
+          "value": "u",
+          "count": 368
+        }
+      ],
+      "dtype": "string"
+    },
+    "poisonous": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "e",
+          "count": 4208
+        },
+        {
+          "value": "p",
+          "count": 3916
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

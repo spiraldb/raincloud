@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "slug": "uci-individual-household-electric-power-consumption",
+  "row_count": 2075259,
+  "parquet_sha256": "03b054700b39e611cd9d32376faad7041664f9a53df68e36f4ca76d2aedbada9",
+  "computed_at": "2026-05-16T10:23:29Z",
+  "sample_rows": null,
+  "columns": {
+    "date": {
+      "null_count": 0,
+      "ndv_approx": 1635,
+      "mean_length": 8.948063832032531,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "time": {
+      "null_count": 0,
+      "ndv_approx": 1445,
+      "mean_length": 8.0,
+      "top_values": null,
+      "dtype": "time"
+    },
+    "global_active_power": {
+      "null_count": 0,
+      "ndv_approx": 4838,
+      "mean_length": 4.949931068844901,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "global_reactive_power": {
+      "null_count": 0,
+      "ndv_approx": 523,
+      "mean_length": 4.949926250169256,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "voltage": {
+      "null_count": 0,
+      "ndv_approx": 3322,
+      "mean_length": 6.924889375253884,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "global_intensity": {
+      "null_count": 0,
+      "ndv_approx": 249,
+      "mean_length": 5.060080693542348,
+      "top_values": [
+        {
+          "value": "1.000",
+          "count": 172785
+        },
+        {
+          "value": "1.400",
+          "count": 164720
+        },
+        {
+          "value": "1.200",
+          "count": 140425
+        },
+        {
+          "value": "1.600",
+          "count": 118212
+        },
+        {
+          "value": "1.800",
+          "count": 95395
+        }
+      ],
+      "dtype": "string"
+    },
+    "sub_metering_1": {
+      "null_count": 0,
+      "ndv_approx": 95,
+      "mean_length": 4.979781318861886,
+      "top_values": [
+        {
+          "value": "0.000",
+          "count": 1880175
+        },
+        {
+          "value": "1.000",
+          "count": 84936
+        },
+        {
+          "value": "?",
+          "count": 25979
+        },
+        {
+          "value": "2.000",
+          "count": 19017
+        },
+        {
+          "value": "38.000",
+          "count": 16119
+        }
+      ],
+      "dtype": "string"
+    },
+    "sub_metering_2": {
+      "null_count": 0,
+      "ndv_approx": 89,
+      "mean_length": 4.977343068985606,
+      "top_values": [
+        {
+          "value": "0.000",
+          "count": 1436830
+        },
+        {
+          "value": "1.000",
+          "count": 378224
+        },
+        {
+          "value": "2.000",
+          "count": 157075
+        },
+        {
+          "value": "?",
+          "count": 25979
+        },
+        {
+          "value": "3.000",
+          "count": 7189
+        }
+      ],
+      "dtype": "string"
+    },
+    "sub_metering_3": {
+      "null_count": 25979,
+      "min": 0.0,
+      "max": 31.0,
+      "mean": 6.45844735712055,
+      "ndv_approx": 32,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3.1,
+          6.2,
+          9.3,
+          12.4,
+          15.5,
+          18.6,
+          21.7,
+          24.8,
+          27.900000000000002,
+          31.0
+        ],
+        "counts": [
+          1327865,
+          5805,
+          5887,
+          31317,
+          6530,
+          525587,
+          126722,
+          2078,
+          2797,
+          14692
+        ]
+      },
+      "dtype": "float64"
+    }
+  }
+}

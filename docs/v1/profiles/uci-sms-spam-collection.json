@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "slug": "uci-sms-spam-collection",
+  "row_count": 5574,
+  "parquet_sha256": "6a18cb3e2caae4adaf1be15b86b8efac72ad803ec0677d7ce2ea4fc18a1fb5d0",
+  "computed_at": "2026-05-16T10:24:05Z",
+  "sample_rows": null,
+  "columns": {
+    "f0": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 3.1340150699677074,
+      "top_values": [
+        {
+          "value": "ham",
+          "count": 4827
+        },
+        {
+          "value": "spam",
+          "count": 747
+        }
+      ],
+      "dtype": "string"
+    },
+    "f1": {
+      "null_count": 0,
+      "ndv_approx": 5448,
+      "mean_length": 80.47829207032652,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

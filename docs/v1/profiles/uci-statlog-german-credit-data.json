@@ -1,0 +1,590 @@
+{
+  "schema_version": 1,
+  "slug": "uci-statlog-german-credit-data",
+  "row_count": 1000,
+  "parquet_sha256": "9417e74613301bf60d504ab66f8938c9ca558acbbdddc360c1ad585c446bdedc",
+  "computed_at": "2026-05-16T10:24:08Z",
+  "sample_rows": null,
+  "columns": {
+    "attribute1": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "A14",
+          "count": 394
+        },
+        {
+          "value": "A11",
+          "count": 274
+        },
+        {
+          "value": "A12",
+          "count": 269
+        },
+        {
+          "value": "A13",
+          "count": 63
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute2": {
+      "null_count": 0,
+      "min": 4,
+      "max": 72,
+      "mean": 20.903,
+      "ndv_approx": 35,
+      "histogram": {
+        "buckets": [
+          4.0,
+          10.8,
+          17.6,
+          24.4,
+          31.2,
+          38.0,
+          44.8,
+          51.6,
+          58.4,
+          65.19999999999999,
+          72.0
+        ],
+        "counts": [
+          171,
+          262,
+          337,
+          57,
+          86,
+          17,
+          54,
+          2,
+          13,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "attribute3": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "A32",
+          "count": 530
+        },
+        {
+          "value": "A34",
+          "count": 293
+        },
+        {
+          "value": "A33",
+          "count": 88
+        },
+        {
+          "value": "A31",
+          "count": 49
+        },
+        {
+          "value": "A30",
+          "count": 40
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute4": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 3.012,
+      "top_values": [
+        {
+          "value": "A43",
+          "count": 280
+        },
+        {
+          "value": "A40",
+          "count": 234
+        },
+        {
+          "value": "A42",
+          "count": 181
+        },
+        {
+          "value": "A41",
+          "count": 103
+        },
+        {
+          "value": "A49",
+          "count": 97
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute5": {
+      "null_count": 0,
+      "min": 250,
+      "max": 18424,
+      "mean": 3271.258,
+      "ndv_approx": 975,
+      "histogram": {
+        "buckets": [
+          250.0,
+          2067.4,
+          3884.8,
+          5702.200000000001,
+          7519.6,
+          9337.0,
+          11154.400000000001,
+          12971.800000000001,
+          14789.2,
+          16606.6,
+          18424.0
+        ],
+        "counts": [
+          445,
+          293,
+          97,
+          80,
+          38,
+          19,
+          14,
+          8,
+          5,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "attribute6": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "A61",
+          "count": 603
+        },
+        {
+          "value": "A65",
+          "count": 183
+        },
+        {
+          "value": "A62",
+          "count": 103
+        },
+        {
+          "value": "A63",
+          "count": 63
+        },
+        {
+          "value": "A64",
+          "count": 48
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute7": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "A73",
+          "count": 339
+        },
+        {
+          "value": "A75",
+          "count": 253
+        },
+        {
+          "value": "A74",
+          "count": 174
+        },
+        {
+          "value": "A72",
+          "count": 172
+        },
+        {
+          "value": "A71",
+          "count": 62
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute8": {
+      "null_count": 0,
+      "min": 1,
+      "max": 4,
+      "mean": 2.973,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.3,
+          1.6,
+          1.9,
+          2.2,
+          2.5,
+          2.8,
+          3.1,
+          3.4,
+          3.6999999999999997,
+          4.0
+        ],
+        "counts": [
+          136,
+          0,
+          0,
+          231,
+          0,
+          0,
+          157,
+          0,
+          0,
+          476
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "attribute9": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "A93",
+          "count": 548
+        },
+        {
+          "value": "A92",
+          "count": 310
+        },
+        {
+          "value": "A94",
+          "count": 92
+        },
+        {
+          "value": "A91",
+          "count": 50
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute10": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "A101",
+          "count": 907
+        },
+        {
+          "value": "A103",
+          "count": 52
+        },
+        {
+          "value": "A102",
+          "count": 41
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute11": {
+      "null_count": 0,
+      "min": 1,
+      "max": 4,
+      "mean": 2.845,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.3,
+          1.6,
+          1.9,
+          2.2,
+          2.5,
+          2.8,
+          3.1,
+          3.4,
+          3.6999999999999997,
+          4.0
+        ],
+        "counts": [
+          130,
+          0,
+          0,
+          308,
+          0,
+          0,
+          149,
+          0,
+          0,
+          413
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "attribute12": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "A123",
+          "count": 332
+        },
+        {
+          "value": "A121",
+          "count": 282
+        },
+        {
+          "value": "A122",
+          "count": 232
+        },
+        {
+          "value": "A124",
+          "count": 154
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute13": {
+      "null_count": 0,
+      "min": 19,
+      "max": 75,
+      "mean": 35.546,
+      "ndv_approx": 52,
+      "histogram": {
+        "buckets": [
+          19.0,
+          24.6,
+          30.2,
+          35.8,
+          41.4,
+          47.0,
+          52.599999999999994,
+          58.199999999999996,
+          63.8,
+          69.4,
+          75.0
+        ],
+        "counts": [
+          149,
+          262,
+          177,
+          155,
+          89,
+          72,
+          42,
+          26,
+          21,
+          7
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "attribute14": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "A143",
+          "count": 814
+        },
+        {
+          "value": "A141",
+          "count": 139
+        },
+        {
+          "value": "A142",
+          "count": 47
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute15": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "A152",
+          "count": 713
+        },
+        {
+          "value": "A151",
+          "count": 179
+        },
+        {
+          "value": "A153",
+          "count": 108
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute16": {
+      "null_count": 0,
+      "min": 1,
+      "max": 4,
+      "mean": 1.407,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.3,
+          1.6,
+          1.9,
+          2.2,
+          2.5,
+          2.8,
+          3.1,
+          3.4,
+          3.6999999999999997,
+          4.0
+        ],
+        "counts": [
+          633,
+          0,
+          0,
+          333,
+          0,
+          0,
+          28,
+          0,
+          0,
+          6
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "attribute17": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "A173",
+          "count": 630
+        },
+        {
+          "value": "A172",
+          "count": 200
+        },
+        {
+          "value": "A174",
+          "count": 148
+        },
+        {
+          "value": "A171",
+          "count": 22
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute18": {
+      "null_count": 0,
+      "min": 1,
+      "max": 2,
+      "mean": 1.155,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.1,
+          1.2,
+          1.3,
+          1.4,
+          1.5,
+          1.6,
+          1.7000000000000002,
+          1.8,
+          1.9,
+          2.0
+        ],
+        "counts": [
+          845,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          155
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "attribute19": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "A191",
+          "count": 596
+        },
+        {
+          "value": "A192",
+          "count": 404
+        }
+      ],
+      "dtype": "string"
+    },
+    "attribute20": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "A201",
+          "count": 963
+        },
+        {
+          "value": "A202",
+          "count": 37
+        }
+      ],
+      "dtype": "string"
+    },
+    "class": {
+      "null_count": 0,
+      "min": 1,
+      "max": 2,
+      "mean": 1.3,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.1,
+          1.2,
+          1.3,
+          1.4,
+          1.5,
+          1.6,
+          1.7000000000000002,
+          1.8,
+          1.9,
+          2.0
+        ],
+        "counts": [
+          700,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          300
+        ]
+      },
+      "dtype": "uint8"
+    }
+  }
+}

@@ -1,0 +1,1214 @@
+{
+  "schema_version": 1,
+  "slug": "uci-diabetes-130-us-hospitals",
+  "row_count": 101766,
+  "parquet_sha256": "eeec0a284f12824117d122877630f5fa418fb35be893b9c6c9651661eaa2d4d6",
+  "computed_at": "2026-05-16T10:22:15Z",
+  "sample_rows": null,
+  "columns": {
+    "encounter_id": {
+      "null_count": 0,
+      "min": 12522,
+      "max": 443867222,
+      "mean": 165201645.6229782,
+      "ndv_approx": 106080,
+      "histogram": {
+        "buckets": [
+          12522.0,
+          44397992.0,
+          88783462.0,
+          133168932.0,
+          177554402.0,
+          221939872.0,
+          266325342.0,
+          310710812.0,
+          355096282.0,
+          399481752.0,
+          443867222.0
+        ],
+        "counts": [
+          10493,
+          16574,
+          16064,
+          20683,
+          10720,
+          9958,
+          7039,
+          3438,
+          3346,
+          3451
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "patient_nbr": {
+      "null_count": 0,
+      "min": 135,
+      "max": 189502619,
+      "mean": 54330400.694947235,
+      "ndv_approx": 70812,
+      "histogram": {
+        "buckets": [
+          135.0,
+          18950383.4,
+          37900631.8,
+          56850880.199999996,
+          75801128.6,
+          94751377.0,
+          113701625.39999999,
+          132651873.79999998,
+          151602122.2,
+          170552370.6,
+          189502619.0
+        ],
+        "counts": [
+          20481,
+          19240,
+          16184,
+          11037,
+          17908,
+          12886,
+          1594,
+          1161,
+          429,
+          846
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "race": {
+      "null_count": 2273,
+      "ndv_approx": 4,
+      "mean_length": 10.051682027881359,
+      "top_values": [
+        {
+          "value": "Caucasian",
+          "count": 76099
+        },
+        {
+          "value": "AfricanAmerican",
+          "count": 19210
+        },
+        {
+          "value": "Hispanic",
+          "count": 2037
+        },
+        {
+          "value": "Other",
+          "count": 1506
+        },
+        {
+          "value": "Asian",
+          "count": 641
+        }
+      ],
+      "dtype": "string"
+    },
+    "gender": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.075496727787277,
+      "top_values": [
+        {
+          "value": "Female",
+          "count": 54708
+        },
+        {
+          "value": "Male",
+          "count": 47055
+        },
+        {
+          "value": "Unknown/Invalid",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "age": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 7.0258632549181455,
+      "top_values": [
+        {
+          "value": "[70-80)",
+          "count": 26068
+        },
+        {
+          "value": "[60-70)",
+          "count": 22483
+        },
+        {
+          "value": "[50-60)",
+          "count": 17256
+        },
+        {
+          "value": "[80-90)",
+          "count": 17197
+        },
+        {
+          "value": "[40-50)",
+          "count": 9685
+        }
+      ],
+      "dtype": "string"
+    },
+    "weight": {
+      "null_count": 98569,
+      "ndv_approx": 9,
+      "mean_length": 7.910541132311542,
+      "top_values": [
+        {
+          "value": "[75-100)",
+          "count": 1336
+        },
+        {
+          "value": "[50-75)",
+          "count": 897
+        },
+        {
+          "value": "[100-125)",
+          "count": 625
+        },
+        {
+          "value": "[125-150)",
+          "count": 145
+        },
+        {
+          "value": "[25-50)",
+          "count": 97
+        }
+      ],
+      "dtype": "string"
+    },
+    "admission_type_id": {
+      "null_count": 0,
+      "min": 1,
+      "max": 8,
+      "mean": 2.024006053102215,
+      "ndv_approx": 9,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.7,
+          2.4,
+          3.0999999999999996,
+          3.8,
+          4.5,
+          5.199999999999999,
+          5.8999999999999995,
+          6.6,
+          7.3,
+          8.0
+        ],
+        "counts": [
+          53990,
+          18480,
+          18869,
+          0,
+          10,
+          4785,
+          0,
+          5291,
+          21,
+          320
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "discharge_disposition_id": {
+      "null_count": 0,
+      "min": 1,
+      "max": 28,
+      "mean": 3.7156417664052825,
+      "ndv_approx": 27,
+      "histogram": {
+        "buckets": [
+          1.0,
+          3.7,
+          6.4,
+          9.100000000000001,
+          11.8,
+          14.5,
+          17.200000000000003,
+          19.900000000000002,
+          22.6,
+          25.3,
+          28.0
+        ],
+        "counts": [
+          76316,
+          14901,
+          752,
+          1648,
+          774,
+          88,
+          3699,
+          1995,
+          1449,
+          144
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "admission_source_id": {
+      "null_count": 0,
+      "min": 1,
+      "max": 25,
+      "mean": 5.754436648782501,
+      "ndv_approx": 20,
+      "histogram": {
+        "buckets": [
+          1.0,
+          3.4,
+          5.8,
+          8.2,
+          10.6,
+          13.0,
+          15.399999999999999,
+          17.8,
+          20.2,
+          22.599999999999998,
+          25.0
+        ],
+        "counts": [
+          30856,
+          4042,
+          59774,
+          133,
+          2,
+          3,
+          6781,
+          161,
+          12,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "time_in_hospital": {
+      "null_count": 0,
+      "min": 1,
+      "max": 14,
+      "mean": 4.395986871843248,
+      "ndv_approx": 16,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.3,
+          3.6,
+          4.9,
+          6.2,
+          7.5,
+          8.8,
+          10.1,
+          11.4,
+          12.700000000000001,
+          14.0
+        ],
+        "counts": [
+          31432,
+          17756,
+          13924,
+          17505,
+          5859,
+          4391,
+          5344,
+          1855,
+          1448,
+          2252
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "payer_code": {
+      "null_count": 40256,
+      "ndv_approx": 18,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "MC",
+          "count": 32439
+        },
+        {
+          "value": "HM",
+          "count": 6274
+        },
+        {
+          "value": "SP",
+          "count": 5007
+        },
+        {
+          "value": "BC",
+          "count": 4655
+        },
+        {
+          "value": "MD",
+          "count": 3532
+        }
+      ],
+      "dtype": "string"
+    },
+    "medical_specialty": {
+      "null_count": 49949,
+      "ndv_approx": 66,
+      "mean_length": 15.950904143427833,
+      "top_values": [
+        {
+          "value": "InternalMedicine",
+          "count": 14635
+        },
+        {
+          "value": "Emergency/Trauma",
+          "count": 7565
+        },
+        {
+          "value": "Family/GeneralPractice",
+          "count": 7440
+        },
+        {
+          "value": "Cardiology",
+          "count": 5352
+        },
+        {
+          "value": "Surgery-General",
+          "count": 3099
+        }
+      ],
+      "dtype": "string"
+    },
+    "num_lab_procedures": {
+      "null_count": 0,
+      "min": 1,
+      "max": 132,
+      "mean": 43.09564098028811,
+      "ndv_approx": 110,
+      "histogram": {
+        "buckets": [
+          1.0,
+          14.1,
+          27.2,
+          40.3,
+          53.4,
+          66.5,
+          79.6,
+          92.7,
+          105.8,
+          118.89999999999999,
+          132.0
+        ],
+        "counts": [
+          10318,
+          10141,
+          21826,
+          27814,
+          20558,
+          8876,
+          1915,
+          290,
+          23,
+          5
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "num_procedures": {
+      "null_count": 0,
+      "min": 0,
+      "max": 6,
+      "mean": 1.339730361810428,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.6,
+          1.2,
+          1.7999999999999998,
+          2.4,
+          3.0,
+          3.5999999999999996,
+          4.2,
+          4.8,
+          5.3999999999999995,
+          6.0
+        ],
+        "counts": [
+          46652,
+          20742,
+          0,
+          12717,
+          0,
+          9443,
+          4180,
+          0,
+          3078,
+          4954
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "num_medications": {
+      "null_count": 0,
+      "min": 1,
+      "max": 81,
+      "mean": 16.021844230882614,
+      "ndv_approx": 70,
+      "histogram": {
+        "buckets": [
+          1.0,
+          9.0,
+          17.0,
+          25.0,
+          33.0,
+          41.0,
+          49.0,
+          57.0,
+          65.0,
+          73.0,
+          81.0
+        ],
+        "counts": [
+          15602,
+          45073,
+          27844,
+          9345,
+          2541,
+          815,
+          355,
+          145,
+          41,
+          5
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "number_outpatient": {
+      "null_count": 0,
+      "min": 0,
+      "max": 42,
+      "mean": 0.36935715268360747,
+      "ndv_approx": 39,
+      "histogram": {
+        "buckets": [
+          0.0,
+          4.2,
+          8.4,
+          12.600000000000001,
+          16.8,
+          21.0,
+          25.200000000000003,
+          29.400000000000002,
+          33.6,
+          37.800000000000004,
+          42.0
+        ],
+        "counts": [
+          100309,
+          1089,
+          212,
+          94,
+          23,
+          19,
+          8,
+          2,
+          6,
+          4
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "number_emergency": {
+      "null_count": 0,
+      "min": 0,
+      "max": 76,
+      "mean": 0.19783621248747127,
+      "ndv_approx": 34,
+      "histogram": {
+        "buckets": [
+          0.0,
+          7.6,
+          15.2,
+          22.799999999999997,
+          30.4,
+          38.0,
+          45.599999999999994,
+          53.199999999999996,
+          60.8,
+          68.39999999999999,
+          76.0
+        ],
+        "counts": [
+          101560,
+          168,
+          26,
+          5,
+          1,
+          1,
+          1,
+          1,
+          2,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "number_inpatient": {
+      "null_count": 0,
+      "min": 0,
+      "max": 21,
+      "mean": 0.635565906098304,
+      "ndv_approx": 23,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.1,
+          4.2,
+          6.300000000000001,
+          8.4,
+          10.5,
+          12.600000000000001,
+          14.700000000000001,
+          16.8,
+          18.900000000000002,
+          21.0
+        ],
+        "counts": [
+          94717,
+          5033,
+          1292,
+          419,
+          172,
+          83,
+          30,
+          15,
+          2,
+          3
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "diag_1": {
+      "null_count": 21,
+      "ndv_approx": 746,
+      "mean_length": 3.1756646518256426,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "diag_2": {
+      "null_count": 358,
+      "ndv_approx": 837,
+      "mean_length": 3.173842300410224,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "diag_3": {
+      "null_count": 1423,
+      "ndv_approx": 905,
+      "mean_length": 3.141604297260397,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "number_diagnoses": {
+      "null_count": 0,
+      "min": 1,
+      "max": 16,
+      "mean": 7.422606764538254,
+      "ndv_approx": 18,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.5,
+          4.0,
+          5.5,
+          7.0,
+          8.5,
+          10.0,
+          11.5,
+          13.0,
+          14.5,
+          16.0
+        ],
+        "counts": [
+          1242,
+          2835,
+          16930,
+          10161,
+          21009,
+          49474,
+          28,
+          9,
+          23,
+          55
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "max_glu_serum": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "None",
+          "count": 96420
+        },
+        {
+          "value": "Norm",
+          "count": 2597
+        },
+        {
+          "value": ">200",
+          "count": 1485
+        },
+        {
+          "value": ">300",
+          "count": 1264
+        }
+      ],
+      "dtype": "string"
+    },
+    "a1cresult": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.7636145667511745,
+      "top_values": [
+        {
+          "value": "None",
+          "count": 84748
+        },
+        {
+          "value": ">8",
+          "count": 8216
+        },
+        {
+          "value": "Norm",
+          "count": 4990
+        },
+        {
+          "value": ">7",
+          "count": 3812
+        }
+      ],
+      "dtype": "string"
+    },
+    "metformin": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.7324057150718315,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 81778
+        },
+        {
+          "value": "Steady",
+          "count": 18346
+        },
+        {
+          "value": "Up",
+          "count": 1067
+        },
+        {
+          "value": "Down",
+          "count": 575
+        }
+      ],
+      "dtype": "string"
+    },
+    "repaglinide": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.0552836900339995,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 100227
+        },
+        {
+          "value": "Steady",
+          "count": 1384
+        },
+        {
+          "value": "Up",
+          "count": 110
+        },
+        {
+          "value": "Down",
+          "count": 45
+        }
+      ],
+      "dtype": "string"
+    },
+    "nateglinide": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.026472495725488,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101063
+        },
+        {
+          "value": "Steady",
+          "count": 668
+        },
+        {
+          "value": "Up",
+          "count": 24
+        },
+        {
+          "value": "Down",
+          "count": 11
+        }
+      ],
+      "dtype": "string"
+    },
+    "chlorpropamide": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.003124815753788,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101680
+        },
+        {
+          "value": "Steady",
+          "count": 79
+        },
+        {
+          "value": "Up",
+          "count": 6
+        },
+        {
+          "value": "Down",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "glimepiride": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.1873710276516714,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 96575
+        },
+        {
+          "value": "Steady",
+          "count": 4670
+        },
+        {
+          "value": "Up",
+          "count": 327
+        },
+        {
+          "value": "Down",
+          "count": 194
+        }
+      ],
+      "dtype": "string"
+    },
+    "acetohexamide": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.000039305858538,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101765
+        },
+        {
+          "value": "Steady",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "glipizide": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.457362969950671,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 89080
+        },
+        {
+          "value": "Steady",
+          "count": 11356
+        },
+        {
+          "value": "Up",
+          "count": 770
+        },
+        {
+          "value": "Down",
+          "count": 560
+        }
+      ],
+      "dtype": "string"
+    },
+    "glyburide": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.375606784191184,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 91116
+        },
+        {
+          "value": "Steady",
+          "count": 9274
+        },
+        {
+          "value": "Up",
+          "count": 812
+        },
+        {
+          "value": "Down",
+          "count": 564
+        }
+      ],
+      "dtype": "string"
+    },
+    "tolbutamide": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.000904034746379,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101743
+        },
+        {
+          "value": "Steady",
+          "count": 23
+        }
+      ],
+      "dtype": "string"
+    },
+    "pioglitazone": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.2765167148163434,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 94438
+        },
+        {
+          "value": "Steady",
+          "count": 6976
+        },
+        {
+          "value": "Up",
+          "count": 234
+        },
+        {
+          "value": "Down",
+          "count": 118
+        }
+      ],
+      "dtype": "string"
+    },
+    "rosiglitazone": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.2414755419295247,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 95401
+        },
+        {
+          "value": "Steady",
+          "count": 6100
+        },
+        {
+          "value": "Up",
+          "count": 178
+        },
+        {
+          "value": "Down",
+          "count": 87
+        }
+      ],
+      "dtype": "string"
+    },
+    "acarbose": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.011654187056581,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101458
+        },
+        {
+          "value": "Steady",
+          "count": 295
+        },
+        {
+          "value": "Up",
+          "count": 10
+        },
+        {
+          "value": "Down",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "miglitol": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.0013167462610304,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101728
+        },
+        {
+          "value": "Steady",
+          "count": 31
+        },
+        {
+          "value": "Down",
+          "count": 5
+        },
+        {
+          "value": "Up",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "troglitazone": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0001179175756145,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101763
+        },
+        {
+          "value": "Steady",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "tolazamide": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.001493622624452,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101727
+        },
+        {
+          "value": "Steady",
+          "count": 38
+        },
+        {
+          "value": "Up",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "examide": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101766
+        }
+      ],
+      "dtype": "string"
+    },
+    "citoglipton": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101766
+        }
+      ],
+      "dtype": "string"
+    },
+    "insulin": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.4526659198553546,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 47383
+        },
+        {
+          "value": "Steady",
+          "count": 30849
+        },
+        {
+          "value": "Down",
+          "count": 12218
+        },
+        {
+          "value": "Up",
+          "count": 11316
+        }
+      ],
+      "dtype": "string"
+    },
+    "glyburide_metformin": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.0273175716840597,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101060
+        },
+        {
+          "value": "Steady",
+          "count": 692
+        },
+        {
+          "value": "Up",
+          "count": 8
+        },
+        {
+          "value": "Down",
+          "count": 6
+        }
+      ],
+      "dtype": "string"
+    },
+    "glipizide_metformin": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0005109761609967,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101753
+        },
+        {
+          "value": "Steady",
+          "count": 13
+        }
+      ],
+      "dtype": "string"
+    },
+    "glimepiride_pioglitazone": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.000039305858538,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101765
+        },
+        {
+          "value": "Steady",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "metformin_rosiglitazone": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0000786117170763,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101764
+        },
+        {
+          "value": "Steady",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "metformin_pioglitazone": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.000039305858538,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 101765
+        },
+        {
+          "value": "Steady",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "change": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 54755
+        },
+        {
+          "value": "Ch",
+          "count": 47011
+        }
+      ],
+      "dtype": "string"
+    },
+    "diabetesmed": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.770031248157538,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 78363
+        },
+        {
+          "value": "No",
+          "count": 23403
+        }
+      ],
+      "dtype": "string"
+    },
+    "readmitted": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.4608808442898416,
+      "top_values": [
+        {
+          "value": "NO",
+          "count": 54864
+        },
+        {
+          "value": ">30",
+          "count": 35545
+        },
+        {
+          "value": "<30",
+          "count": 11357
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}
