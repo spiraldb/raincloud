@@ -75,9 +75,8 @@ def prepared_vortex_hydrated(slug: str, manifest: dict | None = None) -> Path:
     return output_format_dir(slug, "vortex-hydrated", manifest) / f"{slug}.vortex"
 
 
-def iter_datasets(manifest: dict, *, family: str | None = None, slug: str | None = None) -> Iterator[dict]:
+def iter_datasets(manifest: dict, *, slug: str | None = None) -> Iterator[dict]:
     for d in manifest["datasets"]:
-        if family and d.get("family") != family: continue
         if slug and d.get("slug") != slug: continue
         yield d
 
