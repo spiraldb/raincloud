@@ -12,10 +12,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **Catalog discoverability** — newcomers can now find "interesting"
   datasets without scrolling the 158 KB `datasets.md`.
 - **TUI faceted side panel** (`browse.py`) — filter groups for showcase,
-  domain tags, size, shape traits, license, family, fetch type, vortex.
-  View-preset bar (`Start Here`, `Encoding Research`, `Vortex Wins`,
-  `Stress Test`) on top, accessible via keys `1`–`4`. Counts header shows
-  `N of 249`.
+  domain tags, size, shape traits, license, fetch type. View-preset bar
+  (`encoding`, `stress`) on top, selectable from the `View` row. Counts
+  header shows `N of 249`.
 - **Per-column profiles** — new opt-in stage
   `python -m scripts.pipeline.profile [<slug>]` produces
   `outputs/v1/<slug>/profile.json` with per-dtype stats (numeric
@@ -23,8 +22,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   list/map length stats). Surfaced in the TUI's detail pane and via
   `list_datasets --inspect <slug>`.
 - **Editorial metadata** in `sources.json` — optional `tags` (closed
-  vocab, 12 entries) and `showcase` (closed vocab, 4 tiers) per
-  `DatasetSpec`. Empty by default; curation pass lands separately.
+  vocab, 13 data-kind entries: urls / prose / enums / identifiers /
+  code-strings / timestamps / embeddings / counts / monetary /
+  measurements / coordinates / binary-payload / nested-json) and
+  `showcase` (closed vocab, 2 tiers: encoding / stress) per
+  `DatasetSpec`. `scripts.pipeline.autotag` proposes tags from each
+  slug's profile + handler/slug-name fallbacks; hand-edit in
+  `sources.json` after that like any other manifest field.
 - **Derived signals** in `docs/snapshot.json` — per-slug `shape_traits`
   (has_nested, has_timestamp, has_variant, string_heavy, wide_row,
   high_cardinality_present) and `size_bucket` (xs/s/m/l/xl), derived by
