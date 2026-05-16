@@ -1,7 +1,7 @@
 ---
 name: raincloud-status
 description: Report per-dataset state (raw / workdir / parquet / vortex / variant-pending) across the manifest. Use when the user asks what's downloaded, what's built, what's missing, what needs re-tightening, or to triage which slugs still need work.
-argument-hint: [<slug>...] [--family <name>] [--fast] [--missing-only] [--json]
+argument-hint: [<slug>...] [--fast] [--missing-only] [--json]
 allowed-tools: Bash(python -m scripts.pipeline.status *)
 ---
 
@@ -23,7 +23,6 @@ Walks the manifest and reports per-slug filesystem state in five columns:
 
 Selection (default: every slug in the manifest):
 - `<slug>...` — positional slugs
-- `--family <name>` — every dataset in a family
 - `--all` — explicit "every dataset" (the default, kept for parity with `/raincloud-build`)
 
 Modifiers:

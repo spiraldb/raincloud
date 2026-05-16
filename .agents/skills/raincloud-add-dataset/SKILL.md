@@ -21,7 +21,6 @@ Steps:
      "short_name": "My Dataset",
      "full_name": "My Dataset (publisher attribution)",
      "description": "One-line summary.",
-     "family": "direct",
      "license": { "spdx": "CC0-1.0", "source_url": "...", "redistribution_permitted": true, "attribution_required": false },
      "fetch":     { "type": "http", "urls": ["https://..."], "auth": null },
      "extract":   { "type": "passthrough" },
@@ -31,8 +30,6 @@ Steps:
      "expect":    { "rows": 123456 }
    }
    ```
-
-   Pick `family` from existing values (`direct`, `kaggle-upstream`, `nyc-tlc`, `public-bi`, `uci`) — do not invent new ones without discussing.
 
 3. **Validate the manifest.** Invoke `/raincloud-validate-manifest` — sub-second check that the new entry has the right shape, the handler resolves, the slug is unique, and `fetch.type`/`fetch.auth` agree. Catches typos before paying for a fetch.
 

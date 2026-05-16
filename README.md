@@ -47,24 +47,23 @@ The command runs every pipeline stage — fetch, extract, parse, transform, writ
 
 ### Discover
 
-Run `python -m scripts.pipeline.browse` and start with **Start Here**. The left panel filters by domain, size, shape traits, license, or family; click a slug to see its description, on-disk state, and per-column profile (run `python -m scripts.pipeline.profile <slug>` first to populate it).
+Run `python -m scripts.pipeline.browse` and click the **Encoding** preset. The left panel filters by domain, size, shape traits, license, or fetch type; click a slug to see its description, on-disk state, and per-column profile (run `python -m scripts.pipeline.profile <slug>` first to populate it).
 
 Headless? The same axes are flags on `list_datasets`:
 
 ```bash
-python -m scripts.pipeline.list_datasets --view start-here --long
+python -m scripts.pipeline.list_datasets --view encoding --long
 python -m scripts.pipeline.list_datasets --tag geospatial
 python -m scripts.pipeline.list_datasets --trait has_nested --size m
 python -m scripts.pipeline.list_datasets --inspect clickbench-hits
 python -m scripts.pipeline.list_datasets --tags-help
 ```
 
-The curated-picks header at the top of [`docs/v1/datasets.md`](docs/v1/datasets.md) groups slugs into four editorial tiers (Start Here, Encoding Research, Vortex Wins, Stress Test) drawn from each spec's `showcase` field — pick any slug and pass it to `build` the same way. Examples spanning the size range, all members of the **Start Here** tier:
+The curated-picks header at the top of [`docs/v1/datasets.md`](docs/v1/datasets.md) groups slugs into two editorial tiers (Encoding, Stress) drawn from each spec's `showcase` field — pick any slug and pass it to `build` the same way. Examples spanning the size range:
 
 ```bash
 python -m scripts.pipeline.build uci-seeds                  # 210 rows, ~200 ms
 python -m scripts.pipeline.build clickbench-hits            # 100 M rows, ~10 GB parquet
-python -m scripts.pipeline.build --family public-bi         # all 46 Public BI workloads
 ```
 
 ### Upstream-specific extras
@@ -121,7 +120,7 @@ scripts/
     docs.py                     # regenerate docs/datasets.md + handlers.md (other catalog views live in list_datasets / TUI)
     tighten_variant.py          # in-place JSON → VARIANT pass
     validate_manifest.py        # static checks on sources.json (schema + cross-checks)
-    list_datasets.py            # filter/list slugs by family / handler / license / etc.
+    list_datasets.py            # filter/list slugs by handler / license / tag / size / etc.
     status.py                   # per-slug filesystem state report
     browse.py                   # interactive Textual TUI over sources.json (requires --extra tui)
     spec.py                     # manifest loader, path helpers, duckdb_connect
@@ -145,9 +144,8 @@ _workdir/<slug>/                # stage 2 scratch space (gitignored)
 # Build a single dataset
 python -m scripts.pipeline.build <slug>
 
-# Build everything in a family
-python -m scripts.pipeline.build --family uci
-python -m scripts.pipeline.build --family public-bi
+# Build several datasets at once
+python -m scripts.pipeline.build uci-iris uci-seeds uci-wine-quality
 
 # Build every dataset in the manifest
 python -m scripts.pipeline.build --all
@@ -185,7 +183,7 @@ python -m scripts.pipeline.hydrate --all              # every spec with hydrate
 # Read-only inspection / triage
 python -m scripts.pipeline.status --fast --missing-only       # filesystem state across the manifest
 python -m scripts.pipeline.validate_manifest                  # static checks on sources.json (schema + cross-checks)
-python -m scripts.pipeline.list_datasets --family uci         # filter the catalog without grepping JSON
+python -m scripts.pipeline.list_datasets --handler uci_default # filter the catalog without grepping JSON
 python -m scripts.pipeline.list_datasets --handler tighten_types --long
 python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
 python -m scripts.pipeline.browse                             # interactive TUI (requires --extra tui)
@@ -232,7 +230,6 @@ A minimal entry looks like:
 {
   "slug": "clickbench-hits",
   "short_name": "ClickBench Hits",
-  "family": "direct",
   "license": { "spdx": "Apache-2.0", "source_url": "..." },
   "fetch":     { "type": "http", "urls": ["https://datasets.clickhouse.com/hits_compatible/hits.parquet"] },
   "extract":   { "type": "passthrough" },
@@ -245,7 +242,6 @@ A minimal entry looks like:
 
 Current counts:
 
-- **249 datasets** across five families: `direct`, `kaggle-upstream`, `nyc-tlc`, `public-bi`, `uci`.
 - **Fetch types in use:** `http`, `kaggle`, `huggingface`.
 - **Parse readers in use:** `csv`, `parquet`, `jsonl`, `xml`, `pbf`, `custom`.
 - **Schema version:** 1 — outputs land in `outputs/v1/`.

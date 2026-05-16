@@ -25,7 +25,7 @@ python -m scripts.pipeline.docs && cp docs/datasets.md docs/handlers.md docs/sna
 
 When to run:
 - After a build (row counts, file sizes, and `snapshot.json` schema for that slug change).
-- After manifest edits that affect `short_name` / `license` / `description` / `family` / `expect.rows` / `convert.vortex`.
+- After manifest edits that affect `short_name` / `license` / `description` / `expect.rows` / `convert.vortex`.
 - After adding, removing, or renaming a handler (`handlers.md` regenerates from the registry + manifest usage).
 - After any schema-affecting change to a slug's transform handler — re-run `snapshot` so the TUI's fallback view picks up the new shape.
 

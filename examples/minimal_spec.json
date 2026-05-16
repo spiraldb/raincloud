@@ -4,7 +4,6 @@
   "short_name": "My Dataset",
   "full_name": "My Dataset (Publisher Attribution, Year)",
   "description": "One-line summary describing what this dataset contains.",
-  "family": "direct",
   "license": {
     "spdx": "CC0-1.0",
     "source_url": "https://example.com/LICENSE",

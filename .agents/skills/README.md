@@ -19,7 +19,7 @@ Wrappers around `python -m scripts.pipeline.<module>`. Side-effecting ones set `
 | `/raincloud-tighten-variant` | `scripts.pipeline.tighten_variant` | In-place JSON → VARIANT promotion. |
 | `/raincloud-status` | `scripts.pipeline.status` | Per-slug filesystem state (raw / workdir / parquet / vortex / variant-pending). *(read-only, model-invocable.)* |
 | `/raincloud-validate-manifest` | `scripts.pipeline.validate_manifest` | Static checks for `sources.json` — JSON Schema + handler-registry / slug-uniqueness / fetch-auth cross-checks. *(read-only, model-invocable.)* |
-| `/raincloud-list-datasets` | `scripts.pipeline.list_datasets` | Filter/list slugs by family / handler / license / fetch-type / reader / vortex / regex. *(read-only, model-invocable.)* |
+| `/raincloud-list-datasets` | `scripts.pipeline.list_datasets` | Filter/list slugs by handler / license / fetch-type / reader / vortex / tag / showcase / size / regex. *(read-only, model-invocable.)* |
 
 ## Procedural playbooks (model-invocable)
 

@@ -9,7 +9,7 @@ Wraps `python -m scripts.pipeline.list_datasets` with the discoverability flags.
 
 ## Closed vocab
 
-- **Showcase tiers** (4): `start-here`, `encoding-research`, `vortex-wins`, `stress-test`. Run `--showcase-help` for live counts.
+- **Showcase tiers** (2): `encoding`, `stress`. Run `--showcase-help` for live counts.
 - **Domain tags** (12): `geospatial`, `nlp-text`, `web-analytics`, `e-commerce`, `finance`, `social`, `scientific`, `healthcare`, `sports`, `transportation`, `government`, `benchmark`. Run `--tags-help` for live counts.
 - **Size buckets** (5): `xs / s / m / l / xl` (file-size on disk).
 - **Trait flags** (6): `has_nested`, `has_timestamp`, `has_variant`, `string_heavy`, `wide_row`, `high_cardinality_present`. Prefix with `!` to negate.
@@ -17,7 +17,7 @@ Wraps `python -m scripts.pipeline.list_datasets` with the discoverability flags.
 ## Patterns
 
 ```bash
-python -m scripts.pipeline.list_datasets --view start-here --long
+python -m scripts.pipeline.list_datasets --view encoding --long
 python -m scripts.pipeline.list_datasets --tag geospatial --tag scientific
 python -m scripts.pipeline.list_datasets --trait has_nested --size m
 python -m scripts.pipeline.list_datasets --trait '!has_nested' --vortex
