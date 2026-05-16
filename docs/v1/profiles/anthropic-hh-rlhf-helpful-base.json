@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "slug": "anthropic-hh-rlhf-helpful-base",
+  "row_count": 46189,
+  "parquet_sha256": "05491baa5e879b92bb8b234f8491dab45ec89b10eb6e17920042432ec0219c93",
+  "computed_at": "2026-05-16T05:12:44Z",
+  "sample_rows": null,
+  "columns": {
+    "chosen": {
+      "null_count": 0,
+      "ndv_approx": 44990,
+      "mean_length": 781.71296196064,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "rejected": {
+      "null_count": 0,
+      "ndv_approx": 47764,
+      "mean_length": 727.0068198055815,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.9490354846392,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 43835
+        },
+        {
+          "value": "test",
+          "count": 2354
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

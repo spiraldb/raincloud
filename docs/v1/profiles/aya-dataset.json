@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "slug": "aya-dataset",
+  "row_count": 204112,
+  "parquet_sha256": "39ce8864e3b1d19de6976da4a19133ddd27261071e8522ada64e8e0db2ff1a88",
+  "computed_at": "2026-05-13T16:44:20Z",
+  "sample_rows": null,
+  "columns": {
+    "inputs": {
+      "null_count": 0,
+      "ndv_approx": 152702,
+      "mean_length": 176.62004193775965,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "targets": {
+      "null_count": 0,
+      "ndv_approx": 185652,
+      "mean_length": 496.1467772595438,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "language": {
+      "null_count": 0,
+      "ndv_approx": 69,
+      "mean_length": 8.75746158971545,
+      "top_values": [
+        {
+          "value": "Plateau Malagasy",
+          "count": 14597
+        },
+        {
+          "value": "Sinhala",
+          "count": 14524
+        },
+        {
+          "value": "Tamil",
+          "count": 14133
+        },
+        {
+          "value": "Yoruba",
+          "count": 12008
+        },
+        {
+          "value": "Standard Malay",
+          "count": 10073
+        }
+      ],
+      "dtype": "string"
+    },
+    "language_code": {
+      "null_count": 0,
+      "ndv_approx": 74,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "plt",
+          "count": 14597
+        },
+        {
+          "value": "sin",
+          "count": 14524
+        },
+        {
+          "value": "tam",
+          "count": 14133
+        },
+        {
+          "value": "yor",
+          "count": 12008
+        },
+        {
+          "value": "zsm",
+          "count": 10073
+        }
+      ],
+      "dtype": "string"
+    },
+    "annotation_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 18.081347495492672,
+      "top_values": [
+        {
+          "value": "original-annotations",
+          "count": 138842
+        },
+        {
+          "value": "re-annotations",
+          "count": 65270
+        }
+      ],
+      "dtype": "string"
+    },
+    "user_id": {
+      "null_count": 0,
+      "ndv_approx": 1460,
+      "mean_length": 64.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.9914262757701655,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 202362
+        },
+        {
+          "value": "test",
+          "count": 1750
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "slug": "medmcqa",
+  "row_count": 193155,
+  "parquet_sha256": "2f99c4dab111c4c8b7d0a9715ea68df56fcc3ac7c0fe930d65426791d6f8dbb8",
+  "computed_at": "2026-05-13T16:44:38Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 171929,
+      "mean_length": 36.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 193321,
+      "mean_length": 78.27464471538401,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "opa": {
+      "null_count": 0,
+      "ndv_approx": 75995,
+      "mean_length": 17.68080557065569,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "opb": {
+      "null_count": 0,
+      "ndv_approx": 94497,
+      "mean_length": 18.108539773756828,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "opc": {
+      "null_count": 0,
+      "ndv_approx": 96091,
+      "mean_length": 18.378250627734204,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "opd": {
+      "null_count": 0,
+      "ndv_approx": 71301,
+      "mean_length": 18.022815873262406,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "cop": {
+      "null_count": 0,
+      "min": -1,
+      "max": 3,
+      "mean": 1.2883901529859438,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          -0.6,
+          -0.19999999999999996,
+          0.20000000000000018,
+          0.6000000000000001,
+          1.0,
+          1.4000000000000004,
+          1.8000000000000003,
+          2.2,
+          2.6,
+          3.0
+        ],
+        "counts": [
+          6150,
+          0,
+          54939,
+          0,
+          0,
+          48911,
+          0,
+          43367,
+          0,
+          39788
+        ]
+      },
+      "dtype": "int8"
+    },
+    "choice_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 5.661204731951024,
+      "top_values": [
+        {
+          "value": "single",
+          "count": 127715
+        },
+        {
+          "value": "multi",
+          "count": 65440
+        }
+      ],
+      "dtype": "string"
+    },
+    "exp": {
+      "null_count": 23930,
+      "ndv_approx": 229220,
+      "mean_length": 503.4456374649136,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "subject_name": {
+      "null_count": 0,
+      "ndv_approx": 21,
+      "mean_length": 11.321208355983536,
+      "top_values": [
+        {
+          "value": "Medicine",
+          "count": 18554
+        },
+        {
+          "value": "Surgery",
+          "count": 17732
+        },
+        {
+          "value": "Pathology",
+          "count": 15526
+        },
+        {
+          "value": "Anatomy",
+          "count": 15053
+        },
+        {
+          "value": "Pharmacology",
+          "count": 14318
+        }
+      ],
+      "dtype": "string"
+    },
+    "topic_name": {
+      "null_count": 105523,
+      "ndv_approx": 2634,
+      "mean_length": 18.34012689428519,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.07644120007248,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 182822
+        },
+        {
+          "value": "test",
+          "count": 6150
+        },
+        {
+          "value": "validation",
+          "count": 4183
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

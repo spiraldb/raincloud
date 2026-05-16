@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "slug": "cosmopedia-stanford",
+  "row_count": 1020024,
+  "parquet_sha256": "52428549cbc520a0a12cb475d2582f6999ac271dc3b5a9d0b3d1773c0f2be9e9",
+  "computed_at": "2026-05-13T16:44:27Z",
+  "sample_rows": null,
+  "columns": {
+    "text_token_length": {
+      "null_count": 0,
+      "min": 5,
+      "max": 2515,
+      "mean": 1035.05331149071,
+      "ndv_approx": 2558,
+      "histogram": {
+        "buckets": [
+          5.0,
+          256.0,
+          507.0,
+          758.0,
+          1009.0,
+          1260.0,
+          1511.0,
+          1762.0,
+          2013.0,
+          2264.0,
+          2515.0
+        ],
+        "counts": [
+          12557,
+          24992,
+          176166,
+          318786,
+          255932,
+          131535,
+          59217,
+          26152,
+          10312,
+          4375
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "prompt": {
+      "null_count": 0,
+      "ndv_approx": 1077575,
+      "mean_length": 1210.1117414884357,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 1133976,
+      "mean_length": 4926.7534538403015,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "seed_data": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "stanford",
+          "count": 1020024
+        }
+      ],
+      "dtype": "string"
+    },
+    "format": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 18.0,
+      "top_values": [
+        {
+          "value": "textbook_narrative",
+          "count": 1020024
+        }
+      ],
+      "dtype": "string"
+    },
+    "audience": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 15.25224798632189,
+      "top_values": [
+        {
+          "value": "young_children",
+          "count": 255848
+        },
+        {
+          "value": "high_school_studnets",
+          "count": 255404
+        },
+        {
+          "value": "researchers",
+          "count": 254529
+        },
+        {
+          "value": "college_students",
+          "count": 254243
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 1020024
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

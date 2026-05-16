@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "slug": "truthfulqa-mc",
+  "row_count": 817,
+  "parquet_sha256": "cc02b069245fbade0263629f7a23b16f199643a756127eb94ef9ae2cc52537ff",
+  "computed_at": "2026-05-13T16:44:44Z",
+  "sample_rows": null,
+  "columns": {
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 896,
+      "mean_length": 59.15177478580171,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "mc1_targets": null,
+    "mc2_targets": null,
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 10.0,
+      "top_values": [
+        {
+          "value": "validation",
+          "count": 817
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

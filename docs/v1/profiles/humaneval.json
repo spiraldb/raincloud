@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "slug": "humaneval",
+  "row_count": 164,
+  "parquet_sha256": "bd65bb1e42c0f3eea4f5e41629271abc4f42b37d68b8cff96a6d032b5329bd11",
+  "computed_at": "2026-05-13T15:52:13Z",
+  "sample_rows": null,
+  "columns": {
+    "task_id": {
+      "null_count": 0,
+      "ndv_approx": 193,
+      "mean_length": 12.329268292682928,
+      "top_values": [
+        {
+          "value": "HumanEval/28",
+          "count": 1
+        },
+        {
+          "value": "HumanEval/73",
+          "count": 1
+        },
+        {
+          "value": "HumanEval/81",
+          "count": 1
+        },
+        {
+          "value": "HumanEval/122",
+          "count": 1
+        },
+        {
+          "value": "HumanEval/130",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "prompt": {
+      "null_count": 0,
+      "ndv_approx": 145,
+      "mean_length": 450.5975609756098,
+      "top_values": [
+        {
+          "value": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n",
+          "count": 1
+        },
+        {
+          "value": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n",
+          "count": 1
+        },
+        {
+          "value": "\n\ndef largest_divisor(n: int) -> int:\n    \"\"\" For a given number n, find the largest number that divides n evenly, smaller than n\n    >>> largest_divisor(15)\n    5\n    \"\"\"\n",
+          "count": 1
+        },
+        {
+          "value": "\n\ndef is_palindrome(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome('')\n    True\n    >>> is_palindrome('aba')\n    True\n    >>> is_palindrome('aaaaa')\n    True\n    >>> is_palindrome('zbcd')\n    False\n    \"\"\"\n",
+          "count": 1
+        },
+        {
+          "value": "\ndef total_match(lst1, lst2):\n    '''\n    Write a function that accepts two lists of strings and returns the list that has \n    total number of chars in the all strings of the list less than the other list.\n\n    if the two lists have the same number of chars, return the first list.\n\n    Examples\n    total_match([], []) \u279e []\n    total_match(['hi', 'admin'], ['hI', 'Hi']) \u279e ['hI', 'Hi']\n    total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) \u279e ['hi', 'admin']\n    total_match(['hi', 'admin'], ['hI', 'hi', 'hi']) \u279e ['hI', 'hi', 'hi']\n    total_match(['4'], ['1', '2', '3', '4', '5']) \u279e ['4']\n    '''\n",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "canonical_solution": {
+      "null_count": 0,
+      "ndv_approx": 145,
+      "mean_length": 180.8658536585366,
+      "top_values": [
+        {
+          "value": "    return [e for e in l if e > 0]\n",
+          "count": 1
+        },
+        {
+          "value": "    if n < 2:\n        return False\n    for k in range(2, n - 1):\n        if n % k == 0:\n            return False\n    return True\n",
+          "count": 1
+        },
+        {
+          "value": "    l1 = 0\n    for st in lst1:\n        l1 += len(st)\n    \n    l2 = 0\n    for st in lst2:\n        l2 += len(st)\n    \n    if l1 <= l2:\n        return lst1\n    else:\n        return lst2\n",
+          "count": 1
+        },
+        {
+          "value": "    coords = [(i, j) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(sorted(coords, key=lambda x: x[1], reverse=True), key=lambda x: x[0])\n",
+          "count": 1
+        },
+        {
+          "value": "    def isPrime(n):\n        for i in range(2,int(n**0.5)+1):\n            if n%i==0:\n                return False\n\n        return True\n    maxx = 0\n    i = 0\n    while i < len(lst):\n        if(lst[i] > maxx and isPrime(lst[i])):\n            maxx = lst[i]\n        i+=1\n    result = sum(int(digit) for digit in str(maxx))\n    return result\n\n",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "test": {
+      "null_count": 0,
+      "ndv_approx": 159,
+      "mean_length": 509.109756097561,
+      "top_values": [
+        {
+          "value": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate('') == 0\n    assert candidate('abcde') == 5\n    assert candidate('abcde' + 'cade' + 'CADE') == 5\n    assert candidate('aaaaAAAAaaaa') == 1\n    assert candidate('Jerry jERRY JeRRRY') == 5\n",
+          "count": 1
+        },
+        {
+          "value": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate([]) == []\n    assert candidate([1, 2, 3, 4]) == [1, 2, 3, 4]\n    assert candidate([1, 2, 3, 2, 4, 3, 5]) == [1, 4, 5]\n",
+          "count": 1
+        },
+        {
+          "value": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate([1, 3, 5, 0]) == False\n    assert candidate([1, 3, -2, 1]) == False\n    assert candidate([1, 2, 3, 7]) == False\n    assert candidate([2, 4, -5, 3, 5, 7]) == True\n    assert candidate([1]) == False\n\n    assert candidate([-3, 9, -1, 3, 2, 30]) == True\n    assert candidate([-3, 9, -1, 3, 2, 31]) == True\n    assert candidate([-3, 9, -1, 4, 2, 30]) == False\n    assert candidate([-3, 9, -1, 4, 2, 31]) == False\n\n",
+          "count": 1
+        },
+        {
+          "value": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate([3, 1, 2, 4, 5]) == 3\n    assert candidate([-10, 4, 6, 1000, 10, 20]) == 8.0\n    assert candidate([5]) == 5\n    assert candidate([6, 5]) == 5.5\n    assert candidate([8, 1, 3, 9, 9, 2, 7]) == 7 \n\n",
+          "count": 1
+        },
+        {
+          "value": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate('') == ''\n    assert candidate(\"abcdef\\nghijklm\") == 'bcdf\\nghjklm'\n    assert candidate('fedcba') == 'fdcb'\n    assert candidate('eeeee') == ''\n    assert candidate('acBAA') == 'cB'\n    assert candidate('EcBOO') == 'cB'\n    assert candidate('ybcd') == 'ybcd'\n\n",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "entry_point": {
+      "null_count": 0,
+      "ndv_approx": 144,
+      "mean_length": 11.926829268292684,
+      "top_values": [
+        {
+          "value": "sort_array",
+          "count": 2
+        },
+        {
+          "value": "correct_bracketing",
+          "count": 2
+        },
+        {
+          "value": "add",
+          "count": 2
+        },
+        {
+          "value": "solve",
+          "count": 2
+        },
+        {
+          "value": "sum_squares",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "test",
+          "count": 164
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

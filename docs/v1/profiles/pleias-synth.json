@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "slug": "pleias-synth",
+  "row_count": 777943,
+  "parquet_sha256": "c8250d75e6f5fab02cb576111aae982b46eb85d8691bb4735648881170b0b05c",
+  "computed_at": "2026-05-13T16:44:44Z",
+  "sample_rows": null,
+  "columns": {
+    "synth_id": {
+      "null_count": 0,
+      "ndv_approx": 891558,
+      "mean_length": 28.05389469408427,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "language": {
+      "null_count": 1035,
+      "ndv_approx": 31,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 628680
+        },
+        {
+          "value": "es",
+          "count": 24715
+        },
+        {
+          "value": "de",
+          "count": 24684
+        },
+        {
+          "value": "fr",
+          "count": 24593
+        },
+        {
+          "value": "pl",
+          "count": 24540
+        }
+      ],
+      "dtype": "string"
+    },
+    "exercise": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 11.78833539218169,
+      "top_values": [
+        {
+          "value": "memorization",
+          "count": 704971
+        },
+        {
+          "value": "mcq",
+          "count": 16094
+        },
+        {
+          "value": "constrained writing",
+          "count": 13000
+        },
+        {
+          "value": "math exercise",
+          "count": 12455
+        },
+        {
+          "value": "rag",
+          "count": 7964
+        }
+      ],
+      "dtype": "string"
+    },
+    "model": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 22.57711811790838,
+      "top_values": [
+        {
+          "value": "qwen-3-8b-memorization",
+          "count": 704971
+        },
+        {
+          "value": "qwen-3-8b-mcq",
+          "count": 16094
+        },
+        {
+          "value": "qwen-3-8b-constrained-writing",
+          "count": 13000
+        },
+        {
+          "value": "deepseek-prover-drafter+deepseek-prover-solving",
+          "count": 12455
+        },
+        {
+          "value": "qwen-3-8b-rag",
+          "count": 7964
+        }
+      ],
+      "dtype": "string"
+    },
+    "query": {
+      "null_count": 0,
+      "ndv_approx": 783304,
+      "mean_length": 220.67598911488375,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "query_seed_url": {
+      "null_count": 12455,
+      "ndv_approx": 49975,
+      "mean_length": 46.5810711598353,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "query_seed_text": {
+      "null_count": 0,
+      "ndv_approx": 251067,
+      "mean_length": 1099.3065841584794,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "additional_seed_url": {
+      "null_count": 0,
+      "ndv_approx": 62767,
+      "mean_length": 46.110700912534725,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "seed_license": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 13.940216699681082,
+      "top_values": [
+        {
+          "value": "CC-By-SA (4.0)",
+          "count": 773715
+        },
+        {
+          "value": "CC0",
+          "count": 4228
+        }
+      ],
+      "dtype": "string"
+    },
+    "constraints": {
+      "null_count": 0,
+      "ndv_approx": 19140,
+      "mean_length": 107.56947359896547,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "script": {
+      "null_count": 0,
+      "ndv_approx": 19915,
+      "mean_length": 3.03797707544126,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "synthetic_reasoning": {
+      "null_count": 0,
+      "ndv_approx": 848231,
+      "mean_length": 2077.8453627065223,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "synthetic_answer": {
+      "null_count": 0,
+      "ndv_approx": 684072,
+      "mean_length": 1452.678570280856,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "words": {
+      "null_count": 0,
+      "min": 8,
+      "max": 4044,
+      "mean": 515.1495790822721,
+      "ndv_approx": 3035,
+      "histogram": {
+        "buckets": [
+          8.0,
+          411.6,
+          815.2,
+          1218.8000000000002,
+          1622.4,
+          2026.0,
+          2429.6000000000004,
+          2833.2000000000003,
+          3236.8,
+          3640.4,
+          4044.0
+        ],
+        "counts": [
+          207336,
+          548117,
+          15671,
+          2440,
+          2045,
+          1447,
+          655,
+          204,
+          20,
+          8
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 9.0,
+      "top_values": [
+        {
+          "value": "synth_003",
+          "count": 155911
+        },
+        {
+          "value": "synth_005",
+          "count": 155828
+        },
+        {
+          "value": "synth_004",
+          "count": 155794
+        },
+        {
+          "value": "synth_002",
+          "count": 155736
+        },
+        {
+          "value": "synth_001",
+          "count": 154674
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

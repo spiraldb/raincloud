@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "slug": "cnn-dailymail",
+  "row_count": 311971,
+  "parquet_sha256": "492009418c2afbd12fd18596f3ac32ede9f4455dcb6912cbacb01e2fce5654d1",
+  "computed_at": "2026-05-13T16:44:21Z",
+  "sample_rows": null,
+  "columns": {
+    "article": {
+      "null_count": 0,
+      "ndv_approx": 320257,
+      "mean_length": 4026.503191001728,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "highlights": {
+      "null_count": 0,
+      "ndv_approx": 303147,
+      "mean_length": 296.82761218190154,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 337830,
+      "mean_length": 40.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.177420337146722,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 287113
+        },
+        {
+          "value": "validation",
+          "count": 13368
+        },
+        {
+          "value": "test",
+          "count": 11490
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "slug": "mmmu",
+  "row_count": 11550,
+  "parquet_sha256": "a72bafdbec981a21cf5b850f561db97b3902c5a28cf9119e6b8b3411f7c3359f",
+  "computed_at": "2026-05-13T16:44:39Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 11652,
+      "mean_length": 20.612813852813854,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 9521,
+      "mean_length": 225.31567099567098,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "options": {
+      "null_count": 0,
+      "ndv_approx": 10457,
+      "mean_length": 98.30701298701298,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "explanation": {
+      "null_count": 0,
+      "ndv_approx": 2303,
+      "mean_length": 71.50735930735931,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "image_1": null,
+    "image_2": null,
+    "image_3": null,
+    "image_4": null,
+    "image_5": null,
+    "image_6": null,
+    "image_7": null,
+    "img_type": {
+      "null_count": 0,
+      "ndv_approx": 135,
+      "mean_length": 16.273160173160175,
+      "top_values": [
+        {
+          "value": "['Diagrams']",
+          "count": 3181
+        },
+        {
+          "value": "['Tables']",
+          "count": 2392
+        },
+        {
+          "value": "['Plots and Charts']",
+          "count": 847
+        },
+        {
+          "value": "['Photographs']",
+          "count": 759
+        },
+        {
+          "value": "['Chemical Structures']",
+          "count": 566
+        }
+      ],
+      "dtype": "string"
+    },
+    "answer": {
+      "null_count": 0,
+      "ndv_approx": 654,
+      "mean_length": 1.2516017316017316,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "topic_difficulty": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.937142857142857,
+      "top_values": [
+        {
+          "value": "Medium",
+          "count": 5412
+        },
+        {
+          "value": "Easy",
+          "count": 3289
+        },
+        {
+          "value": "Hard",
+          "count": 2849
+        }
+      ],
+      "dtype": "string"
+    },
+    "question_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 14.343809523809524,
+      "top_values": [
+        {
+          "value": "multiple-choice",
+          "count": 10861
+        },
+        {
+          "value": "open",
+          "count": 689
+        }
+      ],
+      "dtype": "string"
+    },
+    "subfield": {
+      "null_count": 0,
+      "ndv_approx": 178,
+      "mean_length": 16.57852813852814,
+      "top_values": [
+        {
+          "value": "Epidemiology",
+          "count": 454
+        },
+        {
+          "value": "Surveying and Mapping",
+          "count": 436
+        },
+        {
+          "value": "Art History",
+          "count": 401
+        },
+        {
+          "value": "Mechanics of Materials",
+          "count": 393
+        },
+        {
+          "value": "Geotechnical Engineering",
+          "count": 382
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.454545454545454,
+      "top_values": [
+        {
+          "value": "test",
+          "count": 10500
+        },
+        {
+          "value": "validation",
+          "count": 900
+        },
+        {
+          "value": "dev",
+          "count": 150
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

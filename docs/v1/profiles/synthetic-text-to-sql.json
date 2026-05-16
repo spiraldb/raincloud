@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "slug": "synthetic-text-to-sql",
+  "row_count": 105851,
+  "parquet_sha256": "3b9023a42c3aed1d8e5e4f3de8c8bff433dbb667be8a687a6e4522d21928a804",
+  "computed_at": "2026-05-13T16:44:44Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "min": 1,
+      "max": 100000,
+      "mean": 47398.41877733795,
+      "ndv_approx": 96025,
+      "histogram": {
+        "buckets": [
+          1.0,
+          10000.9,
+          20000.8,
+          30000.699999999997,
+          40000.6,
+          50000.5,
+          60000.399999999994,
+          70000.3,
+          80000.2,
+          90000.09999999999,
+          100000.0
+        ],
+        "counts": [
+          15851,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000,
+          10000
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "domain": {
+      "null_count": 0,
+      "ndv_approx": 79,
+      "mean_length": 13.949211627665303,
+      "top_values": [
+        {
+          "value": "ethical fashion",
+          "count": 1446
+        },
+        {
+          "value": "rural development",
+          "count": 1443
+        },
+        {
+          "value": "cybersecurity",
+          "count": 1436
+        },
+        {
+          "value": "hospitality",
+          "count": 1370
+        },
+        {
+          "value": "sustainable infrastructure",
+          "count": 1322
+        }
+      ],
+      "dtype": "string"
+    },
+    "domain_description": {
+      "null_count": 0,
+      "ndv_approx": 109,
+      "mean_length": 110.68098553627269,
+      "top_values": [
+        {
+          "value": "Extensive data on sustainable materials, fair labor practices, circular economy, and consumer awareness in ethical fashion.",
+          "count": 1446
+        },
+        {
+          "value": "Agricultural innovation metrics, rural infrastructure projects, community development initiatives, and economic diversification efforts.",
+          "count": 1443
+        },
+        {
+          "value": "Threat intelligence data, vulnerability assessments, security incident response metrics, and cybersecurity policy analysis.",
+          "count": 1436
+        },
+        {
+          "value": "Hospitality data on sustainable tourism, cultural heritage preservation, virtual tourism, and local economic impact.",
+          "count": 1370
+        },
+        {
+          "value": "Green building data, renewable energy infrastructure projects, carbon offset initiatives, and smart city technology adoption.",
+          "count": 1322
+        }
+      ],
+      "dtype": "string"
+    },
+    "sql_complexity": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 10.241395924459853,
+      "top_values": [
+        {
+          "value": "basic SQL",
+          "count": 51335
+        },
+        {
+          "value": "aggregation",
+          "count": 23319
+        },
+        {
+          "value": "single join",
+          "count": 15818
+        },
+        {
+          "value": "subqueries",
+          "count": 7105
+        },
+        {
+          "value": "window functions",
+          "count": 3792
+        }
+      ],
+      "dtype": "string"
+    },
+    "sql_complexity_description": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 51.66024884035106,
+      "top_values": [
+        {
+          "value": "basic SQL with a simple select statement",
+          "count": 51335
+        },
+        {
+          "value": "aggregation functions (COUNT, SUM, AVG, MIN, MAX, etc.), and HAVING clause",
+          "count": 23319
+        },
+        {
+          "value": "only one join (specify inner, outer, cross)",
+          "count": 15818
+        },
+        {
+          "value": "subqueries, including correlated and nested subqueries",
+          "count": 7105
+        },
+        {
+          "value": "window functions (e.g., ROW_NUMBER, LEAD, LAG, RANk, NTILE, PERCENT_RANK, etc.) with partitioning and ordering",
+          "count": 3792
+        }
+      ],
+      "dtype": "string"
+    },
+    "sql_task_type": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 22.23456556858225,
+      "top_values": [
+        {
+          "value": "analytics and reporting",
+          "count": 93334
+        },
+        {
+          "value": "data manipulation",
+          "count": 10248
+        },
+        {
+          "value": "data retrieval",
+          "count": 1382
+        },
+        {
+          "value": "data definition",
+          "count": 887
+        }
+      ],
+      "dtype": "string"
+    },
+    "sql_task_type_description": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 53.26599654230947,
+      "top_values": [
+        {
+          "value": "generating reports, dashboards, and analytical insights",
+          "count": 93334
+        },
+        {
+          "value": "inserting, updating, or deleting records",
+          "count": 10248
+        },
+        {
+          "value": "basic data fetching queries",
+          "count": 1382
+        },
+        {
+          "value": "creating, altering, or dropping tables and other database objects",
+          "count": 887
+        }
+      ],
+      "dtype": "string"
+    },
+    "sql_prompt": {
+      "null_count": 0,
+      "ndv_approx": 127141,
+      "mean_length": 83.15183607145893,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "sql_context": {
+      "null_count": 0,
+      "ndv_approx": 110704,
+      "mean_length": 276.228557122748,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "sql": {
+      "null_count": 0,
+      "ndv_approx": 108176,
+      "mean_length": 127.07126054548375,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "sql_explanation": {
+      "null_count": 0,
+      "ndv_approx": 93183,
+      "mean_length": 223.09447241877734,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 33.94472418777338,
+      "top_values": [
+        {
+          "value": "synthetic_text_to_sql_train.snappy",
+          "count": 100000
+        },
+        {
+          "value": "synthetic_text_to_sql_test.snappy",
+          "count": 5851
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "slug": "osm-germany-ways",
+  "row_count": 70097667,
+  "parquet_sha256": "18749a23f34f9f8ff4d9341d695ad6c22154d604ccd31ca3cbc739efaaf53d21",
+  "computed_at": "2026-05-12T18:35:01Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "min": 92,
+      "max": 1509625119,
+      "mean": 544498442.078485,
+      "ndv_approx": 70948205,
+      "histogram": {
+        "buckets": [
+          92.0,
+          150962594.7,
+          301925097.4,
+          452887600.09999996,
+          603850102.8,
+          754812605.5,
+          905775108.1999999,
+          1056737610.8999999,
+          1207700113.6,
+          1358662616.3,
+          1509625119.0
+        ],
+        "counts": [
+          12005244,
+          15115487,
+          11570151,
+          5808710,
+          4428408,
+          4427626,
+          5114471,
+          4216061,
+          3820407,
+          3591102
+        ]
+      },
+      "dtype": "int64"
+    },
+    "version": {
+      "null_count": 0,
+      "min": 1,
+      "max": 398,
+      "mean": 2.5904931757571905,
+      "ndv_approx": 226,
+      "histogram": {
+        "buckets": [
+          1.0,
+          40.7,
+          80.4,
+          120.10000000000001,
+          159.8,
+          199.5,
+          239.20000000000002,
+          278.90000000000003,
+          318.6,
+          358.3,
+          398.0
+        ],
+        "counts": [
+          70080474,
+          15900,
+          996,
+          217,
+          51,
+          16,
+          7,
+          3,
+          2,
+          1
+        ]
+      },
+      "dtype": "int32"
+    },
+    "timestamp": {
+      "null_count": 0,
+      "ndv_approx": 20130203,
+      "mean_length": 25.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "refs": {
+      "null_count": 0,
+      "length_min": 2,
+      "length_max": 2000,
+      "length_mean": 8.403377333513824,
+      "dtype": "list"
+    },
+    "tags": {
+      "null_count": 0,
+      "length_min": 0,
+      "length_max": 113,
+      "length_mean": 3.4293662013031048,
+      "dtype": "list"
+    },
+    "geometry": {
+      "null_count": 0,
+      "ndv_approx": 68371801,
+      "mean_length": 143.45402501056134,
+      "top_values": null,
+      "dtype": "binary"
+    }
+  }
+}

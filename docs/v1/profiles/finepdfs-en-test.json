@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "slug": "finepdfs-en-test",
+  "row_count": 373,
+  "parquet_sha256": "b54e8f4ab980f80ebe6be48356a6dd904dadfc10e4d35dde8a14e3f800dc2792",
+  "computed_at": "2026-05-13T16:44:37Z",
+  "sample_rows": null,
+  "columns": {
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 354,
+      "mean_length": 60707.680965147454,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 354,
+      "mean_length": 42.98927613941019,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "dump": {
+      "null_count": 0,
+      "ndv_approx": 63,
+      "mean_length": 15.0,
+      "top_values": [
+        {
+          "value": "CC-MAIN-2019-04",
+          "count": 17
+        },
+        {
+          "value": "CC-MAIN-2023-50",
+          "count": 15
+        },
+        {
+          "value": "CC-MAIN-2024-10",
+          "count": 15
+        },
+        {
+          "value": "CC-MAIN-2024-30",
+          "count": 13
+        },
+        {
+          "value": "CC-MAIN-2020-40",
+          "count": 13
+        }
+      ],
+      "dtype": "string"
+    },
+    "url": {
+      "null_count": 0,
+      "ndv_approx": 388,
+      "mean_length": 86.78016085790885,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "date": {
+      "null_count": 0,
+      "ndv_approx": 309,
+      "mean_length": 23.646112600536192,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "file_path": {
+      "null_count": 0,
+      "ndv_approx": 291,
+      "mean_length": 109.18766756032171,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "offset": {
+      "null_count": 0,
+      "min": 3898109,
+      "max": 1287714841,
+      "mean": 473669458.4128686,
+      "ndv_approx": 385,
+      "histogram": {
+        "buckets": [
+          3898109.0,
+          132279782.2,
+          260661455.4,
+          389043128.6,
+          517424801.8,
+          645806475.0,
+          774188148.2,
+          902569821.4,
+          1030951494.6,
+          1159333167.8,
+          1287714841.0
+        ],
+        "counts": [
+          50,
+          60,
+          62,
+          48,
+          42,
+          34,
+          35,
+          29,
+          12,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "token_count": {
+      "null_count": 0,
+      "min": 19,
+      "max": 853399,
+      "mean": 13896.061662198392,
+      "ndv_approx": 380,
+      "histogram": {
+        "buckets": [
+          19.0,
+          85357.0,
+          170695.0,
+          256033.0,
+          341371.0,
+          426709.0,
+          512047.0,
+          597385.0,
+          682723.0,
+          768061.0,
+          853399.0
+        ],
+        "counts": [
+          365,
+          5,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "language": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "eng_Latn",
+          "count": 373
+        }
+      ],
+      "dtype": "string"
+    },
+    "page_average_lid": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "eng_Latn",
+          "count": 371
+        },
+        {
+          "value": "npl_Latn",
+          "count": 1
+        },
+        {
+          "value": "dag_Latn",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "page_average_lid_score": {
+      "null_count": 0,
+      "min": 0.39718714108069736,
+      "max": 0.9996117353439331,
+      "mean": 0.8770028943572724,
+      "ndv_approx": 379,
+      "histogram": {
+        "buckets": [
+          0.39718714108069736,
+          0.4574296005070209,
+          0.5176720599333445,
+          0.5779145193596681,
+          0.6381569787859916,
+          0.6983994382123153,
+          0.7586418976386389,
+          0.8188843570649624,
+          0.879126816491286,
+          0.9393692759176095,
+          0.9996117353439331
+        ],
+        "counts": [
+          6,
+          12,
+          11,
+          5,
+          19,
+          19,
+          19,
+          35,
+          58,
+          189
+        ]
+      },
+      "dtype": "float64"
+    },
+    "full_doc_lid": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "eng_Latn",
+          "count": 369
+        },
+        {
+          "value": "mal_Latn",
+          "count": 1
+        },
+        {
+          "value": "bzj_Latn",
+          "count": 1
+        },
+        {
+          "value": "enm_Latn",
+          "count": 1
+        },
+        {
+          "value": "frp_Latn",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "full_doc_lid_score": {
+      "null_count": 0,
+      "min": 0.10935132950544357,
+      "max": 0.9996267557144165,
+      "mean": 0.9437080559997393,
+      "ndv_approx": 356,
+      "histogram": {
+        "buckets": [
+          0.10935132950544357,
+          0.19837887212634087,
+          0.28740641474723816,
+          0.37643395736813545,
+          0.46546149998903275,
+          0.55448904260993,
+          0.6435165852308273,
+          0.7325441278517246,
+          0.8215716704726219,
+          0.9105992130935192,
+          0.9996267557144165
+        ],
+        "counts": [
+          2,
+          2,
+          0,
+          2,
+          3,
+          8,
+          8,
+          10,
+          22,
+          316
+        ]
+      },
+      "dtype": "float64"
+    },
+    "per_page_languages": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 1759,
+      "length_mean": 29.62734584450402,
+      "dtype": "list"
+    },
+    "is_truncated": {
+      "dtype": "bool",
+      "true_count": 179,
+      "false_count": 194,
+      "null_count": 0
+    },
+    "extractor": null,
+    "page_ends": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 1759,
+      "length_mean": 29.62734584450402,
+      "dtype": "list"
+    },
+    "fw_edu_scores": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 2,
+      "length_mean": 1.3994638069705094,
+      "dtype": "list"
+    },
+    "fw_edu_v2_scores": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 2,
+      "length_mean": 1.3994638069705094,
+      "dtype": "list"
+    },
+    "dclm_scores": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 2,
+      "length_mean": 1.3994638069705094,
+      "dtype": "list"
+    },
+    "ocr_quality_scores": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 2,
+      "length_mean": 1.3994638069705094,
+      "dtype": "list"
+    },
+    "minhash_cluster_size": {
+      "null_count": 0,
+      "min": 1,
+      "max": 28,
+      "mean": 1.7587131367292226,
+      "ndv_approx": 13,
+      "histogram": {
+        "buckets": [
+          1.0,
+          3.7,
+          6.4,
+          9.100000000000001,
+          11.8,
+          14.5,
+          17.200000000000003,
+          19.900000000000002,
+          22.6,
+          25.3,
+          28.0
+        ],
+        "counts": [
+          348,
+          17,
+          4,
+          1,
+          0,
+          0,
+          0,
+          2,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "duplicate_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4,
+      "mean": 0.040214477211796246,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8000000000000003,
+          3.2,
+          3.6,
+          4.0
+        ],
+        "counts": [
+          362,
+          0,
+          9,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 373
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

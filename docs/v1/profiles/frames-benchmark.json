@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "slug": "frames-benchmark",
+  "row_count": 824,
+  "parquet_sha256": "941578c6cc5e69739cfb8db43ce4055902b949927aa4b28dc91c34c2b5028e1c",
+  "computed_at": "2026-05-13T16:44:37Z",
+  "sample_rows": null,
+  "columns": {
+    "Unnamed: 0": {
+      "null_count": 0,
+      "min": 0,
+      "max": 823,
+      "mean": 411.5,
+      "ndv_approx": 996,
+      "histogram": {
+        "buckets": [
+          0.0,
+          82.3,
+          164.6,
+          246.89999999999998,
+          329.2,
+          411.5,
+          493.79999999999995,
+          576.1,
+          658.4,
+          740.6999999999999,
+          823.0
+        ],
+        "counts": [
+          83,
+          82,
+          82,
+          83,
+          82,
+          82,
+          83,
+          82,
+          82,
+          83
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Prompt": {
+      "null_count": 0,
+      "ndv_approx": 961,
+      "mean_length": 155.33009708737865,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Answer": {
+      "null_count": 0,
+      "ndv_approx": 700,
+      "mean_length": 30.695388349514563,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wikipedia_link_1": {
+      "null_count": 0,
+      "ndv_approx": 874,
+      "mean_length": 53.06674757281554,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wikipedia_link_2": {
+      "null_count": 0,
+      "ndv_approx": 949,
+      "mean_length": 51.68689320388349,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wikipedia_link_3": {
+      "null_count": 310,
+      "ndv_approx": 546,
+      "mean_length": 50.29961089494164,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wikipedia_link_4": {
+      "null_count": 598,
+      "ndv_approx": 270,
+      "mean_length": 49.89823008849557,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wikipedia_link_5": {
+      "null_count": 732,
+      "ndv_approx": 88,
+      "mean_length": 48.0,
+      "top_values": [
+        {
+          "value": "https://en.wikipedia.org/wiki/Astrological_sign",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Geffen_Records#History",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Harry_Potter_and_the_Goblet_of_Fire",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Screaming_Trees",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Apollo_program",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "wikipedia_link_6": {
+      "null_count": 771,
+      "ndv_approx": 53,
+      "mean_length": 49.64150943396226,
+      "top_values": [
+        {
+          "value": "https://en.wikipedia.org/wiki/Presidency_of_Joe_Biden",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Blackburn_Rovers_F.C.",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Ghostface_Killah",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/1936_Summer_Olympics",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Astrological_sign",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "wikipedia_link_7": {
+      "null_count": 788,
+      "ndv_approx": 35,
+      "mean_length": 48.22222222222222,
+      "top_values": [
+        {
+          "value": "https://en.wikipedia.org/wiki/William_VI_of_Montpellier",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Show_No_Mercy",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Michelle_Yeoh",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/List_of_Nobel_laureates_in_Physics",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Jonathan_Demme",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "wikipedia_link_8": {
+      "null_count": 801,
+      "ndv_approx": 21,
+      "mean_length": 48.26086956521739,
+      "top_values": [
+        {
+          "value": "https://en.wikipedia.org/wiki/Sheffield_United_F.C.",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Quantum_mechanics",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Wolverhampton",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Queensland",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Christine_(1983_film)",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "wikipedia_link_9": {
+      "null_count": 807,
+      "ndv_approx": 18,
+      "mean_length": 48.705882352941174,
+      "top_values": [
+        {
+          "value": "https://en.wikipedia.org/wiki/Royston_Sagigi-Baira",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Charlton_Athletic_F.C.",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/2008_Miami_Dolphins_season",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Transformers_(film)",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Northern_Territory",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "wikipedia_link_10": {
+      "null_count": 810,
+      "ndv_approx": 14,
+      "mean_length": 48.07142857142857,
+      "top_values": [
+        {
+          "value": "https://en.wikipedia.org/wiki/Honshu",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Transformers:_Revenge_of_the_Fallen",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Stefan_Kozlov",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Ol%27_Dirty_Bastard",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Andrea_Riseborough",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "wikipedia_link_11+": {
+      "null_count": 811,
+      "ndv_approx": 15,
+      "mean_length": 229.53846153846155,
+      "top_values": [
+        {
+          "value": "https://en.wikipedia.org/wiki/Transformers:_Dark_of_the_Moon, https://en.wikipedia.org/wiki/Pain_%26_Gain, https://en.wikipedia.org/wiki/Transformers:_Age_of_Extinction, https://en.wikipedia.org/wiki/13_Hours:_The_Secret_Soldiers_of_Benghazi, https://en.wikipedia.org/wiki/Transformers:_The_Last_Knight, https://en.wikipedia.org/wiki/6_Underground_(film), https://en.wikipedia.org/wiki/Ambulance_(2022_film)",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/American_Family_Field, https://en.wikipedia.org/wiki/LoanDepot_Park, https://en.wikipedia.org/wiki/Globe_Life_Field, ",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Tim_Salmon, https://en.wikipedia.org/wiki/Troy_Glaus",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Marie_of_Montpellier, https://en.wikipedia.org/wiki/James_I_of_Aragon, https://en.wikipedia.org/wiki/James_II_of_Majorca, https://en.wikipedia.org/wiki/Sancho_of_Majorca, https://en.wikipedia.org/wiki/James_III_of_Majorca",
+          "count": 1
+        },
+        {
+          "value": "https://en.wikipedia.org/wiki/Michelle_Williams_(actress)",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "reasoning_types": {
+      "null_count": 0,
+      "ndv_approx": 30,
+      "mean_length": 35.297330097087375,
+      "top_values": [
+        {
+          "value": "Multiple constraints",
+          "count": 265
+        },
+        {
+          "value": "Numerical reasoning",
+          "count": 58
+        },
+        {
+          "value": "Tabular reasoning | Multiple constraints",
+          "count": 50
+        },
+        {
+          "value": "Temporal reasoning",
+          "count": 50
+        },
+        {
+          "value": "Multiple constraints | Temporal reasoning",
+          "count": 44
+        }
+      ],
+      "dtype": "string"
+    },
+    "wiki_links": {
+      "null_count": 0,
+      "ndv_approx": 710,
+      "mean_length": 180.0606796116505,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 824
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,1096 @@
+{
+  "schema_version": 1,
+  "slug": "bi-generico",
+  "row_count": 114124607,
+  "parquet_sha256": "c1bdb77a8e0aec8831cd896303702a5a66b1788ba4443a7d6a7d3d49c3d4f02e",
+  "computed_at": "2026-05-16T06:10:51Z",
+  "sample_rows": null,
+  "columns": {
+    "Anunciante": {
+      "null_count": 50,
+      "ndv_approx": 33368,
+      "mean_length": 10.240015906480146,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Aviso": {
+      "null_count": 3882476,
+      "ndv_approx": 17,
+      "mean_length": 9.380043079900188,
+      "top_values": [
+        {
+          "value": "COMERCIAL",
+          "count": 87136436
+        },
+        {
+          "value": "INICIO FIN PROGRAMA",
+          "count": 6581336
+        },
+        {
+          "value": "Cuna",
+          "count": 4020944
+        },
+        {
+          "value": "NORMAL",
+          "count": 3346858
+        },
+        {
+          "value": "LOGOS",
+          "count": 2997487
+        }
+      ],
+      "dtype": "string"
+    },
+    "A\ufffdo": {
+      "null_count": 0,
+      "min": 2007,
+      "max": 2015,
+      "mean": 2011.0937086512815,
+      "ndv_approx": 10,
+      "histogram": {
+        "buckets": [
+          2007.0,
+          2007.8,
+          2008.6,
+          2009.4,
+          2010.2,
+          2011.0,
+          2011.8,
+          2012.6,
+          2013.4,
+          2014.2,
+          2015.0
+        ],
+        "counts": [
+          12530060,
+          11925605,
+          11866160,
+          12043730,
+          0,
+          13670545,
+          12740090,
+          12416265,
+          12933660,
+          13998492
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Cadena": {
+      "null_count": 91634416,
+      "ndv_approx": 115,
+      "mean_length": 11.643547980539605,
+      "top_values": [
+        {
+          "value": "CLARO TV",
+          "count": 6213792
+        },
+        {
+          "value": "CONVERGENCE",
+          "count": 5895540
+        },
+        {
+          "value": "Eugua",
+          "count": 1946518
+        },
+        {
+          "value": "GRUPO EMISORAS UNIDAS",
+          "count": 1328760
+        },
+        {
+          "value": "CENTRAL DE RADIO",
+          "count": 1260084
+        }
+      ],
+      "dtype": "string"
+    },
+    "Categoria": {
+      "null_count": 0,
+      "ndv_approx": 454,
+      "mean_length": 22.18196371970858,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Circulacion": {
+      "null_count": 108107720,
+      "ndv_approx": 43,
+      "mean_length": 7.239081106226525,
+      "top_values": [
+        {
+          "value": "OESTE",
+          "count": 1140936
+        },
+        {
+          "value": "ESTE",
+          "count": 1078239
+        },
+        {
+          "value": "Prensa Libre",
+          "count": 937817
+        },
+        {
+          "value": "NORTE",
+          "count": 819461
+        },
+        {
+          "value": "SUR",
+          "count": 811903
+        }
+      ],
+      "dtype": "string"
+    },
+    "Codigo": {
+      "null_count": 0,
+      "min": 5,
+      "max": 1882408,
+      "mean": 160016.68681049653,
+      "ndv_approx": 1516107,
+      "histogram": {
+        "buckets": [
+          5.0,
+          188245.3,
+          376485.6,
+          564725.8999999999,
+          752966.2,
+          941206.5,
+          1129446.7999999998,
+          1317687.0999999999,
+          1505927.4,
+          1694167.7,
+          1882408.0
+        ],
+        "counts": [
+          101245055,
+          7298556,
+          845325,
+          753935,
+          624469,
+          0,
+          431510,
+          927380,
+          968680,
+          1029697
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Cols": {
+      "null_count": 0,
+      "min": 0,
+      "max": 68,
+      "mean": 0.150084547498157,
+      "ndv_approx": 25,
+      "histogram": {
+        "buckets": [
+          0.0,
+          6.8,
+          13.6,
+          20.4,
+          27.2,
+          34.0,
+          40.8,
+          47.6,
+          54.4,
+          61.199999999999996,
+          68.0
+        ],
+        "counts": [
+          113572081,
+          552455,
+          51,
+          0,
+          10,
+          0,
+          0,
+          0,
+          0,
+          10
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Concatenar 1": {
+      "null_count": 384320,
+      "ndv_approx": 1745199,
+      "mean_length": 50.87789453177659,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Concatenar 2": {
+      "null_count": 384320,
+      "ndv_approx": 1608391,
+      "mean_length": 69.64350194579691,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Corte": {
+      "null_count": 114376,
+      "min": 0,
+      "max": 838,
+      "mean": 3.7544672547852307,
+      "ndv_approx": 742,
+      "histogram": {
+        "buckets": [
+          0.0,
+          83.8,
+          167.6,
+          251.39999999999998,
+          335.2,
+          419.0,
+          502.79999999999995,
+          586.6,
+          670.4,
+          754.1999999999999,
+          838.0
+        ],
+        "counts": [
+          113991385,
+          14071,
+          1793,
+          1148,
+          412,
+          548,
+          520,
+          344,
+          0,
+          10
+        ]
+      },
+      "dtype": "int16"
+    },
+    "De_Npags": {
+      "null_count": 4210619,
+      "min": -99,
+      "max": 352,
+      "mean": 10.588459669027749,
+      "ndv_approx": 279,
+      "histogram": {
+        "buckets": [
+          -99.0,
+          -53.9,
+          -8.799999999999997,
+          36.30000000000001,
+          81.4,
+          126.5,
+          171.60000000000002,
+          216.7,
+          261.8,
+          306.90000000000003,
+          352.0
+        ],
+        "counts": [
+          30,
+          30,
+          107400441,
+          1078812,
+          562793,
+          405279,
+          118073,
+          12125,
+          11367,
+          325038
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Dia_Semana": {
+      "null_count": 0,
+      "min": 0,
+      "max": 134,
+      "mean": 3.896369465701643,
+      "ndv_approx": 134,
+      "histogram": {
+        "buckets": [
+          0.0,
+          13.4,
+          26.8,
+          40.2,
+          53.6,
+          67.0,
+          80.4,
+          93.8,
+          107.2,
+          120.60000000000001,
+          134.0
+        ],
+        "counts": [
+          114102772,
+          16965,
+          1240,
+          780,
+          670,
+          670,
+          565,
+          460,
+          330,
+          155
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Disco": {
+      "null_count": 35938158,
+      "min": 0,
+      "max": 351,
+      "mean": 121.13983714748319,
+      "ndv_approx": 353,
+      "histogram": {
+        "buckets": [
+          0.0,
+          35.1,
+          70.2,
+          105.30000000000001,
+          140.4,
+          175.5,
+          210.60000000000002,
+          245.70000000000002,
+          280.8,
+          315.90000000000003,
+          351.0
+        ],
+        "counts": [
+          25312588,
+          9996928,
+          1975100,
+          4682195,
+          13453797,
+          6711949,
+          8028747,
+          2807872,
+          2350001,
+          2867272
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Duracion": {
+      "null_count": 45,
+      "min": 0,
+      "max": 3607,
+      "mean": 23.0981081881392,
+      "ndv_approx": 1111,
+      "histogram": {
+        "buckets": [
+          0.0,
+          360.7,
+          721.4,
+          1082.1,
+          1442.8,
+          1803.5,
+          2164.2,
+          2524.9,
+          2885.6,
+          3246.2999999999997,
+          3607.0
+        ],
+        "counts": [
+          114099498,
+          21039,
+          2649,
+          1154,
+          190,
+          22,
+          0,
+          5,
+          0,
+          5
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Est": {
+      "null_count": 110238747,
+      "ndv_approx": 69,
+      "mean_length": 1.07001538912879,
+      "top_values": [
+        {
+          "value": "N",
+          "count": 3599707
+        },
+        {
+          "value": "BA",
+          "count": 150498
+        },
+        {
+          "value": "AR",
+          "count": 48855
+        },
+        {
+          "value": "CO",
+          "count": 35745
+        },
+        {
+          "value": "RE",
+          "count": 16080
+        }
+      ],
+      "dtype": "string"
+    },
+    "FECHA": {
+      "dtype": "date32",
+      "null_count": 0,
+      "min": "2007-01-01T00:00:00+00:00",
+      "max": "2015-10-31T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2007-01-01T00:00:00+00:00",
+          "2007-11-19T12:00:00+00:00",
+          "2008-10-07T00:00:00+00:00",
+          "2009-08-25T12:00:00+00:00",
+          "2010-07-14T00:00:00+00:00",
+          "2011-06-01T12:00:00+00:00",
+          "2012-04-19T00:00:00+00:00",
+          "2013-03-07T12:00:00+00:00",
+          "2014-01-24T00:00:00+00:00",
+          "2014-12-12T12:00:00+00:00",
+          "2015-10-31T00:00:00+00:00"
+        ],
+        "counts": [
+          11016835,
+          10477605,
+          10492550,
+          10593450,
+          10748450,
+          12330580,
+          11125820,
+          11087945,
+          11599900,
+          14651472
+        ]
+      }
+    },
+    "Franja": {
+      "null_count": 59666845,
+      "ndv_approx": 5,
+      "mean_length": 19.685856517570443,
+      "top_values": [
+        {
+          "value": "Early: 12:00 A 18:00",
+          "count": 17768397
+        },
+        {
+          "value": "Day: 06:00 A 12:00",
+          "count": 15404283
+        },
+        {
+          "value": "Prime: 18:00 A 22:30",
+          "count": 14559037
+        },
+        {
+          "value": "Over Night: 00:00 A 06:00",
+          "count": 3404510
+        },
+        {
+          "value": "Late: 22:30 A 24:00",
+          "count": 3321535
+        }
+      ],
+      "dtype": "string"
+    },
+    "Genero": {
+      "null_count": 35281826,
+      "ndv_approx": 32,
+      "mean_length": 8.08521912741764,
+      "top_values": [
+        {
+          "value": "NOVELAS",
+          "count": 14473240
+        },
+        {
+          "value": "SERIES",
+          "count": 12832287
+        },
+        {
+          "value": "PELICULAS",
+          "count": 10035429
+        },
+        {
+          "value": "NOTICIAS",
+          "count": 9189552
+        },
+        {
+          "value": "INFANTILES",
+          "count": 8738007
+        }
+      ],
+      "dtype": "string"
+    },
+    "Holding": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 7.000000087623522,
+      "top_values": [
+        {
+          "value": "DIRECTO",
+          "count": 114124602
+        },
+        {
+          "value": "COMERCIAL",
+          "count": 5
+        }
+      ],
+      "dtype": "string"
+    },
+    "Hora_Pagina": {
+      "null_count": 3875468,
+      "min": -63,
+      "max": 255940,
+      "mean": 144029.18948153418,
+      "ndv_approx": 87836,
+      "histogram": {
+        "buckets": [
+          -63.0,
+          25537.3,
+          51137.6,
+          76737.9,
+          102338.2,
+          127938.5,
+          153538.8,
+          179139.1,
+          204739.4,
+          230339.69999999998,
+          255940.0
+        ],
+        "counts": [
+          3746559,
+          916851,
+          8115103,
+          12213582,
+          15771235,
+          19255240,
+          18226177,
+          16259912,
+          11077652,
+          4666828
+        ]
+      },
+      "dtype": "int32"
+    },
+    "InversionQ": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 943514.0,
+      "mean": 2645.7400913143233,
+      "ndv_approx": 342405,
+      "histogram": {
+        "buckets": [
+          0.0,
+          94351.4,
+          188702.8,
+          283054.19999999995,
+          377405.6,
+          471757.0,
+          566108.3999999999,
+          660459.7999999999,
+          754811.2,
+          849162.6,
+          943514.0
+        ],
+        "counts": [
+          114095827,
+          20518,
+          5402,
+          1633,
+          647,
+          360,
+          115,
+          60,
+          30,
+          15
+        ]
+      },
+      "dtype": "float64"
+    },
+    "InversionUS": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 121110.84,
+      "mean": 338.7178346803277,
+      "ndv_approx": 199252,
+      "histogram": {
+        "buckets": [
+          0.0,
+          12111.083999999999,
+          24222.167999999998,
+          36333.25199999999,
+          48444.335999999996,
+          60555.42,
+          72666.50399999999,
+          84777.58799999999,
+          96888.67199999999,
+          108999.756,
+          121110.84
+        ],
+        "counts": [
+          114095505,
+          20842,
+          5387,
+          1636,
+          677,
+          340,
+          110,
+          65,
+          35,
+          10
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Marca": {
+      "null_count": 0,
+      "ndv_approx": 31542,
+      "mean_length": 9.949240648863746,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Medio": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 11.934970799067024,
+      "top_values": [
+        {
+          "value": "TELEVISION NACIONAL",
+          "count": 52398518
+        },
+        {
+          "value": "RADIO",
+          "count": 29866924
+        },
+        {
+          "value": "CABLE",
+          "count": 24626434
+        },
+        {
+          "value": "PUBLICIDAD EXTERIOR",
+          "count": 3875464
+        },
+        {
+          "value": "PRENSA",
+          "count": 3231586
+        }
+      ],
+      "dtype": "string"
+    },
+    "Mes": {
+      "null_count": 0,
+      "ndv_approx": 106,
+      "mean_length": 6.99999951807063,
+      "top_values": [
+        {
+          "value": "01Jul11",
+          "count": 2283380
+        },
+        {
+          "value": "01Oct15",
+          "count": 2092364
+        },
+        {
+          "value": "01Jul15",
+          "count": 2042512
+        },
+        {
+          "value": "01Ago15",
+          "count": 2038824
+        },
+        {
+          "value": "01Sep15",
+          "count": 1955304
+        }
+      ],
+      "dtype": "string"
+    },
+    "NumAnuncios": {
+      "null_count": 0,
+      "min": 1,
+      "max": 2,
+      "mean": 1.0000018400939596,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.1,
+          1.2,
+          1.3,
+          1.4,
+          1.5,
+          1.6,
+          1.7000000000000002,
+          1.8,
+          1.9,
+          2.0
+        ],
+        "counts": [
+          114124397,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          210
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          114124607
+        ]
+      }
+    },
+    "Plgs": {
+      "null_count": 0,
+      "min": 0,
+      "max": 98,
+      "mean": 0.17934726382015054,
+      "ndv_approx": 27,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9.8,
+          19.6,
+          29.400000000000002,
+          39.2,
+          49.0,
+          58.800000000000004,
+          68.60000000000001,
+          78.4,
+          88.2,
+          98.0
+        ],
+        "counts": [
+          113745259,
+          378758,
+          560,
+          5,
+          15,
+          0,
+          5,
+          0,
+          0,
+          5
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Posicion_Edicion": {
+      "null_count": 114836,
+      "min": 0,
+      "max": 1136,
+      "mean": 5.504181119704205,
+      "ndv_approx": 378,
+      "histogram": {
+        "buckets": [
+          0.0,
+          113.6,
+          227.2,
+          340.79999999999995,
+          454.4,
+          568.0,
+          681.5999999999999,
+          795.1999999999999,
+          908.8,
+          1022.4,
+          1136.0
+        ],
+        "counts": [
+          113655194,
+          245410,
+          106867,
+          1842,
+          280,
+          93,
+          0,
+          0,
+          0,
+          85
+        ]
+      },
+      "dtype": "int16"
+    },
+    "PrimeraLinea": {
+      "null_count": 60,
+      "ndv_approx": 486674,
+      "mean_length": 50.643922082775056,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Producto": {
+      "null_count": 0,
+      "ndv_approx": 107181,
+      "mean_length": 21.819353288112527,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SEMANA": {
+      "null_count": 384320,
+      "min": 1,
+      "max": 53,
+      "mean": 27.592956821007494,
+      "ndv_approx": 47,
+      "histogram": {
+        "buckets": [
+          1.0,
+          6.2,
+          11.4,
+          16.6,
+          21.8,
+          27.0,
+          32.2,
+          37.4,
+          42.6,
+          47.800000000000004,
+          53.0
+        ],
+        "counts": [
+          10408075,
+          10159160,
+          10315637,
+          10601375,
+          10684645,
+          15450761,
+          12064823,
+          12120947,
+          11142609,
+          10792255
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Sector": {
+      "null_count": 0,
+      "ndv_approx": 21,
+      "mean_length": 15.816172764564262,
+      "top_values": [
+        {
+          "value": "COMUNICACIONES",
+          "count": 45446321
+        },
+        {
+          "value": "HOGAR Y ALIMENTACION",
+          "count": 20235880
+        },
+        {
+          "value": "SALUD",
+          "count": 10940127
+        },
+        {
+          "value": "ENTRETENIMIENTO",
+          "count": 8627282
+        },
+        {
+          "value": "VESTUARIO Y CUIDADO PERSONAL",
+          "count": 7634348
+        }
+      ],
+      "dtype": "string"
+    },
+    "Soporte": {
+      "null_count": 10,
+      "ndv_approx": 36694,
+      "mean_length": 19.470260648543626,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Subsector": {
+      "null_count": 0,
+      "ndv_approx": 120,
+      "mean_length": 23.550312563179297,
+      "top_values": [
+        {
+          "value": "RADIO Y TELE TRANSMISIONES",
+          "count": 37929081
+        },
+        {
+          "value": "PRODUCTOS FARMACEUTICOS",
+          "count": 7711170
+        },
+        {
+          "value": "CUIDADO PERSONAL",
+          "count": 6037910
+        },
+        {
+          "value": "TELEFONIA Y COMUNICACIONES",
+          "count": 5850388
+        },
+        {
+          "value": "COMESTIBLES Y VIVERES",
+          "count": 4370221
+        }
+      ],
+      "dtype": "string"
+    },
+    "Unidad": {
+      "null_count": 110881716,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "M",
+          "count": 2545028
+        },
+        {
+          "value": "P",
+          "count": 697863
+        }
+      ],
+      "dtype": "string"
+    },
+    "VER ANUNCIO": {
+      "null_count": 384320,
+      "ndv_approx": 1607557,
+      "mean_length": 52.26283730056,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Vehiculo": {
+      "null_count": 0,
+      "ndv_approx": 195,
+      "mean_length": 9.09014565106016,
+      "top_values": [
+        {
+          "value": "CANAL 7",
+          "count": 11706516
+        },
+        {
+          "value": "CANAL 13",
+          "count": 10589601
+        },
+        {
+          "value": "CANAL 3",
+          "count": 9723544
+        },
+        {
+          "value": "CANAL 11",
+          "count": 9120109
+        },
+        {
+          "value": "1 GUATE VISION",
+          "count": 8231585
+        }
+      ],
+      "dtype": "string"
+    },
+    "extencion": {
+      "null_count": 384320,
+      "ndv_approx": 4,
+      "mean_length": 4.033954275146149,
+      "top_values": [
+        {
+          "value": ".wmv",
+          "count": 76767382
+        },
+        {
+          "value": ".MP3",
+          "count": 29765424
+        },
+        {
+          "value": "d.JPG",
+          "count": 3861969
+        },
+        {
+          "value": ".JPG",
+          "count": 3345512
+        }
+      ],
+      "dtype": "string"
+    },
+    "medio2": {
+      "null_count": 4246933,
+      "ndv_approx": 5,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "TV",
+          "count": 52229028
+        },
+        {
+          "value": "RD",
+          "count": 29765424
+        },
+        {
+          "value": "CB",
+          "count": 24538354
+        },
+        {
+          "value": "PR",
+          "count": 3219831
+        },
+        {
+          "value": "RV",
+          "count": 125037
+        }
+      ],
+      "dtype": "string"
+    },
+    "www1": {
+      "null_count": 836765,
+      "ndv_approx": 12,
+      "mean_length": 30.75498228662525,
+      "top_values": [
+        {
+          "value": "http://204.51.113.172/videosgt/",
+          "count": 109413298
+        },
+        {
+          "value": "http://204.51.113.172/pe",
+          "count": 3837049
+        },
+        {
+          "value": "OESTE",
+          "count": 7615
+        },
+        {
+          "value": "ESTE",
+          "count": 7170
+        },
+        {
+          "value": "SUR",
+          "count": 5155
+        }
+      ],
+      "dtype": "string"
+    },
+    "www2": {
+      "null_count": 384320,
+      "ndv_approx": 7,
+      "mean_length": 51.330330254925414,
+      "top_values": [
+        {
+          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/TV_GUA",
+          "count": 51985963
+        },
+        {
+          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/RADIO_GUA/",
+          "count": 29660189
+        },
+        {
+          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/TV_GUA/",
+          "count": 24434219
+        },
+        {
+          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/PE_GUA/",
+          "count": 3837049
+        },
+        {
+          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/PRENSA_GUA",
+          "count": 3207256
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

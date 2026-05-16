@@ -1,0 +1,334 @@
+{
+  "schema_version": 1,
+  "slug": "finetranslations-swedish",
+  "row_count": 321000,
+  "parquet_sha256": "e0fa14e94a3a8b13b189e18fd2309fa2cc3a3f1bada5f5a9cc37496f46571a29",
+  "computed_at": "2026-05-13T16:44:31Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 397404,
+      "mean_length": 47.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "translated_text": {
+      "null_count": 0,
+      "ndv_approx": 346347,
+      "mean_length": 2708.161965732087,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "translated_chunks": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 479,
+      "length_mean": 2.122080996884735,
+      "dtype": "list"
+    },
+    "og_chunks": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 479,
+      "length_mean": 2.122080996884735,
+      "dtype": "list"
+    },
+    "og_full_text": {
+      "null_count": 0,
+      "ndv_approx": 376860,
+      "mean_length": 2627.76285046729,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "og_language": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "swe_Latn",
+          "count": 321000
+        }
+      ],
+      "dtype": "string"
+    },
+    "og_language_score": {
+      "null_count": 0,
+      "min": 0.6287504434585571,
+      "max": 1.0000100135803223,
+      "mean": 0.9988333605548303,
+      "ndv_approx": 10476,
+      "histogram": {
+        "buckets": [
+          0.6287504434585571,
+          0.6658764004707336,
+          0.7030023574829102,
+          0.7401283144950866,
+          0.7772542715072632,
+          0.8143802285194397,
+          0.8515061855316162,
+          0.8886321425437926,
+          0.9257580995559692,
+          0.9628840565681458,
+          1.0000100135803223
+        ],
+        "counts": [
+          128,
+          116,
+          145,
+          152,
+          179,
+          227,
+          285,
+          346,
+          635,
+          318787
+        ]
+      },
+      "dtype": "float64"
+    },
+    "og_token_count": {
+      "null_count": 0,
+      "min": 62,
+      "max": 208095,
+      "mean": 759.2416604361371,
+      "ndv_approx": 7484,
+      "histogram": {
+        "buckets": [
+          62.0,
+          20865.3,
+          41668.6,
+          62471.899999999994,
+          83275.2,
+          104078.5,
+          124881.79999999999,
+          145685.1,
+          166488.4,
+          187291.69999999998,
+          208095.0
+        ],
+        "counts": [
+          320785,
+          146,
+          24,
+          14,
+          9,
+          5,
+          4,
+          4,
+          2,
+          7
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "og_quality_score": {
+      "null_count": 0,
+      "min": 2.006872819038108e-06,
+      "max": 0.9999397993087769,
+      "mean": 0.01757086792376541,
+      "ndv_approx": 281383,
+      "histogram": {
+        "buckets": [
+          2.006872819038108e-06,
+          0.09999578611641483,
+          0.1999895653600106,
+          0.2999833446036064,
+          0.3999771238472022,
+          0.49997090309079795,
+          0.5999646823343938,
+          0.6999584615779896,
+          0.7999522408215853,
+          0.8999460200651811,
+          0.9999397993087769
+        ],
+        "counts": [
+          308801,
+          4269,
+          2154,
+          1388,
+          1017,
+          776,
+          671,
+          635,
+          541,
+          748
+        ]
+      },
+      "dtype": "float64"
+    },
+    "early_stop": {
+      "dtype": "bool",
+      "true_count": 80,
+      "false_count": 320920,
+      "null_count": 0
+    },
+    "url": {
+      "null_count": 0,
+      "ndv_approx": 307938,
+      "mean_length": 67.35133956386292,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "warc_path": {
+      "null_count": 0,
+      "ndv_approx": 29285,
+      "mean_length": 127.31698442367602,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "minhash_cluster_size": {
+      "null_count": 0,
+      "min": 1,
+      "max": 21378,
+      "mean": 6.860401869158879,
+      "ndv_approx": 408,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2138.7,
+          4276.4,
+          6414.099999999999,
+          8551.8,
+          10689.5,
+          12827.199999999999,
+          14964.899999999998,
+          17102.6,
+          19240.3,
+          21378.0
+        ],
+        "counts": [
+          320997,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "translated_token_count": {
+      "null_count": 0,
+      "min": 4,
+      "max": 141320,
+      "mean": 585.4689408099689,
+      "ndv_approx": 5481,
+      "histogram": {
+        "buckets": [
+          4.0,
+          14135.6,
+          28267.2,
+          42398.8,
+          56530.4,
+          70662.0,
+          84793.6,
+          98925.2,
+          113056.8,
+          127188.40000000001,
+          141320.0
+        ],
+        "counts": [
+          320730,
+          195,
+          30,
+          15,
+          9,
+          8,
+          2,
+          4,
+          1,
+          6
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "edu_score_raw": {
+      "null_count": 0,
+      "min": -0.19140625,
+      "max": 4.53125,
+      "mean": 0.6765569848865735,
+      "ndv_approx": 2762,
+      "histogram": {
+        "buckets": [
+          -0.19140625,
+          0.280859375,
+          0.753125,
+          1.2253906250000002,
+          1.69765625,
+          2.169921875,
+          2.6421875000000004,
+          3.1144531250000003,
+          3.58671875,
+          4.0589843750000005,
+          4.53125
+        ],
+        "counts": [
+          97097,
+          100844,
+          71127,
+          32974,
+          12238,
+          4680,
+          1444,
+          462,
+          115,
+          19
+        ]
+      },
+      "dtype": "float64"
+    },
+    "edu_score": {
+      "null_count": 0,
+      "min": 0,
+      "max": 5,
+      "mean": 0.645436137071651,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.5,
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0
+        ],
+        "counts": [
+          146399,
+          0,
+          145172,
+          0,
+          26466,
+          0,
+          2772,
+          0,
+          190,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 321000
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

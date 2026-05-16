@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "slug": "youtube-commons-sample",
+  "row_count": 49967,
+  "parquet_sha256": "63bd6e330c8a356a026a08abf8a1b6c74c7683114b0b5ac21f0699fe8f716955",
+  "computed_at": "2026-05-13T16:44:45Z",
+  "sample_rows": null,
+  "columns": {
+    "video_id": {
+      "null_count": 0,
+      "ndv_approx": 45039,
+      "mean_length": 11.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "video_link": {
+      "null_count": 0,
+      "ndv_approx": 58253,
+      "mean_length": 43.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "title": {
+      "null_count": 0,
+      "ndv_approx": 52355,
+      "mean_length": 58.093601777172935,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 49790,
+      "mean_length": 12191.871415133988,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "channel": {
+      "null_count": 0,
+      "ndv_approx": 28350,
+      "mean_length": 16.10921207997278,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "channel_id": {
+      "null_count": 0,
+      "ndv_approx": 25872,
+      "mean_length": 24.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "date": {
+      "null_count": 0,
+      "ndv_approx": 5159,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "license": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 52.0,
+      "top_values": [
+        {
+          "value": "Creative Commons Attribution license (reuse allowed)",
+          "count": 49967
+        }
+      ],
+      "dtype": "string"
+    },
+    "original_language": {
+      "null_count": 0,
+      "ndv_approx": 18,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 36794
+        },
+        {
+          "value": "hi",
+          "count": 3948
+        },
+        {
+          "value": "fr",
+          "count": 2590
+        },
+        {
+          "value": "es",
+          "count": 2153
+        },
+        {
+          "value": "id",
+          "count": 633
+        }
+      ],
+      "dtype": "string"
+    },
+    "language_id_method": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 8.002421598254848,
+      "top_values": [
+        {
+          "value": "metadata",
+          "count": 49840
+        },
+        {
+          "value": "detection",
+          "count": 124
+        },
+        {
+          "value": "unknown",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "transcription_language": {
+      "null_count": 0,
+      "ndv_approx": 21,
+      "mean_length": 2.00098064722717,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 7201
+        },
+        {
+          "value": "es",
+          "count": 7171
+        },
+        {
+          "value": "de",
+          "count": 7157
+        },
+        {
+          "value": "it",
+          "count": 7141
+        },
+        {
+          "value": "nl",
+          "count": 7111
+        }
+      ],
+      "dtype": "string"
+    },
+    "word_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 68393,
+      "mean": 2091.690215542258,
+      "ndv_approx": 10161,
+      "histogram": {
+        "buckets": [
+          0.0,
+          6839.3,
+          13678.6,
+          20517.9,
+          27357.2,
+          34196.5,
+          41035.8,
+          47875.1,
+          54714.4,
+          61553.700000000004,
+          68393.0
+        ],
+        "counts": [
+          45725,
+          3048,
+          852,
+          184,
+          114,
+          35,
+          5,
+          3,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "character_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 352404,
+      "mean": 12191.871415133988,
+      "ndv_approx": 18144,
+      "histogram": {
+        "buckets": [
+          0.0,
+          35240.4,
+          70480.8,
+          105721.20000000001,
+          140961.6,
+          176202.0,
+          211442.40000000002,
+          246682.80000000002,
+          281923.2,
+          317163.60000000003,
+          352404.0
+        ],
+        "counts": [
+          45063,
+          3327,
+          1063,
+          303,
+          126,
+          66,
+          14,
+          2,
+          2,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "cctube_0",
+          "count": 49967
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

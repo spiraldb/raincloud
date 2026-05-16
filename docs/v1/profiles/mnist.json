@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "slug": "mnist",
+  "row_count": 70000,
+  "parquet_sha256": "48533689b58e91740da03c67114473d38c61d1c31a8f47d12514b24f5857cec4",
+  "computed_at": "2026-05-13T15:52:13Z",
+  "sample_rows": null,
+  "columns": {
+    "image": null,
+    "label": {
+      "null_count": 0,
+      "min": 0,
+      "max": 9,
+      "mean": 4.452428571428571,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.9,
+          1.8,
+          2.7,
+          3.6,
+          4.5,
+          5.4,
+          6.3,
+          7.2,
+          8.1,
+          9.0
+        ],
+        "counts": [
+          6903,
+          7877,
+          6990,
+          7141,
+          6824,
+          6313,
+          6876,
+          7293,
+          6825,
+          6958
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.857142857142857,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 60000
+        },
+        {
+          "value": "test",
+          "count": 10000
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

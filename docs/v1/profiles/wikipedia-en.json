@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "slug": "wikipedia-en",
+  "row_count": 6407814,
+  "parquet_sha256": "4f46f3efd2aae547a4ad19a35be0c0801bf74cbc67ae1cd19965a12681b44664",
+  "computed_at": "2026-05-16T05:12:40Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 4816364,
+      "mean_length": 7.74073935354553,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "url": {
+      "null_count": 0,
+      "ndv_approx": 5928082,
+      "mean_length": 54.96972586907173,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "title": {
+      "null_count": 0,
+      "ndv_approx": 6011475,
+      "mean_length": 19.8430449136008,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 5360145,
+      "mean_length": 3041.4306161196314,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 6407814
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

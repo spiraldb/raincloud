@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "slug": "librispeech-test-clean",
+  "row_count": 2620,
+  "parquet_sha256": "9902c1b94252b424dc361bf5fd7354e8ebff610ea53d22150f92b8cbbbf66386",
+  "computed_at": "2026-05-13T16:44:38Z",
+  "sample_rows": null,
+  "columns": {
+    "file": {
+      "null_count": 0,
+      "ndv_approx": 2105,
+      "mean_length": 146.02442748091602,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "audio": null,
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 2745,
+      "mean_length": 107.45419847328245,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "speaker_id": {
+      "null_count": 0,
+      "min": 61,
+      "max": 8555,
+      "mean": 3945.38320610687,
+      "ndv_approx": 42,
+      "histogram": {
+        "buckets": [
+          61.0,
+          910.4,
+          1759.8,
+          2609.2,
+          3458.6,
+          4308.0,
+          5157.4,
+          6006.8,
+          6856.2,
+          7705.599999999999,
+          8555.0
+        ],
+        "counts": [
+          468,
+          377,
+          175,
+          136,
+          193,
+          451,
+          117,
+          91,
+          282,
+          330
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "chapter_id": {
+      "null_count": 0,
+      "min": 960,
+      "max": 294828,
+      "mean": 93488.95610687023,
+      "ndv_approx": 87,
+      "histogram": {
+        "buckets": [
+          960.0,
+          30346.8,
+          59733.6,
+          89120.4,
+          118507.2,
+          147894.0,
+          177280.8,
+          206667.6,
+          236054.4,
+          265441.2,
+          294828.0
+        ],
+        "counts": [
+          707,
+          286,
+          431,
+          93,
+          732,
+          88,
+          0,
+          71,
+          0,
+          212
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 2585,
+      "mean_length": 15.02442748091603,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 2620
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "slug": "coig",
+  "row_count": 178246,
+  "parquet_sha256": "35516084f5f51199e1459eb1ffba0e8d9dcdbb64b2dd9e2248a85dd276adf941",
+  "computed_at": "2026-05-13T16:44:21Z",
+  "sample_rows": null,
+  "columns": {
+    "instruction": {
+      "null_count": 0,
+      "ndv_approx": 63607,
+      "mean_length": 39.13100434231343,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "conversations": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 5,
+      "length_mean": 1.306206029868833,
+      "dtype": "list"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 178246
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

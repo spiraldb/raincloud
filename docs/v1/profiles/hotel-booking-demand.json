@@ -1,0 +1,1019 @@
+{
+  "schema_version": 1,
+  "slug": "hotel-booking-demand",
+  "row_count": 119390,
+  "parquet_sha256": "402ea0920378fa61637c8e4047cbb2461d418ac26e833002ac58c3eef8eb0ac9",
+  "computed_at": "2026-05-13T16:44:37Z",
+  "sample_rows": null,
+  "columns": {
+    "hotel": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 10.671077979730295,
+      "top_values": [
+        {
+          "value": "City Hotel",
+          "count": 79330
+        },
+        {
+          "value": "Resort Hotel",
+          "count": 40060
+        }
+      ],
+      "dtype": "string"
+    },
+    "is_canceled": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.37041628277075134,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          75166,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          44224
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "lead_time": {
+      "null_count": 0,
+      "min": 0,
+      "max": 737,
+      "mean": 104.01141636652986,
+      "ndv_approx": 477,
+      "histogram": {
+        "buckets": [
+          0.0,
+          73.7,
+          147.4,
+          221.10000000000002,
+          294.8,
+          368.5,
+          442.20000000000005,
+          515.9,
+          589.6,
+          663.3000000000001,
+          737.0
+        ],
+        "counts": [
+          61639,
+          24403,
+          16345,
+          8658,
+          5265,
+          1825,
+          844,
+          247,
+          162,
+          2
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "arrival_date_year": {
+      "null_count": 0,
+      "min": 2015,
+      "max": 2017,
+      "mean": 2016.156554150264,
+      "ndv_approx": 3,
+      "histogram": {
+        "buckets": [
+          2015.0,
+          2015.2,
+          2015.4,
+          2015.6,
+          2015.8,
+          2016.0,
+          2016.2,
+          2016.4,
+          2016.6,
+          2016.8,
+          2017.0
+        ],
+        "counts": [
+          21996,
+          0,
+          0,
+          0,
+          0,
+          56707,
+          0,
+          0,
+          0,
+          40687
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "arrival_date_month": {
+      "null_count": 0,
+      "ndv_approx": 12,
+      "mean_length": 5.903182846134517,
+      "top_values": [
+        {
+          "value": "August",
+          "count": 13877
+        },
+        {
+          "value": "July",
+          "count": 12661
+        },
+        {
+          "value": "May",
+          "count": 11791
+        },
+        {
+          "value": "October",
+          "count": 11160
+        },
+        {
+          "value": "April",
+          "count": 11089
+        }
+      ],
+      "dtype": "string"
+    },
+    "arrival_date_week_number": {
+      "null_count": 0,
+      "min": 1,
+      "max": 53,
+      "mean": 27.16517296255968,
+      "ndv_approx": 47,
+      "histogram": {
+        "buckets": [
+          1.0,
+          6.2,
+          11.4,
+          16.6,
+          21.8,
+          27.0,
+          32.2,
+          37.4,
+          42.6,
+          47.800000000000004,
+          53.0
+        ],
+        "counts": [
+          7966,
+          10661,
+          11857,
+          13772,
+          12719,
+          17153,
+          13609,
+          13094,
+          9824,
+          8735
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "arrival_date_day_of_month": {
+      "null_count": 0,
+      "min": 1,
+      "max": 31,
+      "mean": 15.798241058715135,
+      "ndv_approx": 29,
+      "histogram": {
+        "buckets": [
+          1.0,
+          4.0,
+          7.0,
+          10.0,
+          13.0,
+          16.0,
+          19.0,
+          22.0,
+          25.0,
+          28.0,
+          31.0
+        ],
+        "counts": [
+          11536,
+          11913,
+          11682,
+          11261,
+          11760,
+          12486,
+          11851,
+          11205,
+          12109,
+          13587
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "stays_in_weekend_nights": {
+      "null_count": 0,
+      "min": 0,
+      "max": 19,
+      "mean": 0.9275986263506156,
+      "ndv_approx": 20,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.9,
+          3.8,
+          5.699999999999999,
+          7.6,
+          9.5,
+          11.399999999999999,
+          13.299999999999999,
+          15.2,
+          17.099999999999998,
+          19.0
+        ],
+        "counts": [
+          82624,
+          34567,
+          1934,
+          172,
+          71,
+          7,
+          8,
+          2,
+          3,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "stays_in_week_nights": {
+      "null_count": 0,
+      "min": 0,
+      "max": 50,
+      "mean": 2.500301532791691,
+      "ndv_approx": 37,
+      "histogram": {
+        "buckets": [
+          0.0,
+          5.0,
+          10.0,
+          15.0,
+          20.0,
+          25.0,
+          30.0,
+          35.0,
+          40.0,
+          45.0,
+          50.0
+        ],
+        "counts": [
+          103460,
+          14492,
+          1196,
+          155,
+          66,
+          7,
+          8,
+          1,
+          4,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "adults": {
+      "null_count": 0,
+      "min": 0,
+      "max": 55,
+      "mean": 1.8564033838679956,
+      "ndv_approx": 16,
+      "histogram": {
+        "buckets": [
+          0.0,
+          5.5,
+          11.0,
+          16.5,
+          22.0,
+          27.5,
+          33.0,
+          38.5,
+          44.0,
+          49.5,
+          55.0
+        ],
+        "counts": [
+          119376,
+          2,
+          0,
+          2,
+          7,
+          0,
+          0,
+          1,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "children": {
+      "null_count": 4,
+      "min": 0,
+      "max": 10,
+      "mean": 0.10388990333874994,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          110796,
+          4861,
+          3652,
+          76,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "babies": {
+      "null_count": 0,
+      "min": 0,
+      "max": 10,
+      "mean": 0.007948739425412514,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          118473,
+          900,
+          15,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "meal": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 2.0685400787335624,
+      "top_values": [
+        {
+          "value": "BB",
+          "count": 92310
+        },
+        {
+          "value": "HB",
+          "count": 14463
+        },
+        {
+          "value": "SC",
+          "count": 10650
+        },
+        {
+          "value": "Undefined",
+          "count": 1169
+        },
+        {
+          "value": "FB",
+          "count": 798
+        }
+      ],
+      "dtype": "string"
+    },
+    "country": {
+      "null_count": 488,
+      "ndv_approx": 200,
+      "mean_length": 2.989243242334023,
+      "top_values": [
+        {
+          "value": "PRT",
+          "count": 48590
+        },
+        {
+          "value": "GBR",
+          "count": 12129
+        },
+        {
+          "value": "FRA",
+          "count": 10415
+        },
+        {
+          "value": "ESP",
+          "count": 8568
+        },
+        {
+          "value": "DEU",
+          "count": 7287
+        }
+      ],
+      "dtype": "string"
+    },
+    "market_segment": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 9.019767149677527,
+      "top_values": [
+        {
+          "value": "Online TA",
+          "count": 56477
+        },
+        {
+          "value": "Offline TA/TO",
+          "count": 24219
+        },
+        {
+          "value": "Groups",
+          "count": 19811
+        },
+        {
+          "value": "Direct",
+          "count": 12606
+        },
+        {
+          "value": "Corporate",
+          "count": 5295
+        }
+      ],
+      "dtype": "string"
+    },
+    "distribution_channel": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 5.343303459251193,
+      "top_values": [
+        {
+          "value": "TA/TO",
+          "count": 97870
+        },
+        {
+          "value": "Direct",
+          "count": 14645
+        },
+        {
+          "value": "Corporate",
+          "count": 6677
+        },
+        {
+          "value": "GDS",
+          "count": 193
+        },
+        {
+          "value": "Undefined",
+          "count": 5
+        }
+      ],
+      "dtype": "string"
+    },
+    "is_repeated_guest": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.03191222045397437,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          115580,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3810
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "previous_cancellations": {
+      "null_count": 0,
+      "min": 0,
+      "max": 26,
+      "mean": 0.08711784906608594,
+      "ndv_approx": 17,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.6,
+          5.2,
+          7.800000000000001,
+          10.4,
+          13.0,
+          15.600000000000001,
+          18.2,
+          20.8,
+          23.400000000000002,
+          26.0
+        ],
+        "counts": [
+          119073,
+          115,
+          22,
+          0,
+          35,
+          26,
+          0,
+          19,
+          1,
+          99
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "previous_bookings_not_canceled": {
+      "null_count": 0,
+      "min": 0,
+      "max": 72,
+      "mean": 0.13709690928888515,
+      "ndv_approx": 71,
+      "histogram": {
+        "buckets": [
+          0.0,
+          7.2,
+          14.4,
+          21.6,
+          28.8,
+          36.0,
+          43.2,
+          50.4,
+          57.6,
+          64.8,
+          72.0
+        ],
+        "counts": [
+          118838,
+          321,
+          108,
+          66,
+          17,
+          8,
+          9,
+          7,
+          8,
+          8
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "reserved_room_type": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 85994
+        },
+        {
+          "value": "D",
+          "count": 19201
+        },
+        {
+          "value": "E",
+          "count": 6535
+        },
+        {
+          "value": "F",
+          "count": 2897
+        },
+        {
+          "value": "G",
+          "count": 2094
+        }
+      ],
+      "dtype": "string"
+    },
+    "assigned_room_type": {
+      "null_count": 0,
+      "ndv_approx": 11,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 74053
+        },
+        {
+          "value": "D",
+          "count": 25322
+        },
+        {
+          "value": "E",
+          "count": 7806
+        },
+        {
+          "value": "F",
+          "count": 3751
+        },
+        {
+          "value": "G",
+          "count": 2553
+        }
+      ],
+      "dtype": "string"
+    },
+    "booking_changes": {
+      "null_count": 0,
+      "min": 0,
+      "max": 21,
+      "mean": 0.22112404724013737,
+      "ndv_approx": 22,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.1,
+          4.2,
+          6.300000000000001,
+          8.4,
+          10.5,
+          12.600000000000001,
+          14.700000000000001,
+          16.8,
+          18.900000000000002,
+          21.0
+        ],
+        "counts": [
+          117820,
+          1303,
+          181,
+          48,
+          14,
+          4,
+          10,
+          5,
+          3,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "deposit_type": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 10.0,
+      "top_values": [
+        {
+          "value": "No Deposit",
+          "count": 104641
+        },
+        {
+          "value": "Non Refund",
+          "count": 14587
+        },
+        {
+          "value": "Refundable",
+          "count": 162
+        }
+      ],
+      "dtype": "string"
+    },
+    "agent": {
+      "null_count": 16340,
+      "min": 1,
+      "max": 535,
+      "mean": 86.69338185346919,
+      "ndv_approx": 297,
+      "histogram": {
+        "buckets": [
+          1.0,
+          54.4,
+          107.8,
+          161.2,
+          214.6,
+          268.0,
+          321.4,
+          374.8,
+          428.2,
+          481.59999999999997,
+          535.0
+        ],
+        "counts": [
+          66023,
+          4594,
+          3281,
+          2803,
+          21854,
+          2501,
+          747,
+          494,
+          462,
+          291
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "company": {
+      "null_count": 112593,
+      "min": 6,
+      "max": 543,
+      "mean": 189.26673532440782,
+      "ndv_approx": 397,
+      "histogram": {
+        "buckets": [
+          6.0,
+          59.7,
+          113.4,
+          167.10000000000002,
+          220.8,
+          274.5,
+          328.20000000000005,
+          381.90000000000003,
+          435.6,
+          489.3,
+          543.0
+        ],
+        "counts": [
+          1665,
+          845,
+          645,
+          749,
+          1245,
+          422,
+          475,
+          416,
+          146,
+          189
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "days_in_waiting_list": {
+      "null_count": 0,
+      "min": 0,
+      "max": 391,
+      "mean": 2.321149174972778,
+      "ndv_approx": 138,
+      "histogram": {
+        "buckets": [
+          0.0,
+          39.1,
+          78.2,
+          117.30000000000001,
+          156.4,
+          195.5,
+          234.60000000000002,
+          273.7,
+          312.8,
+          351.90000000000003,
+          391.0
+        ],
+        "counts": [
+          116887,
+          1390,
+          538,
+          142,
+          206,
+          107,
+          45,
+          0,
+          15,
+          60
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "customer_type": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 10.209146494681297,
+      "top_values": [
+        {
+          "value": "Transient",
+          "count": 89613
+        },
+        {
+          "value": "Transient-Party",
+          "count": 25124
+        },
+        {
+          "value": "Contract",
+          "count": 4076
+        },
+        {
+          "value": "Group",
+          "count": 577
+        }
+      ],
+      "dtype": "string"
+    },
+    "adr": {
+      "null_count": 0,
+      "min": -6.38,
+      "max": 5400.0,
+      "mean": 101.83112153446453,
+      "ndv_approx": 9429,
+      "histogram": {
+        "buckets": [
+          -6.38,
+          534.258,
+          1074.896,
+          1615.534,
+          2156.172,
+          2696.81,
+          3237.4480000000003,
+          3778.0860000000002,
+          4318.724,
+          4859.362,
+          5400.0
+        ],
+        "counts": [
+          119389,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "required_car_parking_spaces": {
+      "null_count": 0,
+      "min": 0,
+      "max": 8,
+      "mean": 0.06251779881062065,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.8,
+          1.6,
+          2.4000000000000004,
+          3.2,
+          4.0,
+          4.800000000000001,
+          5.6000000000000005,
+          6.4,
+          7.2,
+          8.0
+        ],
+        "counts": [
+          111974,
+          7383,
+          28,
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "total_of_special_requests": {
+      "null_count": 0,
+      "min": 0,
+      "max": 5,
+      "mean": 0.5713627607002262,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.5,
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0
+        ],
+        "counts": [
+          70318,
+          0,
+          33226,
+          0,
+          12969,
+          0,
+          2497,
+          0,
+          340,
+          40
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "reservation_status": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 8.619473992796717,
+      "top_values": [
+        {
+          "value": "Check-Out",
+          "count": 75166
+        },
+        {
+          "value": "Canceled",
+          "count": 43017
+        },
+        {
+          "value": "No-Show",
+          "count": 1207
+        }
+      ],
+      "dtype": "string"
+    },
+    "reservation_status_date": {
+      "dtype": "date32",
+      "null_count": 0,
+      "min": "2014-10-17T00:00:00+00:00",
+      "max": "2017-09-14T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2014-10-17T00:00:00+00:00",
+          "2015-01-31T07:12:00+00:00",
+          "2015-05-17T14:24:00+00:00",
+          "2015-08-31T21:36:00+00:00",
+          "2015-12-16T04:48:00+00:00",
+          "2016-03-31T12:00:00+00:00",
+          "2016-07-15T19:12:00+00:00",
+          "2016-10-30T02:24:00+00:00",
+          "2017-02-13T09:36:00+00:00",
+          "2017-05-30T16:48:00+00:00",
+          "2017-09-14T00:00:00+00:00"
+        ],
+        "counts": [
+          1129,
+          398,
+          7685,
+          14347,
+          15948,
+          16834,
+          17068,
+          16972,
+          16994,
+          12015
+        ]
+      }
+    }
+  }
+}

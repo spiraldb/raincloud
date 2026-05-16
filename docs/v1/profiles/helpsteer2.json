@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "slug": "helpsteer2",
+  "row_count": 21362,
+  "parquet_sha256": "eef8dd021b7ec65fe5ae5dfaa7359746a25085b32db507d3c6f6b935d1fc533b",
+  "computed_at": "2026-05-13T16:44:37Z",
+  "sample_rows": null,
+  "columns": {
+    "prompt": {
+      "null_count": 0,
+      "ndv_approx": 9965,
+      "mean_length": 712.5525699840839,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "response": {
+      "null_count": 0,
+      "ndv_approx": 20013,
+      "mean_length": 1492.5962924819773,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "helpfulness": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4,
+      "mean": 2.8654620353899447,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8000000000000003,
+          3.2,
+          3.6,
+          4.0
+        ],
+        "counts": [
+          1694,
+          0,
+          2045,
+          0,
+          0,
+          2568,
+          0,
+          6189,
+          0,
+          8866
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "correctness": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4,
+      "mean": 2.9644228068532907,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8000000000000003,
+          3.2,
+          3.6,
+          4.0
+        ],
+        "counts": [
+          1526,
+          0,
+          2072,
+          0,
+          0,
+          2220,
+          0,
+          5362,
+          0,
+          10182
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "coherence": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4,
+      "mean": 3.639265986330868,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8000000000000003,
+          3.2,
+          3.6,
+          4.0
+        ],
+        "counts": [
+          50,
+          0,
+          245,
+          0,
+          0,
+          1002,
+          0,
+          4767,
+          0,
+          15298
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "complexity": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4,
+      "mean": 1.7048497331710515,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8000000000000003,
+          3.2,
+          3.6,
+          4.0
+        ],
+        "counts": [
+          667,
+          0,
+          7182,
+          0,
+          0,
+          11414,
+          0,
+          1987,
+          0,
+          112
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "verbosity": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4,
+      "mean": 1.9999063758075086,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8000000000000003,
+          3.2,
+          3.6,
+          4.0
+        ],
+        "counts": [
+          851,
+          0,
+          2979,
+          0,
+          0,
+          13444,
+          0,
+          3497,
+          0,
+          591
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 21362
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

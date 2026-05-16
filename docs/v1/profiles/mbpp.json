@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "slug": "mbpp",
+  "row_count": 974,
+  "parquet_sha256": "e8f476fc08222703d6f77da35178c1888b06e0a3f814c161293688fb8b16d9b2",
+  "computed_at": "2026-05-13T16:44:38Z",
+  "sample_rows": null,
+  "columns": {
+    "task_id": {
+      "null_count": 0,
+      "min": 1,
+      "max": 974,
+      "mean": 487.5,
+      "ndv_approx": 1179,
+      "histogram": {
+        "buckets": [
+          1.0,
+          98.3,
+          195.6,
+          292.9,
+          390.2,
+          487.5,
+          584.8,
+          682.1,
+          779.4,
+          876.6999999999999,
+          974.0
+        ],
+        "counts": [
+          98,
+          97,
+          97,
+          98,
+          97,
+          97,
+          98,
+          97,
+          97,
+          98
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 887,
+      "mean_length": 78.61601642710473,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "code": {
+      "null_count": 0,
+      "ndv_approx": 1041,
+      "mean_length": 181.0677618069815,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "test_list": {
+      "null_count": 0,
+      "length_min": 3,
+      "length_max": 3,
+      "length_mean": 3.0,
+      "dtype": "list"
+    },
+    "test_setup_code": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 1.053388090349076,
+      "top_values": [
+        {
+          "value": "",
+          "count": 972
+        },
+        {
+          "value": "root = Node(1) \r\nroot.left = Node(2) \r\nroot.right = Node(3) \r\nroot.left.left = Node(4) \r\nroot.left.right = Node(5) \r\nroot.left.left.left = Node(8) \r\nroot1 = Node(1) \r\nroot1.left = Node(2) \r\nroot1.right = Node(3) \r\nroot1.left.left = Node(4) \r\nroot1.left.right = Node(5) \r\nroot1.right.left = Node(6) \r\nroot1.left.left.left = Node(7)\r\nroot2 = Node(1) \r\nroot2.left = Node(2) \r\nroot2.right = Node(3) \r\nroot2.left.left = Node(4) \r\nroot2.left.right = Node(5)\r\nroot2.left.left.left = Node(7)",
+          "count": 1
+        },
+        {
+          "value": "root = Node(1) \r\nroot.left = Node(2) \r\nroot.right = Node(3) \r\nroot.left.left = Node(4) \r\nroot.left.right = Node(5) \r\nroot1 = Node(1);  \r\nroot1.left = Node(2);  \r\nroot1.right = Node(3);  \r\nroot1.left.left = Node(4);  \r\nroot1.right.left = Node(5);  \r\nroot1.right.right = Node(6);  \r\nroot1.right.right.right= Node(7);  \r\nroot1.right.right.right.right = Node(8)\r\nroot2 = Node(1) \r\nroot2.left = Node(2) \r\nroot2.right = Node(3) \r\nroot2.left.left = Node(4) \r\nroot2.left.right = Node(5)\r\nroot2.left.left.left = Node(6)\r\nroot2.left.left.right = Node(7)",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "challenge_test_list": {
+      "null_count": 0,
+      "length_min": 0,
+      "length_max": 3,
+      "length_mean": 0.01642710472279261,
+      "dtype": "list"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.958932238193018,
+      "top_values": [
+        {
+          "value": "test",
+          "count": 500
+        },
+        {
+          "value": "train",
+          "count": 374
+        },
+        {
+          "value": "validation",
+          "count": 90
+        },
+        {
+          "value": "prompt",
+          "count": 10
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

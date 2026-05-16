@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "slug": "pubmedqa-labeled",
+  "row_count": 1000,
+  "parquet_sha256": "55ae2ffe9b74516d7668efb73dd5e84e8c046bcf68233b9f320d49ed2d5e6a85",
+  "computed_at": "2026-05-13T16:44:44Z",
+  "sample_rows": null,
+  "columns": {
+    "pubid": {
+      "null_count": 0,
+      "min": 1571683,
+      "max": 29112560,
+      "mean": 19627599.098,
+      "ndv_approx": 765,
+      "histogram": {
+        "buckets": [
+          1571683.0,
+          4325770.7,
+          7079858.4,
+          9833946.100000001,
+          12588033.8,
+          15342121.5,
+          18096209.200000003,
+          20850296.900000002,
+          23604384.6,
+          26358472.3,
+          29112560.0
+        ],
+        "counts": [
+          3,
+          0,
+          53,
+          103,
+          57,
+          148,
+          165,
+          186,
+          193,
+          92
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 1348,
+      "mean_length": 94.196,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "context": null,
+    "long_answer": {
+      "null_count": 0,
+      "ndv_approx": 995,
+      "mean_length": 268.366,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "final_decision": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.882,
+      "top_values": [
+        {
+          "value": "yes",
+          "count": 552
+        },
+        {
+          "value": "no",
+          "count": 338
+        },
+        {
+          "value": "maybe",
+          "count": 110
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 1000
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}
