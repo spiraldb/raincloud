@@ -132,14 +132,20 @@ def _numeric_profile(con, table_name: str, col: str, row_count: int) -> dict | N
     #   bucket = CASE x = hi THEN N ELSE floor((x - lo) / (hi - lo) * N) + 1 END
     # The CASE pins the right-edge (x == hi) into the last bucket; floor()
     # alone would push it into bucket N+1.
+    #
+    # Every numeric literal is `::DOUBLE`-cast so DuckDB doesn't infer
+    # DECIMAL types from the inline Python repr — a 14-digit `lo_f` like
+    # `0.26851799179226266` gets bound as DECIMAL(18,17) by default, and
+    # then `(value - lo) * 10` overflows DECIMAL(18,17)'s 1-digit integer
+    # part for any large-magnitude column.
     lo_f = float(lo)
     hi_f = float(hi)
     bounds = con.execute(f"""
         WITH bucketed AS (
             SELECT CASE
-                WHEN CAST({quoted} AS DOUBLE) = {hi_f} THEN {_HISTOGRAM_BUCKETS}
-                ELSE CAST(floor((CAST({quoted} AS DOUBLE) - {lo_f}) /
-                                ({hi_f} - {lo_f}) * {_HISTOGRAM_BUCKETS}) AS INTEGER) + 1
+                WHEN CAST({quoted} AS DOUBLE) = {hi_f}::DOUBLE THEN {_HISTOGRAM_BUCKETS}
+                ELSE CAST(floor((CAST({quoted} AS DOUBLE) - {lo_f}::DOUBLE) /
+                                ({hi_f}::DOUBLE - {lo_f}::DOUBLE) * {_HISTOGRAM_BUCKETS}::DOUBLE) AS INTEGER) + 1
             END AS b
             FROM {table_name}
             WHERE {quoted} IS NOT NULL
@@ -429,6 +435,13 @@ def profile_slug(*, slug: str, parquet_path: Path, sample_rows: int | None = Non
             for row in con.execute("PRAGMA table_info(_profile_src)").fetchall()
         }
         for field in schema:
+            # Skip empty-named columns — some upstream CSVs ship an unnamed
+            # pandas-index column whose Arrow field has `name == ""`, and
+            # DuckDB rejects `""` as a zero-length delimited identifier.
+            if not field.name:
+                columns["__unnamed_column__"] = {"dtype": str(field.type),
+                                                  "skipped": "empty column name"}
+                continue
             columns[field.name] = _column_profile(
                 con, "_profile_src", field, eff_rows,
                 duckdb_type=duckdb_types.get(field.name),
