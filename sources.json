@@ -2293,7 +2293,6 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "enums",
         "measurements"
       ]
     },
@@ -4821,7 +4820,6 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "enums",
         "measurements"
       ]
     },
@@ -4953,8 +4951,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
+        "coordinates",
         "counts",
-        "enums",
         "measurements"
       ]
     },
@@ -5088,7 +5086,6 @@
       },
       "tags": [
         "binary-payload",
-        "enums",
         "measurements"
       ]
     },
@@ -5288,7 +5285,7 @@
       },
       "tags": [
         "code-strings",
-        "enums",
+        "counts",
         "identifiers"
       ]
     },
@@ -5486,8 +5483,8 @@
       },
       "tags": [
         "counts",
-        "enums",
-        "measurements"
+        "measurements",
+        "monetary"
       ]
     },
     {
@@ -5552,7 +5549,6 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "enums",
         "identifiers",
         "measurements"
       ]
@@ -6075,7 +6071,6 @@
       },
       "tags": [
         "counts",
-        "enums",
         "measurements"
       ]
     },
@@ -6277,7 +6272,6 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "enums",
         "prose"
       ]
     },
@@ -6675,7 +6669,6 @@
       },
       "tags": [
         "coordinates",
-        "enums",
         "measurements"
       ]
     },
@@ -7074,8 +7067,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
+        "binary-payload",
         "counts",
-        "enums",
         "measurements"
       ]
     },
@@ -7542,7 +7535,7 @@
       },
       "tags": [
         "counts",
-        "enums",
+        "identifiers",
         "measurements"
       ]
     },
@@ -8261,7 +8254,6 @@
       },
       "tags": [
         "counts",
-        "enums",
         "measurements"
       ]
     },
@@ -8828,8 +8820,8 @@
       },
       "tags": [
         "counts",
-        "enums",
-        "measurements"
+        "measurements",
+        "monetary"
       ]
     },
     {
@@ -9141,7 +9133,6 @@
       },
       "tags": [
         "coordinates",
-        "enums",
         "identifiers"
       ]
     },
@@ -9393,8 +9384,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
+        "coordinates",
         "counts",
-        "enums",
         "measurements"
       ]
     },
@@ -9834,8 +9825,8 @@
       },
       "tags": [
         "code-strings",
-        "enums",
-        "measurements"
+        "measurements",
+        "timestamps"
       ]
     },
     {
@@ -10018,7 +10009,7 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "enums",
+        "counts",
         "identifiers",
         "measurements"
       ]
@@ -11533,8 +11524,7 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "code-strings",
-        "enums"
+        "code-strings"
       ]
     },
     {
@@ -12384,7 +12374,6 @@
         }
       ],
       "tags": [
-        "enums",
         "identifiers",
         "prose"
       ]
@@ -12526,7 +12515,6 @@
         }
       ],
       "tags": [
-        "enums",
         "prose"
       ]
     },
@@ -12667,7 +12655,6 @@
         }
       ],
       "tags": [
-        "enums",
         "prose"
       ]
     },
@@ -12812,7 +12799,6 @@
         }
       ],
       "tags": [
-        "enums",
         "nested-json",
         "prose"
       ],
@@ -13485,7 +13471,6 @@
         }
       ],
       "tags": [
-        "enums",
         "prose"
       ]
     },
@@ -13927,7 +13912,6 @@
         }
       ],
       "tags": [
-        "enums",
         "prose"
       ]
     },
@@ -14437,7 +14421,6 @@
       ],
       "tags": [
         "binary-payload",
-        "enums",
         "prose"
       ]
     },
@@ -14513,7 +14496,6 @@
       ],
       "tags": [
         "binary-payload",
-        "enums",
         "nested-json"
       ]
     },
@@ -14588,7 +14570,6 @@
       ],
       "tags": [
         "code-strings",
-        "enums",
         "identifiers"
       ]
     },
@@ -14662,7 +14643,6 @@
         }
       ],
       "tags": [
-        "enums",
         "prose"
       ]
     },
@@ -15114,7 +15094,6 @@
         }
       ],
       "tags": [
-        "enums",
         "identifiers",
         "prose"
       ]
@@ -15186,8 +15165,7 @@
       ],
       "tags": [
         "binary-payload",
-        "counts",
-        "enums"
+        "counts"
       ]
     },
     {
@@ -15411,7 +15389,7 @@
       ],
       "tags": [
         "counts",
-        "enums",
+        "identifiers",
         "prose"
       ]
     },
@@ -15486,7 +15464,6 @@
       ],
       "tags": [
         "counts",
-        "enums",
         "prose"
       ]
     },
@@ -15856,7 +15833,6 @@
       ],
       "tags": [
         "counts",
-        "enums",
         "prose"
       ]
     },
@@ -15927,7 +15903,6 @@
         }
       ],
       "tags": [
-        "enums",
         "identifiers",
         "prose"
       ]
@@ -16153,7 +16128,6 @@
         }
       ],
       "tags": [
-        "enums",
         "identifiers",
         "nested-json"
       ]
@@ -16548,7 +16522,7 @@
         }
       ],
       "tags": [
-        "enums",
+        "identifiers",
         "nested-json",
         "prose"
       ]

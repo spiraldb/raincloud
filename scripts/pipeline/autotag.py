@@ -130,7 +130,7 @@ _HANDLER_FALLBACK: dict[str, list[str]] = {
     "jsonbench_variant_parse":  ["nested-json", "timestamps"],
     "stack_exchange_split":     ["code-strings", "prose", "timestamps"],
     "lichess_pgn_parse":        ["code-strings", "timestamps"],
-    "public_bi_merge":          ["enums", "measurements"],
+    "public_bi_merge":          ["measurements"],
 }
 
 # Slug-specific fallback when handler + profile are both unavailable.
@@ -200,6 +200,10 @@ def infer_for_slug(spec: dict, profile: dict | None) -> list[str]:
     # drowning out genuinely column-heavy kinds.
     for t in _slug_name_fallback(spec):
         kinds[t] += 1
+    # enums is the dominant noise tag — require ≥2 column hits to call a slug
+    # enum-shaped, otherwise drop it from the candidate set
+    if kinds.get("enums", 0) < 2:
+        kinds.pop("enums", None)
     ranked = sorted(kinds.items(), key=lambda x: (-x[1], order.get(x[0], 99)))
     return [t for t, _ in ranked[:MAX_TAGS_PER_SLUG]]
 
