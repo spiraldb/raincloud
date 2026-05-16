@@ -8,7 +8,6 @@ This is the read-only query layer over it.
 
 Usage:
     python -m scripts.pipeline.list_datasets                        # every slug
-    python -m scripts.pipeline.list_datasets --family uci           # filter
     python -m scripts.pipeline.list_datasets --handler tighten_types
     python -m scripts.pipeline.list_datasets --license CC0-1.0
     python -m scripts.pipeline.list_datasets --fetch-type kaggle
@@ -18,11 +17,11 @@ Usage:
     python -m scripts.pipeline.list_datasets --kaggle-tos          # requires_interactive_accept
     python -m scripts.pipeline.list_datasets --scrape              # license.scrape_advisory non-null
     python -m scripts.pipeline.list_datasets --hydrate             # hydrate config non-null
-    python -m scripts.pipeline.list_datasets --showcase start-here # editorial tier (repeatable)
+    python -m scripts.pipeline.list_datasets --showcase encoding   # editorial tier (repeatable)
     python -m scripts.pipeline.list_datasets --tag geospatial      # domain tag (repeatable)
     python -m scripts.pipeline.list_datasets --size s --size m     # size bucket (repeatable)
     python -m scripts.pipeline.list_datasets --trait has_nested    # shape trait; ! to negate
-    python -m scripts.pipeline.list_datasets --view start-here     # named preset (clears other axes)
+    python -m scripts.pipeline.list_datasets --view encoding       # named preset (clears other axes)
     python -m scripts.pipeline.list_datasets --long                # slug + key fields
     python -m scripts.pipeline.list_datasets --json                # one JSON object per row
     python -m scripts.pipeline.list_datasets --count               # just the count
@@ -109,11 +108,9 @@ def _filter_state_from_args(args) -> FilterState:
     ):
         if src:
             getattr(state, axis_name).update(src)
-    # The existing --license, --family, --fetch-type flags are single-value.
+    # The existing --license, --fetch-type flags are single-value.
     if getattr(args, "license", None):
         state.license.add(args.license)
-    if getattr(args, "family", None):
-        state.family.add(args.family)
     if getattr(args, "fetch_type", None):
         state.fetch_type.add(args.fetch_type)
     # Trait flags: prefix '!' negates.
@@ -131,8 +128,8 @@ def _filter_state_from_args(args) -> FilterState:
 
 def _matches(spec: dict, args, state: FilterState, snapshot: dict) -> bool:
     """Apply the inline filters not covered by FilterState, then defer the
-    closed-vocab axes (family / license / fetch_type / vortex / showcase /
-    tag / size / trait) to FilterState.matches().
+    closed-vocab axes (license / fetch_type / vortex / showcase / tag / size /
+    trait) to FilterState.matches().
     """
     if args.handler and spec_field(spec, "transform.handler") != args.handler: return False
     if args.reader and spec_field(spec, "parse.reader") != args.reader: return False
@@ -155,7 +152,6 @@ def _matches(spec: dict, args, state: FilterState, snapshot: dict) -> bool:
 def _long_row(spec: dict) -> dict[str, Any]:
     return {
         "slug":                spec["slug"],
-        "family":              spec.get("family"),
         "handler":             spec_field(spec, "transform.handler"),
         "fetch_type":          spec_field(spec, "fetch.type"),
         "reader":              spec_field(spec, "parse.reader"),
@@ -173,12 +169,11 @@ def _long_row(spec: dict) -> dict[str, Any]:
 
 def _render_long_table(rows: list[dict]) -> str:
     if not rows: return ""
-    headers = ("slug", "family", "handler", "fetch", "reader", "license", "rows", "vortex", "scrape", "hydrate")
+    headers = ("slug", "handler", "fetch", "reader", "license", "rows", "vortex", "scrape", "hydrate")
     cells = [headers]
     for r in rows:
         cells.append((
             r["slug"],
-            r["family"] or "",
             r["handler"] or "",
             r["fetch_type"] or "",
             r["reader"] or "",
@@ -351,23 +346,45 @@ def _inspect(slug: str) -> int:
     lic = (spec.get("license") or {}).get("spdx")
     if lic:
         print(f"license:  {lic}")
-    print(f"family:   {spec.get('family')}")
     print()
     desc = (spec.get("description") or "").strip()
     if desc:
         print(desc)
         print()
 
-    profile_path = outputs_root() / slug / "profile.json"
-    if not profile_path.exists():
-        print(f"no profile yet — run `python -m scripts.pipeline.profile {slug}`")
+    # Prefer the locally-built outputs/v{n}/<slug>/profile.json (fresher).
+    # Fall back to the tracked docs/v{n}/profiles/<slug>.json so a fresh
+    # clone can `--inspect` without first running `python -m scripts.pipeline.profile`.
+    v = manifest.get("schema_version", 1)
+    built_path = outputs_root(manifest) / slug / "profile.json"
+    tracked_path = REPO_ROOT / "docs" / f"v{v}" / "profiles" / f"{slug}.json"
+    candidates = (built_path, tracked_path)
+    profile: dict | None = None
+    last_error: Exception | None = None
+    last_error_path = None
+    for path in candidates:
+        if not path.exists():
+            continue
+        try:
+            profile = _json.loads(path.read_text())
+            break
+        except Exception as e:
+            last_error = e
+            last_error_path = path
+            continue
+    if profile is None:
+        if last_error is not None:
+            print(f"profile.json malformed at {last_error_path}: {last_error}", file=sys.stderr)
+            return 2
+        try:
+            tracked_display = tracked_path.relative_to(REPO_ROOT)
+        except ValueError:
+            tracked_display = tracked_path
+        print(
+            f"no profile yet for {slug} — checked {built_path} and {tracked_path}; "
+            f"run `python -m scripts.pipeline.profile {slug}` or check tracked mirror at {tracked_display}"
+        )
         return 0
-
-    try:
-        profile = _json.loads(profile_path.read_text())
-    except Exception as e:
-        print(f"profile.json malformed: {e}", file=sys.stderr)
-        return 2
     print(f"rows: {profile['row_count']}   sample_rows: {profile.get('sample_rows')}")
     print(f"columns ({len(profile['columns'])}):")
     for name, col in profile["columns"].items():
@@ -395,7 +412,6 @@ def _print_vocab_help(manifest: dict, *, vocab_name: str) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
-    ap.add_argument("--family", help="filter by family (direct, kaggle-upstream, nyc-tlc, public-bi, uci)")
     ap.add_argument("--handler", help="filter by transform.handler name")
     ap.add_argument("--license", help="filter by license.spdx")
     ap.add_argument("--fetch-type", help="filter by fetch.type (http, kaggle, huggingface, custom)")
