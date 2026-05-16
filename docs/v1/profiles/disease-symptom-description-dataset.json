@@ -1,0 +1,478 @@
+{
+  "schema_version": 1,
+  "slug": "disease-symptom-description-dataset",
+  "row_count": 4920,
+  "parquet_sha256": "f299b49d430b55a6f3266bdaa3066ecc4435974832650bdb79c6fcac8ac4f07b",
+  "computed_at": "2026-05-16T08:49:18Z",
+  "sample_rows": null,
+  "columns": {
+    "Disease": {
+      "null_count": 0,
+      "ndv_approx": 35,
+      "mean_length": 13.121951219512194,
+      "top_values": [
+        {
+          "value": "Chicken pox",
+          "count": 120
+        },
+        {
+          "value": "Hyperthyroidism",
+          "count": 120
+        },
+        {
+          "value": "Dengue",
+          "count": 120
+        },
+        {
+          "value": "Hepatitis D",
+          "count": 120
+        },
+        {
+          "value": "Hypoglycemia",
+          "count": 120
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_1": {
+      "null_count": 0,
+      "ndv_approx": 32,
+      "mean_length": 10.057317073170731,
+      "top_values": [
+        {
+          "value": " vomiting",
+          "count": 822
+        },
+        {
+          "value": " fatigue",
+          "count": 690
+        },
+        {
+          "value": "itching",
+          "count": 678
+        },
+        {
+          "value": " skin_rash",
+          "count": 480
+        },
+        {
+          "value": " chills",
+          "count": 474
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_2": {
+      "null_count": 0,
+      "ndv_approx": 43,
+      "mean_length": 11.363414634146341,
+      "top_values": [
+        {
+          "value": " vomiting",
+          "count": 870
+        },
+        {
+          "value": " fatigue",
+          "count": 402
+        },
+        {
+          "value": " skin_rash",
+          "count": 306
+        },
+        {
+          "value": " chills",
+          "count": 240
+        },
+        {
+          "value": " yellowish_skin",
+          "count": 240
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_3": {
+      "null_count": 0,
+      "ndv_approx": 54,
+      "mean_length": 12.296341463414635,
+      "top_values": [
+        {
+          "value": " fatigue",
+          "count": 726
+        },
+        {
+          "value": " high_fever",
+          "count": 324
+        },
+        {
+          "value": " yellowish_skin",
+          "count": 240
+        },
+        {
+          "value": " nausea",
+          "count": 222
+        },
+        {
+          "value": " weight_loss",
+          "count": 138
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_4": {
+      "null_count": 348,
+      "ndv_approx": 57,
+      "mean_length": 14.087926509186351,
+      "top_values": [
+        {
+          "value": " high_fever",
+          "count": 378
+        },
+        {
+          "value": " lethargy",
+          "count": 222
+        },
+        {
+          "value": " yellowish_skin",
+          "count": 216
+        },
+        {
+          "value": " sweating",
+          "count": 216
+        },
+        {
+          "value": " weight_loss",
+          "count": 192
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_5": {
+      "null_count": 1206,
+      "ndv_approx": 41,
+      "mean_length": 13.861066235864298,
+      "top_values": [
+        {
+          "value": " headache",
+          "count": 348
+        },
+        {
+          "value": " high_fever",
+          "count": 330
+        },
+        {
+          "value": " dark_urine",
+          "count": 210
+        },
+        {
+          "value": " nausea",
+          "count": 192
+        },
+        {
+          "value": " loss_of_balance",
+          "count": 162
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_6": {
+      "null_count": 1986,
+      "ndv_approx": 30,
+      "mean_length": 13.985685071574641,
+      "top_values": [
+        {
+          "value": " nausea",
+          "count": 390
+        },
+        {
+          "value": " loss_of_appetite",
+          "count": 240
+        },
+        {
+          "value": " headache",
+          "count": 204
+        },
+        {
+          "value": " high_fever",
+          "count": 168
+        },
+        {
+          "value": " abdominal_pain",
+          "count": 156
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_7": {
+      "null_count": 2652,
+      "ndv_approx": 24,
+      "mean_length": 14.246031746031745,
+      "top_values": [
+        {
+          "value": " abdominal_pain",
+          "count": 264
+        },
+        {
+          "value": " loss_of_appetite",
+          "count": 198
+        },
+        {
+          "value": " excessive_hunger",
+          "count": 126
+        },
+        {
+          "value": " malaise",
+          "count": 120
+        },
+        {
+          "value": " diarrhoea",
+          "count": 114
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_8": {
+      "null_count": 2976,
+      "ndv_approx": 21,
+      "mean_length": 13.99074074074074,
+      "top_values": [
+        {
+          "value": " abdominal_pain",
+          "count": 276
+        },
+        {
+          "value": " excessive_hunger",
+          "count": 222
+        },
+        {
+          "value": " loss_of_appetite",
+          "count": 162
+        },
+        {
+          "value": " mild_fever",
+          "count": 120
+        },
+        {
+          "value": " phlegm",
+          "count": 120
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_9": {
+      "null_count": 3228,
+      "ndv_approx": 20,
+      "mean_length": 15.372340425531915,
+      "top_values": [
+        {
+          "value": " yellowing_of_eyes",
+          "count": 228
+        },
+        {
+          "value": " loss_of_appetite",
+          "count": 156
+        },
+        {
+          "value": " mild_fever",
+          "count": 120
+        },
+        {
+          "value": " malaise",
+          "count": 102
+        },
+        {
+          "value": " diarrhoea",
+          "count": 84
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_10": {
+      "null_count": 3408,
+      "ndv_approx": 18,
+      "mean_length": 15.607142857142858,
+      "top_values": [
+        {
+          "value": " yellowing_of_eyes",
+          "count": 198
+        },
+        {
+          "value": " malaise",
+          "count": 138
+        },
+        {
+          "value": " irritability",
+          "count": 120
+        },
+        {
+          "value": " pain_behind_the_eyes",
+          "count": 84
+        },
+        {
+          "value": " toxic_look_(typhos)",
+          "count": 78
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_11": {
+      "null_count": 3726,
+      "ndv_approx": 20,
+      "mean_length": 15.839195979899497,
+      "top_values": [
+        {
+          "value": " irritability",
+          "count": 120
+        },
+        {
+          "value": " back_pain",
+          "count": 84
+        },
+        {
+          "value": " redness_of_eyes",
+          "count": 72
+        },
+        {
+          "value": " muscle_pain",
+          "count": 72
+        },
+        {
+          "value": " acute_liver_failure",
+          "count": 72
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_12": {
+      "null_count": 4176,
+      "ndv_approx": 12,
+      "mean_length": 14.64516129032258,
+      "top_values": [
+        {
+          "value": " malaise",
+          "count": 126
+        },
+        {
+          "value": " irritability",
+          "count": 72
+        },
+        {
+          "value": " palpitations",
+          "count": 72
+        },
+        {
+          "value": " swelled_lymph_nodes",
+          "count": 72
+        },
+        {
+          "value": " coma",
+          "count": 72
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_13": {
+      "null_count": 4416,
+      "ndv_approx": 9,
+      "mean_length": 13.619047619047619,
+      "top_values": [
+        {
+          "value": " runny_nose",
+          "count": 72
+        },
+        {
+          "value": " stomach_bleeding",
+          "count": 72
+        },
+        {
+          "value": " malaise",
+          "count": 72
+        },
+        {
+          "value": " muscle_pain",
+          "count": 72
+        },
+        {
+          "value": " abnormal_menstruation",
+          "count": 72
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_14": {
+      "null_count": 4614,
+      "ndv_approx": 4,
+      "mean_length": 12.0,
+      "top_values": [
+        {
+          "value": " chest_pain",
+          "count": 96
+        },
+        {
+          "value": " phlegm",
+          "count": 72
+        },
+        {
+          "value": " congestion",
+          "count": 72
+        },
+        {
+          "value": " red_spots_over_body",
+          "count": 66
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_15": {
+      "null_count": 4680,
+      "ndv_approx": 2,
+      "mean_length": 12.6,
+      "top_values": [
+        {
+          "value": " chest_pain",
+          "count": 144
+        },
+        {
+          "value": " blood_in_sputum",
+          "count": 48
+        },
+        {
+          "value": " loss_of_smell",
+          "count": 48
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_16": {
+      "null_count": 4728,
+      "ndv_approx": 3,
+      "mean_length": 14.25,
+      "top_values": [
+        {
+          "value": " loss_of_smell",
+          "count": 72
+        },
+        {
+          "value": " blood_in_sputum",
+          "count": 72
+        },
+        {
+          "value": " muscle_pain",
+          "count": 48
+        }
+      ],
+      "dtype": "string"
+    },
+    "Symptom_17": {
+      "null_count": 4848,
+      "ndv_approx": 1,
+      "mean_length": 12.0,
+      "top_values": [
+        {
+          "value": " muscle_pain",
+          "count": 72
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

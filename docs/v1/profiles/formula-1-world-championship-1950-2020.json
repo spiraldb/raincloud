@@ -1,0 +1,493 @@
+{
+  "schema_version": 1,
+  "slug": "formula-1-world-championship-1950-2020",
+  "row_count": 26759,
+  "parquet_sha256": "e4c30ab32767b8c8122adcfb82f52e971f1140adddd1271de2d79275a6149f67",
+  "computed_at": "2026-05-16T08:54:50Z",
+  "sample_rows": null,
+  "columns": {
+    "resultId": {
+      "null_count": 0,
+      "min": 1,
+      "max": 26764,
+      "mean": 13380.977390784408,
+      "ndv_approx": 27044,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2677.3,
+          5353.6,
+          8029.900000000001,
+          10706.2,
+          13382.5,
+          16058.800000000001,
+          18735.100000000002,
+          21411.4,
+          24087.7,
+          26764.0
+        ],
+        "counts": [
+          2677,
+          2676,
+          2676,
+          2677,
+          2676,
+          2676,
+          2677,
+          2673,
+          2674,
+          2677
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "raceId": {
+      "null_count": 0,
+      "min": 1,
+      "max": 1144,
+      "mean": 551.6872827833627,
+      "ndv_approx": 1287,
+      "histogram": {
+        "buckets": [
+          1.0,
+          115.3,
+          229.6,
+          343.9,
+          458.2,
+          572.5,
+          686.8,
+          801.1,
+          915.4,
+          1029.7,
+          1144.0
+        ],
+        "counts": [
+          2374,
+          2478,
+          3209,
+          3266,
+          3230,
+          2662,
+          2618,
+          2647,
+          2116,
+          2159
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "driverId": {
+      "null_count": 0,
+      "min": 1,
+      "max": 862,
+      "mean": 278.6735304009866,
+      "ndv_approx": 1022,
+      "histogram": {
+        "buckets": [
+          1.0,
+          87.1,
+          173.2,
+          259.29999999999995,
+          345.4,
+          431.5,
+          517.5999999999999,
+          603.6999999999999,
+          689.8,
+          775.9,
+          862.0
+        ],
+        "counts": [
+          8389,
+          5234,
+          3728,
+          1588,
+          1548,
+          696,
+          573,
+          634,
+          225,
+          4144
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "constructorId": {
+      "null_count": 0,
+      "min": 1,
+      "max": 215,
+      "mean": 50.18053738928958,
+      "ndv_approx": 237,
+      "histogram": {
+        "buckets": [
+          1.0,
+          22.4,
+          43.8,
+          65.19999999999999,
+          86.6,
+          108.0,
+          129.39999999999998,
+          150.79999999999998,
+          172.2,
+          193.6,
+          215.0
+        ],
+        "counts": [
+          12983,
+          4917,
+          2480,
+          847,
+          731,
+          769,
+          813,
+          948,
+          662,
+          1609
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "number": {
+      "null_count": 0,
+      "ndv_approx": 129,
+      "mean_length": 1.6792854740461154,
+      "top_values": [
+        {
+          "value": "4",
+          "count": 1019
+        },
+        {
+          "value": "16",
+          "count": 1005
+        },
+        {
+          "value": "11",
+          "count": 1001
+        },
+        {
+          "value": "6",
+          "count": 994
+        },
+        {
+          "value": "3",
+          "count": 994
+        }
+      ],
+      "dtype": "string"
+    },
+    "grid": {
+      "null_count": 0,
+      "min": 0,
+      "max": 34,
+      "mean": 11.134795769647596,
+      "ndv_approx": 34,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3.4,
+          6.8,
+          10.2,
+          13.6,
+          17.0,
+          20.4,
+          23.8,
+          27.2,
+          30.599999999999998,
+          34.0
+        ],
+        "counts": [
+          5029,
+          3389,
+          4526,
+          3384,
+          3333,
+          4145,
+          1806,
+          1024,
+          74,
+          49
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "position": {
+      "null_count": 0,
+      "ndv_approx": 35,
+      "mean_length": 1.6261444747561569,
+      "top_values": [
+        {
+          "value": "\\N",
+          "count": 10953
+        },
+        {
+          "value": "3",
+          "count": 1135
+        },
+        {
+          "value": "4",
+          "count": 1135
+        },
+        {
+          "value": "2",
+          "count": 1133
+        },
+        {
+          "value": "5",
+          "count": 1131
+        }
+      ],
+      "dtype": "string"
+    },
+    "positionText": {
+      "null_count": 0,
+      "ndv_approx": 39,
+      "mean_length": 1.216898987256624,
+      "top_values": [
+        {
+          "value": "R",
+          "count": 8897
+        },
+        {
+          "value": "F",
+          "count": 1368
+        },
+        {
+          "value": "3",
+          "count": 1135
+        },
+        {
+          "value": "4",
+          "count": 1135
+        },
+        {
+          "value": "2",
+          "count": 1133
+        }
+      ],
+      "dtype": "string"
+    },
+    "positionOrder": {
+      "null_count": 0,
+      "min": 1,
+      "max": 39,
+      "mean": 12.794050599798199,
+      "ndv_approx": 39,
+      "histogram": {
+        "buckets": [
+          1.0,
+          4.8,
+          8.6,
+          12.399999999999999,
+          16.2,
+          20.0,
+          23.799999999999997,
+          27.599999999999998,
+          31.4,
+          35.199999999999996,
+          39.0
+        ],
+        "counts": [
+          4532,
+          4528,
+          4524,
+          4475,
+          3247,
+          3012,
+          1483,
+          674,
+          219,
+          65
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "points": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 50.0,
+      "mean": 1.9876321985126502,
+      "ndv_approx": 35,
+      "histogram": {
+        "buckets": [
+          0.0,
+          5.0,
+          10.0,
+          15.0,
+          20.0,
+          25.0,
+          30.0,
+          35.0,
+          40.0,
+          45.0,
+          50.0
+        ],
+        "counts": [
+          22750,
+          2168,
+          926,
+          607,
+          2,
+          303,
+          1,
+          1,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "laps": {
+      "null_count": 0,
+      "min": 0,
+      "max": 200,
+      "mean": 46.30176762958257,
+      "ndv_approx": 189,
+      "histogram": {
+        "buckets": [
+          0.0,
+          20.0,
+          40.0,
+          60.0,
+          80.0,
+          100.0,
+          120.0,
+          140.0,
+          160.0,
+          180.0,
+          200.0
+        ],
+        "counts": [
+          6138,
+          3148,
+          8400,
+          7819,
+          833,
+          148,
+          43,
+          10,
+          33,
+          187
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "time": {
+      "null_count": 0,
+      "ndv_approx": 7923,
+      "mean_length": 3.644530812063231,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "milliseconds": {
+      "null_count": 0,
+      "ndv_approx": 7338,
+      "mean_length": 3.4447475615680707,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "fastestLap": {
+      "null_count": 0,
+      "ndv_approx": 80,
+      "mean_length": 1.9855749467468888,
+      "top_values": [
+        {
+          "value": "\\N",
+          "count": 18507
+        },
+        {
+          "value": "50",
+          "count": 309
+        },
+        {
+          "value": "52",
+          "count": 289
+        },
+        {
+          "value": "53",
+          "count": 287
+        },
+        {
+          "value": "51",
+          "count": 275
+        }
+      ],
+      "dtype": "string"
+    },
+    "rank": {
+      "null_count": 0,
+      "ndv_approx": 27,
+      "mean_length": 1.852572966104862,
+      "top_values": [
+        {
+          "value": "\\N",
+          "count": 18249
+        },
+        {
+          "value": "1",
+          "count": 410
+        },
+        {
+          "value": "3",
+          "count": 410
+        },
+        {
+          "value": "5",
+          "count": 410
+        },
+        {
+          "value": "4",
+          "count": 410
+        }
+      ],
+      "dtype": "string"
+    },
+    "fastestLapTime": {
+      "null_count": 0,
+      "ndv_approx": 8497,
+      "mean_length": 3.850293359243619,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "fastestLapSpeed": {
+      "null_count": 0,
+      "ndv_approx": 7395,
+      "mean_length": 3.5418363914944506,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "statusId": {
+      "null_count": 0,
+      "min": 1,
+      "max": 141,
+      "mean": 17.224971037781682,
+      "ndv_approx": 148,
+      "histogram": {
+        "buckets": [
+          1.0,
+          15.0,
+          29.0,
+          43.0,
+          57.0,
+          71.0,
+          85.0,
+          99.0,
+          113.0,
+          127.0,
+          141.0
+        ],
+        "counts": [
+          20349,
+          2367,
+          516,
+          642,
+          579,
+          1264,
+          610,
+          246,
+          63,
+          123
+        ]
+      },
+      "dtype": "uint8"
+    }
+  }
+}

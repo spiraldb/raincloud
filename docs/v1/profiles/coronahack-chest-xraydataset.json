@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "slug": "coronahack-chest-xraydataset",
+  "row_count": 5910,
+  "parquet_sha256": "b5baf676ea34b3dbfb6fb549be21ecb7531fa0cfe2992cbc90c77adb5e120b35",
+  "computed_at": "2026-05-16T08:45:11Z",
+  "sample_rows": null,
+  "columns": {
+    "__unnamed_column__": {
+      "dtype": "uint16",
+      "skipped": "empty column name"
+    },
+    "X_ray_image_name": {
+      "null_count": 0,
+      "ndv_approx": 5277,
+      "mean_length": 25.782571912013537,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Label": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 7.466666666666667,
+      "top_values": [
+        {
+          "value": "Pnemonia",
+          "count": 4334
+        },
+        {
+          "value": "Normal",
+          "count": 1576
+        }
+      ],
+      "dtype": "string"
+    },
+    "Dataset_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.894416243654822,
+      "top_values": [
+        {
+          "value": "TRAIN",
+          "count": 5286
+        },
+        {
+          "value": "TEST",
+          "count": 624
+        }
+      ],
+      "dtype": "string"
+    },
+    "Label_2_Virus_category": {
+      "null_count": 5841,
+      "ndv_approx": 4,
+      "mean_length": 8.014492753623188,
+      "top_values": [
+        {
+          "value": "COVID-19",
+          "count": 58
+        },
+        {
+          "value": "Streptococcus",
+          "count": 5
+        },
+        {
+          "value": "SARS",
+          "count": 4
+        },
+        {
+          "value": "ARDS",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "Label_1_Virus_category": {
+      "null_count": 1576,
+      "ndv_approx": 3,
+      "mean_length": 6.926395939086294,
+      "top_values": [
+        {
+          "value": "bacteria",
+          "count": 2777
+        },
+        {
+          "value": "Virus",
+          "count": 1555
+        },
+        {
+          "value": "Stress-Smoking",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

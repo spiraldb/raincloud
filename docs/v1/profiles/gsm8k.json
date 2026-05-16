@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "slug": "gsm8k",
+  "row_count": 8792,
+  "parquet_sha256": "41cc289dec24ad6282d144f545b6efc09e2fab7acc30af04ac9afea105129f8f",
+  "computed_at": "2026-05-16T08:55:17Z",
+  "sample_rows": null,
+  "columns": {
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 7723,
+      "mean_length": 235.31210191082803,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "answer": {
+      "null_count": 0,
+      "ndv_approx": 8658,
+      "mean_length": 288.3033439490446,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.8499772520473154,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 7473
+        },
+        {
+          "value": "test",
+          "count": 1319
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "slug": "glove-6b-200d",
+  "row_count": 400000,
+  "parquet_sha256": "ecf978b46a9291f2c85e03cb31d040c587019dc7eff4558bacf4b36838545697",
+  "computed_at": "2026-05-16T08:55:01Z",
+  "sample_rows": null,
+  "columns": {
+    "word": {
+      "null_count": 0,
+      "ndv_approx": 504772,
+      "mean_length": 7.3606775,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "vector": null
+  }
+}
