@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "slug": "chess",
+  "row_count": 121332,
+  "parquet_sha256": "e33683e02acefdb8f8cbca638a6237b452a0857774557250bf77d0b2299b5580",
+  "computed_at": "2026-05-16T08:44:06Z",
+  "sample_rows": null,
+  "columns": {
+    "event": {
+      "null_count": 0,
+      "ndv_approx": 149,
+      "mean_length": 18.130138792733987,
+      "top_values": [
+        {
+          "value": "Rated Blitz game",
+          "count": 45388
+        },
+        {
+          "value": "Rated Classical game",
+          "count": 41772
+        },
+        {
+          "value": "Rated Bullet game",
+          "count": 32691
+        },
+        {
+          "value": "Rated Correspondence game",
+          "count": 266
+        },
+        {
+          "value": "Rated Blitz tournament https://lichess.org/tournament/z0pz5w9f",
+          "count": 18
+        }
+      ],
+      "dtype": "string"
+    },
+    "site": {
+      "null_count": 0,
+      "ndv_approx": 138212,
+      "mean_length": 28.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "white": {
+      "null_count": 0,
+      "ndv_approx": 4431,
+      "mean_length": 7.8168001846174135,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "black": {
+      "null_count": 0,
+      "ndv_approx": 4305,
+      "mean_length": 7.917952395081264,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "result": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 3.1312761678699768,
+      "top_values": [
+        {
+          "value": "1-0",
+          "count": 62129
+        },
+        {
+          "value": "0-1",
+          "count": 55221
+        },
+        {
+          "value": "1/2-1/2",
+          "count": 3982
+        }
+      ],
+      "dtype": "string"
+    },
+    "utc_date": {
+      "null_count": 0,
+      "ndv_approx": 32,
+      "mean_length": 10.0,
+      "top_values": [
+        {
+          "value": "2013.01.27",
+          "count": 4437
+        },
+        {
+          "value": "2013.01.25",
+          "count": 4422
+        },
+        {
+          "value": "2013.01.04",
+          "count": 4249
+        },
+        {
+          "value": "2013.01.19",
+          "count": 4181
+        },
+        {
+          "value": "2013.01.29",
+          "count": 4158
+        }
+      ],
+      "dtype": "string"
+    },
+    "utc_time": {
+      "null_count": 0,
+      "ndv_approx": 57595,
+      "mean_length": 8.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "white_elo": {
+      "null_count": 78,
+      "min": 782,
+      "max": 2403,
+      "mean": 1605.413586355914,
+      "ndv_approx": 1424,
+      "histogram": {
+        "buckets": [
+          782.0,
+          944.1,
+          1106.2,
+          1268.3,
+          1430.4,
+          1592.5,
+          1754.6,
+          1916.7,
+          2078.8,
+          2240.8999999999996,
+          2403.0
+        ],
+        "counts": [
+          47,
+          822,
+          4651,
+          17458,
+          35466,
+          35495,
+          19074,
+          6580,
+          1614,
+          47
+        ]
+      },
+      "dtype": "int32"
+    },
+    "black_elo": {
+      "null_count": 140,
+      "min": 789,
+      "max": 2386,
+      "mean": 1595.547849693049,
+      "ndv_approx": 1516,
+      "histogram": {
+        "buckets": [
+          789.0,
+          948.7,
+          1108.4,
+          1268.1,
+          1427.8,
+          1587.5,
+          1747.1999999999998,
+          1906.8999999999999,
+          2066.6,
+          2226.3,
+          2386.0
+        ],
+        "counts": [
+          70,
+          1089,
+          5658,
+          17722,
+          35866,
+          33173,
+          18741,
+          6884,
+          1926,
+          63
+        ]
+      },
+      "dtype": "int32"
+    },
+    "white_rating_diff": {
+      "null_count": 218,
+      "min": -517,
+      "max": 638,
+      "mean": 0.23993097412355302,
+      "ndv_approx": 719,
+      "histogram": {
+        "buckets": [
+          -517.0,
+          -401.5,
+          -286.0,
+          -170.5,
+          -55.0,
+          60.5,
+          176.0,
+          291.5,
+          407.0,
+          522.5,
+          638.0
+        ],
+        "counts": [
+          10,
+          91,
+          538,
+          2548,
+          115216,
+          2130,
+          467,
+          87,
+          22,
+          5
+        ]
+      },
+      "dtype": "int32"
+    },
+    "black_rating_diff": {
+      "null_count": 218,
+      "min": -504,
+      "max": 614,
+      "mean": -1.508611721188302,
+      "ndv_approx": 766,
+      "histogram": {
+        "buckets": [
+          -504.0,
+          -392.2,
+          -280.4,
+          -168.60000000000002,
+          -56.80000000000001,
+          55.0,
+          166.79999999999995,
+          278.6,
+          390.4,
+          502.19999999999993,
+          614.0
+        ],
+        "counts": [
+          19,
+          117,
+          749,
+          3228,
+          113765,
+          2419,
+          623,
+          158,
+          28,
+          8
+        ]
+      },
+      "dtype": "int32"
+    },
+    "eco": {
+      "null_count": 0,
+      "ndv_approx": 482,
+      "mean_length": 3.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "opening": {
+      "null_count": 0,
+      "ndv_approx": 2110,
+      "mean_length": 29.75513467180958,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "time_control": {
+      "null_count": 0,
+      "ndv_approx": 381,
+      "mean_length": 4.780783305311047,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "termination": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 7.873355751162101,
+      "top_values": [
+        {
+          "value": "Normal",
+          "count": 83449
+        },
+        {
+          "value": "Time forfeit",
+          "count": 37883
+        }
+      ],
+      "dtype": "string"
+    },
+    "moves": {
+      "null_count": 0,
+      "ndv_approx": 110428,
+      "mean_length": 413.46313421026605,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

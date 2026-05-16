@@ -1,0 +1,1732 @@
+{
+  "schema_version": 1,
+  "slug": "bi-uberlandia",
+  "row_count": 7559227,
+  "parquet_sha256": "e81a4c9b8d13fa3e563630554eb50942bfc6cd53d73ef0c71a3b3b078875e344",
+  "computed_at": "2026-05-16T08:18:33Z",
+  "sample_rows": null,
+  "columns": {
+    "Calculation_838513981443702785": {
+      "null_count": 0,
+      "ndv_approx": 254260,
+      "mean_length": 7.356672712699328,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_838513981462429699": {
+      "null_count": 54226,
+      "ndv_approx": 8449058,
+      "mean_length": 18.355610478932647,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Codigo Diploma/Certificado": {
+      "null_count": 7404308,
+      "ndv_approx": 179085,
+      "mean_length": 14.385078654006287,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Cor da Pele": {
+      "null_count": 54277,
+      "ndv_approx": 9,
+      "mean_length": 10.189364352860446,
+      "top_values": [
+        {
+          "value": "Parda",
+          "count": 2228250
+        },
+        {
+          "value": "N\u00e3o h\u00e1 informa\u00e7\u00e3o",
+          "count": 1728027
+        },
+        {
+          "value": "N\u00e3o Declarada",
+          "count": 1223188
+        },
+        {
+          "value": "Branca",
+          "count": 1137694
+        },
+        {
+          "value": "Sem declara\u00e7\u00e3o",
+          "count": 793475
+        }
+      ],
+      "dtype": "string"
+    },
+    "Data Diploma/Certificado": {
+      "dtype": "timestamp[us]",
+      "null_count": 7406817,
+      "min": "2015-04-08T19:53:45+00:00",
+      "max": "2016-06-20T11:14:04+00:00",
+      "histogram": {
+        "buckets": [
+          "2015-04-08T19:53:45+00:00",
+          "2015-05-22T16:37:46.900000+00:00",
+          "2015-07-05T13:21:48.800000+00:00",
+          "2015-08-18T10:05:50.700000+00:00",
+          "2015-10-01T06:49:52.600000+00:00",
+          "2015-11-14T03:33:54.500000+00:00",
+          "2015-12-28T00:17:56.400000+00:00",
+          "2016-02-09T21:01:58.300000+00:00",
+          "2016-03-24T17:46:00.200000+00:00",
+          "2016-05-07T14:30:02.100000+00:00",
+          "2016-06-20T11:14:04+00:00"
+        ],
+        "counts": [
+          7114,
+          6949,
+          7681,
+          9121,
+          20298,
+          24197,
+          14300,
+          30243,
+          16091,
+          16416
+        ]
+      }
+    },
+    "Data Pr\u00e9-Matricula": {
+      "dtype": "date32",
+      "null_count": 54224,
+      "min": "2011-10-25T00:00:00+00:00",
+      "max": "2016-06-20T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2011-10-25T00:00:00+00:00",
+          "2012-04-12T00:00:00+00:00",
+          "2012-09-29T00:00:00+00:00",
+          "2013-03-18T00:00:00+00:00",
+          "2013-09-04T00:00:00+00:00",
+          "2014-02-21T00:00:00+00:00",
+          "2014-08-10T00:00:00+00:00",
+          "2015-01-27T00:00:00+00:00",
+          "2015-07-16T00:00:00+00:00",
+          "2016-01-02T00:00:00+00:00",
+          "2016-06-20T00:00:00+00:00"
+        ],
+        "counts": [
+          228796,
+          753357,
+          484340,
+          1454373,
+          998316,
+          1983117,
+          1002726,
+          99287,
+          486535,
+          14156
+        ]
+      }
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          7559227
+        ]
+      }
+    },
+    "ch_catalogo_guia": {
+      "null_count": 400246,
+      "min": 160,
+      "max": 1200,
+      "mean": 463.8149661243688,
+      "ndv_approx": 22,
+      "histogram": {
+        "buckets": [
+          160.0,
+          264.0,
+          368.0,
+          472.0,
+          576.0,
+          680.0,
+          784.0,
+          888.0,
+          992.0,
+          1096.0,
+          1200.0
+        ],
+        "counts": [
+          4642108,
+          159746,
+          64744,
+          0,
+          0,
+          0,
+          571816,
+          0,
+          363293,
+          1357274
+        ]
+      },
+      "dtype": "int16"
+    },
+    "ch_da_oferta": {
+      "null_count": 0,
+      "min": 1,
+      "max": 18062012,
+      "mean": 496.914793933295,
+      "ndv_approx": 467,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1806202.1,
+          3612403.2,
+          5418604.300000001,
+          7224805.4,
+          9031006.5,
+          10837207.600000001,
+          12643408.700000001,
+          14449609.8,
+          16255810.9,
+          18062012.0
+        ],
+        "counts": [
+          7559226,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "int32"
+    },
+    "ch_max_financiavel": {
+      "null_count": 400246,
+      "min": 240,
+      "max": 1800,
+      "mean": 601.4120382495777,
+      "ndv_approx": 27,
+      "histogram": {
+        "buckets": [
+          240.0,
+          396.0,
+          552.0,
+          708.0,
+          864.0,
+          1020.0,
+          1176.0,
+          1332.0,
+          1488.0,
+          1644.0,
+          1800.0
+        ],
+        "counts": [
+          4642108,
+          159746,
+          64744,
+          0,
+          513306,
+          0,
+          396518,
+          1251585,
+          25285,
+          105689
+        ]
+      },
+      "dtype": "int16"
+    },
+    "ch_maxima_permitida": {
+      "null_count": 0,
+      "min": 240,
+      "max": 1440,
+      "mean": 591.2655148469546,
+      "ndv_approx": 24,
+      "histogram": {
+        "buckets": [
+          240.0,
+          360.0,
+          480.0,
+          600.0,
+          720.0,
+          840.0,
+          960.0,
+          1080.0,
+          1200.0,
+          1320.0,
+          1440.0
+        ],
+        "counts": [
+          4795690,
+          358524,
+          9891,
+          67243,
+          5,
+          0,
+          469287,
+          0,
+          248684,
+          1609903
+        ]
+      },
+      "dtype": "int16"
+    },
+    "ch_min_financiavel": {
+      "null_count": 400246,
+      "min": 160,
+      "max": 1200,
+      "mean": 461.99983628955016,
+      "ndv_approx": 22,
+      "histogram": {
+        "buckets": [
+          160.0,
+          264.0,
+          368.0,
+          472.0,
+          576.0,
+          680.0,
+          784.0,
+          888.0,
+          992.0,
+          1096.0,
+          1200.0
+        ],
+        "counts": [
+          4642108,
+          159746,
+          64744,
+          0,
+          0,
+          0,
+          588148,
+          0,
+          389830,
+          1314405
+        ]
+      },
+      "dtype": "int16"
+    },
+    "ch_minima_do_curso": {
+      "null_count": 0,
+      "min": 160,
+      "max": 1200,
+      "mean": 461.80289810055973,
+      "ndv_approx": 24,
+      "histogram": {
+        "buckets": [
+          160.0,
+          264.0,
+          368.0,
+          472.0,
+          576.0,
+          680.0,
+          784.0,
+          888.0,
+          992.0,
+          1096.0,
+          1200.0
+        ],
+        "counts": [
+          4982494,
+          181572,
+          67282,
+          5,
+          0,
+          0,
+          469287,
+          0,
+          248684,
+          1609903
+        ]
+      },
+      "dtype": "int16"
+    },
+    "co_matricula_estudante": {
+      "null_count": 54224,
+      "min": 1,
+      "max": 5931206,
+      "mean": 2466225.7091950527,
+      "ndv_approx": 5922239,
+      "histogram": {
+        "buckets": [
+          1.0,
+          593121.5,
+          1186242.0,
+          1779362.5,
+          2372483.0,
+          2965603.5,
+          3558724.0,
+          4151844.5,
+          4744965.0,
+          5338085.5,
+          5931206.0
+        ],
+        "counts": [
+          1163183,
+          1181376,
+          1139142,
+          580331,
+          578674,
+          574613,
+          583489,
+          588673,
+          589344,
+          526178
+        ]
+      },
+      "dtype": "int32"
+    },
+    "cod_da_unidade_de_ensino": {
+      "null_count": 0,
+      "min": 145,
+      "max": 43995,
+      "mean": 11379.1463979055,
+      "ndv_approx": 3931,
+      "histogram": {
+        "buckets": [
+          145.0,
+          4530.0,
+          8915.0,
+          13300.0,
+          17685.0,
+          22070.0,
+          26455.0,
+          30840.0,
+          35225.0,
+          39610.0,
+          43995.0
+        ],
+        "counts": [
+          3668013,
+          0,
+          1454909,
+          317254,
+          646014,
+          773497,
+          69899,
+          470192,
+          17078,
+          142371
+        ]
+      },
+      "dtype": "int32"
+    },
+    "cod_ibge_da_ue": {
+      "null_count": 0,
+      "min": 1100023,
+      "max": 5300108,
+      "mean": 3217747.548447745,
+      "ndv_approx": 1371,
+      "histogram": {
+        "buckets": [
+          1100023.0,
+          1520031.5,
+          1940040.0,
+          2360048.5,
+          2780057.0,
+          3200065.5,
+          3620074.0,
+          4040082.5,
+          4460091.0,
+          4880099.5,
+          5300108.0
+        ],
+        "counts": [
+          670001,
+          201506,
+          773687,
+          1042251,
+          1407783,
+          1345671,
+          0,
+          1183501,
+          0,
+          934827
+        ]
+      },
+      "dtype": "int32"
+    },
+    "cod_ibge_do_local_da_oferta": {
+      "null_count": 0,
+      "min": 1100015,
+      "max": 5300108,
+      "mean": 3218027.946268183,
+      "ndv_approx": 5823,
+      "histogram": {
+        "buckets": [
+          1100015.0,
+          1520024.3,
+          1940033.6,
+          2360042.9,
+          2780052.2,
+          3200061.5,
+          3620070.8,
+          4040080.1,
+          4460089.4,
+          4880098.699999999,
+          5300108.0
+        ],
+        "counts": [
+          670001,
+          201506,
+          773712,
+          1039411,
+          1405042,
+          1351251,
+          0,
+          1183477,
+          0,
+          934827
+        ]
+      },
+      "dtype": "int32"
+    },
+    "codigo_da_oferta": {
+      "null_count": 0,
+      "min": 1,
+      "max": 265394,
+      "mean": 108639.73594032829,
+      "ndv_approx": 214495,
+      "histogram": {
+        "buckets": [
+          1.0,
+          26540.3,
+          53079.6,
+          79618.9,
+          106158.2,
+          132697.5,
+          159236.8,
+          185776.1,
+          212315.4,
+          238854.69999999998,
+          265394.0
+        ],
+        "counts": [
+          1374378,
+          1446227,
+          546184,
+          521384,
+          614816,
+          587397,
+          700626,
+          661366,
+          576457,
+          530392
+        ]
+      },
+      "dtype": "int32"
+    },
+    "codigo_do_curso": {
+      "null_count": 0,
+      "min": 1,
+      "max": 278083,
+      "mean": 143214.67854490943,
+      "ndv_approx": 1420,
+      "histogram": {
+        "buckets": [
+          1.0,
+          27809.2,
+          55617.4,
+          83425.6,
+          111233.8,
+          139042.0,
+          166850.2,
+          194658.4,
+          222466.6,
+          250274.80000000002,
+          278083.0
+        ],
+        "counts": [
+          2244185,
+          24159,
+          0,
+          0,
+          907391,
+          101198,
+          26783,
+          4127223,
+          59530,
+          68758
+        ]
+      },
+      "dtype": "int32"
+    },
+    "comunidade_quilombola": {
+      "null_count": 5824806,
+      "ndv_approx": 1157,
+      "mean_length": 2.054298812110785,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "cpf aluno": {
+      "null_count": 54226,
+      "ndv_approx": 5116440,
+      "mean_length": 10.999766822149658,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "data de confirmacao": {
+      "dtype": "date32",
+      "null_count": 3299339,
+      "min": "2011-04-23T00:00:00+00:00",
+      "max": "2016-06-20T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2011-04-23T00:00:00+00:00",
+          "2011-10-28T12:00:00+00:00",
+          "2012-05-04T00:00:00+00:00",
+          "2012-11-08T12:00:00+00:00",
+          "2013-05-16T00:00:00+00:00",
+          "2013-11-20T12:00:00+00:00",
+          "2014-05-28T00:00:00+00:00",
+          "2014-12-02T12:00:00+00:00",
+          "2015-06-09T00:00:00+00:00",
+          "2015-12-14T12:00:00+00:00",
+          "2016-06-20T00:00:00+00:00"
+        ],
+        "counts": [
+          17,
+          134839,
+          524747,
+          521703,
+          1042049,
+          839974,
+          811920,
+          112085,
+          243419,
+          29135
+        ]
+      }
+    },
+    "data de nascimento aluno": {
+      "dtype": "date32",
+      "null_count": 54229,
+      "min": "1194-06-13T00:00:00+00:00",
+      "max": "2017-09-03T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1194-06-13T00:00:00+00:00",
+          "1276-10-07T16:48:00+00:00",
+          "1359-02-03T09:36:00+00:00",
+          "1441-06-01T02:24:00+00:00",
+          "1523-09-27T19:12:00+00:00",
+          "1606-01-22T12:00:00+00:00",
+          "1688-05-19T04:48:00+00:00",
+          "1770-09-14T21:36:00+00:00",
+          "1853-01-10T14:24:00+00:00",
+          "1935-05-09T07:12:00+00:00",
+          "2017-09-03T00:00:00+00:00"
+        ],
+        "counts": [
+          3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          381,
+          7504614
+        ]
+      }
+    },
+    "data_da_publicacao": {
+      "dtype": "date32",
+      "null_count": 1739242,
+      "min": "2013-05-31T00:00:00+00:00",
+      "max": "2016-06-06T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2013-05-31T00:00:00+00:00",
+          "2013-09-18T04:48:00+00:00",
+          "2014-01-06T09:36:00+00:00",
+          "2014-04-26T14:24:00+00:00",
+          "2014-08-14T19:12:00+00:00",
+          "2014-12-03T00:00:00+00:00",
+          "2015-03-23T04:48:00+00:00",
+          "2015-07-11T09:36:00+00:00",
+          "2015-10-29T14:24:00+00:00",
+          "2016-02-16T19:12:00+00:00",
+          "2016-06-06T00:00:00+00:00"
+        ],
+        "counts": [
+          3080387,
+          311103,
+          866599,
+          688487,
+          463630,
+          57881,
+          64,
+          231994,
+          115629,
+          4211
+        ]
+      }
+    },
+    "data_de_conclusao": {
+      "null_count": 1707614,
+      "ndv_approx": 1453,
+      "mean_length": 8.973014790964474,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "data_de_inicio": {
+      "dtype": "date32",
+      "null_count": 154,
+      "min": "1201-11-01T00:00:00+00:00",
+      "max": "3013-04-16T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1201-11-01T00:00:00+00:00",
+          "1382-12-24T00:00:00+00:00",
+          "1564-02-16T00:00:00+00:00",
+          "1745-04-09T00:00:00+00:00",
+          "1926-06-02T00:00:00+00:00",
+          "2107-07-25T00:00:00+00:00",
+          "2288-09-15T00:00:00+00:00",
+          "2469-11-07T00:00:00+00:00",
+          "2650-12-31T00:00:00+00:00",
+          "2832-02-22T00:00:00+00:00",
+          "3013-04-16T00:00:00+00:00"
+        ],
+        "counts": [
+          9,
+          0,
+          0,
+          0,
+          7559014,
+          0,
+          0,
+          0,
+          0,
+          50
+        ]
+      }
+    },
+    "data_de_previsaode_termino": {
+      "dtype": "date32",
+      "null_count": 43,
+      "min": "1012-07-06T00:00:00+00:00",
+      "max": "3013-09-02T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1012-07-06T00:00:00+00:00",
+          "1212-08-16T19:12:00+00:00",
+          "1412-09-28T14:24:00+00:00",
+          "1612-11-09T09:36:00+00:00",
+          "1812-12-22T04:48:00+00:00",
+          "2013-02-02T00:00:00+00:00",
+          "2213-03-16T19:12:00+00:00",
+          "2413-04-27T14:24:00+00:00",
+          "2613-06-09T09:36:00+00:00",
+          "2813-07-21T04:48:00+00:00",
+          "3013-09-02T00:00:00+00:00"
+        ],
+        "counts": [
+          2,
+          0,
+          0,
+          0,
+          866408,
+          6692723,
+          0,
+          0,
+          0,
+          51
+        ]
+      }
+    },
+    "desempregado": {
+      "null_count": 4384371,
+      "ndv_approx": 2,
+      "mean_length": 2.4556877540272692,
+      "top_values": [
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "SIM",
+          "count": 1446743
+        }
+      ],
+      "dtype": "string"
+    },
+    "ds_email": {
+      "null_count": 1445448,
+      "ndv_approx": 1120038,
+      "mean_length": 6.7173666238181005,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ds_identificador_turma": {
+      "null_count": 0,
+      "ndv_approx": 35104,
+      "mean_length": 42.5706498825872,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ds_tipo_beneficiario": {
+      "null_count": 5158725,
+      "ndv_approx": 12861,
+      "mean_length": 13.335723527828762,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "dt_cadastro": {
+      "null_count": 0,
+      "ndv_approx": 258482,
+      "mean_length": 24.30703258415179,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ead": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 17.00202163528096,
+      "top_values": [
+        {
+          "value": "Ensino Presencial",
+          "count": 7543945
+        },
+        {
+          "value": "Ensino a Dist\u00e2ncia",
+          "count": 15282
+        }
+      ],
+      "dtype": "string"
+    },
+    "edicao_catalogo_guia": {
+      "null_count": 400246,
+      "ndv_approx": 9,
+      "mean_length": 13.001321696481664,
+      "top_values": [
+        {
+          "value": "3_EDICAO_GUIA",
+          "count": 2439164
+        },
+        {
+          "value": "2_EDICAO_CNCT",
+          "count": 1953586
+        },
+        {
+          "value": "2_EDICAO_GUIA",
+          "count": 1465485
+        },
+        {
+          "value": "1_EDICAO_GUIA",
+          "count": 673279
+        },
+        {
+          "value": "3_EDICAO_CNCT",
+          "count": 288421
+        }
+      ],
+      "dtype": "string"
+    },
+    "edital": {
+      "null_count": 5831114,
+      "ndv_approx": 4,
+      "mean_length": 21.0,
+      "top_values": [
+        {
+          "value": "EDITAL SISUTEC 2014.2",
+          "count": 666815
+        },
+        {
+          "value": "EDITAL SISUTEC 2014.1",
+          "count": 536747
+        },
+        {
+          "value": "Edital sisutec 2013.2",
+          "count": 312700
+        },
+        {
+          "value": "EDITAL SISUTEC 2015.1",
+          "count": 211851
+        }
+      ],
+      "dtype": "string"
+    },
+    "eixo_tecnologico_catalogo_guia": {
+      "null_count": 400252,
+      "ndv_approx": 20,
+      "mean_length": 21.27303126495064,
+      "top_values": [
+        {
+          "value": "Gest\u00e3o e Neg\u00f3cios",
+          "count": 1627582
+        },
+        {
+          "value": "Informa\u00e7\u00e3o e Comunica\u00e7\u00e3o",
+          "count": 923182
+        },
+        {
+          "value": "Controle e Processos Industriais",
+          "count": 882582
+        },
+        {
+          "value": "Infraestrutura",
+          "count": 701294
+        },
+        {
+          "value": "Ambiente e  Sa\u00fade",
+          "count": 530251
+        }
+      ],
+      "dtype": "string"
+    },
+    "eixo_tecnol\u00f3gico": {
+      "null_count": 0,
+      "ndv_approx": 15,
+      "mean_length": 21.469152599862394,
+      "top_values": [
+        {
+          "value": "Gest\u00e3o e Neg\u00f3cios",
+          "count": 1688735
+        },
+        {
+          "value": "Ambiente e Sa\u00fade",
+          "count": 1111063
+        },
+        {
+          "value": "Controle e Processos Industriais",
+          "count": 1013286
+        },
+        {
+          "value": "Informa\u00e7\u00e3o e Comunica\u00e7\u00e3o",
+          "count": 959230
+        },
+        {
+          "value": "Infraestrutura",
+          "count": 620591
+        }
+      ],
+      "dtype": "string"
+    },
+    "escolaridade do aluno": {
+      "null_count": 54224,
+      "ndv_approx": 17,
+      "mean_length": 25.41223807638718,
+      "top_values": [
+        {
+          "value": "Ensino M\u00e9dio - Completo",
+          "count": 2402601
+        },
+        {
+          "value": "Ensino M\u00e9dio - Incompleto",
+          "count": 1937986
+        },
+        {
+          "value": "N\u00e3o h\u00e1 informa\u00e7\u00e3o",
+          "count": 1728027
+        },
+        {
+          "value": "Ensino Fundamental II (6\u00ba ao 9\u00ba) - Completo",
+          "count": 510336
+        },
+        {
+          "value": "Ensino Fundamental II (5\u00aa a 8\u00aa) Incompleto",
+          "count": 293046
+        }
+      ],
+      "dtype": "string"
+    },
+    "escolaridade_catalogo_guia": {
+      "null_count": 2692276,
+      "ndv_approx": 20,
+      "mean_length": 29.398036059948005,
+      "top_values": [
+        {
+          "value": "Ensino Fundamental II Incompleto",
+          "count": 1765682
+        },
+        {
+          "value": "Ensino Fundamental Completo",
+          "count": 933544
+        },
+        {
+          "value": "Ensino M\u00e9dio Incompleto",
+          "count": 839524
+        },
+        {
+          "value": "Ensino Fundamental I Incompleto",
+          "count": 491980
+        },
+        {
+          "value": "Ensino Fundamental Incompleto",
+          "count": 426185
+        }
+      ],
+      "dtype": "string"
+    },
+    "forma_ingresso": {
+      "null_count": 54224,
+      "ndv_approx": 7,
+      "mean_length": 11.338456760110555,
+      "top_values": [
+        {
+          "value": "On-Line",
+          "count": 3136134
+        },
+        {
+          "value": "Pr\u00e9-Matr\u00edcula",
+          "count": 3050339
+        },
+        {
+          "value": "Primeira Chamada",
+          "count": 590572
+        },
+        {
+          "value": "On-Line por Demandante",
+          "count": 457235
+        },
+        {
+          "value": "Segunda Chamada",
+          "count": 243845
+        }
+      ],
+      "dtype": "string"
+    },
+    "instituicao": {
+      "null_count": 1421190,
+      "ndv_approx": 97,
+      "mean_length": 5.221006650823382,
+      "top_values": [
+        {
+          "value": "SENAI",
+          "count": 2489949
+        },
+        {
+          "value": "SENAC",
+          "count": 1800469
+        },
+        {
+          "value": "SENAT",
+          "count": 277410
+        },
+        {
+          "value": "SENAR",
+          "count": 178645
+        },
+        {
+          "value": "UFRN",
+          "count": 89785
+        }
+      ],
+      "dtype": "string"
+    },
+    "mantenedora": {
+      "null_count": 3885317,
+      "ndv_approx": 733,
+      "mean_length": 46.110682079854975,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "municipio_da_ue": {
+      "null_count": 0,
+      "ndv_approx": 1305,
+      "mean_length": 9.618282530740247,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "municipio_do_local_da_oferta": {
+      "null_count": 0,
+      "ndv_approx": 4640,
+      "mean_length": 10.067458087976457,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "no_dependencia_admin": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 16.426156272327844,
+      "top_values": [
+        {
+          "value": "Artigo 240 - SISTEMA S",
+          "count": 4750297
+        },
+        {
+          "value": "Privada",
+          "count": 1416710
+        },
+        {
+          "value": "P\u00fablica",
+          "count": 1392220
+        }
+      ],
+      "dtype": "string"
+    },
+    "no_modalidade": {
+      "null_count": 54224,
+      "ndv_approx": 39,
+      "mean_length": 15.217029493525851,
+      "top_values": [
+        {
+          "value": "N\u00e3o Vinculado",
+          "count": 3116266
+        },
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "Pronatec Brasil sem Mis\u00e9ria",
+          "count": 1483568
+        },
+        {
+          "value": "Pronatec Seguro-Desemprego",
+          "count": 318521
+        },
+        {
+          "value": "Pronatec Jovem FIC",
+          "count": 202301
+        }
+      ],
+      "dtype": "string"
+    },
+    "no_parceiro_demandante": {
+      "null_count": 0,
+      "ndv_approx": 44,
+      "mean_length": 32.43979179352598,
+      "top_values": [
+        {
+          "value": "MINIST\u00c9RIO DO DESENVOLVIMENTO SOCIAL E COMBATE \u00c0 FOME",
+          "count": 2664589
+        },
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "Inscri\u00e7\u00e3o Online",
+          "count": 1165496
+        },
+        {
+          "value": "MINIST\u00c9RIO DO TRABALHO E EMPREGO",
+          "count": 449950
+        },
+        {
+          "value": "SECRETARIA DE ESTADO DA EDUCA\u00c7\u00c3O DE MINAS GERAIS",
+          "count": 140506
+        }
+      ],
+      "dtype": "string"
+    },
+    "no_programa": {
+      "null_count": 54224,
+      "ndv_approx": 4,
+      "mean_length": 12.130576896504905,
+      "top_values": [
+        {
+          "value": "N\u00e3o Vinculado",
+          "count": 5684984
+        },
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "MTE - Seguro Desemprego  - tb_pco_tipo_programa_social / co_tipo_programa_social IN ( 52 - Est\u00e1 Desempregado,  53 - Est\u00e1 Recebendo Seguro Desemprego)",
+          "count": 91743
+        },
+        {
+          "value": "MTE - Viver sem Limites -  PNE Cadastrado pelo SPP / SINE",
+          "count": 163
+        }
+      ],
+      "dtype": "string"
+    },
+    "no_sistema_ensino": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 8.399607922873596,
+      "top_values": [
+        {
+          "value": "Federal",
+          "count": 6735822
+        },
+        {
+          "value": "Estadual / Distrital",
+          "count": 812104
+        },
+        {
+          "value": "Municipal",
+          "count": 11301
+        }
+      ],
+      "dtype": "string"
+    },
+    "no_subdependencia_admin": {
+      "null_count": 2808930,
+      "ndv_approx": 4,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "SENAI",
+          "count": 2490781
+        },
+        {
+          "value": "SENAC",
+          "count": 1803461
+        },
+        {
+          "value": "SENAT",
+          "count": 277410
+        },
+        {
+          "value": "SENAR",
+          "count": 178645
+        }
+      ],
+      "dtype": "string"
+    },
+    "nome aluno": {
+      "null_count": 54224,
+      "ndv_approx": 5842836,
+      "mean_length": 25.096426077377984,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nome da sit matricula (situacao detalhada)": {
+      "null_count": 54275,
+      "ndv_approx": 26,
+      "mean_length": 10.972304419801752,
+      "top_values": [
+        {
+          "value": "CONCLU\u00cdDA",
+          "count": 2532173
+        },
+        {
+          "value": "N\u00c3O_COMPARECEU",
+          "count": 2151859
+        },
+        {
+          "value": "ABANDONO",
+          "count": 646621
+        },
+        {
+          "value": "EM_CURSO",
+          "count": 579816
+        },
+        {
+          "value": "FREQ_INIC_INSUF",
+          "count": 439777
+        }
+      ],
+      "dtype": "string"
+    },
+    "nome_curso_catalogo_guia": {
+      "null_count": 400246,
+      "ndv_approx": 865,
+      "mean_length": 24.731617809853105,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nome_da_ue": {
+      "null_count": 0,
+      "ndv_approx": 3596,
+      "mean_length": 46.178161206165655,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nome_da_uer": {
+      "null_count": 0,
+      "ndv_approx": 22391,
+      "mean_length": 12.407927159747947,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nome_do_curso": {
+      "null_count": 0,
+      "ndv_approx": 1388,
+      "mean_length": 25.22772037405412,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nu_telefone": {
+      "null_count": 291157,
+      "ndv_approx": 4229936,
+      "mean_length": 9.443521870317705,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nu_telefone_celular": {
+      "null_count": 199228,
+      "ndv_approx": 1077482,
+      "mean_length": 3.400839728374963,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "oferta_cadastro_online": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.7713902492940083,
+      "top_values": [
+        {
+          "value": "N\u00e3o",
+          "count": 5830087
+        },
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "Sim",
+          "count": 1027
+        }
+      ],
+      "dtype": "string"
+    },
+    "pcd": {
+      "null_count": 0,
+      "ndv_approx": 45,
+      "mean_length": 2.0656184818897487,
+      "top_values": [
+        {
+          "value": "''",
+          "count": 7526651
+        },
+        {
+          "value": "Defici\u00eancia F\u00edsica",
+          "count": 16156
+        },
+        {
+          "value": "Baixa Vis\u00e3o",
+          "count": 6016
+        },
+        {
+          "value": "Defici\u00eancia Intelectual",
+          "count": 3992
+        },
+        {
+          "value": "Defici\u00eancia Auditiva",
+          "count": 3616
+        }
+      ],
+      "dtype": "string"
+    },
+    "populacao_campo": {
+      "null_count": 5614709,
+      "ndv_approx": 21,
+      "mean_length": 7.514821667888906,
+      "top_values": [
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "Estudante matriculado no ensino m\u00e9dio da rede p\u00fablica",
+          "count": 206099
+        },
+        {
+          "value": "Estudante EJA",
+          "count": 7555
+        },
+        {
+          "value": "Trabalhador: Agricultor Familiar",
+          "count": 1443
+        },
+        {
+          "value": "Trabalhador na Agricultura FamiliarEstudante matriculado no ensino m\u00e9dio da rede p\u00fablica",
+          "count": 669
+        }
+      ],
+      "dtype": "string"
+    },
+    "povo_indigena": {
+      "null_count": 5825225,
+      "ndv_approx": 635,
+      "mean_length": 2.02574852854841,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "seguro_desenprego": {
+      "null_count": 5781772,
+      "ndv_approx": 2,
+      "mean_length": 2.027759915159596,
+      "top_values": [
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "SIM",
+          "count": 49342
+        }
+      ],
+      "dtype": "string"
+    },
+    "sexo do aluno": {
+      "null_count": 54224,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "F",
+          "count": 4441888
+        },
+        {
+          "value": "M",
+          "count": 3063062
+        },
+        {
+          "value": "X",
+          "count": 53
+        }
+      ],
+      "dtype": "string"
+    },
+    "situacao_da_turma": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 8.728423686707648,
+      "top_values": [
+        {
+          "value": "CONCLU\u00cdDA",
+          "count": 5101931
+        },
+        {
+          "value": "INICIADA",
+          "count": 2044587
+        },
+        {
+          "value": "CANCELADA",
+          "count": 406745
+        },
+        {
+          "value": "CRIADA",
+          "count": 2885
+        },
+        {
+          "value": "PUBLICADA",
+          "count": 2744
+        }
+      ],
+      "dtype": "string"
+    },
+    "st_extemporaneo_matricula": {
+      "dtype": "bool",
+      "true_count": 118376,
+      "false_count": 7386541,
+      "null_count": 54310
+    },
+    "st_extemporaneo_turma": {
+      "dtype": "bool",
+      "true_count": 17068,
+      "false_count": 7542159,
+      "null_count": 0
+    },
+    "st_financiavel": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.4577941633450087,
+      "top_values": [
+        {
+          "value": "-",
+          "count": 5828942
+        },
+        {
+          "value": "Sim",
+          "count": 1722367
+        },
+        {
+          "value": "N\u00e3o",
+          "count": 7918
+        }
+      ],
+      "dtype": "string"
+    },
+    "subtipo_curso": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 8.006562840353915,
+      "top_values": [
+        {
+          "value": "FIC",
+          "count": 5231353
+        },
+        {
+          "value": "T\u00e9cnico Subsequente",
+          "count": 1728113
+        },
+        {
+          "value": "T\u00e9cnico Concomitante",
+          "count": 599761
+        }
+      ],
+      "dtype": "string"
+    },
+    "tipo_da_oferta": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 10.321703793258227,
+      "top_values": [
+        {
+          "value": "Compartilhada",
+          "count": 5202920
+        },
+        {
+          "value": "''",
+          "count": 1728113
+        },
+        {
+          "value": "Preferencial",
+          "count": 425390
+        },
+        {
+          "value": "Exclusiva",
+          "count": 202804
+        }
+      ],
+      "dtype": "string"
+    },
+    "tipo_do_local_da_oferta": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.325451134090827,
+      "top_values": [
+        {
+          "value": "UE",
+          "count": 5099068
+        },
+        {
+          "value": "UER",
+          "count": 2460159
+        }
+      ],
+      "dtype": "string"
+    },
+    "total_conf_freq_aluno": {
+      "null_count": 5831114,
+      "ndv_approx": 30,
+      "mean_length": 1.1583733239666618,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 1284962
+        },
+        {
+          "value": "19",
+          "count": 69357
+        },
+        {
+          "value": "13",
+          "count": 37215
+        },
+        {
+          "value": "10",
+          "count": 27003
+        },
+        {
+          "value": "2",
+          "count": 25948
+        }
+      ],
+      "dtype": "string"
+    },
+    "total_freq_aluno": {
+      "null_count": 2114887,
+      "min": 0,
+      "max": 1097,
+      "mean": 5.09760815819732,
+      "ndv_approx": 59,
+      "histogram": {
+        "buckets": [
+          0.0,
+          109.7,
+          219.4,
+          329.1,
+          438.8,
+          548.5,
+          658.2,
+          767.9,
+          877.6,
+          987.3000000000001,
+          1097.0
+        ],
+        "counts": [
+          5444316,
+          9,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          5,
+          10
+        ]
+      },
+      "dtype": "int16"
+    },
+    "transferencia_renda": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 3.6658281329559226,
+      "top_values": [
+        {
+          "value": "''",
+          "count": 6390720
+        },
+        {
+          "value": "Bolsa Fam\u00edlia",
+          "count": 1104855
+        },
+        {
+          "value": "Outro",
+          "count": 51930
+        },
+        {
+          "value": "Bolsa Fam\u00edlia - Outro",
+          "count": 8608
+        },
+        {
+          "value": "Benef\u00edcio de Presta\u00e7\u00e3o Continuada \u2013 BPC",
+          "count": 2823
+        }
+      ],
+      "dtype": "string"
+    },
+    "turno": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "Noite",
+          "count": 2955104
+        },
+        {
+          "value": "Tarde",
+          "count": 2528895
+        },
+        {
+          "value": "Manh\u00e3",
+          "count": 2075228
+        }
+      ],
+      "dtype": "string"
+    },
+    "uf_da_ue": {
+      "null_count": 0,
+      "ndv_approx": 28,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "MG",
+          "count": 883791
+        },
+        {
+          "value": "SP",
+          "count": 821019
+        },
+        {
+          "value": "RS",
+          "count": 559418
+        },
+        {
+          "value": "BA",
+          "count": 410284
+        },
+        {
+          "value": "PE",
+          "count": 399515
+        }
+      ],
+      "dtype": "string"
+    },
+    "uf_do_local_da_oferta": {
+      "null_count": 0,
+      "ndv_approx": 28,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "MG",
+          "count": 878235
+        },
+        {
+          "value": "SP",
+          "count": 826599
+        },
+        {
+          "value": "RS",
+          "count": 559418
+        },
+        {
+          "value": "BA",
+          "count": 413103
+        },
+        {
+          "value": "PE",
+          "count": 394886
+        }
+      ],
+      "dtype": "string"
+    },
+    "unidade_demandante": {
+      "null_count": 54224,
+      "ndv_approx": 10043,
+      "mean_length": 28.665345903259464,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "vagas": {
+      "null_count": 0,
+      "min": 0,
+      "max": 320,
+      "mean": 41.682748778413455,
+      "ndv_approx": 137,
+      "histogram": {
+        "buckets": [
+          0.0,
+          32.0,
+          64.0,
+          96.0,
+          128.0,
+          160.0,
+          192.0,
+          224.0,
+          256.0,
+          288.0,
+          320.0
+        ],
+        "counts": [
+          4771070,
+          1767854,
+          280499,
+          316746,
+          40612,
+          133642,
+          168331,
+          66670,
+          559,
+          13244
+        ]
+      },
+      "dtype": "int16"
+    },
+    "valor_hora_aula_proposto": {
+      "null_count": 5831114,
+      "ndv_approx": 417,
+      "mean_length": 4.008506966847654,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_838513978982854656": {
+      "null_count": 4482,
+      "ndv_approx": 802,
+      "mean_length": 12.097361591953137,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

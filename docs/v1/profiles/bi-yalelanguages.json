@@ -1,0 +1,825 @@
+{
+  "schema_version": 1,
+  "slug": "bi-yalelanguages",
+  "row_count": 5762082,
+  "parquet_sha256": "29e26f68353233a7e605e5253e60a6c72d9b342914da0b83bb3ca29f012f1502",
+  "computed_at": "2026-05-16T08:43:30Z",
+  "sample_rows": null,
+  "columns": {
+    "BEGIN_PUB_DATE": {
+      "null_count": 1678,
+      "ndv_approx": 636,
+      "mean_length": 3.999958336255582,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BIB_FORMAT": {
+      "null_count": 0,
+      "ndv_approx": 39,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "am",
+          "count": 5196214
+        },
+        {
+          "value": "as",
+          "count": 359658
+        },
+        {
+          "value": "jm",
+          "count": 99060
+        },
+        {
+          "value": "cm",
+          "count": 72424
+        },
+        {
+          "value": "gm",
+          "count": 17509
+        }
+      ],
+      "dtype": "string"
+    },
+    "BIB_ID": {
+      "null_count": 0,
+      "min": 1871,
+      "max": 12657572,
+      "mean": 5903537.635783732,
+      "ndv_approx": 781426,
+      "histogram": {
+        "buckets": [
+          1871.0,
+          1267441.1,
+          2533011.2,
+          3798581.3000000003,
+          5064151.4,
+          6329721.5,
+          7595291.600000001,
+          8860861.700000001,
+          10126431.8,
+          11392001.9,
+          12657572.0
+        ],
+        "counts": [
+          462746,
+          124751,
+          367977,
+          1545798,
+          752314,
+          940433,
+          804325,
+          396403,
+          177401,
+          189934
+        ]
+      },
+      "dtype": "int32"
+    },
+    "CALL_NO_TYPE": {
+      "null_count": 4391,
+      "ndv_approx": 6,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 5037208
+        },
+        {
+          "value": "8",
+          "count": 720292
+        },
+        {
+          "value": "1",
+          "count": 89
+        },
+        {
+          "value": "4",
+          "count": 68
+        },
+        {
+          "value": "Y",
+          "count": 20
+        }
+      ],
+      "dtype": "string"
+    },
+    "CHARGE_DATE": {
+      "dtype": "timestamp[us]",
+      "null_count": 0,
+      "min": "1989-08-23T00:00:00+00:00",
+      "max": "2015-12-31T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1989-08-23T00:00:00+00:00",
+          "1992-04-11T14:24:00+00:00",
+          "1994-11-30T04:48:00+00:00",
+          "1997-07-19T19:12:00+00:00",
+          "2000-03-08T09:36:00+00:00",
+          "2002-10-27T00:00:00+00:00",
+          "2005-06-15T14:24:00+00:00",
+          "2008-02-03T04:48:00+00:00",
+          "2010-09-22T19:12:00+00:00",
+          "2013-05-12T09:36:00+00:00",
+          "2015-12-31T00:00:00+00:00"
+        ],
+        "counts": [
+          9038,
+          2890,
+          36954,
+          463937,
+          778132,
+          1069451,
+          1081867,
+          1094351,
+          750516,
+          474946
+        ]
+      }
+    },
+    "CLASS_BROAD": {
+      "null_count": 738662,
+      "ndv_approx": 19,
+      "mean_length": 24.969635228589286,
+      "top_values": [
+        {
+          "value": "P - Language and Literature",
+          "count": 1615243
+        },
+        {
+          "value": "D - History (except America)",
+          "count": 822388
+        },
+        {
+          "value": "B - Philosophy, Psychology, Religion",
+          "count": 597863
+        },
+        {
+          "value": "N - Fine Arts",
+          "count": 552289
+        },
+        {
+          "value": "H - Social Sciences",
+          "count": 486985
+        }
+      ],
+      "dtype": "string"
+    },
+    "CLASS_GROUP": {
+      "null_count": 738662,
+      "ndv_approx": 4,
+      "mean_length": 10.639931958705423,
+      "top_values": [
+        {
+          "value": "Humanities",
+          "count": 3869231
+        },
+        {
+          "value": "Social Sciences",
+          "count": 835780
+        },
+        {
+          "value": "Sciences",
+          "count": 209264
+        },
+        {
+          "value": "Other",
+          "count": 109145
+        }
+      ],
+      "dtype": "string"
+    },
+    "CLASS_LETTER": {
+      "null_count": 850113,
+      "ndv_approx": 338,
+      "mean_length": 1.855891191495712,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CLASS_NARROW": {
+      "null_count": 738662,
+      "ndv_approx": 241,
+      "mean_length": 24.877354670722337,
+      "top_values": [
+        {
+          "value": "PQ - Romance Literature",
+          "count": 678683
+        },
+        {
+          "value": "PT - German Literature",
+          "count": 353497
+        },
+        {
+          "value": "PN - Literature, Literary History and Collections",
+          "count": 267986
+        },
+        {
+          "value": "NJ - Artists",
+          "count": 202281
+        },
+        {
+          "value": "DG - Italy",
+          "count": 186783
+        }
+      ],
+      "dtype": "string"
+    },
+    "DATE": {
+      "null_count": 1704,
+      "ndv_approx": 636,
+      "mean_length": 3.999961113663027,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "DATE_RANGE_CENTURY": {
+      "null_count": 1704,
+      "ndv_approx": 10,
+      "mean_length": 8.997217196510368,
+      "top_values": [
+        {
+          "value": "2000-2099",
+          "count": 3273047
+        },
+        {
+          "value": "1900-1999",
+          "count": 2292651
+        },
+        {
+          "value": "1800-1899",
+          "count": 145783
+        },
+        {
+          "value": "1700-1799",
+          "count": 33284
+        },
+        {
+          "value": "Unknown",
+          "count": 8015
+        }
+      ],
+      "dtype": "string"
+    },
+    "DATE_RANGE_DECADE": {
+      "null_count": 1704,
+      "ndv_approx": 41,
+      "mean_length": 8.997217196510368,
+      "top_values": [
+        {
+          "value": "2000-2009",
+          "count": 2728782
+        },
+        {
+          "value": "1990-1999",
+          "count": 1286448
+        },
+        {
+          "value": "2010-2019",
+          "count": 543749
+        },
+        {
+          "value": "1980-1989",
+          "count": 337366
+        },
+        {
+          "value": "1970-1979",
+          "count": 185910
+        }
+      ],
+      "dtype": "string"
+    },
+    "DISCHARGE_DATE": {
+      "dtype": "timestamp[us]",
+      "null_count": 85237,
+      "min": "1933-03-09T00:00:00+00:00",
+      "max": "2029-03-09T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1933-03-09T00:00:00+00:00",
+          "1942-10-14T09:36:00+00:00",
+          "1952-05-20T19:12:00+00:00",
+          "1961-12-26T04:48:00+00:00",
+          "1971-08-02T14:24:00+00:00",
+          "1981-03-09T00:00:00+00:00",
+          "1990-10-14T09:36:00+00:00",
+          "2000-05-20T19:12:00+00:00",
+          "2009-12-26T04:48:00+00:00",
+          "2019-08-02T14:24:00+00:00",
+          "2029-03-09T00:00:00+00:00"
+        ],
+        "counts": [
+          5,
+          98,
+          3,
+          23,
+          2,
+          0,
+          458747,
+          3638209,
+          1579437,
+          321
+        ]
+      }
+    },
+    "ID": {
+      "null_count": 738662,
+      "min": 1,
+      "max": 264,
+      "mean": 123.46985002249464,
+      "ndv_approx": 255,
+      "histogram": {
+        "buckets": [
+          1.0,
+          27.3,
+          53.6,
+          79.9,
+          106.2,
+          132.5,
+          158.8,
+          185.1,
+          211.4,
+          237.70000000000002,
+          264.0
+        ],
+        "counts": [
+          639633,
+          820028,
+          584461,
+          268963,
+          33515,
+          49996,
+          1747937,
+          483460,
+          44466,
+          350961
+        ]
+      },
+      "dtype": "int16"
+    },
+    "ID1": {
+      "null_count": 1704,
+      "min": 1,
+      "max": 993,
+      "mean": 692.0500225853234,
+      "ndv_approx": 623,
+      "histogram": {
+        "buckets": [
+          1.0,
+          100.2,
+          199.4,
+          298.6,
+          397.8,
+          497.0,
+          596.2,
+          695.4,
+          794.6,
+          893.8000000000001,
+          993.0
+        ],
+        "counts": [
+          1,
+          71,
+          1369,
+          5652,
+          30868,
+          133076,
+          1288653,
+          4295763,
+          4687,
+          238
+        ]
+      },
+      "dtype": "int16"
+    },
+    "LANGUAGE": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "ger",
+          "count": 2558756
+        },
+        {
+          "value": "ita",
+          "count": 1809746
+        },
+        {
+          "value": "fre",
+          "count": 1393580
+        }
+      ],
+      "dtype": "string"
+    },
+    "LC_BROAD": {
+      "null_count": 724874,
+      "ndv_approx": 24,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "P",
+          "count": 1615373
+        },
+        {
+          "value": "D",
+          "count": 824154
+        },
+        {
+          "value": "B",
+          "count": 598005
+        },
+        {
+          "value": "N",
+          "count": 552486
+        },
+        {
+          "value": "H",
+          "count": 487954
+        }
+      ],
+      "dtype": "string"
+    },
+    "LC_NARROW": {
+      "null_count": 838207,
+      "ndv_approx": 527,
+      "mean_length": 1.858139778121906,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "MFHD_ID": {
+      "null_count": 0,
+      "min": 3296,
+      "max": 12768461,
+      "mean": 6356963.83869702,
+      "ndv_approx": 760846,
+      "histogram": {
+        "buckets": [
+          3296.0,
+          1279812.5,
+          2556329.0,
+          3832845.5,
+          5109362.0,
+          6385878.5,
+          7662395.0,
+          8938911.5,
+          10215428.0,
+          11491944.5,
+          12768461.0
+        ],
+        "counts": [
+          442470,
+          93371,
+          269218,
+          1241608,
+          626571,
+          1296210,
+          892663,
+          483500,
+          210923,
+          205548
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          5762082
+        ]
+      }
+    },
+    "PATRON_GROUP_CODE": {
+      "null_count": 187,
+      "ndv_approx": 34,
+      "mean_length": 6.833439519463648,
+      "top_values": [
+        {
+          "value": "INPROCESS",
+          "count": 3149202
+        },
+        {
+          "value": "FROG",
+          "count": 674391
+        },
+        {
+          "value": "GRAD",
+          "count": 453948
+        },
+        {
+          "value": "DEPT",
+          "count": 359268
+        },
+        {
+          "value": "BINDCO",
+          "count": 244247
+        }
+      ],
+      "dtype": "string"
+    },
+    "PATRON_GROUP_DISPLAY": {
+      "null_count": 187,
+      "ndv_approx": 44,
+      "mean_length": 11.171081736130214,
+      "top_values": [
+        {
+          "value": "In Process",
+          "count": 3149202
+        },
+        {
+          "value": "Frontlog",
+          "count": 674391
+        },
+        {
+          "value": "Grad Student",
+          "count": 453948
+        },
+        {
+          "value": "Department Patron",
+          "count": 359268
+        },
+        {
+          "value": "Bindery - Commercial",
+          "count": 244247
+        }
+      ],
+      "dtype": "string"
+    },
+    "PATRON_GROUP_ID": {
+      "null_count": 187,
+      "min": 1,
+      "max": 49,
+      "mean": 19.174582494127367,
+      "ndv_approx": 39,
+      "histogram": {
+        "buckets": [
+          1.0,
+          5.8,
+          10.6,
+          15.399999999999999,
+          20.2,
+          25.0,
+          29.799999999999997,
+          34.6,
+          39.4,
+          44.199999999999996,
+          49.0
+        ],
+        "counts": [
+          696568,
+          104029,
+          786,
+          3854936,
+          255897,
+          377665,
+          360470,
+          104607,
+          640,
+          6297
+        ]
+      },
+      "dtype": "int16"
+    },
+    "PATRON_GROUP_ID1": {
+      "null_count": 0,
+      "min": 0,
+      "max": 49,
+      "mean": 19.173989714134578,
+      "ndv_approx": 41,
+      "histogram": {
+        "buckets": [
+          0.0,
+          4.9,
+          9.8,
+          14.700000000000001,
+          19.6,
+          24.5,
+          29.400000000000002,
+          34.300000000000004,
+          39.2,
+          44.1,
+          49.0
+        ],
+        "counts": [
+          242797,
+          549665,
+          9098,
+          705744,
+          3405099,
+          377665,
+          360470,
+          104607,
+          640,
+          6297
+        ]
+      },
+      "dtype": "int16"
+    },
+    "PATRON_GROUP_NAME": {
+      "null_count": 187,
+      "ndv_approx": 42,
+      "mean_length": 10.856941683248307,
+      "top_values": [
+        {
+          "value": "In Process",
+          "count": 3149202
+        },
+        {
+          "value": "Frontlog",
+          "count": 674391
+        },
+        {
+          "value": "Graduate",
+          "count": 453948
+        },
+        {
+          "value": "Department Patron",
+          "count": 359268
+        },
+        {
+          "value": "Bindery - Commercial",
+          "count": 244247
+        }
+      ],
+      "dtype": "string"
+    },
+    "PATRON_TYPE (Pseudo vs Patron)": {
+      "null_count": 187,
+      "ndv_approx": 2,
+      "mean_length": 10.895184310023005,
+      "top_values": [
+        {
+          "value": "Pseudopatron",
+          "count": 4700923
+        },
+        {
+          "value": "Patron",
+          "count": 1060972
+        }
+      ],
+      "dtype": "string"
+    },
+    "PLACE_CODE": {
+      "null_count": 3448,
+      "ndv_approx": 353,
+      "mean_length": 2.028071066853702,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Patron Group": {
+      "null_count": 187,
+      "ndv_approx": 11,
+      "mean_length": 9.733398473939562,
+      "top_values": [
+        {
+          "value": "Processing",
+          "count": 4477968
+        },
+        {
+          "value": "Graduate",
+          "count": 453948
+        },
+        {
+          "value": "Other",
+          "count": 264868
+        },
+        {
+          "value": "Resource Sharing",
+          "count": 196856
+        },
+        {
+          "value": "Faculty",
+          "count": 168454
+        }
+      ],
+      "dtype": "string"
+    },
+    "RENEWAL_COUNT": {
+      "null_count": 0,
+      "min": 0,
+      "max": 101,
+      "mean": 0.1670403163301043,
+      "ndv_approx": 102,
+      "histogram": {
+        "buckets": [
+          0.0,
+          10.1,
+          20.2,
+          30.299999999999997,
+          40.4,
+          50.5,
+          60.599999999999994,
+          70.7,
+          80.8,
+          90.89999999999999,
+          101.0
+        ],
+        "counts": [
+          5743715,
+          12923,
+          3358,
+          883,
+          497,
+          269,
+          160,
+          61,
+          42,
+          174
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Calculation_1810108111146429": {
+      "null_count": 3952336,
+      "ndv_approx": 20,
+      "mean_length": 23.94696272294565,
+      "top_values": [
+        {
+          "value": "P - Language and Literature",
+          "count": 508394
+        },
+        {
+          "value": "D - History (except America)",
+          "count": 257222
+        },
+        {
+          "value": "N - Fine Arts",
+          "count": 207140
+        },
+        {
+          "value": "B - Philosophy, Psychology, Religion",
+          "count": 203100
+        },
+        {
+          "value": "Other / Old Yale",
+          "count": 186162
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_3110108110633423": {
+      "null_count": 4368502,
+      "ndv_approx": 20,
+      "mean_length": 24.53363638973005,
+      "top_values": [
+        {
+          "value": "P - Language and Literature",
+          "count": 503503
+        },
+        {
+          "value": "D - History (except America)",
+          "count": 194132
+        },
+        {
+          "value": "Other / Old Yale",
+          "count": 173052
+        },
+        {
+          "value": "B - Philosophy, Psychology, Religion",
+          "count": 120615
+        },
+        {
+          "value": "H - Social Sciences",
+          "count": 112183
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_6550106154858816": {
+      "null_count": 3203326,
+      "ndv_approx": 20,
+      "mean_length": 23.34105010403493,
+      "top_values": [
+        {
+          "value": "P - Language and Literature",
+          "count": 603346
+        },
+        {
+          "value": "Other / Old Yale",
+          "count": 379448
+        },
+        {
+          "value": "D - History (except America)",
+          "count": 371034
+        },
+        {
+          "value": "B - Philosophy, Psychology, Religion",
+          "count": 274148
+        },
+        {
+          "value": "N - Fine Arts",
+          "count": 263454
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

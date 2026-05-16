@@ -1,0 +1,970 @@
+{
+  "schema_version": 1,
+  "slug": "building-permit-applications-data",
+  "row_count": 198900,
+  "parquet_sha256": "3898f12f84d4a5683cc4b8d4e434c2bcaeb7bd422b17a2bdf91be7b88b0bf0e2",
+  "computed_at": "2026-05-16T08:43:33Z",
+  "sample_rows": null,
+  "columns": {
+    "Permit Number": {
+      "null_count": 0,
+      "ndv_approx": 227605,
+      "mean_length": 11.063273001508296,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Permit Type": {
+      "null_count": 0,
+      "min": 1,
+      "max": 8,
+      "mean": 7.522322775263952,
+      "ndv_approx": 9,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.7,
+          2.4,
+          3.0999999999999996,
+          3.8,
+          4.5,
+          5.199999999999999,
+          5.8999999999999995,
+          6.6,
+          7.3,
+          8.0
+        ],
+        "counts": [
+          349,
+          950,
+          14663,
+          0,
+          2892,
+          91,
+          0,
+          600,
+          511,
+          178844
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Permit Type Definition": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 22.572785319255907,
+      "top_values": [
+        {
+          "value": "otc alterations permit",
+          "count": 178844
+        },
+        {
+          "value": "additions alterations or repairs",
+          "count": 14663
+        },
+        {
+          "value": "sign - erect",
+          "count": 2892
+        },
+        {
+          "value": "new construction wood frame",
+          "count": 950
+        },
+        {
+          "value": "demolitions",
+          "count": 600
+        }
+      ],
+      "dtype": "string"
+    },
+    "Permit Creation Date": {
+      "null_count": 0,
+      "ndv_approx": 1395,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Block": {
+      "null_count": 0,
+      "ndv_approx": 4929,
+      "mean_length": 4.036390145801911,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Lot": {
+      "null_count": 0,
+      "ndv_approx": 1121,
+      "mean_length": 3.0798793363499244,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Street Number": {
+      "null_count": 0,
+      "min": 0,
+      "max": 8400,
+      "mean": 1121.7289441930618,
+      "ndv_approx": 4845,
+      "histogram": {
+        "buckets": [
+          0.0,
+          840.0,
+          1680.0,
+          2520.0,
+          3360.0,
+          4200.0,
+          5040.0,
+          5880.0,
+          6720.0,
+          7560.0,
+          8400.0
+        ],
+        "counts": [
+          108892,
+          39738,
+          24746,
+          14352,
+          7531,
+          2480,
+          697,
+          267,
+          118,
+          79
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Street Number Suffix": {
+      "null_count": 196684,
+      "ndv_approx": 19,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 1501
+        },
+        {
+          "value": "B",
+          "count": 291
+        },
+        {
+          "value": "V",
+          "count": 228
+        },
+        {
+          "value": "C",
+          "count": 56
+        },
+        {
+          "value": "E",
+          "count": 28
+        }
+      ],
+      "dtype": "string"
+    },
+    "Street Name": {
+      "null_count": 0,
+      "ndv_approx": 1936,
+      "mean_length": 6.509718451483157,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Street Suffix": {
+      "null_count": 2768,
+      "ndv_approx": 21,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "St",
+          "count": 138358
+        },
+        {
+          "value": "Av",
+          "count": 43219
+        },
+        {
+          "value": "Bl",
+          "count": 3555
+        },
+        {
+          "value": "Wy",
+          "count": 3540
+        },
+        {
+          "value": "Dr",
+          "count": 3267
+        }
+      ],
+      "dtype": "string"
+    },
+    "Unit": {
+      "null_count": 169421,
+      "min": 0,
+      "max": 6004,
+      "mean": 78.51718172258218,
+      "ndv_approx": 864,
+      "histogram": {
+        "buckets": [
+          0.0,
+          600.4,
+          1200.8,
+          1801.1999999999998,
+          2401.6,
+          3002.0,
+          3602.3999999999996,
+          4202.8,
+          4803.2,
+          5403.599999999999,
+          6004.0
+        ],
+        "counts": [
+          28316,
+          679,
+          284,
+          78,
+          48,
+          27,
+          18,
+          7,
+          13,
+          9
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Unit Suffix": {
+      "null_count": 196939,
+      "ndv_approx": 166,
+      "mean_length": 2.601733809280979,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 346
+        },
+        {
+          "value": "C",
+          "count": 226
+        },
+        {
+          "value": "B",
+          "count": 191
+        },
+        {
+          "value": "D",
+          "count": 135
+        },
+        {
+          "value": "E",
+          "count": 92
+        }
+      ],
+      "dtype": "string"
+    },
+    "Description": {
+      "null_count": 290,
+      "ndv_approx": 164176,
+      "mean_length": 101.4529077085746,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Current Status": {
+      "null_count": 0,
+      "ndv_approx": 13,
+      "mean_length": 6.992347913524384,
+      "top_values": [
+        {
+          "value": "complete",
+          "count": 97077
+        },
+        {
+          "value": "issued",
+          "count": 83559
+        },
+        {
+          "value": "filed",
+          "count": 12043
+        },
+        {
+          "value": "withdrawn",
+          "count": 1754
+        },
+        {
+          "value": "cancelled",
+          "count": 1536
+        }
+      ],
+      "dtype": "string"
+    },
+    "Current Status Date": {
+      "null_count": 0,
+      "ndv_approx": 1395,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Filed Date": {
+      "null_count": 0,
+      "ndv_approx": 1395,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Issued Date": {
+      "null_count": 14940,
+      "ndv_approx": 1395,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Completed Date": {
+      "null_count": 101709,
+      "ndv_approx": 1395,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "First Construction Document Date": {
+      "null_count": 14946,
+      "ndv_approx": 1395,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Structural Notification": {
+      "null_count": 191978,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "Y",
+          "count": 6922
+        }
+      ],
+      "dtype": "string"
+    },
+    "Number of Existing Stories": {
+      "null_count": 42784,
+      "min": 0.0,
+      "max": 78.0,
+      "mean": 5.705773271157344,
+      "ndv_approx": 73,
+      "histogram": {
+        "buckets": [
+          0.0,
+          7.8,
+          15.6,
+          23.4,
+          31.2,
+          39.0,
+          46.8,
+          54.6,
+          62.4,
+          70.2,
+          78.0
+        ],
+        "counts": [
+          133621,
+          8018,
+          5054,
+          4230,
+          2070,
+          1864,
+          1004,
+          155,
+          99,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Number of Proposed Stories": {
+      "null_count": 42868,
+      "min": 0.0,
+      "max": 78.0,
+      "mean": 5.745042683552092,
+      "ndv_approx": 73,
+      "histogram": {
+        "buckets": [
+          0.0,
+          7.8,
+          15.6,
+          23.4,
+          31.2,
+          39.0,
+          46.8,
+          54.6,
+          62.4,
+          70.2,
+          78.0
+        ],
+        "counts": [
+          133609,
+          8018,
+          4997,
+          4195,
+          2053,
+          1876,
+          1007,
+          171,
+          105,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Voluntary Soft-Story Retrofit": {
+      "null_count": 198865,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "Y",
+          "count": 35
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fire Only Permit": {
+      "null_count": 180073,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "Y",
+          "count": 18827
+        }
+      ],
+      "dtype": "string"
+    },
+    "Permit Expiration Date": {
+      "null_count": 51880,
+      "ndv_approx": 2238,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Estimated Cost": {
+      "null_count": 38066,
+      "min": 1.0,
+      "max": 537958646.0,
+      "mean": 168955.44329681533,
+      "ndv_approx": 12912,
+      "histogram": {
+        "buckets": [
+          1.0,
+          53795865.5,
+          107591730.0,
+          161387594.5,
+          215183459.0,
+          268979323.5,
+          322775188.0,
+          376571052.5,
+          430366917.0,
+          484162781.5,
+          537958646.0
+        ],
+        "counts": [
+          160757,
+          46,
+          14,
+          9,
+          1,
+          2,
+          1,
+          2,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Revised Cost": {
+      "null_count": 6066,
+      "min": 0.0,
+      "max": 780500000.0,
+      "mean": 132856.18649174884,
+      "ndv_approx": 14221,
+      "histogram": {
+        "buckets": [
+          0.0,
+          78050000.0,
+          156100000.0,
+          234150000.0,
+          312200000.0,
+          390250000.0,
+          468300000.0,
+          546350000.0,
+          624400000.0,
+          702450000.0,
+          780500000.0
+        ],
+        "counts": [
+          192785,
+          30,
+          11,
+          3,
+          1,
+          2,
+          1,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Existing Use": {
+      "null_count": 41114,
+      "ndv_approx": 97,
+      "mean_length": 13.170255916240984,
+      "top_values": [
+        {
+          "value": "1 family dwelling",
+          "count": 46766
+        },
+        {
+          "value": "apartments",
+          "count": 40798
+        },
+        {
+          "value": "office",
+          "count": 24616
+        },
+        {
+          "value": "2 family dwelling",
+          "count": 20987
+        },
+        {
+          "value": "retail sales",
+          "count": 6910
+        }
+      ],
+      "dtype": "string"
+    },
+    "Existing Units": {
+      "null_count": 51538,
+      "min": 0.0,
+      "max": 1907.0,
+      "mean": 15.666164275729155,
+      "ndv_approx": 419,
+      "histogram": {
+        "buckets": [
+          0.0,
+          190.7,
+          381.4,
+          572.0999999999999,
+          762.8,
+          953.5,
+          1144.1999999999998,
+          1334.8999999999999,
+          1525.6,
+          1716.3,
+          1907.0
+        ],
+        "counts": [
+          144544,
+          1689,
+          779,
+          115,
+          54,
+          26,
+          51,
+          52,
+          0,
+          52
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Proposed Use": {
+      "null_count": 42439,
+      "ndv_approx": 97,
+      "mean_length": 13.20881881107752,
+      "top_values": [
+        {
+          "value": "1 family dwelling",
+          "count": 46346
+        },
+        {
+          "value": "apartments",
+          "count": 43032
+        },
+        {
+          "value": "office",
+          "count": 23962
+        },
+        {
+          "value": "2 family dwelling",
+          "count": 22061
+        },
+        {
+          "value": "retail sales",
+          "count": 5079
+        }
+      ],
+      "dtype": "string"
+    },
+    "Proposed Units": {
+      "null_count": 50911,
+      "min": 0,
+      "max": 1911,
+      "mean": 16.510950138185947,
+      "ndv_approx": 428,
+      "histogram": {
+        "buckets": [
+          0.0,
+          191.1,
+          382.2,
+          573.3,
+          764.4,
+          955.5,
+          1146.6,
+          1337.7,
+          1528.8,
+          1719.8999999999999,
+          1911.0
+        ],
+        "counts": [
+          145040,
+          1709,
+          896,
+          123,
+          48,
+          24,
+          48,
+          49,
+          0,
+          52
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Plansets": {
+      "null_count": 37309,
+      "min": 0,
+      "max": 9000,
+      "mean": 1.2746501971025614,
+      "ndv_approx": 9,
+      "histogram": {
+        "buckets": [
+          0.0,
+          900.0,
+          1800.0,
+          2700.0,
+          3600.0,
+          4500.0,
+          5400.0,
+          6300.0,
+          7200.0,
+          8100.0,
+          9000.0
+        ],
+        "counts": [
+          161590,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "TIDF Compliance": {
+      "null_count": 198898,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "P",
+          "count": 1
+        },
+        {
+          "value": "Y",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Existing Construction Type": {
+      "null_count": 43366,
+      "min": 1,
+      "max": 5,
+      "mean": 4.072877955945324,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          28072,
+          0,
+          4068,
+          0,
+          0,
+          9663,
+          0,
+          381,
+          0,
+          113350
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Existing Construction Type Description": {
+      "null_count": 43366,
+      "ndv_approx": 5,
+      "mean_length": 13.728779559453239,
+      "top_values": [
+        {
+          "value": "wood frame (5)",
+          "count": 113350
+        },
+        {
+          "value": "constr type 1",
+          "count": 28072
+        },
+        {
+          "value": "constr type 3",
+          "count": 9663
+        },
+        {
+          "value": "constr type 2",
+          "count": 4068
+        },
+        {
+          "value": "constr type 4",
+          "count": 381
+        }
+      ],
+      "dtype": "string"
+    },
+    "Proposed Construction Type": {
+      "null_count": 43162,
+      "min": 1,
+      "max": 5,
+      "mean": 4.0895285672090305,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          27841,
+          0,
+          3778,
+          0,
+          0,
+          9360,
+          0,
+          377,
+          0,
+          114382
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Proposed Construction Type Description": {
+      "null_count": 43162,
+      "ndv_approx": 5,
+      "mean_length": 13.734451450513042,
+      "top_values": [
+        {
+          "value": "wood frame (5)",
+          "count": 114382
+        },
+        {
+          "value": "constr type 1",
+          "count": 27841
+        },
+        {
+          "value": "constr type 3",
+          "count": 9360
+        },
+        {
+          "value": "constr type 2",
+          "count": 3778
+        },
+        {
+          "value": "constr type 4",
+          "count": 377
+        }
+      ],
+      "dtype": "string"
+    },
+    "Site Permit": {
+      "null_count": 193541,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "Y",
+          "count": 5359
+        }
+      ],
+      "dtype": "string"
+    },
+    "Supervisor District": {
+      "null_count": 1717,
+      "min": 1,
+      "max": 11,
+      "mean": 5.538403412058849,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          13038,
+          25483,
+          28649,
+          9592,
+          19045,
+          24797,
+          14365,
+          26760,
+          16362,
+          19092
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Neighborhoods - Analysis Boundaries": {
+      "null_count": 1725,
+      "ndv_approx": 43,
+      "mean_length": 14.78103714974008,
+      "top_values": [
+        {
+          "value": "Financial District/South Beach",
+          "count": 21816
+        },
+        {
+          "value": "Mission",
+          "count": 14681
+        },
+        {
+          "value": "Sunset/Parkside",
+          "count": 10207
+        },
+        {
+          "value": "West of Twin Peaks",
+          "count": 8739
+        },
+        {
+          "value": "Castro/Upper Market",
+          "count": 8527
+        }
+      ],
+      "dtype": "string"
+    },
+    "Zipcode": {
+      "null_count": 1716,
+      "min": 94102,
+      "max": 94158,
+      "mean": 94115.5005578546,
+      "ndv_approx": 28,
+      "histogram": {
+        "buckets": [
+          94102.0,
+          94107.6,
+          94113.2,
+          94118.8,
+          94124.4,
+          94130.0,
+          94135.6,
+          94141.2,
+          94146.8,
+          94152.4,
+          94158.0
+        ],
+        "counts": [
+          38713,
+          47787,
+          51512,
+          31439,
+          5016,
+          21659,
+          0,
+          0,
+          0,
+          1058
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Location": {
+      "null_count": 1700,
+      "ndv_approx": 49233,
+      "mean_length": 40.04426977687627,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Record ID": {
+      "null_count": 0,
+      "min": 12935321500,
+      "max": 1498342127659,
+      "mean": 1162047577771.7393,
+      "ndv_approx": 197537,
+      "histogram": {
+        "buckets": [
+          12935321500.0,
+          161476002115.9,
+          310016682731.8,
+          458557363347.69995,
+          607098043963.6,
+          755638724579.5,
+          904179405195.3999,
+          1052720085811.2999,
+          1201260766427.2,
+          1349801447043.0999,
+          1498342127659.0
+        ],
+        "counts": [
+          36905,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          45129,
+          116866
+        ]
+      },
+      "dtype": "uint64"
+    }
+  }
+}

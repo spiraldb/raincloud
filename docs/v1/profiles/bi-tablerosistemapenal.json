@@ -1,0 +1,1290 @@
+{
+  "schema_version": 1,
+  "slug": "bi-tablerosistemapenal",
+  "row_count": 25274916,
+  "parquet_sha256": "7c3483680f73ceef487d69ffb61285470dd6700a2fb346756393a5f8978d81d5",
+  "computed_at": "2026-05-16T07:52:09Z",
+  "sample_rows": null,
+  "columns": {
+    "AGRUPADOR": {
+      "null_count": 8694283,
+      "ndv_approx": 52,
+      "mean_length": 15.860026333132154,
+      "top_values": [
+        {
+          "value": "OTROS DELITOS.",
+          "count": 2420512
+        },
+        {
+          "value": "HURTOS.",
+          "count": 2058536
+        },
+        {
+          "value": "LESIONES.",
+          "count": 1698469
+        },
+        {
+          "value": "FALTAS",
+          "count": 1094304
+        },
+        {
+          "value": "Otros delitos.",
+          "count": 1091360
+        }
+      ],
+      "dtype": "string"
+    },
+    "A\u00f1o Ingreso": {
+      "null_count": 17250245,
+      "ndv_approx": 9,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "2014",
+          "count": 1229656
+        },
+        {
+          "value": "2013",
+          "count": 1208594
+        },
+        {
+          "value": "2011",
+          "count": 1207385
+        },
+        {
+          "value": "2012",
+          "count": 1206486
+        },
+        {
+          "value": "2010",
+          "count": 1068817
+        }
+      ],
+      "dtype": "string"
+    },
+    "CLASE": {
+      "null_count": 20781838,
+      "ndv_approx": 4,
+      "mean_length": 8.660302358427787,
+      "top_values": [
+        {
+          "value": "RELACIONES",
+          "count": 2176118
+        },
+        {
+          "value": "DELITOS",
+          "count": 1948462
+        },
+        {
+          "value": "PARTICIPANTES",
+          "count": 185716
+        },
+        {
+          "value": "CAUSAS",
+          "count": 182782
+        }
+      ],
+      "dtype": "string"
+    },
+    "COD DELITO": {
+      "null_count": 18977569,
+      "ndv_approx": 480,
+      "mean_length": 3.5850363653138375,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "COD. REGI\u00d3N": {
+      "null_count": 20781838,
+      "ndv_approx": 16,
+      "mean_length": 1.4086632816078422,
+      "top_values": [
+        {
+          "value": "13",
+          "count": 1228206
+        },
+        {
+          "value": "8",
+          "count": 589420
+        },
+        {
+          "value": "5",
+          "count": 530846
+        },
+        {
+          "value": "9",
+          "count": 360690
+        },
+        {
+          "value": "7",
+          "count": 303556
+        }
+      ],
+      "dtype": "string"
+    },
+    "COMUNA": {
+      "null_count": 20781838,
+      "ndv_approx": 157,
+      "mean_length": 8.444572295428657,
+      "top_values": [
+        {
+          "value": "SANTIAGO",
+          "count": 918996
+        },
+        {
+          "value": "CONCEPCI\u00d3N",
+          "count": 87050
+        },
+        {
+          "value": "IQUIQUE",
+          "count": 79394
+        },
+        {
+          "value": "VALPARA\u00cdSO",
+          "count": 77614
+        },
+        {
+          "value": "SAN BERNARDO",
+          "count": 73088
+        }
+      ],
+      "dtype": "string"
+    },
+    "CORTE": {
+      "null_count": 3531593,
+      "ndv_approx": 33,
+      "mean_length": 15.719849629240205,
+      "top_values": [
+        {
+          "value": "90- SANTIAGO.",
+          "count": 3451596
+        },
+        {
+          "value": "91- SAN MIGUEL.",
+          "count": 2110216
+        },
+        {
+          "value": "30- VALPARA\u00cdSO.",
+          "count": 1692827
+        },
+        {
+          "value": "90-C.A. DE SANTIAGO.",
+          "count": 1517494
+        },
+        {
+          "value": "46- CONCEPCI\u00d3N.",
+          "count": 1171904
+        }
+      ],
+      "dtype": "string"
+    },
+    "CREA RUC": {
+      "null_count": 20781838,
+      "ndv_approx": 3,
+      "mean_length": 7.999916315719425,
+      "top_values": [
+        {
+          "value": "FISCAL\u00cdA",
+          "count": 3611476
+        },
+        {
+          "value": "TRIBUNAL",
+          "count": 881508
+        },
+        {
+          "value": "RARA",
+          "count": 94
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_0520821013255406": {
+      "null_count": 21150336,
+      "ndv_approx": 36,
+      "mean_length": 16.385194613754614,
+      "top_values": [
+        {
+          "value": "OTROS DELITOS.",
+          "count": 800492
+        },
+        {
+          "value": "FALTAS",
+          "count": 426632
+        },
+        {
+          "value": "LESIONES.",
+          "count": 305764
+        },
+        {
+          "value": "HURTOS.",
+          "count": 291056
+        },
+        {
+          "value": "OTROS DELITOS CONTRA LA PROPIEDAD.",
+          "count": 286486
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_0640821194248948": {
+      "null_count": 21150336,
+      "ndv_approx": 36,
+      "mean_length": 16.385194613754614,
+      "top_values": [
+        {
+          "value": "OTROS DELITOS.",
+          "count": 800492
+        },
+        {
+          "value": "FALTAS",
+          "count": 426632
+        },
+        {
+          "value": "LESIONES.",
+          "count": 305764
+        },
+        {
+          "value": "HURTOS.",
+          "count": 291056
+        },
+        {
+          "value": "OTROS DELITOS CONTRA LA PROPIEDAD.",
+          "count": 286486
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_7430825124450529": {
+      "null_count": 20781838,
+      "ndv_approx": 1948,
+      "mean_length": 1.1468120517827645,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Cod. Tribunal": {
+      "null_count": 17250245,
+      "ndv_approx": 177,
+      "mean_length": 3.6200426160773445,
+      "top_values": [
+        {
+          "value": "1226",
+          "count": 223409
+        },
+        {
+          "value": "1223",
+          "count": 168454
+        },
+        {
+          "value": "1221",
+          "count": 164407
+        },
+        {
+          "value": "993",
+          "count": 157568
+        },
+        {
+          "value": "1236",
+          "count": 156017
+        }
+      ],
+      "dtype": "string"
+    },
+    "DELITO": {
+      "null_count": 3900466,
+      "ndv_approx": 459,
+      "mean_length": 40.02746947874682,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Forma Inicio": {
+      "null_count": 17250245,
+      "ndv_approx": 10,
+      "mean_length": 9.661595347647275,
+      "top_values": [
+        {
+          "value": "Denuncia.",
+          "count": 6492256
+        },
+        {
+          "value": "Querella.",
+          "count": 745882
+        },
+        {
+          "value": "Auto de apertura.",
+          "count": 408351
+        },
+        {
+          "value": "Incompetencia.",
+          "count": 242028
+        },
+        {
+          "value": "Especiales RPA",
+          "count": 99124
+        }
+      ],
+      "dtype": "string"
+    },
+    "INGRESOS": {
+      "null_count": 20781838,
+      "ndv_approx": 1948,
+      "mean_length": 1.1507892807558648,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Ingresos _ Garantia (copy)": {
+      "null_count": 20781838,
+      "ndv_approx": 115,
+      "mean_length": 1.0039772289731004,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 4161568
+        },
+        {
+          "value": "1",
+          "count": 189454
+        },
+        {
+          "value": "2",
+          "count": 59124
+        },
+        {
+          "value": "3",
+          "count": 26846
+        },
+        {
+          "value": "4",
+          "count": 14968
+        }
+      ],
+      "dtype": "string"
+    },
+    "Jurisdicci\u00f3n": {
+      "null_count": 20781838,
+      "ndv_approx": 2,
+      "mean_length": 7.704870469642414,
+      "top_values": [
+        {
+          "value": "Garant\u00eda",
+          "count": 4161568
+        },
+        {
+          "value": "Oral",
+          "count": 331510
+        }
+      ],
+      "dtype": "string"
+    },
+    "LATITUD": {
+      "null_count": 20781838,
+      "ndv_approx": 313,
+      "mean_length": 9.21519323724182,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "LONGITUD": {
+      "null_count": 20781838,
+      "ndv_approx": 236,
+      "mean_length": 9.580698576788562,
+      "top_values": [
+        {
+          "value": "-70,6667",
+          "count": 749964
+        },
+        {
+          "value": "-70.666700000000006",
+          "count": 180962
+        },
+        {
+          "value": "-70,3333",
+          "count": 94022
+        },
+        {
+          "value": "-73,0498",
+          "count": 69788
+        },
+        {
+          "value": "-70,1525",
+          "count": 64132
+        }
+      ],
+      "dtype": "string"
+    },
+    "Mes Ingreso": {
+      "null_count": 17250245,
+      "ndv_approx": 84,
+      "mean_length": 7.0,
+      "top_values": [
+        {
+          "value": "10/2013",
+          "count": 108423
+        },
+        {
+          "value": "04/2013",
+          "count": 108247
+        },
+        {
+          "value": "03/2012",
+          "count": 108183
+        },
+        {
+          "value": "05/2011",
+          "count": 107883
+        },
+        {
+          "value": "10/2014",
+          "count": 107866
+        }
+      ],
+      "dtype": "string"
+    },
+    "Number of Records": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 25274916
+        }
+      ],
+      "dtype": "string"
+    },
+    "PA\u00cdS": {
+      "null_count": 3531593,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "PA\u00cdS",
+          "count": 21743323
+        }
+      ],
+      "dtype": "string"
+    },
+    "REGI\u00d3N": {
+      "null_count": 20781838,
+      "ndv_approx": 13,
+      "mean_length": 28.246477359173376,
+      "top_values": [
+        {
+          "value": "REGI\u00d3N METROPOLITANA DE SANTIAGO.",
+          "count": 1228206
+        },
+        {
+          "value": "VIII REGI\u00d3N DEL BIO BIO.",
+          "count": 589420
+        },
+        {
+          "value": "V REGI\u00d3N DE VALPARA\u00cdSO.",
+          "count": 530846
+        },
+        {
+          "value": "IX REGI\u00d3N DE LA ARAUCAN\u00cdA.",
+          "count": 360690
+        },
+        {
+          "value": "VII REGI\u00d3N DEL MAULE.",
+          "count": 303556
+        }
+      ],
+      "dtype": "string"
+    },
+    "RPA": {
+      "null_count": 22889741,
+      "ndv_approx": 3,
+      "mean_length": 1.4077721760457829,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 1643086
+        },
+        {
+          "value": "RPA",
+          "count": 486304
+        },
+        {
+          "value": "1",
+          "count": 161183
+        },
+        {
+          "value": " ",
+          "count": 94602
+        }
+      ],
+      "dtype": "string"
+    },
+    "TIPO": {
+      "null_count": 5335862,
+      "ndv_approx": 6,
+      "mean_length": 2.8020142781096835,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 14629318
+        },
+        {
+          "value": "ordinaria",
+          "count": 4485996
+        },
+        {
+          "value": "2",
+          "count": 810307
+        },
+        {
+          "value": "militar",
+          "count": 7082
+        },
+        {
+          "value": "5",
+          "count": 6265
+        }
+      ],
+      "dtype": "string"
+    },
+    "TIP_TRIB": {
+      "null_count": 17250245,
+      "ndv_approx": 4,
+      "mean_length": 4.6010010877704515,
+      "top_values": [
+        {
+          "value": "13",
+          "count": 4161568
+        },
+        {
+          "value": "Garant\u00eda",
+          "count": 3452248
+        },
+        {
+          "value": "14",
+          "count": 331510
+        },
+        {
+          "value": "Oral",
+          "count": 79345
+        }
+      ],
+      "dtype": "string"
+    },
+    "TRIBUNAL": {
+      "null_count": 3531593,
+      "ndv_approx": 332,
+      "mean_length": 19.613483964709534,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "A\u00d1O": {
+      "null_count": 21743323,
+      "ndv_approx": 6,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "2011",
+          "count": 661696
+        },
+        {
+          "value": "2014",
+          "count": 658899
+        },
+        {
+          "value": "2012",
+          "count": 651296
+        },
+        {
+          "value": "2013",
+          "count": 649384
+        },
+        {
+          "value": "2010",
+          "count": 594872
+        }
+      ],
+      "dtype": "string"
+    },
+    "COD_FORMAINICIO": {
+      "null_count": 21743323,
+      "ndv_approx": 6,
+      "mean_length": 1.0005722629985958,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 3271868
+        },
+        {
+          "value": "2",
+          "count": 161600
+        },
+        {
+          "value": "6",
+          "count": 79345
+        },
+        {
+          "value": "9",
+          "count": 16360
+        },
+        {
+          "value": "11",
+          "count": 2021
+        }
+      ],
+      "dtype": "string"
+    },
+    "CRR_IDCAUSA": {
+      "null_count": 19939054,
+      "ndv_approx": 2854793,
+      "mean_length": 6.999845385806455,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_6580723191504157": {
+      "null_count": 21743323,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "PA\u00cdS",
+          "count": 3531593
+        }
+      ],
+      "dtype": "string"
+    },
+    "Cod Materia": {
+      "null_count": 21743323,
+      "ndv_approx": 421,
+      "mean_length": 3.778900060114515,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Cod. Corte": {
+      "null_count": 21743323,
+      "ndv_approx": 20,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "90",
+          "count": 861921
+        },
+        {
+          "value": "91",
+          "count": 453075
+        },
+        {
+          "value": "30",
+          "count": 413555
+        },
+        {
+          "value": "46",
+          "count": 275863
+        },
+        {
+          "value": "35",
+          "count": 215434
+        }
+      ],
+      "dtype": "string"
+    },
+    "Corte": {
+      "null_count": 3531593,
+      "ndv_approx": 33,
+      "mean_length": 15.719849629240205,
+      "top_values": [
+        {
+          "value": "90- SANTIAGO.",
+          "count": 3451596
+        },
+        {
+          "value": "91- SAN MIGUEL.",
+          "count": 2110216
+        },
+        {
+          "value": "30- VALPARA\u00cdSO.",
+          "count": 1692827
+        },
+        {
+          "value": "90-C.A. DE SANTIAGO.",
+          "count": 1517494
+        },
+        {
+          "value": "46- CONCEPCI\u00d3N.",
+          "count": 1171904
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fecha Ingreso Delito": {
+      "null_count": 21743323,
+      "ndv_approx": 2211,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Fecha Ingreso": {
+      "null_count": 21743323,
+      "ndv_approx": 2211,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Materia": {
+      "null_count": 21743323,
+      "ndv_approx": 345,
+      "mean_length": 40.42223891597928,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "RIT": {
+      "null_count": 4493078,
+      "ndv_approx": 220777,
+      "mean_length": 4.445879185469543,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Regi\u00f3n": {
+      "null_count": 21743323,
+      "ndv_approx": 13,
+      "mean_length": 28.893578337028078,
+      "top_values": [
+        {
+          "value": "REGI\u00d3N METROPOLITANA DE SANTIAGO.",
+          "count": 1314996
+        },
+        {
+          "value": "V REGI\u00d3N DE VALPARA\u00cdSO.",
+          "count": 413555
+        },
+        {
+          "value": "VIII REGI\u00d3N DEL BIO BIO.",
+          "count": 357384
+        },
+        {
+          "value": "VI REGI\u00d3N DEL LIBERTADOR GRAL. BERNARDO O\"HIGGINS.",
+          "count": 215434
+        },
+        {
+          "value": "VII REGI\u00d3N DEL MAULE.",
+          "count": 201167
+        }
+      ],
+      "dtype": "string"
+    },
+    "Tipo": {
+      "null_count": 5335862,
+      "ndv_approx": 6,
+      "mean_length": 2.8020142781096835,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 14629318
+        },
+        {
+          "value": "ordinaria",
+          "count": 4485996
+        },
+        {
+          "value": "2",
+          "count": 810307
+        },
+        {
+          "value": "militar",
+          "count": 7082
+        },
+        {
+          "value": "5",
+          "count": 6265
+        }
+      ],
+      "dtype": "string"
+    },
+    "Tribunal": {
+      "null_count": 3531593,
+      "ndv_approx": 332,
+      "mean_length": 19.613483964709534,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Materia (group)": {
+      "null_count": 21743323,
+      "ndv_approx": 345,
+      "mean_length": 40.39049261905321,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "A\u00d1O CAUSA": {
+      "null_count": 9828940,
+      "ndv_approx": 21,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "2013",
+          "count": 2333158
+        },
+        {
+          "value": "2012",
+          "count": 2322240
+        },
+        {
+          "value": "2014",
+          "count": 2248732
+        },
+        {
+          "value": "2011",
+          "count": 2190632
+        },
+        {
+          "value": "2010",
+          "count": 1897996
+        }
+      ],
+      "dtype": "string"
+    },
+    "CAUTELAR": {
+      "null_count": 23627907,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 1647009
+        }
+      ],
+      "dtype": "string"
+    },
+    "COD_CTE": {
+      "null_count": 16350456,
+      "ndv_approx": 20,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "90",
+          "count": 2230602
+        },
+        {
+          "value": "91",
+          "count": 1373910
+        },
+        {
+          "value": "30",
+          "count": 959244
+        },
+        {
+          "value": "46",
+          "count": 608295
+        },
+        {
+          "value": "15",
+          "count": 551919
+        }
+      ],
+      "dtype": "string"
+    },
+    "COD_MATERIA": {
+      "null_count": 9828940,
+      "ndv_approx": 477,
+      "mean_length": 3.5761561457819178,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "COD_TRIB": {
+      "null_count": 9828940,
+      "ndv_approx": 177,
+      "mean_length": 3.6761274910695185,
+      "top_values": [
+        {
+          "value": "952",
+          "count": 505046
+        },
+        {
+          "value": "1236",
+          "count": 480009
+        },
+        {
+          "value": "1221",
+          "count": 459518
+        },
+        {
+          "value": "1226",
+          "count": 434029
+        },
+        {
+          "value": "1228",
+          "count": 428491
+        }
+      ],
+      "dtype": "string"
+    },
+    "FECHA AUDIENCIA": {
+      "null_count": 9828940,
+      "ndv_approx": 943412,
+      "mean_length": 26.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ID_EVENTO": {
+      "null_count": 16350456,
+      "ndv_approx": 2247897,
+      "mean_length": 7.999996638452075,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ILEGALIDAD_DETENCION": {
+      "null_count": 25202991,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 71925
+        }
+      ],
+      "dtype": "string"
+    },
+    "PRISION_PREVENTIVA": {
+      "null_count": 24538584,
+      "ndv_approx": 4,
+      "mean_length": 3.0452689819266308,
+      "top_values": [
+        {
+          "value": "366",
+          "count": 626814
+        },
+        {
+          "value": "492",
+          "count": 76185
+        },
+        {
+          "value": "1460",
+          "count": 21627
+        },
+        {
+          "value": "1581",
+          "count": 11706
+        }
+      ],
+      "dtype": "string"
+    },
+    "PRISION_PREVENTIVA_DECRETADA": {
+      "null_count": 24626304,
+      "ndv_approx": 2,
+      "mean_length": 3.0336071488039074,
+      "top_values": [
+        {
+          "value": "366",
+          "count": 626814
+        },
+        {
+          "value": "1460",
+          "count": 21798
+        }
+      ],
+      "dtype": "string"
+    },
+    "PRISION_PREVENTIVA_RECHAZADA": {
+      "null_count": 25174980,
+      "ndv_approx": 2,
+      "mean_length": 3.135386647454371,
+      "top_values": [
+        {
+          "value": "492",
+          "count": 86406
+        },
+        {
+          "value": "1581",
+          "count": 13530
+        }
+      ],
+      "dtype": "string"
+    },
+    "Rechaza Prisi\u00f3n Preventiva (copia)": {
+      "null_count": 25174980,
+      "ndv_approx": 1,
+      "mean_length": 26.0,
+      "top_values": [
+        {
+          "value": "Rechaza Prisi\u00f3n Preventiva",
+          "count": 99936
+        }
+      ],
+      "dtype": "string"
+    },
+    "SENTENCIA": {
+      "null_count": 24293964,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 980952
+        }
+      ],
+      "dtype": "string"
+    },
+    "AUDIENCIA": {
+      "null_count": 18753400,
+      "ndv_approx": 109,
+      "mean_length": 39.52027182023321,
+      "top_values": [
+        {
+          "value": "AUDIENCIA DE PROCEDIMIENTO SIMPLIFICADO.",
+          "count": 1184430
+        },
+        {
+          "value": "AUDIENCIA DE FORMALIZACI\u00d3N DE LA INVESTIGACI\u00d3N.",
+          "count": 897207
+        },
+        {
+          "value": "AUDIENCIA DE PREPARACI\u00d3N JUICIO ORAL.",
+          "count": 595822
+        },
+        {
+          "value": "AUDIENCIA DE APERCIBIMIENTO O COMUNIC. DE CIERRE",
+          "count": 376535
+        },
+        {
+          "value": "AUDIENCIA DE PROCEDIMIENTO ABREVIADO.",
+          "count": 363120
+        }
+      ],
+      "dtype": "string"
+    },
+    "TIP TRIB": {
+      "null_count": 18753400,
+      "ndv_approx": 2,
+      "mean_length": 7.834142858807676,
+      "top_values": [
+        {
+          "value": "Garant\u00eda",
+          "count": 6251106
+        },
+        {
+          "value": "Oral",
+          "count": 270410
+        }
+      ],
+      "dtype": "string"
+    },
+    "ACUSACI\u00d3N FISCAL": {
+      "null_count": 23470647,
+      "ndv_approx": 2,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "NO",
+          "count": 1552876
+        },
+        {
+          "value": "SI",
+          "count": 251393
+        }
+      ],
+      "dtype": "string"
+    },
+    "AUDIENCIAS": {
+      "null_count": 23470647,
+      "ndv_approx": 2,
+      "mean_length": 15.796555835077807,
+      "top_values": [
+        {
+          "value": "CONTROL DETENCI\u00d3N",
+          "count": 1234032
+        },
+        {
+          "value": "FORMALIZACI\u00d3N",
+          "count": 533700
+        },
+        {
+          "value": "OTRAS AUDIENCIAS",
+          "count": 36537
+        }
+      ],
+      "dtype": "string"
+    },
+    "COD_TRIBUNAL": {
+      "null_count": 23470647,
+      "ndv_approx": 135,
+      "mean_length": 3.698801564511722,
+      "top_values": [
+        {
+          "value": "1236",
+          "count": 56758
+        },
+        {
+          "value": "1226",
+          "count": 55226
+        },
+        {
+          "value": "1223",
+          "count": 53897
+        },
+        {
+          "value": "1070",
+          "count": 53440
+        },
+        {
+          "value": "1228",
+          "count": 50281
+        }
+      ],
+      "dtype": "string"
+    },
+    "CRR_IDPARTICIPANTE": {
+      "null_count": 23470647,
+      "ndv_approx": 1836051,
+      "mean_length": 7.998639892388552,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_6750825005603169": {
+      "null_count": 23474014,
+      "ndv_approx": 21,
+      "mean_length": 15.551834580671242,
+      "top_values": [
+        {
+          "value": "LESIONES.",
+          "count": 352290
+        },
+        {
+          "value": "OTROS DELITOS.",
+          "count": 218150
+        },
+        {
+          "value": "AMENAZAS.",
+          "count": 179832
+        },
+        {
+          "value": "OTROS DELITOS CONTRA LA PROPIEDAD.",
+          "count": 154607
+        },
+        {
+          "value": "HURTOS.",
+          "count": 150361
+        }
+      ],
+      "dtype": "string"
+    },
+    "ESTADO_RELACION": {
+      "null_count": 23470647,
+      "ndv_approx": 4,
+      "mean_length": 10.394486077186938,
+      "top_values": [
+        {
+          "value": "Concluida.",
+          "count": 1338016
+        },
+        {
+          "value": "Tramitaci\u00f3n.",
+          "count": 245781
+        },
+        {
+          "value": "Suspendida.",
+          "count": 220197
+        },
+        {
+          "value": "Ingresada.",
+          "count": 275
+        }
+      ],
+      "dtype": "string"
+    },
+    "FECHA": {
+      "null_count": 23470647,
+      "ndv_approx": 613498,
+      "mean_length": 26.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "MEDIDAS CAUTELARES": {
+      "null_count": 23470647,
+      "ndv_approx": 2,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "NO",
+          "count": 1087517
+        },
+        {
+          "value": "SI",
+          "count": 716752
+        }
+      ],
+      "dtype": "string"
+    },
+    "OTROS T\u00c9RMINOS": {
+      "null_count": 24393837,
+      "ndv_approx": 3,
+      "mean_length": 34.690843840336676,
+      "top_values": [
+        {
+          "value": "Declara sobreseimiento definitivo.",
+          "count": 695058
+        },
+        {
+          "value": "No perseverar en el procedimiento.",
+          "count": 147978
+        },
+        {
+          "value": "Comunica y/o aplica decisi\u00f3n ppio. de oportunidad.",
+          "count": 38043
+        }
+      ],
+      "dtype": "string"
+    },
+    "RUC": {
+      "null_count": 23470647,
+      "ndv_approx": 1030660,
+      "mean_length": 11.999990023660551,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SALIDAS TEMPRANAS": {
+      "null_count": 24414317,
+      "ndv_approx": 2,
+      "mean_length": 38.97610036730231,
+      "top_values": [
+        {
+          "value": "Suspensi\u00f3n condicional del procedimiento.",
+          "count": 726617
+        },
+        {
+          "value": "Aprueba acuerdo reparatorio.",
+          "count": 133982
+        }
+      ],
+      "dtype": "string"
+    },
+    "SEXO": {
+      "null_count": 23470647,
+      "ndv_approx": 3,
+      "mean_length": 4.482861480189484,
+      "top_values": [
+        {
+          "value": "N/D",
+          "count": 909009
+        },
+        {
+          "value": "Hombre",
+          "count": 884961
+        },
+        {
+          "value": "Mujer",
+          "count": 10299
+        }
+      ],
+      "dtype": "string"
+    },
+    "Tipo Sentencia": {
+      "null_count": 24875748,
+      "ndv_approx": 2,
+      "mean_length": 21.90660824514991,
+      "top_values": [
+        {
+          "value": "Sentencia Condenatoria",
+          "count": 361889
+        },
+        {
+          "value": "Sentencia Absolutoria",
+          "count": 37279
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}
