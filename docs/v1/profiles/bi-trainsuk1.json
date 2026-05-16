@@ -1,0 +1,731 @@
+{
+  "schema_version": 1,
+  "slug": "bi-trainsuk1",
+  "row_count": 12909724,
+  "parquet_sha256": "8d79cfca52b1fd42fed6b757bb0831493df0da9ef7be0d72e384f9e848596094",
+  "computed_at": "2026-05-16T14:03:40Z",
+  "sample_rows": null,
+  "columns": {
+    "Date": {
+      "dtype": "date32",
+      "null_count": 12909723,
+      "min": "2015-01-20T00:00:00+00:00",
+      "max": "2015-01-20T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2015-01-20T00:00:00+00:00",
+          "2015-01-20T00:00:00+00:00"
+        ],
+        "counts": [
+          1
+        ]
+      }
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 12909723,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          1
+        ]
+      }
+    },
+    "Test": {
+      "dtype": "int16",
+      "null_count": 12909723,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          1
+        ]
+      }
+    },
+    "Average Lateness": {
+      "null_count": 1,
+      "min": -44.7,
+      "max": 61.5882352941176,
+      "mean": 1.6130558174999747,
+      "ndv_approx": 115595,
+      "histogram": {
+        "buckets": [
+          -44.7,
+          -34.07117647058824,
+          -23.44235294117648,
+          -12.81352941176472,
+          -2.184705882352958,
+          8.444117647058803,
+          19.072941176470565,
+          29.701764705882326,
+          40.33058823529409,
+          50.95941176470585,
+          61.58823529411761
+        ],
+        "counts": [
+          174,
+          915,
+          2382,
+          91263,
+          12643077,
+          168948,
+          2895,
+          51,
+          12,
+          6
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Calculation_2040623161253421": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 37.0,
+      "mean": 0.8271355241316951,
+      "ndv_approx": 77,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3.7,
+          7.4,
+          11.100000000000001,
+          14.8,
+          18.5,
+          22.200000000000003,
+          25.900000000000002,
+          29.6,
+          33.300000000000004,
+          37.0
+        ],
+        "counts": [
+          12387537,
+          458073,
+          53706,
+          7782,
+          1794,
+          624,
+          132,
+          57,
+          12,
+          6
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Calculation_2890421151640665": {
+      "null_count": 1,
+      "ndv_approx": 1394627,
+      "mean_length": 16.385043737964015,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_3330422103625946": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.9001154557053275,
+      "ndv_approx": 4616,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          33363,
+          8733,
+          20886,
+          45339,
+          89469,
+          199584,
+          425844,
+          950772,
+          2481243,
+          8654490
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Engineering Allowance (mins)": {
+      "null_count": 27292,
+      "min": 0,
+      "max": 38,
+      "mean": 0.05055559385060212,
+      "ndv_approx": 21,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3.8,
+          7.6,
+          11.399999999999999,
+          15.2,
+          19.0,
+          22.799999999999997,
+          26.599999999999998,
+          30.4,
+          34.199999999999996,
+          38.0
+        ],
+        "counts": [
+          12879399,
+          2130,
+          747,
+          117,
+          27,
+          0,
+          0,
+          0,
+          6,
+          6
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Headcode": {
+      "null_count": 1,
+      "ndv_approx": 5837,
+      "mean_length": 4.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Median Lateness": {
+      "null_count": 1,
+      "min": -47.5,
+      "max": 37.0,
+      "mean": 0.5726039977774892,
+      "ndv_approx": 229,
+      "histogram": {
+        "buckets": [
+          -47.5,
+          -39.05,
+          -30.6,
+          -22.150000000000002,
+          -13.700000000000003,
+          -5.25,
+          3.1999999999999957,
+          11.649999999999991,
+          20.099999999999994,
+          28.549999999999997,
+          37.0
+        ],
+        "counts": [
+          120,
+          468,
+          1050,
+          2412,
+          17628,
+          12173928,
+          705594,
+          8097,
+          393,
+          33
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Operator Name": {
+      "null_count": 1,
+      "ndv_approx": 27,
+      "mean_length": 9.027234356616328,
+      "top_values": [
+        {
+          "value": "GTR",
+          "count": 1953567
+        },
+        {
+          "value": "Northern",
+          "count": 1229490
+        },
+        {
+          "value": "Southeastern",
+          "count": 1211574
+        },
+        {
+          "value": "ScotRail",
+          "count": 1162269
+        },
+        {
+          "value": "GWR",
+          "count": 928287
+        }
+      ],
+      "dtype": "string"
+    },
+    "Operator": {
+      "null_count": 1,
+      "ndv_approx": 24,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "ET",
+          "count": 1953567
+        },
+        {
+          "value": "ED",
+          "count": 1400856
+        },
+        {
+          "value": "HU",
+          "count": 1211574
+        },
+        {
+          "value": "HA",
+          "count": 1162269
+        },
+        {
+          "value": "HY",
+          "count": 1044279
+        }
+      ],
+      "dtype": "string"
+    },
+    "Pathing Allowance (mins)": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 14.0,
+      "mean": 0.05173321689396434,
+      "ndv_approx": 24,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.4,
+          2.8,
+          4.199999999999999,
+          5.6,
+          7.0,
+          8.399999999999999,
+          9.799999999999999,
+          11.2,
+          12.6,
+          14.0
+        ],
+        "counts": [
+          12733491,
+          131562,
+          34758,
+          6642,
+          1722,
+          831,
+          567,
+          102,
+          39,
+          9
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Performance Allowance (mins)": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 7.5,
+      "mean": 0.020163290877736106,
+      "ndv_approx": 15,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.75,
+          1.5,
+          2.25,
+          3.0,
+          3.75,
+          4.5,
+          5.25,
+          6.0,
+          6.75,
+          7.5
+        ],
+        "counts": [
+          12744108,
+          128805,
+          27099,
+          2682,
+          4785,
+          1230,
+          1008,
+          0,
+          3,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Planned Dest Location Full Name": {
+      "null_count": 1,
+      "ndv_approx": 560,
+      "mean_length": 13.529757687287326,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Planned Origin Location Full Name": {
+      "null_count": 1,
+      "ndv_approx": 531,
+      "mean_length": 13.556536340864943,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Punctuality Threshold": {
+      "null_count": 1,
+      "min": 300,
+      "max": 900,
+      "mean": 342.52497129489143,
+      "ndv_approx": 3,
+      "histogram": {
+        "buckets": [
+          300.0,
+          360.0,
+          420.0,
+          480.0,
+          540.0,
+          600.0,
+          660.0,
+          720.0,
+          780.0,
+          840.0,
+          900.0
+        ],
+        "counts": [
+          11110869,
+          0,
+          0,
+          0,
+          0,
+          1767756,
+          0,
+          0,
+          0,
+          31098
+        ]
+      },
+      "dtype": "int16"
+    },
+    "RT%": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.5020665918677264,
+      "ndv_approx": 5248,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          1170972,
+          1137486,
+          1261209,
+          1315230,
+          1344072,
+          1462470,
+          1456518,
+          1420899,
+          1326525,
+          1014342
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Ranking": {
+      "null_count": 5806,
+      "min": 1,
+      "max": 312,
+      "mean": 17.901298117362494,
+      "ndv_approx": 345,
+      "histogram": {
+        "buckets": [
+          1.0,
+          32.1,
+          63.2,
+          94.30000000000001,
+          125.4,
+          156.5,
+          187.60000000000002,
+          218.70000000000002,
+          249.8,
+          280.90000000000003,
+          312.0
+        ],
+        "counts": [
+          11278005,
+          1381425,
+          158847,
+          46317,
+          24195,
+          8640,
+          4176,
+          1359,
+          678,
+          276
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Section Start Location Full Name": {
+      "null_count": 1,
+      "ndv_approx": 2658,
+      "mean_length": 12.076671048635204,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Section Start Location Name": {
+      "null_count": 1,
+      "ndv_approx": 4792,
+      "mean_length": 8.597431796174092,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Time-to-10%": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.9572545366155644,
+      "ndv_approx": 3135,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          99,
+          357,
+          1749,
+          4752,
+          11325,
+          33840,
+          94275,
+          276225,
+          1055379,
+          11431722
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Time-to-2%": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.723818108711616,
+      "ndv_approx": 5248,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          121224,
+          236607,
+          400800,
+          587931,
+          801849,
+          1152843,
+          1526772,
+          2017362,
+          2690247,
+          3374088
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Time-to-5%": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.8874453774159392,
+      "ndv_approx": 4616,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          4200,
+          13662,
+          33102,
+          69447,
+          136260,
+          292344,
+          567849,
+          1136532,
+          2583804,
+          8072523
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Timetable": {
+      "null_count": 1,
+      "ndv_approx": 10,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "M17",
+          "count": 2022930
+        },
+        {
+          "value": "D16",
+          "count": 1956348
+        },
+        {
+          "value": "M16",
+          "count": 1897938
+        },
+        {
+          "value": "D17",
+          "count": 1866135
+        },
+        {
+          "value": "M15",
+          "count": 1722834
+        }
+      ],
+      "dtype": "string"
+    },
+    "Train Count": {
+      "null_count": 1,
+      "min": 10,
+      "max": 149,
+      "mean": 91.28803755123174,
+      "ndv_approx": 138,
+      "histogram": {
+        "buckets": [
+          10.0,
+          23.9,
+          37.8,
+          51.7,
+          65.6,
+          79.5,
+          93.4,
+          107.3,
+          121.2,
+          135.10000000000002,
+          149.0
+        ],
+        "counts": [
+          1195035,
+          714633,
+          1601097,
+          281595,
+          438414,
+          707337,
+          3608745,
+          685755,
+          747861,
+          2929251
+        ]
+      },
+      "dtype": "int16"
+    },
+    "v_Headcode Description": {
+      "null_count": 1,
+      "ndv_approx": 56964,
+      "mean_length": 44.08629402815227,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "v_Section_WTT_Time": {
+      "null_count": 1,
+      "ndv_approx": 1445,
+      "mean_length": 8.0,
+      "top_values": null,
+      "dtype": "time"
+    },
+    "v_WTT and Section Name and Timing Event": {
+      "null_count": 1,
+      "ndv_approx": 1191143,
+      "mean_length": 24.076671048635202,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_2480421151322357": {
+      "null_count": 1,
+      "ndv_approx": 5,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 4271238
+        },
+        {
+          "value": "D",
+          "count": 4230795
+        },
+        {
+          "value": "P",
+          "count": 3346752
+        },
+        {
+          "value": "T",
+          "count": 545055
+        },
+        {
+          "value": "O",
+          "count": 515883
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_0430624152715434": {
+      "null_count": 1,
+      "ndv_approx": 4368,
+      "mean_length": 36.08629402815227,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}
