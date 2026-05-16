@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "slug": "mmlu-pro",
+  "row_count": 12102,
+  "parquet_sha256": "52fcb34b75d895453c0b85c0412e5aeb903ca6017c694d6c8c4139c6420a7de3",
+  "computed_at": "2026-05-16T08:59:53Z",
+  "sample_rows": null,
+  "columns": {
+    "question_id": {
+      "null_count": 0,
+      "min": 0,
+      "max": 12256,
+      "mean": 6133.442488844819,
+      "ndv_approx": 10844,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1225.6,
+          2451.2,
+          3676.7999999999997,
+          4902.4,
+          6128.0,
+          7353.599999999999,
+          8579.199999999999,
+          9804.8,
+          11030.4,
+          12256.0
+        ],
+        "counts": [
+          1213,
+          1206,
+          1207,
+          1208,
+          1203,
+          1209,
+          1217,
+          1222,
+          1199,
+          1218
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 11576,
+      "mean_length": 264.5258634936374,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "options": {
+      "null_count": 0,
+      "length_min": 3,
+      "length_max": 10,
+      "length_mean": 9.476945959345562,
+      "dtype": "list"
+    },
+    "answer": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 1414
+        },
+        {
+          "value": "B",
+          "count": 1360
+        },
+        {
+          "value": "D",
+          "count": 1341
+        },
+        {
+          "value": "C",
+          "count": 1319
+        },
+        {
+          "value": "G",
+          "count": 1187
+        }
+      ],
+      "dtype": "string"
+    },
+    "answer_index": {
+      "null_count": 0,
+      "min": 0,
+      "max": 9,
+      "mean": 4.196992232688812,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.9,
+          1.8,
+          2.7,
+          3.6,
+          4.5,
+          5.4,
+          6.3,
+          7.2,
+          8.1,
+          9.0
+        ],
+        "counts": [
+          1414,
+          1360,
+          1319,
+          1341,
+          1157,
+          1134,
+          1187,
+          1122,
+          1115,
+          953
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "cot_content": {
+      "null_count": 0,
+      "ndv_approx": 65,
+      "mean_length": 1.9900016526194018,
+      "top_values": [
+        {
+          "value": "",
+          "count": 12032
+        },
+        {
+          "value": "A: Let's think step by step. Because X has the value 5, the first conditional IF (X < 0) is false, so we move to the first ELSE clause. Because X is 5 and Y is 10, the second conditional IF (X > Y) is false, so we move to the following ELSE clause. Since Y is 10, the conditional IF (Y > 0) is true, so the command DISPLAY (\"November\") is executed. The answer is (A).",
+          "count": 1
+        },
+        {
+          "value": "A: Let's think step by step. We refer to Wikipedia articles on prehistory for help. The average cranium capacity of Homo erectus is less than 1000 cubic cm. The answer is (E).",
+          "count": 1
+        },
+        {
+          "value": "A: Let's think step by step. The torque on a coil in a uniform magnetic field is given by BANI, where B is the magnetic flux density, A is the area of the coil, N is the number of turns, and I is the current. So we have that I = (Torque)/(BAN), or 240e-6/(1200e-6 * 100 * 1) = 2e-3. The answer is (A).",
+          "count": 1
+        },
+        {
+          "value": "A: Let's think step by step. We refer to Wikipedia articles on psychology for help. When the decision to change the educational placement of a student with a disability is made, the educational agency must notify the parents in writing on that date. The answer is (A).",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "category": {
+      "null_count": 0,
+      "ndv_approx": 16,
+      "mean_length": 7.425136341100645,
+      "top_values": [
+        {
+          "value": "math",
+          "count": 1356
+        },
+        {
+          "value": "physics",
+          "count": 1304
+        },
+        {
+          "value": "chemistry",
+          "count": 1137
+        },
+        {
+          "value": "law",
+          "count": 1106
+        },
+        {
+          "value": "engineering",
+          "count": 974
+        }
+      ],
+      "dtype": "string"
+    },
+    "src": {
+      "null_count": 0,
+      "ndv_approx": 149,
+      "mean_length": 22.56891422905305,
+      "top_values": [
+        {
+          "value": "ori_mmlu-professional_law",
+          "count": 1003
+        },
+        {
+          "value": "stemez-Business",
+          "count": 560
+        },
+        {
+          "value": "stemez-Chemistry",
+          "count": 508
+        },
+        {
+          "value": "stemez-Economics",
+          "count": 400
+        },
+        {
+          "value": "stemez-Physics",
+          "count": 391
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.034705007436787,
+      "top_values": [
+        {
+          "value": "test",
+          "count": 12032
+        },
+        {
+          "value": "validation",
+          "count": 70
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

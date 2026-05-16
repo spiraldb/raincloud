@@ -1,0 +1,500 @@
+{
+  "schema_version": 1,
+  "slug": "iowa-liquor-sales",
+  "row_count": 12591077,
+  "parquet_sha256": "15ec25d7e62c05fdfc1862d0ba8b1946db9a5198c70f1a7d16eff4f98747fa16",
+  "computed_at": "2026-05-16T08:56:14Z",
+  "sample_rows": null,
+  "columns": {
+    "Invoice/Item Number": {
+      "null_count": 0,
+      "ndv_approx": 11640395,
+      "mean_length": 12.645688847745113,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Date": {
+      "null_count": 0,
+      "ndv_approx": 1333,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Store Number": {
+      "null_count": 0,
+      "min": 2106,
+      "max": 9932,
+      "mean": 3565.215884550623,
+      "ndv_approx": 1763,
+      "histogram": {
+        "buckets": [
+          2106.0,
+          2888.6,
+          3671.2,
+          4453.8,
+          5236.4,
+          6019.0,
+          6801.6,
+          7584.2,
+          8366.8,
+          9149.400000000001,
+          9932.0
+        ],
+        "counts": [
+          4999453,
+          1147390,
+          3865475,
+          2370422,
+          202086,
+          0,
+          0,
+          0,
+          3377,
+          2874
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Store Name": {
+      "null_count": 0,
+      "ndv_approx": 1869,
+      "mean_length": 25.69558195855684,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Address": {
+      "null_count": 2376,
+      "ndv_approx": 2760,
+      "mean_length": 15.860803112251217,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "City": {
+      "null_count": 2375,
+      "ndv_approx": 882,
+      "mean_length": 9.197094029233515,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Zip Code": {
+      "null_count": 2420,
+      "ndv_approx": 374,
+      "mean_length": 5.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Store Location": {
+      "null_count": 2375,
+      "ndv_approx": 4054,
+      "mean_length": 54.04300316267714,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "County Number": {
+      "null_count": 79178,
+      "min": 1,
+      "max": 99,
+      "mean": 57.2404970660329,
+      "ndv_approx": 96,
+      "histogram": {
+        "buckets": [
+          1.0,
+          10.8,
+          20.6,
+          30.400000000000002,
+          40.2,
+          50.0,
+          59.800000000000004,
+          69.60000000000001,
+          79.4,
+          89.2,
+          99.0
+        ],
+        "counts": [
+          1154014,
+          746374,
+          883466,
+          673954,
+          438176,
+          2239827,
+          584562,
+          3293103,
+          1462693,
+          1035730
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "County": {
+      "null_count": 79178,
+      "ndv_approx": 188,
+      "mean_length": 6.421020182467905,
+      "top_values": [
+        {
+          "value": "Polk",
+          "count": 1833520
+        },
+        {
+          "value": "Linn",
+          "count": 827574
+        },
+        {
+          "value": "Scott",
+          "count": 621384
+        },
+        {
+          "value": "Black Hawk",
+          "count": 535908
+        },
+        {
+          "value": "Johnson",
+          "count": 490358
+        }
+      ],
+      "dtype": "string"
+    },
+    "Category": {
+      "null_count": 8020,
+      "min": 101220,
+      "max": 1901200,
+      "mean": 1044709.6176774055,
+      "ndv_approx": 119,
+      "histogram": {
+        "buckets": [
+          101220.0,
+          281218.0,
+          461216.0,
+          641214.0,
+          821212.0,
+          1001210.0,
+          1181208.0,
+          1361206.0,
+          1541204.0,
+          1721202.0,
+          1901200.0
+        ],
+        "counts": [
+          6,
+          0,
+          0,
+          0,
+          0,
+          12520650,
+          0,
+          32,
+          56368,
+          6001
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Category Name": {
+      "null_count": 16086,
+      "ndv_approx": 135,
+      "mean_length": 17.24436852479656,
+      "top_values": [
+        {
+          "value": "VODKA 80 PROOF",
+          "count": 1265974
+        },
+        {
+          "value": "CANADIAN WHISKIES",
+          "count": 936212
+        },
+        {
+          "value": "STRAIGHT BOURBON WHISKIES",
+          "count": 543684
+        },
+        {
+          "value": "SPICED RUM",
+          "count": 530323
+        },
+        {
+          "value": "VODKA FLAVORED",
+          "count": 502813
+        }
+      ],
+      "dtype": "string"
+    },
+    "Vendor Number": {
+      "null_count": 3,
+      "min": 10,
+      "max": 987,
+      "mean": 257.49109575561226,
+      "ndv_approx": 301,
+      "histogram": {
+        "buckets": [
+          10.0,
+          107.7,
+          205.4,
+          303.1,
+          400.8,
+          498.5,
+          596.2,
+          693.9,
+          791.6,
+          889.3000000000001,
+          987.0
+        ],
+        "counts": [
+          2982355,
+          1258020,
+          3693101,
+          2237609,
+          2385979,
+          1143,
+          0,
+          1,
+          4780,
+          28086
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Vendor Name": {
+      "null_count": 1,
+      "ndv_approx": 395,
+      "mean_length": 18.83409305130078,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Item Number": {
+      "null_count": 0,
+      "min": 101,
+      "max": 999275,
+      "mean": 46036.817927807126,
+      "ndv_approx": 6284,
+      "histogram": {
+        "buckets": [
+          101.0,
+          100018.4,
+          199935.8,
+          299853.19999999995,
+          399770.6,
+          499688.0,
+          599605.3999999999,
+          699522.7999999999,
+          799440.2,
+          899357.6,
+          999275.0
+        ],
+        "counts": [
+          12548233,
+          5353,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          37491
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Item Description": {
+      "null_count": 0,
+      "ndv_approx": 6440,
+      "mean_length": 21.3048424689961,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Pack": {
+      "null_count": 0,
+      "min": 1,
+      "max": 600,
+      "mean": 12.225328143096894,
+      "ndv_approx": 35,
+      "histogram": {
+        "buckets": [
+          1.0,
+          60.9,
+          120.8,
+          180.7,
+          240.6,
+          300.5,
+          360.4,
+          420.3,
+          480.2,
+          540.1,
+          600.0
+        ],
+        "counts": [
+          12590868,
+          13,
+          4,
+          0,
+          122,
+          68,
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Bottle Volume (ml)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 378000,
+      "mean": 928.9401808121736,
+      "ndv_approx": 54,
+      "histogram": {
+        "buckets": [
+          0.0,
+          37800.0,
+          75600.0,
+          113400.0,
+          151200.0,
+          189000.0,
+          226800.0,
+          264600.0,
+          302400.0,
+          340200.0,
+          378000.0
+        ],
+        "counts": [
+          12591039,
+          0,
+          0,
+          8,
+          3,
+          3,
+          0,
+          0,
+          0,
+          24
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "State Bottle Cost": {
+      "null_count": 10,
+      "ndv_approx": 2990,
+      "mean_length": 5.360156450601049,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "State Bottle Retail": {
+      "null_count": 10,
+      "ndv_approx": 3685,
+      "mean_length": 5.659547042359476,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Bottles Sold": {
+      "null_count": 0,
+      "min": 0,
+      "max": 15000,
+      "mean": 8.14039156459769,
+      "ndv_approx": 600,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1500.0,
+          3000.0,
+          4500.0,
+          6000.0,
+          7500.0,
+          9000.0,
+          10500.0,
+          12000.0,
+          13500.0,
+          15000.0
+        ],
+        "counts": [
+          12590943,
+          120,
+          9,
+          1,
+          1,
+          0,
+          0,
+          1,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Sale (Dollars)": {
+      "null_count": 10,
+      "ndv_approx": 21929,
+      "mean_length": 6.2799796077647745,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Volume Sold (Liters)": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 15000.0,
+      "mean": 7.489119071385999,
+      "ndv_approx": 1427,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1500.0,
+          3000.0,
+          4500.0,
+          6000.0,
+          7500.0,
+          9000.0,
+          10500.0,
+          12000.0,
+          13500.0,
+          15000.0
+        ],
+        "counts": [
+          12590775,
+          271,
+          23,
+          2,
+          3,
+          0,
+          0,
+          1,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Volume Sold (Gallons)": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 3962.58,
+      "mean": 1.9773577716833002,
+      "ndv_approx": 1234,
+      "histogram": {
+        "buckets": [
+          0.0,
+          396.258,
+          792.516,
+          1188.774,
+          1585.032,
+          1981.29,
+          2377.548,
+          2773.806,
+          3170.064,
+          3566.3219999999997,
+          3962.58
+        ],
+        "counts": [
+          12590775,
+          271,
+          23,
+          2,
+          3,
+          0,
+          0,
+          1,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    }
+  }
+}

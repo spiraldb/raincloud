@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "slug": "insurance",
+  "row_count": 1338,
+  "parquet_sha256": "504b5c0dbe22608afd592f53b7445ea65df25bfdef40c11fa69f627c321232a6",
+  "computed_at": "2026-05-16T08:55:38Z",
+  "sample_rows": null,
+  "columns": {
+    "age": {
+      "null_count": 0,
+      "min": 18,
+      "max": 64,
+      "mean": 39.20702541106129,
+      "ndv_approx": 43,
+      "histogram": {
+        "buckets": [
+          18.0,
+          22.6,
+          27.2,
+          31.799999999999997,
+          36.4,
+          41.0,
+          45.599999999999994,
+          50.199999999999996,
+          54.8,
+          59.4,
+          64.0
+        ],
+        "counts": [
+          222,
+          140,
+          109,
+          128,
+          102,
+          137,
+          144,
+          114,
+          128,
+          114
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "sex": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.989536621823618,
+      "top_values": [
+        {
+          "value": "male",
+          "count": 676
+        },
+        {
+          "value": "female",
+          "count": 662
+        }
+      ],
+      "dtype": "string"
+    },
+    "bmi": {
+      "null_count": 0,
+      "min": 15.96,
+      "max": 53.13,
+      "mean": 30.663396860986538,
+      "ndv_approx": 639,
+      "histogram": {
+        "buckets": [
+          15.96,
+          19.677,
+          23.394000000000002,
+          27.111,
+          30.828000000000003,
+          34.545,
+          38.262,
+          41.979,
+          45.696,
+          49.413000000000004,
+          53.13
+        ],
+        "counts": [
+          30,
+          127,
+          234,
+          319,
+          288,
+          195,
+          96,
+          32,
+          14,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "children": {
+      "null_count": 0,
+      "min": 0,
+      "max": 5,
+      "mean": 1.0949177877429,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.5,
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0
+        ],
+        "counts": [
+          574,
+          0,
+          324,
+          0,
+          240,
+          0,
+          157,
+          0,
+          25,
+          18
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "smoker": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.204783258594918,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 1064
+        },
+        {
+          "value": "yes",
+          "count": 274
+        }
+      ],
+      "dtype": "string"
+    },
+    "region": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 9.0,
+      "top_values": [
+        {
+          "value": "southeast",
+          "count": 364
+        },
+        {
+          "value": "northwest",
+          "count": 325
+        },
+        {
+          "value": "southwest",
+          "count": 325
+        },
+        {
+          "value": "northeast",
+          "count": 324
+        }
+      ],
+      "dtype": "string"
+    },
+    "charges": {
+      "null_count": 0,
+      "min": 1121.8739,
+      "max": 63770.42801,
+      "mean": 13270.422265141257,
+      "ndv_approx": 1232,
+      "histogram": {
+        "buckets": [
+          1121.8739,
+          7386.729311000001,
+          13651.584722000001,
+          19916.440133,
+          26181.295544,
+          32446.150955,
+          38711.006366,
+          44975.861777000006,
+          51240.717188,
+          57505.572599,
+          63770.42801
+        ],
+        "counts": [
+          536,
+          398,
+          129,
+          86,
+          35,
+          59,
+          57,
+          32,
+          2,
+          4
+        ]
+      },
+      "dtype": "float64"
+    }
+  }
+}

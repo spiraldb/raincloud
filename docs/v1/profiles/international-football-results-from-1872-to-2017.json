@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "slug": "international-football-results-from-1872-to-2017",
+  "row_count": 49329,
+  "parquet_sha256": "55bf08cf28d32a82dd2f15f4db37e2e291c2942155cc2909df4d4d62cba13763",
+  "computed_at": "2026-05-16T08:55:39Z",
+  "sample_rows": null,
+  "columns": {
+    "date": {
+      "dtype": "date32",
+      "null_count": 0,
+      "min": "1872-11-30T00:00:00+00:00",
+      "max": "2026-06-27T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1872-11-30T00:00:00+00:00",
+          "1888-04-09T02:24:00+00:00",
+          "1903-08-19T04:48:00+00:00",
+          "1918-12-27T07:12:00+00:00",
+          "1934-05-06T09:36:00+00:00",
+          "1949-09-13T12:00:00+00:00",
+          "1965-01-21T14:24:00+00:00",
+          "1980-05-31T16:48:00+00:00",
+          "1995-10-09T19:12:00+00:00",
+          "2011-02-16T21:36:00+00:00",
+          "2026-06-27T00:00:00+00:00"
+        ],
+        "counts": [
+          61,
+          94,
+          389,
+          1320,
+          1424,
+          2906,
+          6049,
+          8346,
+          13986,
+          14754
+        ]
+      }
+    },
+    "home_team": {
+      "null_count": 0,
+      "ndv_approx": 329,
+      "mean_length": 8.135518660422875,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "away_team": {
+      "null_count": 0,
+      "ndv_approx": 308,
+      "mean_length": 8.176143850473352,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "home_score": {
+      "null_count": 72,
+      "min": 0,
+      "max": 31,
+      "mean": 1.7570497594250563,
+      "ndv_approx": 27,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3.1,
+          6.2,
+          9.3,
+          12.4,
+          15.5,
+          18.6,
+          21.7,
+          24.8,
+          27.900000000000002,
+          31.0
+        ],
+        "counts": [
+          42946,
+          5278,
+          811,
+          154,
+          42,
+          13,
+          8,
+          3,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "away_score": {
+      "null_count": 72,
+      "min": 0,
+      "max": 21,
+      "mean": 1.182735448768703,
+      "ndv_approx": 23,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.1,
+          4.2,
+          6.300000000000001,
+          8.4,
+          10.5,
+          12.600000000000001,
+          14.700000000000001,
+          16.8,
+          18.900000000000002,
+          21.0
+        ],
+        "counts": [
+          42770,
+          5150,
+          972,
+          243,
+          67,
+          20,
+          9,
+          11,
+          9,
+          6
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "tournament": {
+      "null_count": 0,
+      "ndv_approx": 196,
+      "mean_length": 17.03460439092623,
+      "top_values": [
+        {
+          "value": "Friendly",
+          "count": 18257
+        },
+        {
+          "value": "FIFA World Cup qualification",
+          "count": 8771
+        },
+        {
+          "value": "UEFA Euro qualification",
+          "count": 2824
+        },
+        {
+          "value": "African Cup of Nations qualification",
+          "count": 2327
+        },
+        {
+          "value": "FIFA World Cup",
+          "count": 1036
+        }
+      ],
+      "dtype": "string"
+    },
+    "city": {
+      "null_count": 0,
+      "ndv_approx": 2831,
+      "mean_length": 7.8570414968882405,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "country": {
+      "null_count": 0,
+      "ndv_approx": 255,
+      "mean_length": 8.285491293154129,
+      "top_values": [
+        {
+          "value": "United States",
+          "count": 1531
+        },
+        {
+          "value": "France",
+          "count": 922
+        },
+        {
+          "value": "Malaysia",
+          "count": 830
+        },
+        {
+          "value": "England",
+          "count": 769
+        },
+        {
+          "value": "Qatar",
+          "count": 760
+        }
+      ],
+      "dtype": "string"
+    },
+    "neutral": {
+      "dtype": "bool",
+      "true_count": 13058,
+      "false_count": 36271,
+      "null_count": 0
+    }
+  }
+}

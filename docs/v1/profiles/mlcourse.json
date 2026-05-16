@@ -1,0 +1,448 @@
+{
+  "schema_version": 1,
+  "slug": "mlcourse",
+  "row_count": 32561,
+  "parquet_sha256": "1ca5b24ec1a7f1d1769ec65460d5f7061a06c5a3859ec12dbfc2daa626315b3d",
+  "computed_at": "2026-05-16T08:59:52Z",
+  "sample_rows": null,
+  "columns": {
+    "age": {
+      "null_count": 0,
+      "min": 17,
+      "max": 90,
+      "mean": 38.58164675532078,
+      "ndv_approx": 70,
+      "histogram": {
+        "buckets": [
+          17.0,
+          24.3,
+          31.6,
+          38.9,
+          46.2,
+          53.5,
+          60.8,
+          68.1,
+          75.4,
+          82.7,
+          90.0
+        ],
+        "counts": [
+          5570,
+          5890,
+          6048,
+          6163,
+          3967,
+          2591,
+          1595,
+          496,
+          174,
+          67
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "workclass": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 7.86440834126716,
+      "top_values": [
+        {
+          "value": "Private",
+          "count": 22696
+        },
+        {
+          "value": "Self-emp-not-inc",
+          "count": 2541
+        },
+        {
+          "value": "Local-gov",
+          "count": 2093
+        },
+        {
+          "value": "?",
+          "count": 1836
+        },
+        {
+          "value": "State-gov",
+          "count": 1298
+        }
+      ],
+      "dtype": "string"
+    },
+    "fnlwgt": {
+      "null_count": 0,
+      "min": 12285,
+      "max": 1484705,
+      "mean": 189778.36651208502,
+      "ndv_approx": 21011,
+      "histogram": {
+        "buckets": [
+          12285.0,
+          159527.0,
+          306769.0,
+          454011.0,
+          601253.0,
+          748495.0,
+          895737.0,
+          1042979.0,
+          1190221.0,
+          1337463.0,
+          1484705.0
+        ],
+        "counts": [
+          13117,
+          15327,
+          3498,
+          477,
+          102,
+          20,
+          10,
+          5,
+          2,
+          3
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "education": {
+      "null_count": 0,
+      "ndv_approx": 17,
+      "mean_length": 8.433709038420195,
+      "top_values": [
+        {
+          "value": "HS-grad",
+          "count": 10501
+        },
+        {
+          "value": "Some-college",
+          "count": 7291
+        },
+        {
+          "value": "Bachelors",
+          "count": 5355
+        },
+        {
+          "value": "Masters",
+          "count": 1723
+        },
+        {
+          "value": "Assoc-voc",
+          "count": 1382
+        }
+      ],
+      "dtype": "string"
+    },
+    "education-num": {
+      "null_count": 0,
+      "min": 1,
+      "max": 16,
+      "mean": 10.0806793403151,
+      "ndv_approx": 18,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.5,
+          4.0,
+          5.5,
+          7.0,
+          8.5,
+          10.0,
+          11.5,
+          13.0,
+          14.5,
+          16.0
+        ],
+        "counts": [
+          219,
+          333,
+          1160,
+          933,
+          1608,
+          10501,
+          8673,
+          1067,
+          7078,
+          989
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "marital-status": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 14.414053622431744,
+      "top_values": [
+        {
+          "value": "Married-civ-spouse",
+          "count": 14976
+        },
+        {
+          "value": "Never-married",
+          "count": 10683
+        },
+        {
+          "value": "Divorced",
+          "count": 4443
+        },
+        {
+          "value": "Separated",
+          "count": 1025
+        },
+        {
+          "value": "Widowed",
+          "count": 993
+        }
+      ],
+      "dtype": "string"
+    },
+    "occupation": {
+      "null_count": 0,
+      "ndv_approx": 17,
+      "mean_length": 12.201897976106386,
+      "top_values": [
+        {
+          "value": "Prof-specialty",
+          "count": 4140
+        },
+        {
+          "value": "Craft-repair",
+          "count": 4099
+        },
+        {
+          "value": "Exec-managerial",
+          "count": 4066
+        },
+        {
+          "value": "Adm-clerical",
+          "count": 3770
+        },
+        {
+          "value": "Sales",
+          "count": 3650
+        }
+      ],
+      "dtype": "string"
+    },
+    "relationship": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 9.11974447959215,
+      "top_values": [
+        {
+          "value": "Husband",
+          "count": 13193
+        },
+        {
+          "value": "Not-in-family",
+          "count": 8305
+        },
+        {
+          "value": "Own-child",
+          "count": 5068
+        },
+        {
+          "value": "Unmarried",
+          "count": 3446
+        },
+        {
+          "value": "Wife",
+          "count": 1568
+        }
+      ],
+      "dtype": "string"
+    },
+    "race": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 5.538988360308345,
+      "top_values": [
+        {
+          "value": "White",
+          "count": 27816
+        },
+        {
+          "value": "Black",
+          "count": 3124
+        },
+        {
+          "value": "Asian-Pac-Islander",
+          "count": 1039
+        },
+        {
+          "value": "Amer-Indian-Eskimo",
+          "count": 311
+        },
+        {
+          "value": "Other",
+          "count": 271
+        }
+      ],
+      "dtype": "string"
+    },
+    "sex": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.661589017536317,
+      "top_values": [
+        {
+          "value": "Male",
+          "count": 21790
+        },
+        {
+          "value": "Female",
+          "count": 10771
+        }
+      ],
+      "dtype": "string"
+    },
+    "capital-gain": {
+      "null_count": 0,
+      "min": 0,
+      "max": 99999,
+      "mean": 1077.6488437087312,
+      "ndv_approx": 131,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9999.9,
+          19999.8,
+          29999.699999999997,
+          39999.6,
+          49999.5,
+          59999.399999999994,
+          69999.3,
+          79999.2,
+          89999.09999999999,
+          99999.0
+        ],
+        "counts": [
+          31791,
+          517,
+          87,
+          5,
+          2,
+          0,
+          0,
+          0,
+          0,
+          159
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "capital-loss": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4356,
+      "mean": 87.303829734959,
+      "ndv_approx": 86,
+      "histogram": {
+        "buckets": [
+          0.0,
+          435.6,
+          871.2,
+          1306.8000000000002,
+          1742.4,
+          2178.0,
+          2613.6000000000004,
+          3049.2000000000003,
+          3484.8,
+          3920.4,
+          4356.0
+        ],
+        "counts": [
+          31053,
+          17,
+          21,
+          461,
+          779,
+          207,
+          14,
+          0,
+          6,
+          3
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "hours-per-week": {
+      "null_count": 0,
+      "min": 1,
+      "max": 99,
+      "mean": 40.437455852092995,
+      "ndv_approx": 92,
+      "histogram": {
+        "buckets": [
+          1.0,
+          10.8,
+          20.6,
+          30.400000000000002,
+          40.2,
+          50.0,
+          59.800000000000004,
+          69.60000000000001,
+          79.4,
+          89.2,
+          99.0
+        ],
+        "counts": [
+          736,
+          2192,
+          2317,
+          17735,
+          3119,
+          3877,
+          1796,
+          448,
+          202,
+          139
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "native-country": {
+      "null_count": 0,
+      "ndv_approx": 38,
+      "mean_length": 12.293848469027363,
+      "top_values": [
+        {
+          "value": "United-States",
+          "count": 29170
+        },
+        {
+          "value": "Mexico",
+          "count": 643
+        },
+        {
+          "value": "?",
+          "count": 583
+        },
+        {
+          "value": "Philippines",
+          "count": 198
+        },
+        {
+          "value": "Germany",
+          "count": 137
+        }
+      ],
+      "dtype": "string"
+    },
+    "salary": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.759190442553976,
+      "top_values": [
+        {
+          "value": "<=50K",
+          "count": 24720
+        },
+        {
+          "value": ">50K",
+          "count": 7841
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

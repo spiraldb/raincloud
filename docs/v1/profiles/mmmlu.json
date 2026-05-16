@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "slug": "mmmlu",
+  "row_count": 196588,
+  "parquet_sha256": "a34035ec5e7c1de7534f318874493c3fb4c0e6876bbf332344125703705cd60d",
+  "computed_at": "2026-05-16T08:59:55Z",
+  "sample_rows": null,
+  "columns": {
+    "__unnamed_column__": {
+      "dtype": "uint16",
+      "skipped": "empty column name"
+    },
+    "Question": {
+      "null_count": 0,
+      "ndv_approx": 200551,
+      "mean_length": 249.31278104462123,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "A": {
+      "null_count": 0,
+      "ndv_approx": 125221,
+      "mean_length": 37.31943455348241,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "B": {
+      "null_count": 0,
+      "ndv_approx": 149923,
+      "mean_length": 38.69071357356502,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "C": {
+      "null_count": 0,
+      "ndv_approx": 178378,
+      "mean_length": 39.31494292632307,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "D": {
+      "null_count": 0,
+      "ndv_approx": 194364,
+      "mean_length": 38.75184141453192,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Answer": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "D",
+          "count": 52862
+        },
+        {
+          "value": "C",
+          "count": 50151
+        },
+        {
+          "value": "B",
+          "count": 48465
+        },
+        {
+          "value": "A",
+          "count": 45110
+        }
+      ],
+      "dtype": "string"
+    },
+    "Subject": {
+      "null_count": 0,
+      "ndv_approx": 72,
+      "mean_length": 17.402715323417503,
+      "top_values": [
+        {
+          "value": "professional_law",
+          "count": 21476
+        },
+        {
+          "value": "moral_scenarios",
+          "count": 12530
+        },
+        {
+          "value": "miscellaneous",
+          "count": 10962
+        },
+        {
+          "value": "professional_psychology",
+          "count": 8568
+        },
+        {
+          "value": "high_school_psychology",
+          "count": 7630
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 15,
+      "mean_length": 10.0,
+      "top_values": [
+        {
+          "value": "mmlu_ZH-CN",
+          "count": 14042
+        },
+        {
+          "value": "mmlu_DE-DE",
+          "count": 14042
+        },
+        {
+          "value": "mmlu_AR-XY",
+          "count": 14042
+        },
+        {
+          "value": "mmlu_IT-IT",
+          "count": 14042
+        },
+        {
+          "value": "mmlu_ES-LA",
+          "count": 14042
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}
