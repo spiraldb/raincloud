@@ -1,0 +1,416 @@
+{
+  "schema_version": 1,
+  "slug": "uci-credit-approval",
+  "row_count": 690,
+  "parquet_sha256": "da4738dcb2f690e5d6b0e2a1f2e1313b9d78423926e5c547ab07dde64605ec65",
+  "computed_at": "2026-05-16T10:22:05Z",
+  "sample_rows": null,
+  "columns": {
+    "a1": {
+      "null_count": 12,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "b",
+          "count": 468
+        },
+        {
+          "value": "a",
+          "count": 210
+        }
+      ],
+      "dtype": "string"
+    },
+    "a2": {
+      "null_count": 12,
+      "min": 13.75,
+      "max": 80.25,
+      "mean": 31.56817109144546,
+      "ndv_approx": 413,
+      "histogram": {
+        "buckets": [
+          13.75,
+          20.4,
+          27.05,
+          33.7,
+          40.35,
+          47.0,
+          53.650000000000006,
+          60.300000000000004,
+          66.95,
+          73.6,
+          80.25
+        ],
+        "counts": [
+          96,
+          209,
+          135,
+          99,
+          53,
+          43,
+          25,
+          9,
+          6,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "a3": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 28.0,
+      "mean": 4.7587246376811585,
+      "ndv_approx": 244,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.8,
+          5.6,
+          8.399999999999999,
+          11.2,
+          14.0,
+          16.799999999999997,
+          19.599999999999998,
+          22.4,
+          25.2,
+          28.0
+        ],
+        "counts": [
+          347,
+          129,
+          55,
+          72,
+          51,
+          19,
+          7,
+          5,
+          2,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "a4": {
+      "null_count": 6,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "u",
+          "count": 519
+        },
+        {
+          "value": "y",
+          "count": 163
+        },
+        {
+          "value": "l",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "a5": {
+      "null_count": 6,
+      "ndv_approx": 2,
+      "mean_length": 1.0029239766081872,
+      "top_values": [
+        {
+          "value": "g",
+          "count": 519
+        },
+        {
+          "value": "p",
+          "count": 163
+        },
+        {
+          "value": "gg",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "a6": {
+      "null_count": 9,
+      "ndv_approx": 11,
+      "mean_length": 1.2173274596182084,
+      "top_values": [
+        {
+          "value": "c",
+          "count": 137
+        },
+        {
+          "value": "q",
+          "count": 78
+        },
+        {
+          "value": "w",
+          "count": 64
+        },
+        {
+          "value": "i",
+          "count": 59
+        },
+        {
+          "value": "aa",
+          "count": 54
+        }
+      ],
+      "dtype": "string"
+    },
+    "a7": {
+      "null_count": 9,
+      "ndv_approx": 10,
+      "mean_length": 1.1791483113069017,
+      "top_values": [
+        {
+          "value": "v",
+          "count": 399
+        },
+        {
+          "value": "h",
+          "count": 138
+        },
+        {
+          "value": "bb",
+          "count": 59
+        },
+        {
+          "value": "ff",
+          "count": 57
+        },
+        {
+          "value": "j",
+          "count": 8
+        }
+      ],
+      "dtype": "string"
+    },
+    "a8": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 28.5,
+      "mean": 2.2234057971014476,
+      "ndv_approx": 167,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.85,
+          5.7,
+          8.55,
+          11.4,
+          14.25,
+          17.1,
+          19.95,
+          22.8,
+          25.650000000000002,
+          28.5
+        ],
+        "counts": [
+          523,
+          95,
+          37,
+          12,
+          12,
+          6,
+          2,
+          2,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "a9": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "t",
+          "count": 361
+        },
+        {
+          "value": "f",
+          "count": 329
+        }
+      ],
+      "dtype": "string"
+    },
+    "a10": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 395
+        },
+        {
+          "value": "t",
+          "count": 295
+        }
+      ],
+      "dtype": "string"
+    },
+    "a11": {
+      "null_count": 0,
+      "min": 0,
+      "max": 67,
+      "mean": 2.4,
+      "ndv_approx": 24,
+      "histogram": {
+        "buckets": [
+          0.0,
+          6.7,
+          13.4,
+          20.1,
+          26.8,
+          33.5,
+          40.2,
+          46.9,
+          53.6,
+          60.300000000000004,
+          67.0
+        ],
+        "counts": [
+          595,
+          72,
+          20,
+          1,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "a12": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 374
+        },
+        {
+          "value": "t",
+          "count": 316
+        }
+      ],
+      "dtype": "string"
+    },
+    "a13": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "g",
+          "count": 625
+        },
+        {
+          "value": "s",
+          "count": 57
+        },
+        {
+          "value": "p",
+          "count": 8
+        }
+      ],
+      "dtype": "string"
+    },
+    "a14": {
+      "null_count": 13,
+      "min": 0,
+      "max": 2000,
+      "mean": 184.01477104874445,
+      "ndv_approx": 211,
+      "histogram": {
+        "buckets": [
+          0.0,
+          200.0,
+          400.0,
+          600.0,
+          800.0,
+          1000.0,
+          1200.0,
+          1400.0,
+          1600.0,
+          1800.0,
+          2000.0
+        ],
+        "counts": [
+          403,
+          209,
+          53,
+          7,
+          3,
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "a15": {
+      "null_count": 0,
+      "min": 0,
+      "max": 100000,
+      "mean": 1017.3855072463768,
+      "ndv_approx": 229,
+      "histogram": {
+        "buckets": [
+          0.0,
+          10000.0,
+          20000.0,
+          30000.0,
+          40000.0,
+          50000.0,
+          60000.0,
+          70000.0,
+          80000.0,
+          90000.0,
+          100000.0
+        ],
+        "counts": [
+          677,
+          8,
+          1,
+          1,
+          0,
+          2,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "a16": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "-",
+          "count": 383
+        },
+        {
+          "value": "+",
+          "count": 307
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

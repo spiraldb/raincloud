@@ -1,0 +1,333 @@
+{
+  "schema_version": 1,
+  "slug": "titanic-dataset",
+  "row_count": 891,
+  "parquet_sha256": "d25cf1cd01ba91414660f350c1c25cec0bad98fa08918f7939d6e828d6555217",
+  "computed_at": "2026-05-16T10:21:39Z",
+  "sample_rows": null,
+  "columns": {
+    "PassengerId": {
+      "null_count": 0,
+      "min": 1,
+      "max": 891,
+      "mean": 446.0,
+      "ndv_approx": 1051,
+      "histogram": {
+        "buckets": [
+          1.0,
+          90.0,
+          179.0,
+          268.0,
+          357.0,
+          446.0,
+          535.0,
+          624.0,
+          713.0,
+          802.0,
+          891.0
+        ],
+        "counts": [
+          89,
+          89,
+          89,
+          89,
+          89,
+          89,
+          89,
+          89,
+          89,
+          90
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Survived": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.3838383838383838,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          549,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          342
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Pclass": {
+      "null_count": 0,
+      "min": 1,
+      "max": 3,
+      "mean": 2.308641975308642,
+      "ndv_approx": 3,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0,
+          2.2,
+          2.4000000000000004,
+          2.6,
+          2.8,
+          3.0
+        ],
+        "counts": [
+          216,
+          0,
+          0,
+          0,
+          0,
+          184,
+          0,
+          0,
+          0,
+          491
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Name": {
+      "null_count": 0,
+      "ndv_approx": 1045,
+      "mean_length": 26.9652076318743,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Sex": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.704826038159371,
+      "top_values": [
+        {
+          "value": "male",
+          "count": 577
+        },
+        {
+          "value": "female",
+          "count": 314
+        }
+      ],
+      "dtype": "string"
+    },
+    "Age": {
+      "null_count": 177,
+      "min": 0.42,
+      "max": 80.0,
+      "mean": 29.69911764705882,
+      "ndv_approx": 97,
+      "histogram": {
+        "buckets": [
+          0.42,
+          8.378,
+          16.336000000000002,
+          24.294000000000004,
+          32.252,
+          40.21,
+          48.168000000000006,
+          56.126000000000005,
+          64.084,
+          72.042,
+          80.0
+        ],
+        "counts": [
+          54,
+          46,
+          177,
+          169,
+          118,
+          70,
+          45,
+          24,
+          9,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "SibSp": {
+      "null_count": 0,
+      "min": 0,
+      "max": 8,
+      "mean": 0.5230078563411896,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.8,
+          1.6,
+          2.4000000000000004,
+          3.2,
+          4.0,
+          4.800000000000001,
+          5.6000000000000005,
+          6.4,
+          7.2,
+          8.0
+        ],
+        "counts": [
+          608,
+          209,
+          28,
+          16,
+          0,
+          18,
+          5,
+          0,
+          0,
+          7
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Parch": {
+      "null_count": 0,
+      "min": 0,
+      "max": 6,
+      "mean": 0.38159371492704824,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.6,
+          1.2,
+          1.7999999999999998,
+          2.4,
+          3.0,
+          3.5999999999999996,
+          4.2,
+          4.8,
+          5.3999999999999995,
+          6.0
+        ],
+        "counts": [
+          678,
+          118,
+          0,
+          80,
+          0,
+          5,
+          4,
+          0,
+          5,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Ticket": {
+      "null_count": 0,
+      "ndv_approx": 752,
+      "mean_length": 6.750841750841751,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Fare": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 512.3292,
+      "mean": 32.2042079685746,
+      "ndv_approx": 283,
+      "histogram": {
+        "buckets": [
+          0.0,
+          51.23292,
+          102.46584,
+          153.69876,
+          204.93168,
+          256.1646,
+          307.39752,
+          358.63044,
+          409.86336,
+          461.09628,
+          512.3292
+        ],
+        "counts": [
+          732,
+          106,
+          31,
+          2,
+          11,
+          6,
+          0,
+          0,
+          0,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Cabin": {
+      "null_count": 687,
+      "ndv_approx": 163,
+      "mean_length": 3.588235294117647,
+      "top_values": [
+        {
+          "value": "B96 B98",
+          "count": 4
+        },
+        {
+          "value": "C23 C25 C27",
+          "count": 4
+        },
+        {
+          "value": "G6",
+          "count": 4
+        },
+        {
+          "value": "F33",
+          "count": 3
+        },
+        {
+          "value": "F2",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "Embarked": {
+      "null_count": 2,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "S",
+          "count": 644
+        },
+        {
+          "value": "C",
+          "count": 168
+        },
+        {
+          "value": "Q",
+          "count": 77
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

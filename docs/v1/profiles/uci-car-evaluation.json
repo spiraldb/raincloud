@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "slug": "uci-car-evaluation",
+  "row_count": 1728,
+  "parquet_sha256": "b15ea97049fe1495306a27285391ea63f411bfd671b997510dc565d0e4dc1cd3",
+  "computed_at": "2026-05-16T10:21:51Z",
+  "sample_rows": null,
+  "columns": {
+    "buying": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.75,
+      "top_values": [
+        {
+          "value": "med",
+          "count": 432
+        },
+        {
+          "value": "low",
+          "count": 432
+        },
+        {
+          "value": "vhigh",
+          "count": 432
+        },
+        {
+          "value": "high",
+          "count": 432
+        }
+      ],
+      "dtype": "string"
+    },
+    "maint": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.75,
+      "top_values": [
+        {
+          "value": "med",
+          "count": 432
+        },
+        {
+          "value": "low",
+          "count": 432
+        },
+        {
+          "value": "high",
+          "count": 432
+        },
+        {
+          "value": "vhigh",
+          "count": 432
+        }
+      ],
+      "dtype": "string"
+    },
+    "doors": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "3",
+          "count": 432
+        },
+        {
+          "value": "4",
+          "count": 432
+        },
+        {
+          "value": "5more",
+          "count": 432
+        },
+        {
+          "value": "2",
+          "count": 432
+        }
+      ],
+      "dtype": "string"
+    },
+    "persons": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "more",
+          "count": 576
+        },
+        {
+          "value": "4",
+          "count": 576
+        },
+        {
+          "value": "2",
+          "count": 576
+        }
+      ],
+      "dtype": "string"
+    },
+    "lug_boot": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 3.6666666666666665,
+      "top_values": [
+        {
+          "value": "small",
+          "count": 576
+        },
+        {
+          "value": "med",
+          "count": 576
+        },
+        {
+          "value": "big",
+          "count": 576
+        }
+      ],
+      "dtype": "string"
+    },
+    "safety": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 3.3333333333333335,
+      "top_values": [
+        {
+          "value": "med",
+          "count": 576
+        },
+        {
+          "value": "high",
+          "count": 576
+        },
+        {
+          "value": "low",
+          "count": 576
+        }
+      ],
+      "dtype": "string"
+    },
+    "class": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.515625,
+      "top_values": [
+        {
+          "value": "unacc",
+          "count": 1210
+        },
+        {
+          "value": "acc",
+          "count": 384
+        },
+        {
+          "value": "good",
+          "count": 69
+        },
+        {
+          "value": "vgood",
+          "count": 65
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

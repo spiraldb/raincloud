@@ -1,0 +1,577 @@
+{
+  "schema_version": 1,
+  "slug": "temperature-change",
+  "row_count": 147,
+  "parquet_sha256": "b384e28b77a66e2273d019eb9e10cf0e01a07947ef537c14b3ef90c27b062169",
+  "computed_at": "2026-05-16T10:21:38Z",
+  "sample_rows": null,
+  "columns": {
+    "Year": {
+      "null_count": 0,
+      "min": 1880,
+      "max": 2026,
+      "mean": 1953.0,
+      "ndv_approx": 176,
+      "histogram": {
+        "buckets": [
+          1880.0,
+          1894.6,
+          1909.2,
+          1923.8,
+          1938.4,
+          1953.0,
+          1967.6,
+          1982.2,
+          1996.8,
+          2011.4,
+          2026.0
+        ],
+        "counts": [
+          15,
+          15,
+          14,
+          15,
+          14,
+          15,
+          15,
+          14,
+          15,
+          15
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Jan": {
+      "null_count": 0,
+      "min": -0.81,
+      "max": 1.38,
+      "mean": 0.08571428571428566,
+      "ndv_approx": 101,
+      "histogram": {
+        "buckets": [
+          -0.81,
+          -0.5910000000000001,
+          -0.37200000000000005,
+          -0.15300000000000002,
+          0.06599999999999995,
+          0.2849999999999999,
+          0.504,
+          0.7229999999999999,
+          0.942,
+          1.161,
+          1.38
+        ],
+        "counts": [
+          5,
+          13,
+          33,
+          30,
+          22,
+          16,
+          10,
+          11,
+          3,
+          4
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Feb": {
+      "null_count": 0,
+      "min": -0.62,
+      "max": 1.43,
+      "mean": 0.09401360544217692,
+      "ndv_approx": 93,
+      "histogram": {
+        "buckets": [
+          -0.62,
+          -0.41500000000000004,
+          -0.21000000000000002,
+          -0.0050000000000000044,
+          0.19999999999999996,
+          0.4049999999999999,
+          0.61,
+          0.8149999999999998,
+          1.02,
+          1.225,
+          1.4299999999999997
+        ],
+        "counts": [
+          17,
+          21,
+          37,
+          23,
+          13,
+          15,
+          8,
+          7,
+          1,
+          5
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Mar": {
+      "null_count": 0,
+      "min": -0.64,
+      "max": 1.39,
+      "mean": 0.11258503401360538,
+      "ndv_approx": 95,
+      "histogram": {
+        "buckets": [
+          -0.64,
+          -0.43700000000000006,
+          -0.23400000000000004,
+          -0.031000000000000028,
+          0.17199999999999993,
+          0.3749999999999999,
+          0.578,
+          0.7809999999999998,
+          0.9839999999999999,
+          1.1869999999999998,
+          1.3899999999999997
+        ],
+        "counts": [
+          7,
+          27,
+          35,
+          26,
+          17,
+          10,
+          10,
+          6,
+          4,
+          5
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Apr": {
+      "null_count": 0,
+      "min": -0.59,
+      "max": 1.31,
+      "mean": 0.08496598639455781,
+      "ndv_approx": 108,
+      "histogram": {
+        "buckets": [
+          -0.59,
+          -0.39999999999999997,
+          -0.20999999999999996,
+          -0.019999999999999907,
+          0.17000000000000004,
+          0.36,
+          0.5500000000000002,
+          0.7400000000000001,
+          0.93,
+          1.12,
+          1.31
+        ],
+        "counts": [
+          14,
+          29,
+          30,
+          22,
+          19,
+          8,
+          10,
+          7,
+          4,
+          4
+        ]
+      },
+      "dtype": "float64"
+    },
+    "May": {
+      "null_count": 0,
+      "ndv_approx": 76,
+      "mean_length": 3.557823129251701,
+      "top_values": [
+        {
+          "value": "-.29",
+          "count": 5
+        },
+        {
+          "value": ".06",
+          "count": 4
+        },
+        {
+          "value": "-.10",
+          "count": 4
+        },
+        {
+          "value": "-.20",
+          "count": 4
+        },
+        {
+          "value": "-.30",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "Jun": {
+      "null_count": 0,
+      "ndv_approx": 79,
+      "mean_length": 3.5850340136054424,
+      "top_values": [
+        {
+          "value": "-.22",
+          "count": 6
+        },
+        {
+          "value": "-.25",
+          "count": 5
+        },
+        {
+          "value": "-.05",
+          "count": 5
+        },
+        {
+          "value": ".12",
+          "count": 4
+        },
+        {
+          "value": ".15",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Jul": {
+      "null_count": 0,
+      "ndv_approx": 89,
+      "mean_length": 3.54421768707483,
+      "top_values": [
+        {
+          "value": "-.19",
+          "count": 5
+        },
+        {
+          "value": "-.04",
+          "count": 5
+        },
+        {
+          "value": ".04",
+          "count": 5
+        },
+        {
+          "value": ".02",
+          "count": 4
+        },
+        {
+          "value": "-.35",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Aug": {
+      "null_count": 0,
+      "ndv_approx": 81,
+      "mean_length": 3.564625850340136,
+      "top_values": [
+        {
+          "value": "-.22",
+          "count": 6
+        },
+        {
+          "value": "-.20",
+          "count": 5
+        },
+        {
+          "value": "-.33",
+          "count": 4
+        },
+        {
+          "value": "-.17",
+          "count": 4
+        },
+        {
+          "value": "-.27",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Sep": {
+      "null_count": 0,
+      "ndv_approx": 96,
+      "mean_length": 3.557823129251701,
+      "top_values": [
+        {
+          "value": "-.15",
+          "count": 7
+        },
+        {
+          "value": "-.22",
+          "count": 5
+        },
+        {
+          "value": "-.08",
+          "count": 4
+        },
+        {
+          "value": "-.12",
+          "count": 4
+        },
+        {
+          "value": "-.19",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Oct": {
+      "null_count": 0,
+      "ndv_approx": 87,
+      "mean_length": 3.503401360544218,
+      "top_values": [
+        {
+          "value": "-.11",
+          "count": 5
+        },
+        {
+          "value": "-.23",
+          "count": 5
+        },
+        {
+          "value": "-.03",
+          "count": 4
+        },
+        {
+          "value": "-.24",
+          "count": 4
+        },
+        {
+          "value": ".09",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Nov": {
+      "null_count": 0,
+      "ndv_approx": 91,
+      "mean_length": 3.5170068027210886,
+      "top_values": [
+        {
+          "value": ".02",
+          "count": 5
+        },
+        {
+          "value": "-.06",
+          "count": 5
+        },
+        {
+          "value": "-.17",
+          "count": 4
+        },
+        {
+          "value": ".03",
+          "count": 4
+        },
+        {
+          "value": "-.34",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Dec": {
+      "null_count": 0,
+      "ndv_approx": 102,
+      "mean_length": 3.5918367346938775,
+      "top_values": [
+        {
+          "value": "-.07",
+          "count": 5
+        },
+        {
+          "value": "-.03",
+          "count": 5
+        },
+        {
+          "value": "-.08",
+          "count": 4
+        },
+        {
+          "value": ".21",
+          "count": 3
+        },
+        {
+          "value": "-.21",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "J-D": {
+      "null_count": 0,
+      "ndv_approx": 102,
+      "mean_length": 3.564625850340136,
+      "top_values": [
+        {
+          "value": "-.11",
+          "count": 7
+        },
+        {
+          "value": "-.28",
+          "count": 6
+        },
+        {
+          "value": "-.18",
+          "count": 4
+        },
+        {
+          "value": "-.22",
+          "count": 4
+        },
+        {
+          "value": ".61",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "D-N": {
+      "null_count": 0,
+      "ndv_approx": 104,
+      "mean_length": 3.564625850340136,
+      "top_values": [
+        {
+          "value": "-.27",
+          "count": 6
+        },
+        {
+          "value": "-.10",
+          "count": 5
+        },
+        {
+          "value": "-.13",
+          "count": 4
+        },
+        {
+          "value": "-.28",
+          "count": 3
+        },
+        {
+          "value": "-.36",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "DJF": {
+      "null_count": 0,
+      "ndv_approx": 100,
+      "mean_length": 3.54421768707483,
+      "top_values": [
+        {
+          "value": "-.10",
+          "count": 5
+        },
+        {
+          "value": "-.15",
+          "count": 4
+        },
+        {
+          "value": "-.18",
+          "count": 4
+        },
+        {
+          "value": "-.24",
+          "count": 4
+        },
+        {
+          "value": ".39",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "MAM": {
+      "null_count": 0,
+      "ndv_approx": 94,
+      "mean_length": 3.54421768707483,
+      "top_values": [
+        {
+          "value": "-.28",
+          "count": 8
+        },
+        {
+          "value": ".12",
+          "count": 5
+        },
+        {
+          "value": "-.37",
+          "count": 4
+        },
+        {
+          "value": ".04",
+          "count": 4
+        },
+        {
+          "value": "-.16",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "JJA": {
+      "null_count": 0,
+      "ndv_approx": 91,
+      "mean_length": 3.557823129251701,
+      "top_values": [
+        {
+          "value": "-.18",
+          "count": 5
+        },
+        {
+          "value": "-.30",
+          "count": 5
+        },
+        {
+          "value": "-.15",
+          "count": 4
+        },
+        {
+          "value": "-.37",
+          "count": 4
+        },
+        {
+          "value": "-.31",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "SON": {
+      "null_count": 0,
+      "ndv_approx": 84,
+      "mean_length": 3.5374149659863945,
+      "top_values": [
+        {
+          "value": "-.01",
+          "count": 5
+        },
+        {
+          "value": "-.29",
+          "count": 4
+        },
+        {
+          "value": "-.12",
+          "count": 4
+        },
+        {
+          "value": "-.28",
+          "count": 4
+        },
+        {
+          "value": "-.16",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

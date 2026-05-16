@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "slug": "uci-breast-cancer",
+  "row_count": 286,
+  "parquet_sha256": "9a046be9f49137e730edbbfec31f9c412d1dffdb6dc5a6974b5a6ead28b43735",
+  "computed_at": "2026-05-16T10:21:49Z",
+  "sample_rows": null,
+  "columns": {
+    "age": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "50-59",
+          "count": 96
+        },
+        {
+          "value": "40-49",
+          "count": 90
+        },
+        {
+          "value": "60-69",
+          "count": 57
+        },
+        {
+          "value": "30-39",
+          "count": 36
+        },
+        {
+          "value": "70-79",
+          "count": 6
+        }
+      ],
+      "dtype": "string"
+    },
+    "menopause": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.573426573426573,
+      "top_values": [
+        {
+          "value": "premeno",
+          "count": 150
+        },
+        {
+          "value": "ge40",
+          "count": 129
+        },
+        {
+          "value": "lt40",
+          "count": 7
+        }
+      ],
+      "dtype": "string"
+    },
+    "tumor_size": {
+      "null_count": 0,
+      "ndv_approx": 12,
+      "mean_length": 5.041958041958042,
+      "top_values": [
+        {
+          "value": "30-34",
+          "count": 60
+        },
+        {
+          "value": "25-29",
+          "count": 54
+        },
+        {
+          "value": "20-24",
+          "count": 50
+        },
+        {
+          "value": "15-19",
+          "count": 30
+        },
+        {
+          "value": "14-Oct",
+          "count": 28
+        }
+      ],
+      "dtype": "string"
+    },
+    "inv_nodes": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 3.555944055944056,
+      "top_values": [
+        {
+          "value": "0-2",
+          "count": 213
+        },
+        {
+          "value": "5-Mar",
+          "count": 36
+        },
+        {
+          "value": "8-Jun",
+          "count": 17
+        },
+        {
+          "value": "11-Sep",
+          "count": 10
+        },
+        {
+          "value": "15-17",
+          "count": 6
+        }
+      ],
+      "dtype": "string"
+    },
+    "node_caps": {
+      "null_count": 8,
+      "ndv_approx": 2,
+      "mean_length": 2.2014388489208634,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 222
+        },
+        {
+          "value": "yes",
+          "count": 56
+        }
+      ],
+      "dtype": "string"
+    },
+    "deg_malig": {
+      "null_count": 0,
+      "min": 1,
+      "max": 3,
+      "mean": 2.0489510489510487,
+      "ndv_approx": 3,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0,
+          2.2,
+          2.4000000000000004,
+          2.6,
+          2.8,
+          3.0
+        ],
+        "counts": [
+          71,
+          0,
+          0,
+          0,
+          0,
+          130,
+          0,
+          0,
+          0,
+          85
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "breast": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.468531468531468,
+      "top_values": [
+        {
+          "value": "left",
+          "count": 152
+        },
+        {
+          "value": "right",
+          "count": 134
+        }
+      ],
+      "dtype": "string"
+    },
+    "breast_quad": {
+      "null_count": 1,
+      "ndv_approx": 5,
+      "mean_length": 7.670175438596491,
+      "top_values": [
+        {
+          "value": "left_low",
+          "count": 110
+        },
+        {
+          "value": "left_up",
+          "count": 97
+        },
+        {
+          "value": "right_up",
+          "count": 33
+        },
+        {
+          "value": "right_low",
+          "count": 24
+        },
+        {
+          "value": "central",
+          "count": 21
+        }
+      ],
+      "dtype": "string"
+    },
+    "irradiat": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.237762237762238,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 218
+        },
+        {
+          "value": "yes",
+          "count": 68
+        }
+      ],
+      "dtype": "string"
+    },
+    "class": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 19.10839160839161,
+      "top_values": [
+        {
+          "value": "no-recurrence-events",
+          "count": 201
+        },
+        {
+          "value": "recurrence-events",
+          "count": 85
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}
