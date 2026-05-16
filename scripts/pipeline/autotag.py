@@ -82,13 +82,15 @@ def _classify_column(name: str, col: dict, row_count: int) -> str | None:
                 return "prose"
             if ndv is not None and row_count > 0:
                 ratio = ndv / row_count
-                if ndv <= 64 or ratio <= 0.01:
+                if (ndv <= 32 and mean_len <= 24) or (ndv <= 256 and ratio <= 0.001 and mean_len <= 24):
                     return "enums"
                 if ratio >= 0.5 and 4 <= mean_len <= 40:
                     return "identifiers"
                 if mean_len >= 40:
                     return "prose"
-            return "prose" if mean_len >= 40 else "enums"
+            if ndv is None:
+                return "prose" if mean_len >= 40 else None
+            return "prose" if mean_len >= 40 else "identifiers" if ndv > 256 else "enums"
         return None
 
     # ---- numeric columns ----
