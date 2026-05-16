@@ -1,0 +1,683 @@
+{
+  "schema_version": 1,
+  "slug": "bi-medpayment2",
+  "row_count": 9153273,
+  "parquet_sha256": "b456274f43b1b16bd89a216bfa03657c700063967bb20b9febcde60043989466",
+  "computed_at": "2026-05-16T06:22:35Z",
+  "sample_rows": null,
+  "columns": {
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          9153273
+        ]
+      }
+    },
+    "average_Medicare_allowed_amt": {
+      "null_count": 1,
+      "min": 3.33333e-05,
+      "max": 46272.516889,
+      "mean": 96.2882904566029,
+      "ndv_approx": 2608980,
+      "histogram": {
+        "buckets": [
+          3.33333e-05,
+          4627.25171889997,
+          9254.503404466639,
+          13881.75509003331,
+          18509.00677559998,
+          23136.25846116665,
+          27763.510146733322,
+          32390.76183229999,
+          37018.01351786666,
+          41645.26520343333,
+          46272.516889
+        ],
+        "counts": [
+          9152287,
+          546,
+          274,
+          126,
+          6,
+          6,
+          3,
+          20,
+          3,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "average_Medicare_payment_amt": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 37012.323556,
+      "mean": 74.90088752826303,
+      "ndv_approx": 5291202,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3701.2323556,
+          7402.4647112,
+          11103.6970668,
+          14804.9294224,
+          18506.161778,
+          22207.3941336,
+          25908.6264892,
+          29609.8588448,
+          33311.0912004,
+          37012.323556
+        ],
+        "counts": [
+          9152316,
+          521,
+          278,
+          118,
+          6,
+          6,
+          10,
+          13,
+          3,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "average_submitted_chrg_amt": {
+      "null_count": 1,
+      "min": 3.33333e-05,
+      "max": 98000.0,
+      "mean": 298.1585542389345,
+      "ndv_approx": 2166927,
+      "histogram": {
+        "buckets": [
+          3.33333e-05,
+          9800.000029999968,
+          19600.00002666664,
+          29400.00002333331,
+          39200.00001999998,
+          49000.00001666664,
+          58800.000013333316,
+          68600.00000999999,
+          78400.00000666665,
+          88200.00000333332,
+          97999.99999999999
+        ],
+        "counts": [
+          9145217,
+          6819,
+          818,
+          250,
+          101,
+          39,
+          19,
+          4,
+          1,
+          4
+        ]
+      },
+      "dtype": "float64"
+    },
+    "bene_day_srvc_cnt": {
+      "null_count": 1,
+      "min": 11,
+      "max": 1227047,
+      "mean": 150.94475571140026,
+      "ndv_approx": 14360,
+      "histogram": {
+        "buckets": [
+          11.0,
+          122714.6,
+          245418.2,
+          368121.80000000005,
+          490825.4,
+          613529.0,
+          736232.6000000001,
+          858936.2000000001,
+          981639.8,
+          1104343.4000000001,
+          1227047.0
+        ],
+        "counts": [
+          9152969,
+          175,
+          64,
+          31,
+          17,
+          4,
+          2,
+          5,
+          2,
+          3
+        ]
+      },
+      "dtype": "int32"
+    },
+    "bene_unique_cnt": {
+      "null_count": 1,
+      "min": 11,
+      "max": 604634,
+      "mean": 91.19918789696187,
+      "ndv_approx": 8626,
+      "histogram": {
+        "buckets": [
+          11.0,
+          60473.3,
+          120935.6,
+          181397.90000000002,
+          241860.2,
+          302322.5,
+          362784.80000000005,
+          423247.10000000003,
+          483709.4,
+          544171.7000000001,
+          604634.0
+        ],
+        "counts": [
+          9152914,
+          199,
+          77,
+          40,
+          21,
+          10,
+          5,
+          1,
+          4,
+          1
+        ]
+      },
+      "dtype": "int32"
+    },
+    "hcpcs_code": {
+      "null_count": 1,
+      "ndv_approx": 5985,
+      "mean_length": 5.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "hcpcs_description": {
+      "null_count": 1,
+      "ndv_approx": 3660,
+      "mean_length": 23.54025391138819,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "line_srvc_cnt": {
+      "null_count": 1,
+      "min": 6.0,
+      "max": 4578582.0,
+      "mean": 239.7031475301946,
+      "ndv_approx": 24918,
+      "histogram": {
+        "buckets": [
+          6.0,
+          457863.6,
+          915721.2,
+          1373578.7999999998,
+          1831436.4,
+          2289294.0,
+          2747151.5999999996,
+          3205009.1999999997,
+          3662866.8,
+          4120724.4,
+          4578582.0
+        ],
+        "counts": [
+          9153149,
+          80,
+          25,
+          6,
+          4,
+          2,
+          2,
+          1,
+          2,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "medicare_participation_indicator": {
+      "null_count": 1,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "Y",
+          "count": 9148804
+        },
+        {
+          "value": "N",
+          "count": 4468
+        }
+      ],
+      "dtype": "string"
+    },
+    "npi": {
+      "null_count": 0,
+      "min": 1,
+      "max": 1992999874,
+      "mean": 1499545923.9987528,
+      "ndv_approx": 918519,
+      "histogram": {
+        "buckets": [
+          1.0,
+          199299988.3,
+          398599975.6,
+          597899962.9000001,
+          797199950.2,
+          996499937.5,
+          1195799924.8000002,
+          1395099912.1000001,
+          1594399899.4,
+          1793699886.7,
+          1992999874.0
+        ],
+        "counts": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1829079,
+          1749067,
+          1831437,
+          1917142,
+          1826547
+        ]
+      },
+      "dtype": "int32"
+    },
+    "nppes_credentials": {
+      "null_count": 557798,
+      "ndv_approx": 14555,
+      "mean_length": 3.2537774817563894,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nppes_entity_code": {
+      "null_count": 1,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "I",
+          "count": 8773299
+        },
+        {
+          "value": "O",
+          "count": 379966
+        },
+        {
+          "value": ".",
+          "count": 7
+        }
+      ],
+      "dtype": "string"
+    },
+    "nppes_provider_city": {
+      "null_count": 1,
+      "ndv_approx": 11500,
+      "mean_length": 8.92105795610575,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nppes_provider_country": {
+      "null_count": 1,
+      "ndv_approx": 24,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "US",
+          "count": 9152829
+        },
+        {
+          "value": "DE",
+          "count": 82
+        },
+        {
+          "value": "ES",
+          "count": 74
+        },
+        {
+          "value": "JP",
+          "count": 48
+        },
+        {
+          "value": "TR",
+          "count": 34
+        }
+      ],
+      "dtype": "string"
+    },
+    "nppes_provider_first_name": {
+      "null_count": 379992,
+      "ndv_approx": 56722,
+      "mean_length": 5.861483634229885,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nppes_provider_gender": {
+      "null_count": 379967,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "M",
+          "count": 6617277
+        },
+        {
+          "value": "F",
+          "count": 2156029
+        }
+      ],
+      "dtype": "string"
+    },
+    "nppes_provider_last_org_name": {
+      "null_count": 161,
+      "ndv_approx": 227321,
+      "mean_length": 7.366830756577653,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nppes_provider_mi": {
+      "null_count": 2408602,
+      "ndv_approx": 31,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 770443
+        },
+        {
+          "value": "M",
+          "count": 650679
+        },
+        {
+          "value": "J",
+          "count": 635789
+        },
+        {
+          "value": "L",
+          "count": 499461
+        },
+        {
+          "value": "S",
+          "count": 428673
+        }
+      ],
+      "dtype": "string"
+    },
+    "nppes_provider_state": {
+      "null_count": 1,
+      "ndv_approx": 68,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "CA",
+          "count": 716330
+        },
+        {
+          "value": "FL",
+          "count": 667995
+        },
+        {
+          "value": "TX",
+          "count": 628122
+        },
+        {
+          "value": "NY",
+          "count": 592577
+        },
+        {
+          "value": "PA",
+          "count": 403924
+        }
+      ],
+      "dtype": "string"
+    },
+    "nppes_provider_street1": {
+      "null_count": 1,
+      "ndv_approx": 293498,
+      "mean_length": 17.060720035414658,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nppes_provider_street2": {
+      "null_count": 5070846,
+      "ndv_approx": 61899,
+      "mean_length": 11.105834348048354,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nppes_provider_zip": {
+      "null_count": 211,
+      "min": 0,
+      "max": 999291651,
+      "mean": 417718378.24678737,
+      "ndv_approx": 256811,
+      "histogram": {
+        "buckets": [
+          0.0,
+          99929165.1,
+          199858330.2,
+          299787495.29999995,
+          399716660.4,
+          499645825.5,
+          599574990.5999999,
+          699504155.6999999,
+          799433320.8,
+          899362485.9,
+          999291651.0
+        ],
+        "counts": [
+          1774811,
+          898924,
+          903717,
+          1308287,
+          926726,
+          458245,
+          670055,
+          869466,
+          432453,
+          910378
+        ]
+      },
+      "dtype": "int32"
+    },
+    "place_of_service": {
+      "null_count": 1,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "O",
+          "count": 5480332
+        },
+        {
+          "value": "F",
+          "count": 3672940
+        }
+      ],
+      "dtype": "string"
+    },
+    "provider_type": {
+      "null_count": 1,
+      "ndv_approx": 91,
+      "mean_length": 16.353258157301564,
+      "top_values": [
+        {
+          "value": "Diagnostic Radiology",
+          "count": 1227008
+        },
+        {
+          "value": "Internal Medicine",
+          "count": 1197465
+        },
+        {
+          "value": "Family Practice",
+          "count": 970873
+        },
+        {
+          "value": "Cardiology",
+          "count": 535359
+        },
+        {
+          "value": "Orthopedic Surgery",
+          "count": 316719
+        }
+      ],
+      "dtype": "string"
+    },
+    "stdev_Medicare_allowed_amt": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 44803.426522,
+      "mean": 6.568266644721,
+      "ndv_approx": 2787999,
+      "histogram": {
+        "buckets": [
+          0.0,
+          4480.3426522,
+          8960.6853044,
+          13441.027956599999,
+          17921.3706088,
+          22401.713261,
+          26882.055913199998,
+          31362.3985654,
+          35842.7412176,
+          40323.0838698,
+          44803.426522
+        ],
+        "counts": [
+          9153247,
+          3,
+          3,
+          8,
+          5,
+          2,
+          0,
+          2,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "stdev_Medicare_payment_amt": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 35839.234502,
+      "mean": 12.406572459401522,
+      "ndv_approx": 7495086,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3583.9234502,
+          7167.8469004,
+          10751.7703506,
+          14335.6938008,
+          17919.617251,
+          21503.5407012,
+          25087.4641514,
+          28671.3876016,
+          32255.3110518,
+          35839.234502
+        ],
+        "counts": [
+          9153233,
+          17,
+          3,
+          8,
+          5,
+          2,
+          0,
+          2,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "stdev_submitted_chrg_amt": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 53195.859825,
+      "mean": 22.29884279957499,
+      "ndv_approx": 2299194,
+      "histogram": {
+        "buckets": [
+          0.0,
+          5319.5859825,
+          10639.171965,
+          15958.757947499998,
+          21278.34393,
+          26597.9299125,
+          31917.515894999997,
+          37237.1018775,
+          42556.68786,
+          47876.2738425,
+          53195.859825
+        ],
+        "counts": [
+          9152251,
+          756,
+          202,
+          36,
+          14,
+          9,
+          0,
+          1,
+          1,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Calculation_0820513143749095": {
+      "null_count": 1,
+      "min": 0.0,
+      "max": 37012.323556,
+      "mean": 74.90088752826335,
+      "ndv_approx": 5291202,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3701.2323556,
+          7402.4647112,
+          11103.6970668,
+          14804.9294224,
+          18506.161778,
+          22207.3941336,
+          25908.6264892,
+          29609.8588448,
+          33311.0912004,
+          37012.323556
+        ],
+        "counts": [
+          9152316,
+          521,
+          278,
+          118,
+          6,
+          6,
+          10,
+          13,
+          3,
+          1
+        ]
+      },
+      "dtype": "float64"
+    }
+  }
+}

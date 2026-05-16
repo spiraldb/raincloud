@@ -1,0 +1,442 @@
+{
+  "schema_version": 1,
+  "slug": "bi-realestate2",
+  "row_count": 66415881,
+  "parquet_sha256": "62e1ba562ea0024a43501293f485e42bdfa88ef8bfb1a16cc7301fb005b25fb9",
+  "computed_at": "2026-05-16T07:22:01Z",
+  "sample_rows": null,
+  "columns": {
+    "Address_1": {
+      "null_count": 26453,
+      "ndv_approx": 284417,
+      "mean_length": 3.794791845472746,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Address_2": {
+      "null_count": 57682681,
+      "ndv_approx": 21128,
+      "mean_length": 6.50970904135941,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "County": {
+      "null_count": 0,
+      "ndv_approx": 112,
+      "mean_length": 11.981771889768352,
+      "top_values": [
+        {
+          "value": "GREATER LONDON",
+          "count": 8727852
+        },
+        {
+          "value": "GREATER MANCHESTER",
+          "count": 2882761
+        },
+        {
+          "value": "WEST MIDLANDS",
+          "count": 2525866
+        },
+        {
+          "value": "WEST YORKSHIRE",
+          "count": 2472484
+        },
+        {
+          "value": "KENT",
+          "count": 1960840
+        }
+      ],
+      "dtype": "string"
+    },
+    "County (copy)": {
+      "null_count": 0,
+      "ndv_approx": 112,
+      "mean_length": 11.981771889768352,
+      "top_values": [
+        {
+          "value": "GREATER LONDON",
+          "count": 8727852
+        },
+        {
+          "value": "GREATER MANCHESTER",
+          "count": 2882761
+        },
+        {
+          "value": "WEST MIDLANDS",
+          "count": 2525866
+        },
+        {
+          "value": "WEST YORKSHIRE",
+          "count": 2472484
+        },
+        {
+          "value": "KENT",
+          "count": 1960840
+        }
+      ],
+      "dtype": "string"
+    },
+    "Date_of_Transfer": {
+      "dtype": "date32",
+      "null_count": 0,
+      "min": "2006-01-01T00:00:00+00:00",
+      "max": "2016-11-30T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2006-01-01T00:00:00+00:00",
+          "2007-02-03T14:24:00+00:00",
+          "2008-03-08T04:48:00+00:00",
+          "2009-04-10T19:12:00+00:00",
+          "2010-05-14T09:36:00+00:00",
+          "2011-06-17T00:00:00+00:00",
+          "2012-07-19T14:24:00+00:00",
+          "2013-08-22T04:48:00+00:00",
+          "2014-09-24T19:12:00+00:00",
+          "2015-10-28T09:36:00+00:00",
+          "2016-11-30T00:00:00+00:00"
+        ],
+        "counts": [
+          10007634,
+          9134545,
+          4367825,
+          5051326,
+          4967956,
+          5246899,
+          5478109,
+          7403452,
+          7573069,
+          7185066
+        ]
+      }
+    },
+    "District": {
+      "null_count": 0,
+      "ndv_approx": 378,
+      "mean_length": 10.801705272869903,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Duration": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "F",
+          "count": 49791469
+        },
+        {
+          "value": "L",
+          "count": 16624146
+        },
+        {
+          "value": "U",
+          "count": 266
+        }
+      ],
+      "dtype": "string"
+    },
+    "Latitude": {
+      "null_count": 397859,
+      "min": 49.7668195999,
+      "max": 55.7988594537161,
+      "mean": 52.277111601314026,
+      "ndv_approx": 969388,
+      "histogram": {
+        "buckets": [
+          49.7668195999,
+          50.370023585281615,
+          50.97322757066322,
+          51.57643155604483,
+          52.17963554142644,
+          52.78283952680805,
+          53.38604351218966,
+          53.98924749757127,
+          54.59245148295288,
+          55.195655468334486,
+          55.7988594537161
+        ],
+        "counts": [
+          560833,
+          6289430,
+          17961748,
+          10616564,
+          9234428,
+          6765332,
+          10348324,
+          1726942,
+          2424345,
+          90076
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Locality": {
+      "null_count": 28976990,
+      "ndv_approx": 20331,
+      "mean_length": 9.17591012511562,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Longitude": {
+      "null_count": 397859,
+      "min": -7.5571631308,
+      "max": 1.75867951009669,
+      "mean": -1.2698718619400735,
+      "ndv_approx": 1121660,
+      "histogram": {
+        "buckets": [
+          -7.5571631308,
+          -6.625578866710331,
+          -5.693994602620663,
+          -4.7624103385309935,
+          -3.8308260744413243,
+          -2.899241810351655,
+          -1.9676575462619867,
+          -1.0360732821723175,
+          -0.10448901808264832,
+          0.82709524600702,
+          1.75867951009669
+        ],
+        "counts": [
+          91,
+          1911,
+          581168,
+          1629922,
+          5545435,
+          12251050,
+          17287585,
+          15664880,
+          10109883,
+          2946097
+        ]
+      },
+      "dtype": "float64"
+    },
+    "New_Build": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "N",
+          "count": 60041926
+        },
+        {
+          "value": "Y",
+          "count": 6373955
+        }
+      ],
+      "dtype": "string"
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          66415881
+        ]
+      }
+    },
+    "Postcode": {
+      "null_count": 70952,
+      "ndv_approx": 1300520,
+      "mean_length": 7.434339465492532,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Postcode_District": {
+      "null_count": 70959,
+      "ndv_approx": 2960,
+      "mean_length": 3.4343390892825227,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Postcode_Region": {
+      "null_count": 70959,
+      "ndv_approx": 155,
+      "mean_length": 1.8855309529190494,
+      "top_values": [
+        {
+          "value": "B",
+          "count": 1831998
+        },
+        {
+          "value": "S",
+          "count": 1391887
+        },
+        {
+          "value": "NG",
+          "count": 1364496
+        },
+        {
+          "value": "M",
+          "count": 1292438
+        },
+        {
+          "value": "BS",
+          "count": 1265572
+        }
+      ],
+      "dtype": "string"
+    },
+    "Postcode_Sector": {
+      "null_count": 70959,
+      "ndv_approx": 9721,
+      "mean_length": 5.434338667245701,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Price": {
+      "null_count": 0,
+      "min": 1,
+      "max": 98250000,
+      "mean": 244575.07429998557,
+      "ndv_approx": 93228,
+      "histogram": {
+        "buckets": [
+          1.0,
+          9825000.9,
+          19650000.8,
+          29475000.700000003,
+          39300000.6,
+          49125000.5,
+          58950000.400000006,
+          68775000.3,
+          78600000.2,
+          88425000.10000001,
+          98250000.0
+        ],
+        "counts": [
+          66399550,
+          10031,
+          2891,
+          1344,
+          826,
+          364,
+          378,
+          168,
+          203,
+          126
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Price_Paid_Transaction_Type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 64600739
+        },
+        {
+          "value": "B",
+          "count": 1815142
+        }
+      ],
+      "dtype": "string"
+    },
+    "Property_Type": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "T",
+          "count": 19859371
+        },
+        {
+          "value": "S",
+          "count": 17904201
+        },
+        {
+          "value": "D",
+          "count": 14963858
+        },
+        {
+          "value": "F",
+          "count": 13280498
+        },
+        {
+          "value": "O",
+          "count": 407953
+        }
+      ],
+      "dtype": "string"
+    },
+    "Street": {
+      "null_count": 972426,
+      "ndv_approx": 289305,
+      "mean_length": 13.124115085305322,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Town/City": {
+      "null_count": 0,
+      "ndv_approx": 980,
+      "mean_length": 8.690965192496655,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Transaction_ID": {
+      "null_count": 0,
+      "ndv_approx": 9958940,
+      "mean_length": 38.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_342484700263473152": {
+      "null_count": 0,
+      "ndv_approx": 1100,
+      "mean_length": 8.690965192496655,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_222787466265260036": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 8.095970344803527,
+      "top_values": [
+        {
+          "value": "Existing",
+          "count": 60041926
+        },
+        {
+          "value": "New build",
+          "count": 6373955
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_222787466264023043": {
+      "null_count": 0,
+      "ndv_approx": 7900960,
+      "mean_length": 29.41795205577413,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_222787466257584130": {
+      "dtype": "bool",
+      "true_count": 70987,
+      "false_count": 66344894,
+      "null_count": 0
+    },
+    "town/city url string (copy)": {
+      "null_count": 1033312,
+      "ndv_approx": 677231,
+      "mean_length": 17.555047248143463,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

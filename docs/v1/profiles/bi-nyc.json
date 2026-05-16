@@ -1,0 +1,1079 @@
+{
+  "schema_version": 1,
+  "slug": "bi-nyc",
+  "row_count": 19242976,
+  "parquet_sha256": "b6222cc0be1d512ab4b31cdd99e6552c01e627c80326a0b0c7e7b70a04cb9af6",
+  "computed_at": "2026-05-16T06:41:19Z",
+  "sample_rows": null,
+  "columns": {
+    "Address Type": {
+      "null_count": 984906,
+      "ndv_approx": 5,
+      "mean_length": 8.015191857627887,
+      "top_values": [
+        {
+          "value": "ADDRESS",
+          "count": 14103636
+        },
+        {
+          "value": "INTERSECTION",
+          "count": 3476324
+        },
+        {
+          "value": "BLOCKFACE",
+          "count": 563162
+        },
+        {
+          "value": "LATLONG",
+          "count": 101198
+        },
+        {
+          "value": "PLACENAME",
+          "count": 13750
+        }
+      ],
+      "dtype": "string"
+    },
+    "Agency Name": {
+      "null_count": 0,
+      "ndv_approx": 1853,
+      "mean_length": 36.80479110923383,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Agency": {
+      "null_count": 0,
+      "ndv_approx": 56,
+      "mean_length": 3.261666490671713,
+      "top_values": [
+        {
+          "value": "HPD",
+          "count": 6902130
+        },
+        {
+          "value": "DOT",
+          "count": 3326016
+        },
+        {
+          "value": "NYPD",
+          "count": 2281187
+        },
+        {
+          "value": "DEP",
+          "count": 1789041
+        },
+        {
+          "value": "DSNY",
+          "count": 1460116
+        }
+      ],
+      "dtype": "string"
+    },
+    "Borough": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 7.8434630901166225,
+      "top_values": [
+        {
+          "value": "BROOKLYN",
+          "count": 5328800
+        },
+        {
+          "value": "QUEENS",
+          "count": 4123864
+        },
+        {
+          "value": "MANHATTAN",
+          "count": 3557882
+        },
+        {
+          "value": "BRONX",
+          "count": 3145998
+        },
+        {
+          "value": "Unspecified",
+          "count": 2158278
+        }
+      ],
+      "dtype": "string"
+    },
+    "Bridge Highway Direction": {
+      "null_count": 19183026,
+      "ndv_approx": 53,
+      "mean_length": 19.36298582151793,
+      "top_values": [
+        {
+          "value": "North/Bronx Bound",
+          "count": 5733
+        },
+        {
+          "value": "East/Long Island Bound",
+          "count": 5510
+        },
+        {
+          "value": "West/Staten Island Bound",
+          "count": 4442
+        },
+        {
+          "value": "East/Queens Bound",
+          "count": 3294
+        },
+        {
+          "value": "West/Toward Triborough Br",
+          "count": 2721
+        }
+      ],
+      "dtype": "string"
+    },
+    "Bridge Highway Name": {
+      "null_count": 19182926,
+      "ndv_approx": 79,
+      "mean_length": 16.04338051623647,
+      "top_values": [
+        {
+          "value": "Belt Pkwy",
+          "count": 6322
+        },
+        {
+          "value": "Grand Central Pkwy",
+          "count": 5516
+        },
+        {
+          "value": "BQE/Gowanus Expwy",
+          "count": 5456
+        },
+        {
+          "value": "FDR Dr",
+          "count": 4698
+        },
+        {
+          "value": "Long Island Expwy",
+          "count": 4374
+        }
+      ],
+      "dtype": "string"
+    },
+    "Bridge Highway Segment": null,
+    "City": {
+      "null_count": 1634938,
+      "ndv_approx": 1435,
+      "mean_length": 8.205391594452488,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Closed Date": {
+      "dtype": "timestamp[us]",
+      "null_count": 1101468,
+      "min": "1900-01-01T00:00:00+00:00",
+      "max": "2201-06-17T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1900-01-01T00:00:00+00:00",
+          "1930-02-23T12:00:00+00:00",
+          "1960-04-17T00:00:00+00:00",
+          "1990-06-09T12:00:00+00:00",
+          "2020-08-01T00:00:00+00:00",
+          "2050-09-23T12:00:00+00:00",
+          "2080-11-15T00:00:00+00:00",
+          "2111-01-08T12:00:00+00:00",
+          "2141-03-02T00:00:00+00:00",
+          "2171-04-24T12:00:00+00:00",
+          "2201-06-17T00:00:00+00:00"
+        ],
+        "counts": [
+          11328,
+          0,
+          0,
+          18130172,
+          2,
+          0,
+          0,
+          0,
+          0,
+          6
+        ]
+      }
+    },
+    "Community Board": {
+      "null_count": 0,
+      "ndv_approx": 74,
+      "mean_length": 11.629634314359691,
+      "top_values": [
+        {
+          "value": "0 Unspecified",
+          "count": 2158278
+        },
+        {
+          "value": "Unspecified BROOKLYN",
+          "count": 520324
+        },
+        {
+          "value": "12 MANHATTAN",
+          "count": 491748
+        },
+        {
+          "value": "Unspecified MANHATTAN",
+          "count": 453672
+        },
+        {
+          "value": "Unspecified QUEENS",
+          "count": 445947
+        }
+      ],
+      "dtype": "string"
+    },
+    "Complaint Type": {
+      "null_count": 0,
+      "ndv_approx": 220,
+      "mean_length": 14.783888884962492,
+      "top_values": [
+        {
+          "value": "HEATING",
+          "count": 1775738
+        },
+        {
+          "value": "Street Light Condition",
+          "count": 1108052
+        },
+        {
+          "value": "Street Condition",
+          "count": 1106766
+        },
+        {
+          "value": "GENERAL CONSTRUCTION",
+          "count": 1001762
+        },
+        {
+          "value": "PLUMBING",
+          "count": 987624
+        }
+      ],
+      "dtype": "string"
+    },
+    "Created Date": {
+      "dtype": "timestamp[us]",
+      "null_count": 0,
+      "min": "2010-01-01T00:00:00+00:00",
+      "max": "2015-07-26T02:13:15+00:00",
+      "histogram": {
+        "buckets": [
+          "2010-01-01T00:00:00+00:00",
+          "2010-07-23T05:01:19.500000+00:00",
+          "2011-02-11T10:02:39+00:00",
+          "2011-09-02T15:03:58.500000+00:00",
+          "2012-03-23T20:05:18+00:00",
+          "2012-10-13T01:06:37.500000+00:00",
+          "2013-05-04T06:07:57+00:00",
+          "2013-11-23T11:09:16.500000+00:00",
+          "2014-06-14T16:10:36+00:00",
+          "2015-01-03T21:11:55.500000+00:00",
+          "2015-07-26T02:13:15+00:00"
+        ],
+        "counts": [
+          1955788,
+          1986251,
+          1816281,
+          1847393,
+          1670923,
+          1875914,
+          1723554,
+          2099351,
+          1954802,
+          2312719
+        ]
+      }
+    },
+    "Cross Street 1": {
+      "null_count": 4247994,
+      "ndv_approx": 22932,
+      "mean_length": 12.567949998206066,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Cross Street 2": {
+      "null_count": 4342330,
+      "ndv_approx": 20280,
+      "mean_length": 12.636681926407755,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Descriptor": {
+      "null_count": 56092,
+      "ndv_approx": 1583,
+      "mean_length": 16.868951154340643,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Due Date": {
+      "dtype": "timestamp[us]",
+      "null_count": 13572885,
+      "min": "1900-01-02T00:00:00+00:00",
+      "max": "2016-07-23T11:52:21+00:00",
+      "histogram": {
+        "buckets": [
+          "1900-01-02T00:00:00+00:00",
+          "1911-08-30T03:35:14.100000+00:00",
+          "1923-04-26T07:10:28.200000+00:00",
+          "1934-12-21T10:45:42.300000+00:00",
+          "1946-08-17T14:20:56.400000+00:00",
+          "1958-04-13T17:56:10.500000+00:00",
+          "1969-12-08T21:31:24.600000+00:00",
+          "1981-08-05T01:06:38.700000+00:00",
+          "1993-04-01T04:41:52.800000+00:00",
+          "2004-11-26T08:17:06.900000+00:00",
+          "2016-07-23T11:52:21+00:00"
+        ],
+        "counts": [
+          712,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          5669379
+        ]
+      }
+    },
+    "Facility Type": {
+      "null_count": 16298739,
+      "ndv_approx": 4,
+      "mean_length": 8.654755714298815,
+      "top_values": [
+        {
+          "value": "Precinct",
+          "count": 2278311
+        },
+        {
+          "value": "DSNY Garage",
+          "count": 644340
+        },
+        {
+          "value": "School",
+          "count": 17374
+        },
+        {
+          "value": "School District",
+          "count": 4212
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ferry Direction": {
+      "null_count": 19237822,
+      "ndv_approx": 2,
+      "mean_length": 17.20566550252231,
+      "top_values": [
+        {
+          "value": "Staten Island Bound",
+          "count": 2842
+        },
+        {
+          "value": "Manhattan Bound",
+          "count": 2312
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ferry Terminal Name": {
+      "null_count": 19230752,
+      "ndv_approx": 972,
+      "mean_length": 21.413285340314136,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Garage Lot Name": {
+      "null_count": 19234490,
+      "ndv_approx": 48,
+      "mean_length": 18.365071883101578,
+      "top_values": [
+        {
+          "value": "Flushing #1 Field",
+          "count": 1594
+        },
+        {
+          "value": "Flushing #3 Field",
+          "count": 704
+        },
+        {
+          "value": "Flushing #2 Field",
+          "count": 686
+        },
+        {
+          "value": "SI Ferry Terminal",
+          "count": 678
+        },
+        {
+          "value": "Brighton Beach Field",
+          "count": 628
+        }
+      ],
+      "dtype": "string"
+    },
+    "Incident Address": {
+      "null_count": 4164358,
+      "ndv_approx": 971440,
+      "mean_length": 17.586538235798532,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Incident Zip": {
+      "null_count": 1646190,
+      "min": 0,
+      "max": 6462430478,
+      "mean": 12494.431089290965,
+      "ndv_approx": 1589,
+      "histogram": {
+        "buckets": [
+          0.0,
+          646243047.8,
+          1292486095.6,
+          1938729143.3999999,
+          2584972191.2,
+          3231215239.0,
+          3877458286.7999997,
+          4523701334.599999,
+          5169944382.4,
+          5816187430.2,
+          6462430478.0
+        ],
+        "counts": [
+          17596772,
+          12,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "int64"
+    },
+    "Intersection Street 1": {
+      "null_count": 15807063,
+      "ndv_approx": 18330,
+      "mean_length": 12.568576387120396,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Intersection Street 2": {
+      "null_count": 15808521,
+      "ndv_approx": 18470,
+      "mean_length": 12.137823031601812,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Landmark": {
+      "null_count": 19228824,
+      "ndv_approx": 389,
+      "mean_length": 15.538581119276428,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Latitude": {
+      "null_count": 1796630,
+      "min": 40.4986277331694,
+      "max": 40.9128687953167,
+      "mean": 40.73037223868269,
+      "ndv_approx": 767585,
+      "histogram": {
+        "buckets": [
+          40.4986277331694,
+          40.54005183938413,
+          40.58147594559886,
+          40.62290005181359,
+          40.66432415802832,
+          40.70574826424305,
+          40.747172370457776,
+          40.78859647667251,
+          40.83002058288724,
+          40.87144468910197,
+          40.9128687953167
+        ],
+        "counts": [
+          94037,
+          419134,
+          1413435,
+          2352978,
+          3362229,
+          2686185,
+          2124457,
+          1647045,
+          2595488,
+          751358
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Location Type": {
+      "null_count": 5798195,
+      "ndv_approx": 115,
+      "mean_length": 15.78559814399357,
+      "top_values": [
+        {
+          "value": "RESIDENTIAL BUILDING",
+          "count": 6884952
+        },
+        {
+          "value": "Street",
+          "count": 2074766
+        },
+        {
+          "value": "Street/Sidewalk",
+          "count": 1871244
+        },
+        {
+          "value": "Sidewalk",
+          "count": 876920
+        },
+        {
+          "value": "Club/Bar/Restaurant",
+          "count": 199742
+        }
+      ],
+      "dtype": "string"
+    },
+    "Location": {
+      "null_count": 1796630,
+      "ndv_approx": 1068240,
+      "mean_length": 39.04986230354482,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Longitude": {
+      "null_count": 1796630,
+      "min": -74.2549372203523,
+      "max": -73.700291995336,
+      "mean": -73.92382428929265,
+      "ndv_approx": 1141865,
+      "histogram": {
+        "buckets": [
+          -74.2549372203523,
+          -74.19947269785067,
+          -74.14400817534904,
+          -74.08854365284742,
+          -74.03307913034578,
+          -73.97761460784415,
+          -73.92215008534252,
+          -73.8666855628409,
+          -73.81122104033926,
+          -73.75575651783763,
+          -73.700291995336
+        ],
+        "counts": [
+          77453,
+          282366,
+          360599,
+          223891,
+          2689620,
+          5590790,
+          4508924,
+          2224277,
+          1036264,
+          452162
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          19242976
+        ]
+      }
+    },
+    "Park Borough": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 7.8434630901166225,
+      "top_values": [
+        {
+          "value": "BROOKLYN",
+          "count": 5328800
+        },
+        {
+          "value": "QUEENS",
+          "count": 4123864
+        },
+        {
+          "value": "MANHATTAN",
+          "count": 3557882
+        },
+        {
+          "value": "BRONX",
+          "count": 3145998
+        },
+        {
+          "value": "Unspecified",
+          "count": 2158278
+        }
+      ],
+      "dtype": "string"
+    },
+    "Park Facility Name": {
+      "null_count": 0,
+      "ndv_approx": 4863,
+      "mean_length": 11.082371458551942,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Resolution Action Updated Date": {
+      "dtype": "timestamp[us]",
+      "null_count": 502300,
+      "min": "2003-10-31T09:41:01+00:00",
+      "max": "2927-03-06T12:30:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2003-10-31T09:41:01+00:00",
+          "2096-02-29T21:57:54.900000+00:00",
+          "2188-07-01T10:14:48.800000+00:00",
+          "2280-10-31T22:31:42.700001+00:00",
+          "2373-03-03T10:48:36.600000+00:00",
+          "2465-07-02T23:05:30.500000+00:00",
+          "2557-11-02T11:22:24.400002+00:00",
+          "2650-03-04T23:39:18.299999+00:00",
+          "2742-07-05T11:56:12.200001+00:00",
+          "2834-11-04T00:13:06.099998+00:00",
+          "2927-03-06T12:30:00+00:00"
+        ],
+        "counts": [
+          18740664,
+          6,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4
+        ]
+      }
+    },
+    "Resolution Description": {
+      "null_count": 7216788,
+      "ndv_approx": 1091,
+      "mean_length": 182.92523990145506,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Road Ramp": {
+      "null_count": 19183530,
+      "ndv_approx": 2,
+      "mean_length": 6.2580493220738145,
+      "top_values": [
+        {
+          "value": "Roadway",
+          "count": 44744
+        },
+        {
+          "value": "Ramp",
+          "count": 14702
+        }
+      ],
+      "dtype": "string"
+    },
+    "School Address": {
+      "null_count": 12,
+      "ndv_approx": 3457,
+      "mean_length": 11.185592198790166,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "School City": {
+      "null_count": 0,
+      "ndv_approx": 44,
+      "mean_length": 10.982253888379843,
+      "top_values": [
+        {
+          "value": "Unspecified",
+          "count": 19118604
+        },
+        {
+          "value": "NEW YORK",
+          "count": 38272
+        },
+        {
+          "value": "BROOKLYN",
+          "count": 35196
+        },
+        {
+          "value": "BRONX",
+          "count": 18222
+        },
+        {
+          "value": "STATEN ISLAND",
+          "count": 6928
+        }
+      ],
+      "dtype": "string"
+    },
+    "School Code": {
+      "null_count": 102886,
+      "ndv_approx": 1329,
+      "mean_length": 10.994387173728024,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "School Name": {
+      "null_count": 0,
+      "ndv_approx": 4863,
+      "mean_length": 11.082371458551942,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "School Not Found": {
+      "null_count": 13622340,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "N",
+          "count": 5619042
+        },
+        {
+          "value": "Y",
+          "count": 1594
+        }
+      ],
+      "dtype": "string"
+    },
+    "School Number": {
+      "null_count": 4192,
+      "ndv_approx": 1887,
+      "mean_length": 10.95692700744496,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "School Phone Number": {
+      "null_count": 0,
+      "ndv_approx": 315,
+      "mean_length": 10.988084795200077,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "School Region": {
+      "null_count": 102888,
+      "ndv_approx": 11,
+      "mean_length": 10.996747141392454,
+      "top_values": [
+        {
+          "value": "Unspecified",
+          "count": 19118604
+        },
+        {
+          "value": "Region 7",
+          "count": 3060
+        },
+        {
+          "value": "Region 9",
+          "count": 2654
+        },
+        {
+          "value": "Region 2",
+          "count": 2324
+        },
+        {
+          "value": "Region 10",
+          "count": 2192
+        }
+      ],
+      "dtype": "string"
+    },
+    "School State": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 10.9418308269989,
+      "top_values": [
+        {
+          "value": "Unspecified",
+          "count": 19118604
+        },
+        {
+          "value": "NY",
+          "count": 124372
+        }
+      ],
+      "dtype": "string"
+    },
+    "School Zip": {
+      "null_count": 10,
+      "ndv_approx": 151,
+      "mean_length": 10.96122364920252,
+      "top_values": [
+        {
+          "value": "Unspecified",
+          "count": 19118604
+        },
+        {
+          "value": "10021",
+          "count": 5802
+        },
+        {
+          "value": "10023",
+          "count": 3736
+        },
+        {
+          "value": "11215",
+          "count": 3558
+        },
+        {
+          "value": "11375",
+          "count": 2608
+        }
+      ],
+      "dtype": "string"
+    },
+    "School or Citywide Complaint": {
+      "null_count": 19238268,
+      "ndv_approx": 2,
+      "mean_length": 6.815632965165675,
+      "top_values": [
+        {
+          "value": "School",
+          "count": 4388
+        },
+        {
+          "value": "Citywide Complaint",
+          "count": 320
+        }
+      ],
+      "dtype": "string"
+    },
+    "Status": {
+      "null_count": 0,
+      "ndv_approx": 20,
+      "mean_length": 5.9703695519861375,
+      "top_values": [
+        {
+          "value": "Closed",
+          "count": 17492895
+        },
+        {
+          "value": "Open",
+          "count": 892294
+        },
+        {
+          "value": "Pending",
+          "count": 562972
+        },
+        {
+          "value": "Assigned",
+          "count": 246795
+        },
+        {
+          "value": "Email Sent",
+          "count": 35656
+        }
+      ],
+      "dtype": "string"
+    },
+    "Street Name": {
+      "null_count": 4230176,
+      "ndv_approx": 33354,
+      "mean_length": 13.16824483107748,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Taxi Company Borough": {
+      "null_count": 19223864,
+      "ndv_approx": 5,
+      "mean_length": 7.3432398493093345,
+      "top_values": [
+        {
+          "value": "BROOKLYN",
+          "count": 6216
+        },
+        {
+          "value": "QUEENS",
+          "count": 4760
+        },
+        {
+          "value": "MANHATTAN",
+          "count": 3728
+        },
+        {
+          "value": "BRONX",
+          "count": 3600
+        },
+        {
+          "value": "STATEN ISLAND",
+          "count": 808
+        }
+      ],
+      "dtype": "string"
+    },
+    "Taxi Pick Up Location": {
+      "null_count": 19057798,
+      "ndv_approx": 5,
+      "mean_length": 7.792005529814557,
+      "top_values": [
+        {
+          "value": "Other",
+          "count": 128000
+        },
+        {
+          "value": "Intersection",
+          "count": 24128
+        },
+        {
+          "value": "JFK Airport",
+          "count": 16044
+        },
+        {
+          "value": "La Guardia Airport",
+          "count": 10474
+        },
+        {
+          "value": "New York-Penn Station",
+          "count": 2714
+        }
+      ],
+      "dtype": "string"
+    },
+    "Unique Key": {
+      "null_count": 0,
+      "min": 15626884,
+      "max": 31165305,
+      "mean": 24112440.190655384,
+      "ndv_approx": 7439581,
+      "histogram": {
+        "buckets": [
+          15626884.0,
+          17180726.1,
+          18734568.2,
+          20288410.3,
+          21842252.4,
+          23396094.5,
+          24949936.6,
+          26503778.700000003,
+          28057620.8,
+          29611462.9,
+          31165305.0
+        ],
+        "counts": [
+          1703395,
+          774491,
+          2099985,
+          1818251,
+          1824465,
+          2170055,
+          2127547,
+          2173527,
+          2212915,
+          2338345
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Vehicle Type": {
+      "null_count": 19228020,
+      "ndv_approx": 4,
+      "mean_length": 11.907996790585718,
+      "top_values": [
+        {
+          "value": "Car Service",
+          "count": 13236
+        },
+        {
+          "value": "Ambulette / Paratransit",
+          "count": 1084
+        },
+        {
+          "value": "Commuter Van",
+          "count": 604
+        },
+        {
+          "value": "Green Taxi",
+          "count": 32
+        }
+      ],
+      "dtype": "string"
+    },
+    "X Coordinate (State Plane)": {
+      "null_count": 1796630,
+      "min": 913357,
+      "max": 1067302,
+      "mean": 1005351.7154039018,
+      "ndv_approx": 152319,
+      "histogram": {
+        "buckets": [
+          913357.0,
+          928751.5,
+          944146.0,
+          959540.5,
+          974935.0,
+          990329.5,
+          1005724.0,
+          1021118.5,
+          1036513.0,
+          1051907.5,
+          1067302.0
+        ],
+        "counts": [
+          76857,
+          279730,
+          360303,
+          224245,
+          2656994,
+          5589784,
+          4536720,
+          2226083,
+          1034994,
+          460636
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Y Coordinate (State Plane)": {
+      "null_count": 1796630,
+      "min": 121032,
+      "max": 271876,
+      "mean": 205390.6829128002,
+      "ndv_approx": 146638,
+      "histogram": {
+        "buckets": [
+          121032.0,
+          136116.4,
+          151200.8,
+          166285.2,
+          181369.6,
+          196454.0,
+          211538.4,
+          226622.8,
+          241707.2,
+          256791.6,
+          271876.0
+        ],
+        "counts": [
+          94433,
+          423774,
+          1419303,
+          2347942,
+          3361323,
+          2686349,
+          2120943,
+          1648791,
+          2591886,
+          751602
+        ]
+      },
+      "dtype": "int32"
+    }
+  }
+}
