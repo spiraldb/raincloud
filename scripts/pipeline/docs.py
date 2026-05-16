@@ -70,22 +70,14 @@ SNAPSHOT_JSON = REPO_ROOT / "docs" / "snapshot.json"
 
 # ---------- shared helpers ----------
 
-_KIND_BY_FAMILY = {
-    "nyc-tlc": "Tabular (Parquet)",
-    "public-bi": "Tabular (CSV)",
-    "uci": "Tabular (CSV)",
-}
-
-
 def _data_kind(spec: dict, column_names: set[str] | None = None) -> str:
     """Best-effort inference of the 'Data Kind' label.
 
     `column_names` may come from a live parquet schema OR from the snapshot
     fallback — both cases need to recognise the `content` blob convention.
+    Inferred from `parse.reader` + `transform.handler`; falls through to
+    "Tabular (CSV)" for the default case.
     """
-    family = spec.get("family", "")
-    if family in _KIND_BY_FAMILY:
-        return _KIND_BY_FAMILY[family]
     reader = spec_field(spec, "parse.reader", "csv")
     handler = spec_field(spec, "transform.handler", "")
     if reader == "parquet":
@@ -149,10 +141,8 @@ def _size_label(bytes_: int | None) -> str:
 # ---------- datasets.md ----------
 
 _TIER_TITLES = {
-    "start-here":        "Start Here",
-    "encoding-research": "Encoding Research",
-    "vortex-wins":       "Vortex Wins",
-    "stress-test":       "Stress Test",
+    "encoding": "Encoding",
+    "stress":   "Stress",
 }
 
 
@@ -191,9 +181,15 @@ def generate_datasets_md():
         slug = spec["slug"]
         parquet = prepared_parquet(slug)
         snap = snapshot_slugs.get(slug, {})
+        meta = None
         if parquet.exists():
-            meta = pq.ParquetFile(parquet).metadata
-            schema = pq.ParquetFile(parquet).schema_arrow
+            try:
+                pf = pq.ParquetFile(parquet)
+                meta = pf.metadata
+                schema = pf.schema_arrow
+            except Exception:
+                meta = None
+        if meta is not None:
             row_count = f"{meta.num_rows:,}"
             row_groups = f"{meta.num_row_groups:,}"
             parquet_size = _size_label(parquet.stat().st_size)

@@ -309,16 +309,19 @@ def test_list_datasets_cli_default_lists_all(manifest):
     assert len(slugs) == len(manifest["datasets"])
 
 
-def test_list_datasets_filter_by_family(manifest):
+def test_list_datasets_filter_by_handler(manifest):
     proc = subprocess.run(
         [sys.executable, "-m", "scripts.pipeline.list_datasets",
-         "--family", "uci", "--count"],
+         "--handler", "uci_default", "--count"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
     )
     assert proc.returncode == 0, proc.stderr
-    expected = sum(1 for d in manifest["datasets"] if d.get("family") == "uci")
+    expected = sum(
+        1 for d in manifest["datasets"]
+        if (d.get("transform") or {}).get("handler") == "uci_default"
+    )
     assert int(proc.stdout.strip()) == expected
 
 
@@ -392,18 +395,18 @@ def test_validate_manifest_warns_on_partially_curated_empty_tiers(manifest):
     partial = json.loads(json.dumps(manifest))
     for d in partial["datasets"]:
         d["showcase"] = []
-    partial["datasets"][0]["showcase"] = ["start-here"]   # populate exactly one tier
+    partial["datasets"][0]["showcase"] = ["encoding"]   # populate exactly one tier
 
     errors, warnings = _cross_checks(partial)
-    # start-here is populated → no warning for it
-    assert not any("start-here" in w for w in warnings)
-    # the other 3 tiers are empty → one warning each
+    # encoding is populated → no warning for it
+    assert not any("encoding" in w for w in warnings)
+    # every other tier is empty → one warning each
     for tier in SHOWCASE_TIERS:
-        if tier == "start-here":
+        if tier == "encoding":
             continue
         assert any(tier in w for w in warnings), f"missing warning for empty tier {tier}"
     # And these are warnings, not errors.
-    assert not any("encoding-research" in e for e in errors)
+    assert not any("stress" in e for e in errors)
 
 
 def test_validate_manifest_strict_passes_on_live_manifest():

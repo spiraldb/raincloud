@@ -20,8 +20,8 @@ from scripts.pipeline.discovery import (
 
 
 def test_vocab_shapes():
-    assert len(TAG_VOCAB) == 12
-    assert len(SHOWCASE_TIERS) == 4
+    assert len(TAG_VOCAB) == 13
+    assert len(SHOWCASE_TIERS) == 2
     assert SIZE_BUCKETS == ("xs", "s", "m", "l", "xl")
     assert "has_nested" in TRAIT_FLAGS
     assert "high_cardinality_present" in TRAIT_FLAGS
@@ -67,28 +67,28 @@ from scripts.pipeline.discovery import FilterState, apply_preset
 
 def test_filter_state_empty_matches_everything():
     state = FilterState()
-    spec = {"family": "uci", "license": {"spdx": "MIT"}, "tags": [], "showcase": []}
+    spec = {"license": {"spdx": "MIT"}, "tags": [], "showcase": []}
     assert state.matches(spec=spec, snapshot={})
 
 
 def test_filter_state_showcase_or_within_axis():
-    state = FilterState(showcase={"start-here", "encoding-research"})
-    assert state.matches(spec={"showcase": ["start-here"]}, snapshot={})
-    assert state.matches(spec={"showcase": ["encoding-research", "other"]}, snapshot={})
+    state = FilterState(showcase={"encoding", "stress"})
+    assert state.matches(spec={"showcase": ["encoding"]}, snapshot={})
+    assert state.matches(spec={"showcase": ["stress", "other"]}, snapshot={})
     assert not state.matches(spec={"showcase": ["other"]}, snapshot={})
     assert not state.matches(spec={"showcase": []}, snapshot={})
 
 
-def test_filter_state_tag_and_family_and_combine():
-    state = FilterState(tag={"geospatial"}, family={"uci"})
+def test_filter_state_tag_and_license_and_combine():
+    state = FilterState(tag={"coordinates"}, license={"MIT"})
     assert state.matches(
-        spec={"family": "uci", "tags": ["geospatial"]}, snapshot={}
+        spec={"license": {"spdx": "MIT"}, "tags": ["coordinates"]}, snapshot={}
     )
     assert not state.matches(
-        spec={"family": "kaggle-upstream", "tags": ["geospatial"]}, snapshot={}
+        spec={"license": {"spdx": "Apache-2.0"}, "tags": ["coordinates"]}, snapshot={}
     )
     assert not state.matches(
-        spec={"family": "uci", "tags": ["finance"]}, snapshot={}
+        spec={"license": {"spdx": "MIT"}, "tags": ["finance"]}, snapshot={}
     )
 
 
@@ -132,18 +132,19 @@ def test_filter_state_vortex_two_state():
     assert skipped.matches(spec=spec_unset, snapshot={})
 
 
-def test_apply_preset_stress_test():
-    new = apply_preset("stress-test")
-    assert new.showcase == {"stress-test"}
-    assert new.size == {"l", "xl"}
-    # axes not in the preset are cleared
+def test_apply_preset_stress():
+    new = apply_preset("stress")
+    assert new.showcase == {"stress"}
+    # Other axes are empty — stress is a pure showcase filter so it
+    # can round-trip through the exclusive-radio side panel.
+    assert new.size == set()
     assert new.tag == set()
 
 
-def test_apply_preset_start_here_clears_other_axes():
+def test_apply_preset_encoding_clears_other_axes():
     """Axes that aren't part of the preset come back empty."""
-    new = apply_preset("start-here")
-    assert new.showcase == {"start-here"}
+    new = apply_preset("encoding")
+    assert new.showcase == {"encoding"}
     assert new.size == set()
 
 
@@ -155,10 +156,10 @@ def test_apply_preset_unknown_raises():
 def test_filter_state_replace_does_not_share_set_fields():
     """dataclasses.replace must produce fully independent copies."""
     import dataclasses
-    a = FilterState(showcase={"start-here"}, tag={"geospatial"})
-    b = dataclasses.replace(a, family={"uci"})
+    a = FilterState(showcase={"encoding"}, tag={"coordinates"})
+    b = dataclasses.replace(a, license={"MIT"})
     # Mutating b's untouched axes must not bleed into a.
-    b.tag.add("nlp-text")
-    b.showcase.add("encoding-research")
-    assert a.tag == {"geospatial"}
-    assert a.showcase == {"start-here"}
+    b.tag.add("prose")
+    b.showcase.add("stress")
+    assert a.tag == {"coordinates"}
+    assert a.showcase == {"encoding"}

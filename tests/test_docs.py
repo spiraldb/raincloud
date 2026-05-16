@@ -19,7 +19,6 @@ _FAKE_SPEC = {
     "short_name": "Fake",
     "full_name": "Fake Dataset",
     "description": "A test dataset for snapshot-fallback verification.",
-    "family": "direct",
     "license": {"spdx": "MIT", "source_url": "https://example.com/data"},
     "fetch": {"type": "http", "urls": ["https://example.com/data.parquet"]},
     "parse": {"reader": "parquet", "options": {}},
@@ -326,17 +325,17 @@ def test_datasets_md_carries_curated_picks_header():
 
     manifest = {"schema_version": 1, "datasets": [
         {"slug": "s1", "short_name": "S1", "full_name": "S1",
-         "description": "lorem", "family": "uci",
+         "description": "lorem",
          "license": {"spdx": "MIT"},
          "fetch": {"type": "http", "urls": []}, "extract": {}, "parse": {},
          "transform": {}, "write": {}, "expect": {},
-         "tags": [], "showcase": ["start-here"]},
+         "tags": [], "showcase": ["encoding"]},
         {"slug": "s2", "short_name": "S2", "full_name": "S2",
-         "description": "ipsum", "family": "uci",
+         "description": "ipsum",
          "license": {"spdx": "MIT"},
          "fetch": {"type": "http", "urls": []}, "extract": {}, "parse": {},
          "transform": {}, "write": {}, "expect": {},
-         "tags": [], "showcase": ["encoding-research"]},
+         "tags": [], "showcase": ["stress"]},
     ]}
     md = docs_mod._render_curated_picks(manifest)
     # All 4 tiers appear (either by slug or by titled form).
@@ -352,5 +351,5 @@ def test_curated_picks_empty_tier_placeholder():
 
     manifest = {"schema_version": 1, "datasets": []}
     md = docs_mod._render_curated_picks(manifest)
-    # Each of the 4 tiers should have the "no picks yet" placeholder text.
-    assert md.count("No picks yet") >= 4
+    # Each tier should have the "no picks yet" placeholder text.
+    assert md.count("No picks yet") >= 2

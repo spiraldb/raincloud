@@ -62,7 +62,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "timestamps",
+        "urls"
+      ]
     },
     {
       "slug": "openpowerlifting",
@@ -119,7 +124,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "wdi",
@@ -176,7 +186,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "identifiers",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "open-food-facts",
@@ -233,7 +248,10 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "prose"
+      ]
     },
     {
       "slug": "nyc-311",
@@ -292,8 +310,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "government",
-        "transportation"
+        "enums",
+        "identifiers",
+        "measurements"
       ]
     },
     {
@@ -351,7 +370,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "identifiers",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "openlibrary-works",
@@ -410,7 +434,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "identifiers",
+        "nested-json",
+        "prose"
+      ]
     },
     {
       "slug": "openlibrary-editions",
@@ -469,7 +498,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "identifiers",
+        "nested-json",
+        "prose"
+      ]
     },
     {
       "slug": "openlibrary-authors",
@@ -528,7 +562,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "identifiers",
+        "nested-json",
+        "prose"
+      ]
     },
     {
       "slug": "osm-germany-nodes",
@@ -587,7 +626,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "nested-json"
+      ]
     },
     {
       "slug": "osm-germany-ways",
@@ -648,7 +691,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "geospatial"
+        "counts",
+        "enums",
+        "nested-json"
       ],
       "showcase": [
         "stress"
@@ -711,7 +756,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "nested-json"
+      ]
     },
     {
       "slug": "hacker-news",
@@ -779,8 +828,9 @@
         "advisory": "Hacker News URLs span the full open web from 2007 onward \u2014 every age range, every link rot scenario, every paywall. Expect substantial null prevalence on older stories. Hydrated HTML is subject to per-page copyright; this hydration is for research / type-coverage, not redistribution. Many target hosts will rate-limit aggressively on bulk crawls."
       },
       "tags": [
-        "social",
-        "web-analytics"
+        "enums",
+        "measurements",
+        "prose"
       ],
       "showcase": [
         "stress"
@@ -841,7 +891,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "identifiers",
+        "timestamps"
+      ]
     },
     {
       "slug": "nypd-complaints",
@@ -898,7 +953,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "enums",
+        "timestamps"
+      ]
     },
     {
       "slug": "stackoverflow-posts",
@@ -958,7 +1018,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "prose",
+        "timestamps"
+      ]
     },
     {
       "slug": "stackoverflow-users",
@@ -1017,7 +1082,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "stackoverflow-tags",
@@ -1076,7 +1146,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "identifiers",
+        "measurements"
+      ]
     },
     {
       "slug": "stackoverflow-badges",
@@ -1135,7 +1210,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "stackoverflow-postlinks",
@@ -1194,7 +1274,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "identifiers",
+        "prose"
+      ]
     },
     {
       "slug": "dbpedia-embeddings",
@@ -1251,7 +1336,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "embeddings",
+        "identifiers",
+        "prose"
+      ]
     },
     {
       "slug": "glove-6b-50d",
@@ -1310,7 +1400,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "embeddings",
+        "identifiers"
+      ]
     },
     {
       "slug": "glove-6b-100d",
@@ -1371,7 +1465,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "nlp-text"
+        "embeddings",
+        "identifiers"
       ],
       "showcase": [
         "encoding"
@@ -1434,7 +1529,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "embeddings",
+        "identifiers"
+      ]
     },
     {
       "slug": "jsonbench-bluesky-100m",
@@ -1590,7 +1689,11 @@
       "convert": {
         "vortex": false,
         "vortex_skip_reason": "VARIANT-column nested data conversion is not implemented in vortex-data 0.69 chunked-array output. Re-enable when vortex adds the path."
-      }
+      },
+      "tags": [
+        "nested-json",
+        "timestamps"
+      ]
     },
     {
       "slug": "yellow_tripdata_2025",
@@ -1661,7 +1764,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "green_tripdata_2025",
@@ -1732,7 +1840,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "fhv_tripdata_2025",
@@ -1803,7 +1916,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "timestamps"
+      ]
     },
     {
       "slug": "fhvhv_tripdata_2025",
@@ -1874,13 +1992,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-arade",
       "short_name": "BI-Arade",
       "full_name": "Public BI Benchmark \u2014 Arade",
-      "description": "Public BI Benchmark workload `Arade` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Arade` \u2014 9.9M rows \u00d7 11 columns (4 decimal/float, 2 string, 2 integer, 1 temporal). Notable columns: `WNET (bin)`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Arade",
@@ -1929,13 +2052,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-bimbo",
       "short_name": "BI-Bimbo",
       "full_name": "Public BI Benchmark \u2014 Bimbo",
-      "description": "Public BI Benchmark workload `Bimbo` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Bimbo` \u2014 49.7M rows \u00d7 12 columns (10 integer, 2 decimal/float). Notable columns: `Agencia_ID`, `Canal_ID`, `Cliente_ID`, `Demanda_uni_equil`. Background: Grupo Bimbo (Mexican multinational bakery) sales / inventory demand data \u2014 `Agencia_ID`, `Cliente_ID`, `Demanda_uni_equil`; widely circulated via the 2016 Bimbo Inventory Demand Kaggle competition. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Bimbo",
@@ -1984,13 +2112,17 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-cmsprovider",
       "short_name": "BI-CMSprovider",
       "full_name": "Public BI Benchmark \u2014 CMSprovider",
-      "description": "Public BI Benchmark workload `CMSprovider` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `CMSprovider` \u2014 13.0M rows \u00d7 26 columns (14 string, 7 decimal/float, 5 integer). Notable columns: `AVERAGE_MEDICARE_ALLOWED_AMT`, `AVERAGE_MEDICARE_PAYMENT_AMT`, `AVERAGE_SUBMITTED_CHRG_AMT`, `BENE_DAY_SRVC_CNT`. Background: US Centers for Medicare & Medicaid Services \u2014 physician/provider utilization and Medicare payment data; columns include AVERAGE_MEDICARE_ALLOWED_AMT, BENE_UNIQUE_CNT, HCPCS_CODE. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/CMSprovider",
@@ -2039,13 +2171,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-citymaxcapita",
       "short_name": "BI-CityMaxCapita",
       "full_name": "Public BI Benchmark \u2014 CityMaxCapita",
-      "description": "Public BI Benchmark workload `CityMaxCapita` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `CityMaxCapita` \u2014 913k rows \u00d7 31 columns (18 string, 7 integer, 6 decimal/float). Notable columns: `City/Admin`, `City/State`, `City`, `Created Date/Time`. Background: Twitter analytics \u2014 `FF Ratio` (follower / following), `Favorites`, `First Link in Tweet`. The workbook name is not domain-revealing. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/CityMaxCapita",
@@ -2094,7 +2231,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-commongovernment",
@@ -2149,13 +2291,17 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-corporations",
       "short_name": "BI-Corporations",
       "full_name": "Public BI Benchmark \u2014 Corporations",
-      "description": "Public BI Benchmark workload `Corporations` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Corporations` \u2014 742k rows \u00d7 27 columns (21 string, 6 integer). Notable columns: `Id1`, `angelco_account`, `business_model`, `city`. Background: Startup / company database \u2014 fields include `angelco_account` (AngelList) and `crunchbase_account` identifiers, plus `business_model`, `city`, `continent`, `country`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Corporations",
@@ -2204,13 +2350,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "bi-eixo",
       "short_name": "BI-Eixo",
       "full_name": "Public BI Benchmark \u2014 Eixo",
-      "description": "Public BI Benchmark workload `Eixo` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Eixo` \u2014 7.6M rows \u00d7 80 columns (59 string, 12 integer, 7 temporal, 2 bool). Notable columns: `Calculation_838513981443702785`, `Calculation_838513981462429699`, `Codigo Diploma/Certificado`, `Cor da Pele`. Background: Brazilian federal education / training program data (same schema family as `mulheresmil` \u2014 diploma codes, skin-colour demographic, certificate dates). The workbook name (\"Eixo\" = axis) doesn't reflect the contents. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Eixo",
@@ -2259,13 +2410,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-euro2016",
       "short_name": "BI-Euro2016",
       "full_name": "Public BI Benchmark \u2014 Euro2016",
-      "description": "Public BI Benchmark workload `Euro2016` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Euro2016` \u2014 2.1M rows \u00d7 11 columns (6 string, 2 integer, 2 decimal/float, 1 temporal). Notable columns: `id`, `lang`, `latitude`, `longitude`. Background: Twitter sentiment data *about* UEFA Euro 2016 \u2014 `lang`, `latitude` / `longitude`, `polarity`. Not match / player statistics despite the workbook name. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Euro2016",
@@ -2314,13 +2470,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "prose"
+      ]
     },
     {
       "slug": "bi-food",
       "short_name": "BI-Food",
       "full_name": "Public BI Benchmark \u2014 Food",
-      "description": "Public BI Benchmark workload `Food` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Food` \u2014 5.2M rows \u00d7 6 columns (3 integer, 2 string, 1 decimal/float). Notable columns: `activity_sec`, `application`, `device`, `subscribers`. Background: Network / app-usage telemetry data \u2014 `application`, `device`, `subscribers`, `volume_total_bytes`. Workbook name (\"Food\") doesn't reflect contents. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Food",
@@ -2369,13 +2530,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-generico",
       "short_name": "BI-Generico",
       "full_name": "Public BI Benchmark \u2014 Generico",
-      "description": "Public BI Benchmark workload `Generico` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Generico` \u2014 114.1M rows \u00d7 43 columns (26 string, 14 integer, 2 decimal/float, 1 temporal). Notable columns: `Anunciante`, `Aviso`, `A\ufffdo`, `Cadena`. Background: Spanish-language print/media advertising data \u2014 same `Anunciante` / `Aviso` / `Circulacion` schema as `motos`, different workbook framing. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Generico",
@@ -2424,13 +2590,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-hashtags",
       "short_name": "BI-HashTags",
       "full_name": "Public BI Benchmark \u2014 HashTags",
-      "description": "Public BI Benchmark workload `HashTags` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `HashTags` \u2014 512k rows \u00d7 101 columns (48 string, 42 integer, 10 decimal/float, 1 temporal). Notable columns: `demographic#gender`, `interaction#author#avatar`, `interaction#author#id`, `interaction#author#language`. Background: social-media (Twitter-style) analytics with `interaction#author#*` and `demographic#*` columns. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/HashTags",
@@ -2479,13 +2650,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-hatred",
       "short_name": "BI-Hatred",
       "full_name": "Public BI Benchmark \u2014 Hatred",
-      "description": "Public BI Benchmark workload `Hatred` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Hatred` \u2014 873k rows \u00d7 31 columns (17 string, 8 integer, 6 decimal/float). Notable columns: `City`, `Client`, `Created Date`, `FF Ratio`. Background: social-media (Twitter) analytics \u2014 `Created Date`, `FF Ratio` (follower / following), `Favorites`, City; likely sentiment- or hate-speech tracking via tweets. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Hatred",
@@ -2534,13 +2710,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "prose"
+      ]
     },
     {
       "slug": "bi-iglocations1",
       "short_name": "BI-IGlocations1",
       "full_name": "Public BI Benchmark \u2014 IGlocations1",
-      "description": "Public BI Benchmark workload `IGlocations1` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `IGlocations1` \u2014 82k rows \u00d7 18 columns (15 integer, 3 string). Notable columns: `CENSUS2010POP`, `CONCIT`, `COUSUB`, `City`. Background: US Census geographic data \u2014 `CENSUS2010POP`, `CONCIT`, `COUSUB`, `County Code`, `ESTIMATESBASE2010`. Workbook name (\"iglocations\") is misleading. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/IGlocations1",
@@ -2589,13 +2770,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-iglocations2",
       "short_name": "BI-IGlocations2",
       "full_name": "Public BI Benchmark \u2014 IGlocations2",
-      "description": "Public BI Benchmark workload `IGlocations2` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `IGlocations2` \u2014 4.3M rows \u00d7 20 columns (12 string, 4 decimal/float, 3 integer, 1 temporal). Notable columns: `caption`, `city`, `country`, `created_time`. Background: Instagram-style geo-tagged social posts (`caption`, `created_time`, `country`, `city`). One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/IGlocations2",
@@ -2644,13 +2830,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "enums",
+        "urls"
+      ]
     },
     {
       "slug": "bi-iublibrary",
       "short_name": "BI-IUBLibrary",
       "full_name": "Public BI Benchmark \u2014 IUBLibrary",
-      "description": "Public BI Benchmark workload `IUBLibrary` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `IUBLibrary` \u2014 2k rows \u00d7 27 columns (16 string, 7 integer, 4 temporal). Notable columns: `Author`, `CallNumber`, `CallSequence`, `CatalogKey`. Background: Indiana University Bloomington library catalog data \u2014 `Author`, `CallNumber`, `CatalogKey`, `CopyNumber`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/IUBLibrary",
@@ -2699,13 +2890,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "identifiers",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-mlb",
       "short_name": "BI-MLB",
       "full_name": "Public BI Benchmark \u2014 MLB",
-      "description": "Public BI Benchmark workload `MLB` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `MLB` \u2014 32.5M rows \u00d7 155 columns (155 string). Notable columns: `AB`, `AVG`, `BABIP`, `BB.`. Background: Major League Baseball season statistics \u2014 `AB` (at-bats), `AVG` (batting average), `BABIP`, `BB` (walks). Standard sabermetrics column shape. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/MLB",
@@ -2755,13 +2951,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "prose",
+        "urls"
+      ]
     },
     {
       "slug": "bi-medpayment1",
       "short_name": "BI-MedPayment1",
       "full_name": "Public BI Benchmark \u2014 MedPayment1",
-      "description": "Public BI Benchmark workload `MedPayment1` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `MedPayment1` \u2014 9.2M rows \u00d7 28 columns (16 string, 7 decimal/float, 5 integer). Notable columns: `average_Medicare_allowed_amt`, `average_Medicare_payment_amt`, `average_submitted_chrg_amt`, `bene_day_srvc_cnt`. Background: CMS Medicare provider payment data \u2014 same `average_Medicare_*` schema as `cmsprovider`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/MedPayment1",
@@ -2810,13 +3011,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-medpayment2",
       "short_name": "BI-MedPayment2",
       "full_name": "Public BI Benchmark \u2014 MedPayment2",
-      "description": "Public BI Benchmark workload `MedPayment2` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `MedPayment2` \u2014 9.2M rows \u00d7 29 columns (16 string, 8 decimal/float, 5 integer). Notable columns: `average_Medicare_allowed_amt`, `average_Medicare_payment_amt`, `average_submitted_chrg_amt`, `bene_day_srvc_cnt`. Background: CMS Medicare provider payment data \u2014 same `average_Medicare_*` schema as `cmsprovider`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/MedPayment2",
@@ -2865,13 +3071,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-medicare1",
       "short_name": "BI-Medicare1",
       "full_name": "Public BI Benchmark \u2014 Medicare1",
-      "description": "Public BI Benchmark workload `Medicare1` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Medicare1` \u2014 17.3M rows \u00d7 26 columns (10 integer, 10 string, 6 decimal/float). Notable columns: `BENE_COUNT`, `BENE_COUNT_GE65`, `BENE_COUNT_GE65_REDACT_FLAG`, `Calculation_3170826185336909`. Background: CMS Medicare provider / beneficiary data (BENE_COUNT, BENE_COUNT_GE65) with Tableau calculation columns layered on. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Medicare1",
@@ -2920,13 +3131,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "bi-medicare2",
       "short_name": "BI-Medicare2",
       "full_name": "Public BI Benchmark \u2014 Medicare2",
-      "description": "Public BI Benchmark workload `Medicare2` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Medicare2` \u2014 18.3M rows \u00d7 28 columns (15 string, 7 integer, 6 decimal/float). Notable columns: `average_Medicare_allowed_amt`, `average_Medicare_payment_amt`, `average_submitted_chrg_amt`, `bene_day_srvc_cnt`. Background: CMS Medicare provider payment data \u2014 same `average_Medicare_*` / `bene_*` schema as `cmsprovider`, different workbook framing. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Medicare2",
@@ -2975,13 +3191,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-medicare3",
       "short_name": "BI-Medicare3",
       "full_name": "Public BI Benchmark \u2014 Medicare3",
-      "description": "Public BI Benchmark workload `Medicare3` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Medicare3` \u2014 9.3M rows \u00d7 29 columns (17 string, 7 decimal/float, 5 integer). Notable columns: `AVERAGE_MEDICARE_ALLOWED_AMT`, `AVERAGE_MEDICARE_PAYMENT_AMT`, `AVERAGE_SUBMITTED_CHRG_AMT`, `BENE_DAY_SRVC_CNT`. Background: CMS Medicare provider payment data \u2014 same `AVERAGE_MEDICARE_*` schema as `cmsprovider`, different workbook framing. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Medicare3",
@@ -3030,13 +3251,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-motos",
       "short_name": "BI-Motos",
       "full_name": "Public BI Benchmark \u2014 Motos",
-      "description": "Public BI Benchmark workload `Motos` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Motos` \u2014 28.4M rows \u00d7 44 columns (27 string, 14 integer, 2 decimal/float, 1 temporal). Notable columns: `Anunciante`, `Aviso`, `A\ufffdo`, `Cadena`. Background: Spanish-language print/media advertising data \u2014 `Anunciante` (advertiser), `Aviso` (ad), `A\u00f1o`, `Cadena` (chain), `Circulacion`. Not motorcycle data despite the workbook name. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Motos",
@@ -3085,13 +3311,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-mulheresmil",
       "short_name": "BI-MulheresMil",
       "full_name": "Public BI Benchmark \u2014 MulheresMil",
-      "description": "Public BI Benchmark workload `MulheresMil` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `MulheresMil` \u2014 7.6M rows \u00d7 81 columns (60 string, 12 integer, 7 temporal, 2 bool). Notable columns: `Calculation_838513981443702785`, `Calculation_838513981462429699`, `Codigo Diploma/Certificado`, `Cor da Pele`. Background: Brazilian federal education / professional-training program data (e.g. \"Mulheres Mil\"); rows carry diploma codes, demographic fields, and pre-enrolment / certificate dates. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/MulheresMil",
@@ -3140,13 +3371,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-nyc",
       "short_name": "BI-NYC",
       "full_name": "Public BI Benchmark \u2014 NYC",
-      "description": "Public BI Benchmark workload `NYC` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `NYC` \u2014 19.2M rows \u00d7 54 columns (42 string, 5 integer, 4 temporal, 2 decimal/float). Notable columns: `Address Type`, `Agency Name`, `Agency`, `Borough`. Background: New York City 311 service requests \u2014 `Agency Name`, `Borough`, `Bridge Highway *` columns; non-emergency complaint feed. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/NYC",
@@ -3195,13 +3431,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-pancreactomy1",
       "short_name": "BI-PanCreactomy1",
       "full_name": "Public BI Benchmark \u2014 PanCreactomy1",
-      "description": "Public BI Benchmark workload `PanCreactomy1` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `PanCreactomy1` \u2014 9.2M rows \u00d7 29 columns (17 string, 7 decimal/float, 5 integer). Notable columns: `AVERAGE_MEDICARE_ALLOWED_AMT`, `AVERAGE_MEDICARE_PAYMENT_AMT`, `AVERAGE_SUBMITTED_CHRG_AMT`, `BENE_DAY_SRVC_CNT`. Background: CMS Medicare provider payment data (`AVERAGE_MEDICARE_*` / `HCPCS_CODE` schema) \u2014 the workbook frames it around pancreatectomy procedures but the schema is the generic CMS feed. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/PanCreactomy1",
@@ -3250,13 +3491,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-pancreactomy2",
       "short_name": "BI-PanCreactomy2",
       "full_name": "Public BI Benchmark \u2014 PanCreactomy2",
-      "description": "Public BI Benchmark workload `PanCreactomy2` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `PanCreactomy2` \u2014 18.3M rows \u00d7 29 columns (17 string, 7 decimal/float, 5 integer). Notable columns: `AVERAGE_MEDICARE_ALLOWED_AMT`, `AVERAGE_MEDICARE_PAYMENT_AMT`, `AVERAGE_SUBMITTED_CHRG_AMT`, `BENE_DAY_SRVC_CNT`. Background: CMS Medicare provider payment data, same schema as `pancreactomy1`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/PanCreactomy2",
@@ -3305,13 +3551,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-physicians",
       "short_name": "BI-Physicians",
       "full_name": "Public BI Benchmark \u2014 Physicians",
-      "description": "Public BI Benchmark workload `Physicians` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Physicians` \u2014 9.2M rows \u00d7 28 columns (16 string, 7 decimal/float, 5 integer). Notable columns: `average_Medicare_allowed_amt`, `average_Medicare_payment_amt`, `average_submitted_chrg_amt`, `bene_day_srvc_cnt`. Background: CMS Medicare provider payment data \u2014 same `average_Medicare_*` schema as `cmsprovider`; the workbook name (\"Physicians\") implies a demographic feed, but the columns are payment / utilisation. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Physicians",
@@ -3360,13 +3611,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-provider",
       "short_name": "BI-Provider",
       "full_name": "Public BI Benchmark \u2014 Provider",
-      "description": "Public BI Benchmark workload `Provider` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Provider` \u2014 73.2M rows \u00d7 28 columns (15 string, 7 integer, 6 decimal/float). Notable columns: `average_Medicare_allowed_amt`, `average_Medicare_payment_amt`, `average_submitted_chrg_amt`, `bene_day_srvc_cnt`. Background: CMS Medicare provider payment data \u2014 same `average_Medicare_*` schema as `cmsprovider`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Provider",
@@ -3415,13 +3671,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-realestate1",
       "short_name": "BI-RealEstate1",
       "full_name": "Public BI Benchmark \u2014 RealEstate1",
-      "description": "Public BI Benchmark workload `RealEstate1` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `RealEstate1` \u2014 39.1M rows \u00d7 28 columns (17 string, 5 integer, 4 decimal/float, 2 temporal). Notable columns: `Address 1`, `Address 2`, `County`, `Date of Transfer`. Background: UK Land Registry property-sale records \u2014 `Address 1` / `Address 2`, `County`, `Date of Transfer`, `Duration` (lease / freehold). One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/RealEstate1",
@@ -3470,13 +3731,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "coordinates",
+        "enums"
+      ]
     },
     {
       "slug": "bi-realestate2",
       "short_name": "BI-RealEstate2",
       "full_name": "Public BI Benchmark \u2014 RealEstate2",
-      "description": "Public BI Benchmark workload `RealEstate2` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `RealEstate2` \u2014 66.4M rows \u00d7 27 columns (21 string, 2 decimal/float, 2 integer, 1 temporal, 1 bool). Notable columns: `Address_1`, `Address_2`, `County`, `County (copy)`. Background: UK Land Registry property-sale records, same schema as `realestate1`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/RealEstate2",
@@ -3525,13 +3791,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "coordinates",
+        "enums"
+      ]
     },
     {
       "slug": "bi-redfin1",
       "short_name": "BI-Redfin1",
       "full_name": "Public BI Benchmark \u2014 Redfin1",
-      "description": "Public BI Benchmark workload `Redfin1` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Redfin1` \u2014 12.1M rows \u00d7 44 columns (30 decimal/float, 6 integer, 6 string, 2 temporal). Notable columns: `avg_sale_to_list`, `avg_sale_to_list_mom`, `avg_sale_to_list_yoy`, `city`. Background: Redfin US housing-market data \u2014 homes sold, average sale-to-list ratio (`avg_sale_to_list_mom`/`yoy`), by city. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Redfin1",
@@ -3580,13 +3851,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "bi-redfin2",
       "short_name": "BI-Redfin2",
       "full_name": "Public BI Benchmark \u2014 Redfin2",
-      "description": "Public BI Benchmark workload `Redfin2` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Redfin2` \u2014 9.1M rows \u00d7 44 columns (30 decimal/float, 6 integer, 6 string, 2 temporal). Notable columns: `avg_sale_to_list`, `avg_sale_to_list_mom`, `avg_sale_to_list_yoy`, `city`. Background: Redfin US housing-market data, same schema as `redfin1`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Redfin2",
@@ -3635,13 +3911,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "bi-redfin3",
       "short_name": "BI-Redfin3",
       "full_name": "Public BI Benchmark \u2014 Redfin3",
-      "description": "Public BI Benchmark workload `Redfin3` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Redfin3` \u2014 6.5M rows \u00d7 47 columns (33 decimal/float, 6 integer, 6 string, 2 temporal). Notable columns: `avg_sale_to_list`, `avg_sale_to_list_mom`, `avg_sale_to_list_yoy`, `city`. Background: Redfin US housing-market data, same schema as `redfin1`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Redfin3",
@@ -3690,13 +3971,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "bi-redfin4",
       "short_name": "BI-Redfin4",
       "full_name": "Public BI Benchmark \u2014 Redfin4",
-      "description": "Public BI Benchmark workload `Redfin4` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Redfin4` \u2014 3.3M rows \u00d7 48 columns (34 decimal/float, 6 integer, 6 string, 2 temporal). Notable columns: `avg_sale_to_list`, `avg_sale_to_list_mom`, `avg_sale_to_list_yoy`, `city`. Background: Redfin US housing-market data, same schema as `redfin1`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Redfin4",
@@ -3745,13 +4031,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "bi-rentabilidad",
       "short_name": "BI-Rentabilidad",
       "full_name": "Public BI Benchmark \u2014 Rentabilidad",
-      "description": "Public BI Benchmark workload `Rentabilidad` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Rentabilidad` \u2014 3.6M rows \u00d7 142 columns (138 string). Notable columns: `AUTOPREVENTA: Costo Fijo`, `AUTOPREVENTA: Costo Variable`, `AUTOPREVENTA: Costo de Devoluciones`, `AUTOPREVENTA: Tiempos de Venta + Traslado Autopreventa Normal`. Background: Spanish-language consumer-goods distribution profitability data \u2014 `AUTOPREVENTA` (pre-sales) and `AUTOVENTA` (direct-sales) cost/time columns per channel. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Rentabilidad",
@@ -3801,13 +4092,16 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums"
+      ]
     },
     {
       "slug": "bi-romance",
       "short_name": "BI-Romance",
       "full_name": "Public BI Benchmark \u2014 Romance",
-      "description": "Public BI Benchmark workload `Romance` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Romance` \u2014 3.2M rows \u00d7 12 columns (6 string, 4 integer, 2 decimal/float). Notable columns: `caption`, `created_time`, `id`, `lat`. Background: Instagram-style social-post data (`caption`, `created_time`, `lat` / `lng`, `link`) \u2014 workbook name doesn't reflect contents. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Romance",
@@ -3856,13 +4150,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "prose"
+      ]
     },
     {
       "slug": "bi-salariesfrance",
       "short_name": "BI-SalariesFrance",
       "full_name": "Public BI Benchmark \u2014 SalariesFrance",
-      "description": "Public BI Benchmark workload `SalariesFrance` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `SalariesFrance` \u2014 16.2M rows \u00d7 67 columns (31 decimal/float, 29 string, 7 integer). Notable columns: `A129`, `A129_LIBCOURT`, `A129_LIBCOURT_PJ`, `A129_LIB`. Background: French public-sector salary data \u2014 categorical fields keyed by `A129` / `A88` classification codes (likely the INSEE nomenclatures). One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/SalariesFrance",
@@ -3911,13 +4210,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-tablerosistemapenal",
       "short_name": "BI-TableroSistemaPenal",
       "full_name": "Public BI Benchmark \u2014 TableroSistemaPenal",
-      "description": "Public BI Benchmark workload `TableroSistemaPenal` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `TableroSistemaPenal` \u2014 25.3M rows \u00d7 70 columns (70 string). Notable columns: `AGRUPADOR`, `A\u00f1o Ingreso`, `CLASE`, `COD DELITO`. Background: Latin-American criminal-justice dashboard data \u2014 `COD DELITO` (offence code), `COMUNA`, `COD. REGI\u00d3N`. Likely Chilean (\"Tablero del Sistema Penal\"). One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/TableroSistemaPenal",
@@ -3967,13 +4271,16 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums"
+      ]
     },
     {
       "slug": "bi-taxpayer",
       "short_name": "BI-Taxpayer",
       "full_name": "Public BI Benchmark \u2014 Taxpayer",
-      "description": "Public BI Benchmark workload `Taxpayer` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Taxpayer` \u2014 91.5M rows \u00d7 28 columns (15 string, 7 integer, 6 decimal/float). Notable columns: `average_Medicare_allowed_amt`, `average_Medicare_payment_amt`, `average_submitted_chrg_amt`, `bene_day_srvc_cnt`. Background: CMS Medicare provider payment data \u2014 same `average_Medicare_*` schema as `cmsprovider`, despite the workbook name implying taxpayer / income data. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Taxpayer",
@@ -4022,13 +4329,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-telco",
       "short_name": "BI-Telco",
       "full_name": "Public BI Benchmark \u2014 Telco",
-      "description": "Public BI Benchmark workload `Telco` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Telco` \u2014 2.9M rows \u00d7 181 columns (174 decimal/float, 4 temporal, 1 bool, 1 integer, 1 string). Notable columns: `ACTIVATION_DATE`, `ARPU_P1`, `ARPU_P2`, `ARPU_P3`. Background: Telecommunications customer-lifecycle data \u2014 `ACTIVATION_DATE`, `ARPU_P1`\u2026`ARPU_P6` (Average Revenue Per User over six periods); typical churn-analysis shape. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Telco",
@@ -4077,13 +4389,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "measurements",
+        "monetary",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-trainsuk1",
       "short_name": "BI-TrainsUK1",
       "full_name": "Public BI Benchmark \u2014 TrainsUK1",
-      "description": "Public BI Benchmark workload `TrainsUK1` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `TrainsUK1` \u2014 12.9M rows \u00d7 31 columns (13 string, 10 decimal/float, 6 integer, 2 temporal). Notable columns: `Date`, `Test`, `Average Lateness`, `Calculation_2040623161253421`. Background: UK National Rail operations / lateness data \u2014 `Average Lateness` plus Tableau calculation columns. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/TrainsUK1",
@@ -4132,13 +4449,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-trainsuk2",
       "short_name": "BI-TrainsUK2",
       "full_name": "Public BI Benchmark \u2014 TrainsUK2",
-      "description": "Public BI Benchmark workload `TrainsUK2` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `TrainsUK2` \u2014 31.1M rows \u00d7 37 columns (13 string, 13 integer, 8 temporal, 3 decimal/float). Notable columns: `Actual Total Distance Miles`, `Date`, `Financial Year & Period`, `Operator`. Background: UK National Rail operations / lateness data \u2014 `Actual Total Distance Miles`, `Operator`, `Planned Dest Actual Datetime`, `Financial Year & Period`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/TrainsUK2",
@@ -4187,13 +4509,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "enums",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-uscensus",
       "short_name": "BI-USCensus",
       "full_name": "Public BI Benchmark \u2014 USCensus",
-      "description": "Public BI Benchmark workload `USCensus` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `USCensus` \u2014 9.4M rows \u00d7 519 columns (512 integer, 6 string). Notable columns: `ACCESS`, `ACR`, `ADJHSG`, `ADJINC`. Background: US Census Bureau ACS PUMS variables \u2014 `AGEP` (age), `ACCESS`, `ADJINC` (income adjustment) and similar three- to five-letter PUMS field codes. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/USCensus",
@@ -4242,13 +4569,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-uberlandia",
       "short_name": "BI-Uberlandia",
       "full_name": "Public BI Benchmark \u2014 Uberlandia",
-      "description": "Public BI Benchmark workload `Uberlandia` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Uberlandia` \u2014 7.6M rows \u00d7 81 columns (57 string, 15 integer, 7 temporal, 2 bool). Notable columns: `Calculation_838513981443702785`, `Calculation_838513981462429699`, `Codigo Diploma/Certificado`, `Cor da Pele`. Background: Brazilian federal education / training program data, same schema family as `mulheresmil`/`eixo` (the workbook name implies the city of Uberl\u00e2ndia but the columns are program-wide). One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Uberlandia",
@@ -4297,13 +4629,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "timestamps"
+      ]
     },
     {
       "slug": "bi-wins",
       "short_name": "BI-Wins",
       "full_name": "Public BI Benchmark \u2014 Wins",
-      "description": "Public BI Benchmark workload `Wins` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `Wins` \u2014 2.1M rows \u00d7 648 columns (417 integer, 164 decimal/float, 51 string, 16 temporal). Notable columns: `Calculation_-2642768498522718196`, `nABL1`, `nABL2`, `nABLF`. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/Wins",
@@ -4352,13 +4689,18 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bi-yalelanguages",
       "short_name": "BI-YaleLanguages",
       "full_name": "Public BI Benchmark \u2014 YaleLanguages",
-      "description": "Public BI Benchmark workload `YaleLanguages` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `YaleLanguages` \u2014 5.8M rows \u00d7 32 columns (22 string, 8 integer, 2 temporal). Notable columns: `BEGIN_PUB_DATE`, `BIB_FORMAT`, `BIB_ID`, `CALL_NO_TYPE`. Background: Yale University library catalog / circulation data \u2014 `BIB_ID`, `BIB_FORMAT`, `CHARGE_DATE`, `CALL_NO_TYPE`. The workbook name suggests language-program coverage but the schema is generic library bibliographic. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/YaleLanguages",
@@ -4407,7 +4749,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "uci-iris",
@@ -4471,7 +4818,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "scientific"
+        "enums",
+        "measurements"
       ]
     },
     {
@@ -4534,7 +4882,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-wine-quality",
@@ -4598,7 +4950,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "scientific"
+        "counts",
+        "enums",
+        "measurements"
       ]
     },
     {
@@ -4661,7 +5015,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-breast-cancer-wisconsin-diagnostic",
@@ -4723,7 +5082,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "binary-payload",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-adult",
@@ -4785,7 +5149,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-student-performance",
@@ -4847,7 +5216,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "uci-online-retail",
@@ -4911,7 +5284,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "e-commerce"
+        "code-strings",
+        "counts",
+        "enums"
       ]
     },
     {
@@ -4974,7 +5349,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-car-evaluation",
@@ -5036,7 +5415,10 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums"
+      ]
     },
     {
       "slug": "uci-predict-students-dropout-and-academic-success",
@@ -5098,7 +5480,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-air-quality",
@@ -5160,7 +5547,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "embeddings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-default-of-credit-card-clients",
@@ -5222,7 +5614,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-diabetes",
@@ -5281,8 +5677,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "healthcare",
-        "scientific"
+        "counts",
+        "enums"
       ]
     },
     {
@@ -5345,7 +5741,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "uci-human-activity-recognition-using-smartphones",
@@ -5404,7 +5804,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-automobile",
@@ -5466,7 +5871,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-mushroom",
@@ -5528,7 +5938,10 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums"
+      ]
     },
     {
       "slug": "uci-estimation-of-obesity-levels",
@@ -5590,7 +6003,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-abalone",
@@ -5652,7 +6069,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-bike-sharing-dataset",
@@ -5716,7 +6138,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "transportation"
+        "counts",
+        "measurements",
+        "timestamps"
       ]
     },
     {
@@ -5779,7 +6203,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "uci-sms-spam-collection",
@@ -5843,7 +6272,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "uci-online-retail-ii",
@@ -5902,7 +6335,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums"
+      ]
     },
     {
       "slug": "uci-auto-mpg",
@@ -5964,7 +6401,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "identifiers",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-cdc-diabetes-health-indicators",
@@ -6026,7 +6468,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "monetary"
+      ]
     },
     {
       "slug": "uci-online-shoppers-purchasing-intention",
@@ -6088,7 +6534,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-spambase",
@@ -6150,7 +6601,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-magic-gamma-telescope",
@@ -6212,7 +6668,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-diabetes-130-us-hospitals",
@@ -6274,7 +6735,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-breast-cancer-wisconsin-original",
@@ -6336,7 +6802,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-forest-fires",
@@ -6398,7 +6868,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-breast-cancer",
@@ -6460,7 +6935,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "uci-heart-failure-clinical-records",
@@ -6522,7 +7001,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-dry-bean-dataset",
@@ -6584,7 +7068,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-credit-approval",
@@ -6646,7 +7135,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-census-income",
@@ -6708,7 +7202,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-chronic-kidney-disease",
@@ -6770,7 +7269,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-energy-efficiency",
@@ -6832,7 +7336,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-concrete-compressive-strength",
@@ -6894,7 +7402,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-real-estate-valuation-data-set",
@@ -6956,7 +7468,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-ai4i-2020-predictive-maintenance",
@@ -7018,7 +7535,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-wholesale-customers",
@@ -7080,7 +7602,10 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts"
+      ]
     },
     {
       "slug": "uci-parkinsons",
@@ -7142,7 +7667,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "identifiers",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-thyroid-disease",
@@ -7206,7 +7736,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "identifiers"
+      ]
     },
     {
       "slug": "uci-seoul-bike-sharing-demand",
@@ -7268,7 +7802,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-seeds",
@@ -7329,7 +7868,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "scientific"
+        "binary-payload",
+        "counts",
+        "measurements"
       ],
       "showcase": [
         "encoding"
@@ -7396,7 +7937,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-phishing-websites",
@@ -7458,7 +8003,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "uci-optical-recognition-of-handwritten-digits",
@@ -7520,7 +8069,10 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts"
+      ]
     },
     {
       "slug": "california-housing-prices",
@@ -7577,7 +8129,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "insurance",
@@ -7634,7 +8191,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "fitbit",
@@ -7691,7 +8253,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "gtsrb-german-traffic-sign",
@@ -7751,7 +8318,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "binary-payload",
+        "counts",
+        "identifiers"
+      ]
     },
     {
       "slug": "formula-1-world-championship-1950-2020",
@@ -7808,7 +8380,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "diabetes-health-indicators-dataset",
@@ -7868,7 +8445,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "international-football-results-from-1872-to-2017",
@@ -7925,7 +8507,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "timestamps"
+      ]
     },
     {
       "slug": "palmer-archipelago-antarctica-penguin-data",
@@ -7982,7 +8569,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "sf-salaries",
@@ -8041,8 +8633,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "finance",
-        "government"
+        "code-strings",
+        "enums",
+        "measurements"
       ]
     },
     {
@@ -8103,7 +8696,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "marketing-data",
@@ -8160,7 +8758,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "monetary"
+      ]
     },
     {
       "slug": "walmart-dataset",
@@ -8217,7 +8820,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "lung-cancer",
@@ -8280,7 +8888,10 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts"
+      ]
     },
     {
       "slug": "movies",
@@ -8337,7 +8948,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "identifiers",
+        "measurements"
+      ]
     },
     {
       "slug": "chess",
@@ -8394,7 +9010,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "disease-symptom-description-dataset",
@@ -8451,7 +9072,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "binary-payload",
+        "enums"
+      ]
     },
     {
       "slug": "uber-pickups-in-new-york-city",
@@ -8508,7 +9133,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "enums"
+      ]
     },
     {
       "slug": "basketball",
@@ -8565,7 +9194,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "identifiers",
+        "measurements"
+      ]
     },
     {
       "slug": "glass",
@@ -8628,7 +9262,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "120-years-of-olympic-history-athletes-and-results",
@@ -8687,7 +9325,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "sports"
+        "counts",
+        "enums",
+        "measurements"
       ]
     },
     {
@@ -8745,7 +9385,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "airbnbopendata",
@@ -8802,7 +9447,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "bank-account-fraud-dataset-neurips-2022",
@@ -8859,7 +9509,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "behavioral-risk-factor-surveillance-system",
@@ -8919,7 +9574,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "building-permit-applications-data",
@@ -8976,7 +9636,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "cardiovascular-diseases-risk-prediction-dataset",
@@ -9036,7 +9701,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "coronahack-chest-xraydataset",
@@ -9093,7 +9763,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "binary-payload",
+        "enums",
+        "identifiers"
+      ]
     },
     {
       "slug": "covid-world-vaccination-progress",
@@ -9150,7 +9825,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "covid19-data-from-john-hopkins-university",
@@ -9207,7 +9887,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "electric-motor-temperature",
@@ -9264,7 +9949,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "global-fossil-co2-emissions-by-country-2002-2022",
@@ -9321,7 +10010,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "goodbooks-10k",
@@ -9384,7 +10078,10 @@
         "output_column": "content",
         "output_type": "binary",
         "advisory": "Goodreads cover URLs point at Amazon-hosted S3 buckets (images-amazon.com, images-na.ssl-images-amazon.com) and 404 on out-of-print or rebranded titles. Cover images are subject to publisher / Amazon copyright; this hydration is for research / type-coverage purposes, not redistribution."
-      }
+      },
+      "tags": [
+        "counts"
+      ]
     },
     {
       "slug": "heart-disease-health-indicators-dataset",
@@ -9444,7 +10141,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "measurements",
+        "monetary"
+      ]
     },
     {
       "slug": "housing-prices-dataset",
@@ -9501,7 +10203,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "monetary"
+      ]
     },
     {
       "slug": "iowa-liquor-sales",
@@ -9560,7 +10267,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "kepler-labelled-time-series-data",
@@ -9617,7 +10329,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements"
+      ]
     },
     {
       "slug": "loan-default-dataset",
@@ -9674,7 +10390,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "mlcourse",
@@ -9731,7 +10452,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "new-york-city-airbnb-open-data",
@@ -9788,7 +10514,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "nips-papers",
@@ -9848,7 +10579,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "prose"
+      ]
     },
     {
       "slug": "nyc-parking-tickets",
@@ -9905,7 +10640,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "nyc-property-sales",
@@ -9966,7 +10706,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "monetary"
+      ]
     },
     {
       "slug": "stack-overflow-2018-developer-survey",
@@ -10023,7 +10768,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "titanic-dataset",
@@ -10080,7 +10830,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "identifiers"
+      ]
     },
     {
       "slug": "ufcdata",
@@ -10137,7 +10892,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "us-accidents",
@@ -10197,7 +10957,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "enums",
+        "identifiers",
+        "measurements"
+      ]
     },
     {
       "slug": "us-airbnb-open-data",
@@ -10254,7 +11019,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "us-drought-meteorological-data",
@@ -10311,7 +11081,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "measurements",
+        "timestamps"
+      ]
     },
     {
       "slug": "world-energy-consumption",
@@ -10368,7 +11143,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "zoo-animal-classification",
@@ -10431,7 +11211,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "identifiers"
+      ]
     },
     {
       "slug": "news-headlines-dataset-for-sarcasm-detection",
@@ -10491,7 +11275,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "prose"
+      ]
     },
     {
       "slug": "hotel-booking-demand",
@@ -10550,7 +11338,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "e-commerce"
+        "counts",
+        "enums",
+        "timestamps"
       ]
     },
     {
@@ -10608,7 +11398,12 @@
       "convert": {
         "vortex": false,
         "vortex_skip_reason": "Vortex 0.69 cannot accept FixedSizeBinary(16): the parquet stores `event.identifier` as a UUID via that physical type, and `vortex.Array.from_arrow` raises a pyo3_runtime.PanicException on the column. Re-enable once Vortex adds FSB(16) support."
-      }
+      },
+      "tags": [
+        "nested-json",
+        "prose",
+        "urls"
+      ]
     },
     {
       "slug": "crimes-in-boston",
@@ -10665,7 +11460,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "coordinates",
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "countries-of-the-world",
@@ -10725,7 +11525,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "enums"
+      ]
     },
     {
       "slug": "kepler-exoplanet-search-results",
@@ -10784,7 +11588,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "scientific"
+        "counts",
+        "enums",
+        "measurements"
       ],
       "showcase": [
         "encoding"
@@ -10848,7 +11654,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "uk-road-safety-accidents-and-vehicles",
@@ -10905,7 +11716,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "measurements"
+      ]
     },
     {
       "slug": "emotions-dataset-for-nlp",
@@ -10962,7 +11778,11 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "prose"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2019",
@@ -11023,7 +11843,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2017",
@@ -11084,7 +11909,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2018",
@@ -11145,7 +11975,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2023",
@@ -11206,7 +12041,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2016",
@@ -11267,7 +12107,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "code-strings",
+        "counts",
+        "enums"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2020",
@@ -11328,7 +12173,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2021",
@@ -11389,7 +12239,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "osmi-mental-health-in-tech-2022",
@@ -11450,7 +12305,12 @@
       "convert": {
         "vortex": true,
         "vortex_skip_reason": null
-      }
+      },
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
+      ]
     },
     {
       "slug": "squad-v2",
@@ -11516,6 +12376,11 @@
           "kind": "paper",
           "url": "https://arxiv.org/abs/1806.03822"
         }
+      ],
+      "tags": [
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -11582,6 +12447,11 @@
           "kind": "paper",
           "url": "https://arxiv.org/abs/1905.07830"
         }
+      ],
+      "tags": [
+        "code-strings",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -11648,6 +12518,10 @@
           "kind": "paper",
           "url": "https://arxiv.org/abs/2110.14168"
         }
+      ],
+      "tags": [
+        "enums",
+        "prose"
       ]
     },
     {
@@ -11716,7 +12590,9 @@
         }
       ],
       "tags": [
-        "benchmark"
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -11783,6 +12659,10 @@
           "kind": "blog",
           "url": "https://www.databricks.com/blog/2023/04/12/dolly-first-open-commercially-viable-instruction-tuned-llm"
         }
+      ],
+      "tags": [
+        "enums",
+        "prose"
       ]
     },
     {
@@ -11849,6 +12729,11 @@
           "kind": "paper",
           "url": "https://arxiv.org/abs/2304.07327"
         }
+      ],
+      "tags": [
+        "counts",
+        "enums",
+        "identifiers"
       ]
     },
     {
@@ -11921,7 +12806,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "nested-json",
+        "prose"
       ],
       "showcase": [
         "encoding"
@@ -11995,6 +12882,9 @@
           "kind": "homepage",
           "url": "https://huggingface.co/datasets/Open-Orca/OpenOrca"
         }
+      ],
+      "tags": [
+        "prose"
       ]
     },
     {
@@ -12066,6 +12956,11 @@
           "kind": "homepage",
           "url": "https://huggingface.co/datasets/Cohere/wikipedia-2023-11-embed-multilingual-v3"
         }
+      ],
+      "tags": [
+        "enums",
+        "prose",
+        "urls"
       ]
     },
     {
@@ -12137,6 +13032,10 @@
           "kind": "github",
           "url": "https://github.com/beir-cellar/beir"
         }
+      ],
+      "tags": [
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -12216,6 +13115,11 @@
           "kind": "homepage",
           "url": "https://laion.ai/blog/laion-400-open-dataset/"
         }
+      ],
+      "tags": [
+        "binary-payload",
+        "embeddings",
+        "urls"
       ]
     },
     {
@@ -12282,6 +13186,11 @@
           "kind": "paper",
           "url": "https://arxiv.org/abs/1910.10683"
         }
+      ],
+      "tags": [
+        "prose",
+        "timestamps",
+        "urls"
       ]
     },
     {
@@ -12348,6 +13257,11 @@
           "kind": "homepage",
           "url": "https://huggingface.co/datasets/codeparrot/codeparrot-clean"
         }
+      ],
+      "tags": [
+        "enums",
+        "identifiers",
+        "measurements"
       ]
     },
     {
@@ -12416,6 +13330,9 @@
           "kind": "blog",
           "url": "https://www.cerebras.net/blog/slimpajama-a-627b-token-cleaned-and-deduplicated-version-of-redpajama"
         }
+      ],
+      "tags": [
+        "prose"
       ]
     },
     {
@@ -12488,6 +13405,10 @@
           "kind": "paper",
           "url": "https://arxiv.org/abs/2406.17557"
         }
+      ],
+      "tags": [
+        "prose",
+        "urls"
       ]
     },
     {
@@ -12556,6 +13477,10 @@
           "kind": "github",
           "url": "https://github.com/anthropics/hh-rlhf"
         }
+      ],
+      "tags": [
+        "enums",
+        "prose"
       ]
     },
     {
@@ -12626,6 +13551,11 @@
           "kind": "homepage",
           "url": "https://huggingface.co/datasets/HuggingFaceH4/ultrafeedback_binarized"
         }
+      ],
+      "tags": [
+        "measurements",
+        "nested-json",
+        "prose"
       ]
     },
     {
@@ -12692,6 +13622,11 @@
           "kind": "homepage",
           "url": "https://huggingface.co/datasets/HuggingFaceH4/no_robots"
         }
+      ],
+      "tags": [
+        "enums",
+        "nested-json",
+        "prose"
       ]
     },
     {
@@ -12758,6 +13693,11 @@
           "kind": "paper",
           "url": "https://arxiv.org/abs/2406.01574"
         }
+      ],
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -12826,6 +13766,11 @@
           "kind": "homepage",
           "url": "https://huggingface.co/datasets/openai/MMMLU"
         }
+      ],
+      "tags": [
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -12898,7 +13843,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "identifiers",
+        "prose",
+        "urls"
       ],
       "showcase": [
         "stress"
@@ -12974,7 +13921,8 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "prose"
       ]
     },
     {
@@ -13044,7 +13992,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "measurements",
+        "prose"
       ]
     },
     {
@@ -13114,7 +14064,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "nested-json",
+        "prose"
       ]
     },
     {
@@ -13187,7 +14139,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -13256,8 +14210,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "nlp-text"
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -13327,7 +14282,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "counts",
+        "measurements",
+        "prose"
       ]
     },
     {
@@ -13397,8 +14354,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "nlp-text"
+        "enums",
+        "measurements",
+        "prose"
       ]
     },
     {
@@ -13472,7 +14430,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "binary-payload",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -13546,7 +14506,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "binary-payload",
+        "enums",
+        "nested-json"
       ]
     },
     {
@@ -13619,7 +14581,9 @@
         }
       ],
       "tags": [
-        "benchmark"
+        "code-strings",
+        "enums",
+        "identifiers"
       ]
     },
     {
@@ -13692,7 +14656,8 @@
         }
       ],
       "tags": [
-        "benchmark"
+        "enums",
+        "prose"
       ]
     },
     {
@@ -13765,7 +14730,9 @@
         }
       ],
       "tags": [
-        "benchmark"
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -13838,8 +14805,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "nlp-text"
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -13912,8 +14880,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "healthcare"
+        "enums",
+        "measurements",
+        "prose"
       ]
     },
     {
@@ -13986,8 +14955,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "healthcare"
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -14060,8 +15030,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "nlp-text"
+        "enums",
+        "identifiers",
+        "prose"
       ],
       "showcase": [
         "stress"
@@ -14137,7 +15108,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -14206,8 +15179,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "scientific"
+        "binary-payload",
+        "counts",
+        "enums"
       ]
     },
     {
@@ -14280,7 +15254,9 @@
         }
       ],
       "tags": [
-        "benchmark"
+        "code-strings",
+        "nested-json",
+        "prose"
       ]
     },
     {
@@ -14353,7 +15329,9 @@
         }
       ],
       "tags": [
-        "benchmark"
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -14424,6 +15402,11 @@
           "kind": "homepage",
           "url": "https://www.openslr.org/12"
         }
+      ],
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -14494,6 +15477,11 @@
           "kind": "homepage",
           "url": "https://mlcommons.org/datasets/peoples-speech/"
         }
+      ],
+      "tags": [
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -14560,6 +15548,11 @@
           "kind": "homepage",
           "url": "https://huggingface.co/datasets/google/WaxalNLP"
         }
+      ],
+      "tags": [
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -14633,7 +15626,9 @@
         }
       ],
       "tags": [
-        "benchmark"
+        "enums",
+        "prose",
+        "urls"
       ]
     },
     {
@@ -14702,7 +15697,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -14775,7 +15772,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "prose",
+        "urls"
       ]
     },
     {
@@ -14850,7 +15849,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "counts",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -14920,7 +15921,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "identifiers",
+        "prose"
       ]
     },
     {
@@ -14993,7 +15996,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "code-strings",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -15066,7 +16071,9 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "code-strings",
+        "enums",
+        "prose"
       ]
     },
     {
@@ -15140,7 +16147,8 @@
         }
       ],
       "tags": [
-        "nlp-text"
+        "enums",
+        "nested-json"
       ]
     },
     {
@@ -15218,7 +16226,8 @@
         }
       ],
       "tags": [
-        "scientific"
+        "counts",
+        "measurements"
       ],
       "showcase": [
         "encoding"
@@ -15299,7 +16308,9 @@
         }
       ],
       "tags": [
-        "scientific"
+        "counts",
+        "enums",
+        "measurements"
       ]
     },
     {
@@ -15369,8 +16380,9 @@
         }
       ],
       "tags": [
-        "geospatial",
-        "scientific"
+        "counts",
+        "enums",
+        "measurements"
       ]
     },
     {
@@ -15447,8 +16459,9 @@
         }
       ],
       "tags": [
-        "finance",
-        "social"
+        "counts",
+        "measurements",
+        "timestamps"
       ]
     },
     {
@@ -15528,8 +16541,9 @@
         }
       ],
       "tags": [
-        "benchmark",
-        "nlp-text"
+        "enums",
+        "nested-json",
+        "prose"
       ]
     }
   ]

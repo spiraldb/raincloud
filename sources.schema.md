@@ -22,7 +22,6 @@ This document defines the shape of `sources.json`, the manifest that drives the 
   "short_name": "ClickBench Hits",      // table-friendly label
   "full_name": "ClickBench Hits (Yandex Metrica log)",
   "description": "100M-row web-analytics event log used by the ClickBench OLAP benchmark.",
-  "family": "direct",                   // "direct" | "nyc-tlc" | "public-bi" | "uci" | "kaggle-upstream"
 
   /* License (driven by the license-audit pass — machine-readable) */
   "license": {
@@ -116,7 +115,7 @@ This document defines the shape of `sources.json`, the manifest that drives the 
 
   /* Optional editorial showcase tiers — closed vocab from
      scripts/pipeline/discovery.py:SHOWCASE_TIERS. Multi-tier membership allowed. */
-  "showcase": ["start-here", "vortex-wins"],
+  "showcase": ["encoding"],
 
   /* Optional canonical references beyond license.source_url. kind ∈
      {paper, blog, homepage, github, dataset_card}. */
@@ -135,7 +134,7 @@ Closed-vocab domain tags drawn from the discovery module's `TAG_VOCAB`. At most 
 
 ### `showcase` *(array of string, optional, default `[]`)*
 
-Editorial showcase tiers from `SHOWCASE_TIERS`: `start-here`, `encoding-research`, `vortex-wins`, `stress-test`. Multi-tier membership allowed. Drives the TUI view presets, the `--view` CLI flag, and the curated-picks block in `docs/v1/datasets.md`.
+Editorial showcase tiers from `SHOWCASE_TIERS`: `encoding`, `stress`. Multi-tier membership allowed. Drives the TUI view presets, the `--view` CLI flag, and the curated-picks block in `docs/v1/datasets.md`.
 
 ## Handlers
 

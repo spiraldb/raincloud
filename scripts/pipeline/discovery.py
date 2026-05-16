@@ -20,25 +20,27 @@ from typing import Optional
 
 
 TAG_VOCAB: tuple[str, ...] = (
-    "geospatial",
-    "nlp-text",
-    "web-analytics",
-    "e-commerce",
-    "finance",
-    "social",
-    "scientific",
-    "healthcare",
-    "sports",
-    "transportation",
-    "government",
-    "benchmark",
+    # String content
+    "urls",
+    "prose",
+    "enums",
+    "identifiers",
+    "code-strings",
+    # Numeric content
+    "timestamps",
+    "embeddings",
+    "counts",
+    "monetary",
+    "measurements",
+    # Payload / structure
+    "coordinates",
+    "binary-payload",
+    "nested-json",
 )
 
 SHOWCASE_TIERS: tuple[str, ...] = (
-    "start-here",
-    "encoding-research",
-    "vortex-wins",
-    "stress-test",
+    "encoding",
+    "stress",
 )
 
 SIZE_BUCKETS: tuple[str, ...] = ("xs", "s", "m", "l", "xl")
@@ -68,10 +70,8 @@ TRAIT_FLAGS: tuple[str, ...] = (
 # Each preset names axes → values; clicking a preset replaces the current
 # selection in those axes only (axes not mentioned are cleared).
 VIEW_PRESETS: dict[str, dict[str, set[str]]] = {
-    "start-here":        {"showcase": {"start-here"}},
-    "encoding-research": {"showcase": {"encoding-research"}},
-    "vortex-wins":       {"showcase": {"vortex-wins"}},
-    "stress-test":       {"showcase": {"stress-test"}, "size": {"l", "xl"}},
+    "encoding": {"showcase": {"encoding"}},
+    "stress":   {"showcase": {"stress"}},
 }
 
 
@@ -94,7 +94,7 @@ class FilterState:
     """Multi-axis catalog filter.
 
     Selections within an axis OR-combine; across axes they AND-combine.
-    `dataclasses.replace(state, family=new)` produces a fully independent
+    `dataclasses.replace(state, tag=new)` produces a fully independent
     copy — unchanged set fields are cloned in `__post_init__` so callers
     can freely mutate either instance.
 
@@ -108,7 +108,6 @@ class FilterState:
     trait: set[str] = field(default_factory=set)
     trait_negated: set[str] = field(default_factory=set)
     license: set[str] = field(default_factory=set)
-    family: set[str] = field(default_factory=set)
     fetch_type: set[str] = field(default_factory=set)
     vortex: Optional[bool] = None
 
@@ -122,14 +121,13 @@ class FilterState:
         self.trait = set(self.trait)
         self.trait_negated = set(self.trait_negated)
         self.license = set(self.license)
-        self.family = set(self.family)
         self.fetch_type = set(self.fetch_type)
 
     def is_empty(self) -> bool:
         return (
             not self.showcase and not self.tag and not self.size
             and not self.trait and not self.trait_negated
-            and not self.license and not self.family
+            and not self.license
             and not self.fetch_type and self.vortex is None
         )
 
@@ -154,8 +152,6 @@ class FilterState:
             lic = ((spec.get("license") or {}).get("spdx"))
             if lic not in self.license:
                 return False
-        if self.family and spec.get("family") not in self.family:
-            return False
         if self.fetch_type:
             ft = (spec.get("fetch") or {}).get("type")
             if ft not in self.fetch_type:
