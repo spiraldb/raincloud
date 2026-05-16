@@ -361,8 +361,17 @@ def _column_profile(con, table_name: str, field, row_count: int,
         return p
     if pa.types.is_boolean(t):
         return _bool_profile(con, table_name, field.name)
-    if pa.types.is_date(t) or pa.types.is_timestamp(t) or pa.types.is_time(t):
+    if pa.types.is_date(t) or pa.types.is_timestamp(t):
         return _temporal_profile(con, table_name, field.name, row_count, dtype_label)
+    if pa.types.is_time(t):
+        # TIME-of-day can't be epoch-cast in DuckDB (no `CAST(time AS TIMESTAMP)`
+        # implementation). Fall through to the string profile for null_count
+        # + NDV + top-K of the rendered HH:MM:SS form.
+        p = _string_profile(con, table_name, field.name,
+                            include_topk=True, length_expr="length(CAST({col} AS VARCHAR))")
+        if p is not None:
+            p["dtype"] = dtype_label
+        return p
     if pa.types.is_string(t) or pa.types.is_large_string(t):
         p = _string_profile(con, table_name, field.name,
                             include_topk=True, length_expr="length({col})")
