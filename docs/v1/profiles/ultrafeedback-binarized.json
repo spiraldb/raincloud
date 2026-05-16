@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "slug": "ultrafeedback-binarized",
+  "row_count": 187405,
+  "parquet_sha256": "608f64dafb15082b87fe2975fe7437ae360a8e3fc327bdfea2d76d5a529e39ff",
+  "computed_at": "2026-05-16T10:37:29Z",
+  "sample_rows": null,
+  "columns": {
+    "prompt": {
+      "null_count": 0,
+      "ndv_approx": 67363,
+      "mean_length": 659.8291507697234,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "prompt_id": {
+      "null_count": 0,
+      "ndv_approx": 50459,
+      "mean_length": 64.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "chosen": {
+      "null_count": 0,
+      "length_min": 2,
+      "length_max": 2,
+      "length_mean": 2.0,
+      "dtype": "list"
+    },
+    "rejected": {
+      "null_count": 0,
+      "length_min": 2,
+      "length_max": 2,
+      "length_mean": 2.0,
+      "dtype": "list"
+    },
+    "messages": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 2,
+      "length_mean": 1.6684453456417918,
+      "dtype": "list"
+    },
+    "score_chosen": {
+      "null_count": 0,
+      "min": 1.0,
+      "max": 10.0,
+      "mean": 7.82530081908167,
+      "ndv_approx": 18,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          6,
+          629,
+          1663,
+          2652,
+          2443,
+          8736,
+          25369,
+          66187,
+          76152,
+          3568
+        ]
+      },
+      "dtype": "float64"
+    },
+    "score_rejected": {
+      "null_count": 0,
+      "min": 1.0,
+      "max": 10.0,
+      "mean": 5.95509191323604,
+      "ndv_approx": 17,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          2136,
+          13161,
+          16271,
+          16084,
+          11725,
+          28100,
+          44340,
+          44291,
+          11209,
+          88
+        ]
+      },
+      "dtype": "float64"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 9.652437234865666,
+      "top_values": [
+        {
+          "value": "train_gen",
+          "count": 61135
+        },
+        {
+          "value": "train_sft",
+          "count": 61135
+        },
+        {
+          "value": "train_prefs",
+          "count": 61135
+        },
+        {
+          "value": "test_prefs",
+          "count": 2000
+        },
+        {
+          "value": "test_gen",
+          "count": 1000
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}
