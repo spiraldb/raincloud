@@ -1022,6 +1022,23 @@ class _DatasetModal(ModalScreen):
     ]
 
 
+def _dedupe_stat_names(stats: list[dict]) -> list[dict]:
+    """Suffix repeated `name` values with ` (2)`, ` (3)`, etc. so each entry is uniquely keyable."""
+    seen: dict[str, int] = {}
+    out: list[dict] = []
+    for s in stats:
+        name = s.get("name")
+        count = seen.get(name, 0) + 1
+        seen[name] = count
+        if count == 1:
+            out.append(s)
+        else:
+            new = dict(s)
+            new["name"] = f"{name} ({count})"
+            out.append(new)
+    return out
+
+
 class ColumnsModal(_DatasetModal):
     """Full per-column metadata for one slug. When the local parquet isn't
     built, falls back to docs/v1/snapshot.json so the modal can still show
@@ -1036,13 +1053,16 @@ class ColumnsModal(_DatasetModal):
         super().__init__()
         self.slug = slug
         self.spec = spec
-        self.stats = stats
+        # Some slugs (osmi-* surveys, uci-spambase, uk-price-paid) carry
+        # legitimately duplicated top-level column names. Suffix repeats so
+        # the DataTable row key is unique and stats_by_name doesn't collapse.
+        self.stats = _dedupe_stat_names(stats) if stats is not None else None
         self.source = source  # "parquet" | "snapshot" | None
         # profile.json keyed-by-column-name. Empty when the profile stage
         # hasn't been run; the right detail pane then renders "no profile".
         self.profile_columns = (profile or {}).get("columns") or {}
         # parquet schema stats keyed by name for O(1) lookup from the detail pane.
-        self.stats_by_name = {s["name"]: s for s in (stats or [])}
+        self.stats_by_name = {s["name"]: s for s in (self.stats or [])}
 
     def compose(self) -> ComposeResult:
         suffix = " [dim](from snapshot)[/dim]" if self.source == "snapshot" else ""

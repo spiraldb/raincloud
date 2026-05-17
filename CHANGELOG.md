@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-05-17
+
+### Fixed
+
+- **TUI Columns modal crash on slugs with duplicate column names.**
+  Eleven slugs ship parquet schemas with legitimately repeated
+  top-level column names — the `osmi-mental-health-in-tech-*` survey
+  series (2016 through 2023) repeats "Why or why not?" follow-ups
+  under each yes/no item, and `uci-spambase`, `uci-parkinsons`, and
+  `uk-price-paid` each have one or more repeated headers. The new
+  Columns modal used the bare column name as the Textual DataTable
+  row key, so the second occurrence crashed with `DuplicateKey`.
+  Repeated names are now suffixed with ` (2)`, ` (3)`, etc. for
+  display + lookup; the by-name stats dict no longer silently
+  collapses entries either. The underlying parquet's column names
+  are unchanged.
+
 ## [0.1.4] - 2026-05-17
 
 ### Added
