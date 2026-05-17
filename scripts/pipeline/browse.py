@@ -753,8 +753,7 @@ def _render_column_detail(name: str, spec_stat: dict | None,
             lines += [
                 "",
                 "[dim]No per-element distribution: `profile.py` skips this "
-                "column's shape (typically struct / variant / all-null). "
-                "The schema stats above are the source of truth.[/dim]",
+                "column's shape (typically struct / variant / all-null).[/dim]",
             ]
         else:
             lines += [
