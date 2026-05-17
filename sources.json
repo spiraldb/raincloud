@@ -373,8 +373,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
+        "enums",
         "identifiers",
-        "measurements",
         "timestamps"
       ]
     },
@@ -566,8 +566,8 @@
       },
       "tags": [
         "identifiers",
-        "nested-json",
-        "prose"
+        "prose",
+        "timestamps"
       ]
     },
     {
@@ -956,9 +956,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "coordinates",
+        "counts",
         "enums",
-        "timestamps"
+        "identifiers"
       ]
     },
     {
@@ -13113,8 +13113,8 @@
         }
       ],
       "tags": [
-        "binary-payload",
-        "embeddings",
+        "counts",
+        "prose",
         "urls"
       ]
     },
