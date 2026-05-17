@@ -65,8 +65,8 @@
       },
       "tags": [
         "counts",
-        "timestamps",
-        "urls"
+        "enums",
+        "measurements"
       ]
     },
     {
@@ -189,9 +189,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "identifiers",
+        "code-strings",
         "measurements",
-        "timestamps"
+        "prose"
       ]
     },
     {
@@ -2243,7 +2243,7 @@
       "slug": "bi-commongovernment",
       "short_name": "BI-CommonGovernment",
       "full_name": "Public BI Benchmark \u2014 CommonGovernment",
-      "description": "Public BI Benchmark workload `CommonGovernment` \u2014 pipe-delimited CSV partitions drawn from a real-world BI dashboard. Part of CWI's 47-workload corpus assembled to stress-test columnar query engines on quirky production data: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities. Each workload shares a schema across its partitions and ships as raw CSV (no parquet upstream); raincloud merges them via `public_bi_merge`.",
+      "description": "Public BI workload `CommonGovernment` \u2014 141.1M rows \u00d7 56 columns (37 string, 10 decimal/float, 9 integer). Notable columns: `a_aid_acontid_agencyid`, `a_aid_acontid_piid`, `ag_name`, `agency_code`. Background: US federal contract / grant awards data of the kind published on USAspending.gov. One of CWI's 46 real-world BI-dashboard workloads in the Public BI Benchmark \u2014 pipe-delimited CSV partitions used to stress columnar engines on production data quirks: inconsistent encodings, mixed quoting, sparse columns, real-world cardinalities.",
       "license": {
         "spdx": "MIT",
         "source_url": "https://github.com/cwida/public_bi_benchmark/tree/master/benchmark/CommonGovernment",
@@ -2294,6 +2294,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
+        "code-strings",
+        "enums",
         "measurements"
       ]
     },
@@ -13027,6 +13029,7 @@
         }
       ],
       "tags": [
+        "enums",
         "identifiers",
         "prose"
       ]
@@ -13400,6 +13403,7 @@
         }
       ],
       "tags": [
+        "enums",
         "prose",
         "urls"
       ]

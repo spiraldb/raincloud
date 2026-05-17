@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "slug": "beir-msmarco",
+  "row_count": 9351785,
+  "parquet_sha256": "25d9c6dcb7830b248db2e00f1398c1ffefe0f4c577afbd854364fbb061ba1b98",
+  "computed_at": "2026-05-17T01:11:23Z",
+  "sample_rows": null,
+  "columns": {
+    "_id": {
+      "null_count": 0,
+      "ndv_approx": 8302592,
+      "mean_length": 6.82880904554585,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "title": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 0.0,
+      "top_values": [
+        {
+          "value": "",
+          "count": 9351785
+        }
+      ],
+      "dtype": "large_string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 9302923,
+      "mean_length": 319.29731126196765,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 6.05453097991453,
+      "top_values": [
+        {
+          "value": "corpus",
+          "count": 8841823
+        },
+        {
+          "value": "queries",
+          "count": 509962
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

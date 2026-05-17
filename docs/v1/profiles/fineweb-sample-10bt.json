@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "slug": "fineweb-sample-10bt",
+  "row_count": 14868862,
+  "parquet_sha256": "087a9871752468fcac8d1743a4716fb3e0060baca97724abee68e443de8febaf",
+  "computed_at": "2026-05-17T01:24:56Z",
+  "sample_rows": null,
+  "columns": {
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 14942163,
+      "mean_length": 3082.5569008576445,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 14921922,
+      "mean_length": 47.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "dump": {
+      "null_count": 0,
+      "ndv_approx": 91,
+      "mean_length": 15.0,
+      "top_values": [
+        {
+          "value": "CC-MAIN-2023-40",
+          "count": 217633
+        },
+        {
+          "value": "CC-MAIN-2022-21",
+          "count": 215914
+        },
+        {
+          "value": "CC-MAIN-2017-17",
+          "count": 215414
+        },
+        {
+          "value": "CC-MAIN-2017-13",
+          "count": 211543
+        },
+        {
+          "value": "CC-MAIN-2023-50",
+          "count": 211075
+        }
+      ],
+      "dtype": "string"
+    },
+    "url": {
+      "null_count": 0,
+      "ndv_approx": 14226036,
+      "mean_length": 72.85623230614421,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "date": {
+      "null_count": 0,
+      "ndv_approx": 15765484,
+      "mean_length": 20.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "file_path": {
+      "null_count": 0,
+      "ndv_approx": 4939773,
+      "mean_length": 130.21462489866406,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "language": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 14868862
+        }
+      ],
+      "dtype": "string"
+    },
+    "language_score": {
+      "null_count": 0,
+      "min": 0.6500009298324585,
+      "max": 0.9996557831764221,
+      "mean": 0.9279609237312639,
+      "ndv_approx": 3025366,
+      "histogram": {
+        "buckets": [
+          0.6500009298324585,
+          0.6849664151668549,
+          0.7199319005012512,
+          0.7548973858356476,
+          0.789862871170044,
+          0.8248283565044403,
+          0.8597938418388367,
+          0.894759327173233,
+          0.9297248125076294,
+          0.9646902978420258,
+          0.9996557831764221
+        ],
+        "counts": [
+          79226,
+          108349,
+          156777,
+          234851,
+          367624,
+          622387,
+          1186614,
+          2636949,
+          5724410,
+          3751675
+        ]
+      },
+      "dtype": "float64"
+    },
+    "token_count": {
+      "null_count": 0,
+      "min": 24,
+      "max": 381395,
+      "mean": 697.5308425083238,
+      "ndv_approx": 23545,
+      "histogram": {
+        "buckets": [
+          24.0,
+          38161.1,
+          76298.2,
+          114435.29999999999,
+          152572.4,
+          190709.5,
+          228846.59999999998,
+          266983.7,
+          305120.8,
+          343257.89999999997,
+          381395.0
+        ],
+        "counts": [
+          14866804,
+          1677,
+          309,
+          67,
+          4,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    }
+  }
+}
