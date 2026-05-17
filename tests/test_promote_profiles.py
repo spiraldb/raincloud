@@ -9,6 +9,7 @@ the real docs/v1/profiles/ tree is never touched.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -26,7 +27,7 @@ def fake_repo(tmp_path, monkeypatch):
     return tmp_path
 
 
-def _put_built_profile(repo: "Path", slug: str, body: str) -> None:
+def _put_built_profile(repo: Path, slug: str, body: str) -> None:
     p = repo / "outputs" / "v1" / slug / "profile.json"
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(body)

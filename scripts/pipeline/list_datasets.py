@@ -46,12 +46,11 @@ import sys
 from typing import Any
 
 from .discovery import (
-    FilterState,
     SHOWCASE_TIERS,
     SIZE_BUCKETS,
     TAG_VOCAB,
-    TRAIT_FLAGS,
     VIEW_PRESETS,
+    FilterState,
     apply_preset,
     format_column_line,
 )

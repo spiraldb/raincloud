@@ -142,7 +142,7 @@ def fetch_http(spec: dict) -> list[Path]:
         # but whose payload integrity is gated by expected_sha256.
         urlopen_kwargs: dict = {"timeout": 300}
         if not verify_tls:
-            print(f"  [warn] verify_tls=false — TLS verification disabled (integrity gated by expected_sha256)")
+            print("  [warn] verify_tls=false — TLS verification disabled (integrity gated by expected_sha256)")
             urlopen_kwargs["context"] = _unverified_ssl_context()
         print(f"  fetching {url} -> {dest.relative_to(REPO_ROOT)}")
         req = urllib.request.Request(url, headers={"User-Agent": "raincloud-pipeline/0.1"})

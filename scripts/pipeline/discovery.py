@@ -18,7 +18,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional
 
-
 TAG_VOCAB: tuple[str, ...] = (
     # String content
     "urls",

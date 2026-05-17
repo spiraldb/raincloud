@@ -435,6 +435,7 @@ def test_render_column_detail_fits_pane_width(pane_cells):
     *pessimistic* render length must come in at or under `pane_cells`."""
     pytest.importorskip("textual")
     import re
+
     from scripts.pipeline.browse import _render_column_detail, _render_len
 
     strip_markup = re.compile(r"\[/?[^\]]+\]")
@@ -481,6 +482,7 @@ def test_render_block_histogram_scales_with_bar_cells():
     tallest count touches the top row."""
     pytest.importorskip("textual")
     from rich.cells import cell_len
+
     from scripts.pipeline.browse import _render_block_histogram
 
     counts = [1, 3, 5, 7, 9, 7, 5, 3, 1, 0]
@@ -499,7 +501,7 @@ def test_render_block_histogram_scales_with_bar_cells():
 def test_render_x_axis_ticks_spaces_lo_mid_hi():
     """3-tick axis: lo left, hi right, mid centered, ASCII spaces between."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _render_x_axis_ticks, _render_len
+    from scripts.pipeline.browse import _render_len, _render_x_axis_ticks
 
     # 11 bin edges → mid = buckets[5].
     edges = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
@@ -828,8 +830,9 @@ def test_shape_trait_radioset_is_visible_in_facet_panel():
     the 28-cell panel and so visually invisible/unclickable. The vertical-stack
     `.trait-block` layout gives the RadioSet its own row inside the panel."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import DatasetBrowser
     from textual.widgets import Collapsible, RadioSet
+
+    from scripts.pipeline.browse import DatasetBrowser
 
     specs = [{"slug": "x", "license": {"spdx": "MIT"},
               "fetch": {"type": "http", "urls": []}, "parse": {"reader": "csv"},
@@ -837,7 +840,7 @@ def test_shape_trait_radioset_is_visible_in_facet_panel():
               "convert": {"vortex": True}}]
     PANEL_WIDTH = 28
 
-    async def _run() -> "Region":
+    async def _run():
         app = DatasetBrowser(specs=specs, manifest={"schema_version": 1, "datasets": specs})
         app._snapshot = {"slugs": {}}
         async with app.run_test(size=(120, 60)) as pilot:
@@ -862,8 +865,9 @@ def test_shape_trait_yes_propagates_to_filter():
     drive the press through `.value = True` (same Changed event Textual fires
     for a real mouse click) and assert the resulting row count."""
     pytest.importorskip("textual")
+    from textual.widgets import DataTable, RadioButton, RadioSet
+
     from scripts.pipeline.browse import DatasetBrowser
-    from textual.widgets import DataTable, RadioSet, RadioButton
 
     specs = [
         {"slug": "nested-alpha", "license": {"spdx": "MIT"},
@@ -956,7 +960,7 @@ def test_combine_filters_merges_axes():
 def test_apply_view_preset_matches_filter_state():
     """Applying a preset programmatically yields the expected FilterState shape."""
     pytest.importorskip("textual")
-    from scripts.pipeline.discovery import apply_preset, FilterState
+    from scripts.pipeline.discovery import apply_preset
 
     state = apply_preset("stress")
     assert state.showcase == {"stress"}

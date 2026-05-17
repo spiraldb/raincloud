@@ -9,12 +9,14 @@ from __future__ import annotations
 import pytest
 
 from scripts.pipeline.discovery import (
-    TAG_VOCAB,
     SHOWCASE_TIERS,
-    SIZE_BUCKETS,
     SIZE_BUCKET_BOUNDS,
+    SIZE_BUCKETS,
+    TAG_VOCAB,
     TRAIT_FLAGS,
     VIEW_PRESETS,
+    FilterState,
+    apply_preset,
     bucket_for_size,
 )
 
@@ -60,9 +62,6 @@ def test_bucket_for_size_boundaries(nbytes, expected):
 def test_size_bucket_bounds_cover_all_buckets():
     """Every named bucket has a (lo, hi) entry."""
     assert set(SIZE_BUCKET_BOUNDS) == set(SIZE_BUCKETS)
-
-
-from scripts.pipeline.discovery import FilterState, apply_preset
 
 
 def test_filter_state_empty_matches_everything():

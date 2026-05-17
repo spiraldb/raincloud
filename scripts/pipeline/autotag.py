@@ -25,7 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
 
 # Word-bounded embedding triggers. The previous list used bare " embed" and

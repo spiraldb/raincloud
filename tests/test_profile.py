@@ -10,8 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import subprocess
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 import jsonschema
@@ -112,6 +111,7 @@ def test_profile_all_null_column_returns_null(tmp_path):
     level (schema-conformant; matches struct/variant convention)."""
     import pyarrow as pa
     import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     table = pa.table({
@@ -134,7 +134,9 @@ def test_profile_all_null_column_returns_null(tmp_path):
 
 def test_profile_string_column_records_ndv(tmp_path):
     """A tiny synthetic parquet exercises the string path."""
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     table = pa.table({"label": ["a", "b", "a", "c", None, "a", "b"]})
@@ -153,7 +155,9 @@ def test_profile_string_column_records_ndv(tmp_path):
 
 
 def test_profile_string_column_skips_topk_when_ndv_large(tmp_path):
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     table = pa.table({"id": [f"u{i}" for i in range(1024)]})
@@ -165,7 +169,9 @@ def test_profile_string_column_skips_topk_when_ndv_large(tmp_path):
 
 
 def test_profile_list_column_length_stats(tmp_path):
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     table = pa.table({"xs": [[1, 2], [3], [], [4, 5, 6]]})
@@ -183,7 +189,9 @@ def test_profile_list_column_length_stats(tmp_path):
 
 
 def test_profile_struct_column_emits_null_entry(tmp_path):
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     inner = pa.struct([("v", pa.int32())])
@@ -197,7 +205,9 @@ def test_profile_struct_column_emits_null_entry(tmp_path):
 
 def test_profile_binary_column_uses_octet_length(tmp_path):
     """Binary columns produce mean_length in bytes; top_values stays null."""
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     table = pa.table({"blob": pa.array([b"abc", b"defgh", b""], type=pa.binary())})
@@ -218,7 +228,9 @@ def test_profile_binary_column_uses_octet_length(tmp_path):
 
 def test_profile_map_column_uses_cardinality(tmp_path):
     """Map columns produce length_min/max/mean from cardinality."""
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     map_type = pa.map_(pa.string(), pa.int32())
@@ -242,7 +254,9 @@ def test_profile_map_column_uses_cardinality(tmp_path):
 
 def test_profile_large_string_column(tmp_path):
     """large_string dispatches through the same path as string."""
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     table = pa.table({"s": pa.array(["alpha", "beta", "alpha"], type=pa.large_string())})
@@ -258,7 +272,9 @@ def test_profile_large_string_column(tmp_path):
 
 def test_profile_handles_column_name_with_quotes(tmp_path):
     """A parquet column whose name contains a `"` must not break the SQL."""
-    import pyarrow as pa, pyarrow.parquet as papq
+    import pyarrow as pa
+    import pyarrow.parquet as papq
+
     from scripts.pipeline.profile import profile_slug
 
     weird = 'foo"bar'

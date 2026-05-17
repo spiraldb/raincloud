@@ -13,6 +13,7 @@ import json
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+import pytest
 
 from scripts.pipeline.list_datasets import (
     _canonicalize_type,
@@ -116,9 +117,6 @@ def test_iter_columns_skips_unbuilt_slugs():
     assert out == []
 
 
-import pytest
-
-
 @pytest.fixture
 def tmp_manifest_with_showcase():
     """Two-spec synthetic manifest for filter testing."""
@@ -220,7 +218,7 @@ def test_list_datasets_size_filter(monkeypatch, capsys, tmp_manifest_with_showca
     out = capsys.readouterr().out.splitlines()
     assert "demo-start" in out
     assert "demo-other" in out
-    rc2 = ld_mod.main(["--size", "l"])
+    ld_mod.main(["--size", "l"])
     out2 = capsys.readouterr().out.splitlines()
     assert "demo-start" not in out2
 

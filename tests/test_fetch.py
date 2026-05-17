@@ -11,8 +11,6 @@ import io
 import ssl
 from pathlib import Path
 
-import pytest
-
 from scripts.pipeline import fetch as fetch_mod
 from scripts.pipeline.spec import REPO_ROOT
 

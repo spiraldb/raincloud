@@ -47,7 +47,7 @@ from pathlib import Path
 
 import pyarrow.parquet as pq
 
-from .discovery import SHOWCASE_TIERS, TRAIT_FLAGS, _is_variant_field, bucket_for_size
+from .discovery import SHOWCASE_TIERS, _is_variant_field, bucket_for_size
 from .spec import (
     REPO_ROOT,
     load_manifest,

@@ -38,7 +38,6 @@ from .spec import (
     prepared_parquet,
 )
 
-
 _PROFILE_SCHEMA_VERSION = 1
 _HISTOGRAM_BUCKETS = 10
 _TOPK = 5

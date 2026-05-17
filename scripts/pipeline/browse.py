@@ -59,7 +59,6 @@ from .discovery import (
     TAG_VOCAB,
     TRAIT_FLAGS,
     FilterState,
-    sparkline,
 )
 from .list_datasets import _canonicalize_type
 from .spec import (
@@ -473,6 +472,7 @@ def _cell_weight(ch: str) -> int:
           and reliably monospace.
     """
     import unicodedata
+
     from rich.cells import cell_len
     cl = cell_len(ch)
     if ord(ch) > 127 and unicodedata.category(ch)[0] in ("L", "M"):
@@ -713,8 +713,6 @@ def _render_column_detail(name: str, spec_stat: dict | None,
     # Derived cell budgets. label+pad is 10 cells; value content gets the
     # rest, capped at 60 (beyond which longer min/max stops being useful).
     value_cells = max(14, min(budget - 10, 60))
-    # The "lo  →  hi" range line under the histogram (5-cell separator).
-    range_cells = max(8, (budget - 5) // 2)
     # Histogram bar geometry — derived from `budget` assuming 10 bins per
     # profile with one cell of inter-bar gap (total = 10 * (bar+1) - 1).
     # Clamp to [1, 6] cells per bar; beyond 6 looks chunky.

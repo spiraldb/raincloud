@@ -231,6 +231,7 @@ def test_snapshot_size_bucket_unknown_when_no_data(tmp_path):
 
 def test_shape_traits_from_schema_flat_string_only():
     import pyarrow as pa
+
     from scripts.pipeline.docs import _shape_traits_from_schema
 
     schema = pa.schema([("a", pa.string()), ("b", pa.string())])
@@ -245,6 +246,7 @@ def test_shape_traits_from_schema_flat_string_only():
 
 def test_shape_traits_from_schema_nested_timestamp_wide():
     import pyarrow as pa
+
     from scripts.pipeline.docs import _shape_traits_from_schema
 
     fields = [(f"col{i}", pa.int32()) for i in range(60)] + [
@@ -264,6 +266,7 @@ def test_shape_traits_detects_variant_via_metadata():
     """VARIANT in raincloud is stored as a struct with a `__variant_type` marker
     in pyarrow field metadata."""
     import pyarrow as pa
+
     from scripts.pipeline.docs import _shape_traits_from_schema
 
     inner = pa.struct([("v", pa.binary())])
