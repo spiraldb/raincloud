@@ -597,14 +597,22 @@ def _render_block_histogram(counts: list[int], *, rows: int, bar_cells: int) -> 
 
 
 def _format_axis_value(v: Any) -> str:
-    """Format a histogram bucket edge for an x-axis tick label. Numbers
-    get comma-separated / 3-sig-fig form; ISO timestamps get truncated to
-    their date portion; everything else falls through to `str(v)`."""
+    """Format a histogram bucket edge for an x-axis tick label. Numbers in
+    `[1, 100_000)` get comma-separated standard form with up to 3 sig figs
+    after the leading digit (`1.23`, `12.3`, `123`, `1,234`, `12,345`);
+    everything else falls through to `:.3g` so very small or very large
+    floats compress to scientific. ISO timestamps truncate to their date
+    portion."""
     if isinstance(v, bool):
         return str(v)
     if isinstance(v, int):
         return f"{v:,}"
     if isinstance(v, float):
+        import math
+        av = abs(v)
+        if 1 <= av < 100_000 and math.isfinite(v):
+            decimals = max(0, 2 - int(math.floor(math.log10(av))))
+            return f"{v:,.{decimals}f}"
         return f"{v:.3g}"
     s = str(v)
     if len(s) >= 10 and s[4:5] == "-" and s[7:8] == "-":

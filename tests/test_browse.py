@@ -509,6 +509,39 @@ def test_render_x_axis_ticks_spaces_lo_mid_hi():
     assert "0.0001" in out and "0.01" in out
 
 
+def test_format_axis_value_uses_standard_notation_between_1_and_100k():
+    """Floats in [1, 100k) render with commas in standard form so a
+    histogram of counts/measurements doesn't paint `1e+03` / `1.23e+04`
+    when the reader would naturally read `1,000` / `12,300`. Outside that
+    range and below 1, fall through to `:.3g`."""
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import _format_axis_value
+
+    # Standard-notation band — was the bug zone.
+    assert _format_axis_value(1.0) == "1.00"
+    assert _format_axis_value(1.234) == "1.23"
+    assert _format_axis_value(12.34) == "12.3"
+    assert _format_axis_value(123.4) == "123"
+    assert _format_axis_value(1234.6) == "1,235"
+    assert _format_axis_value(12345.6) == "12,346"
+    assert _format_axis_value(99999.4) == "99,999"
+    # Negative numbers — same rules on the magnitude.
+    assert _format_axis_value(-1234.6) == "-1,235"
+    # Boundary: ≥ 100k flips back to scientific.
+    assert "e+05" in _format_axis_value(100_000.0)
+    assert "e+06" in _format_axis_value(1_234_567.0)
+    # Below 1: existing `:.3g` behaviour.
+    assert _format_axis_value(0.5) == "0.5"
+    assert _format_axis_value(0.001) == "0.001"
+    assert "e-05" in _format_axis_value(0.0000123)
+    # Integers always use comma form (no scientific).
+    assert _format_axis_value(0) == "0"
+    assert _format_axis_value(1234) == "1,234"
+    assert _format_axis_value(1_000_000) == "1,000,000"
+    # Bools stay as their str repr (e.g. `True` for a boolean histogram).
+    assert _format_axis_value(True) == "True"
+
+
 def test_render_top_value_bars_proportional_widths():
     """Top-value bars scale to count / max(counts); each row reports the
     raw count right-justified."""
