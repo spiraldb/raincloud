@@ -324,3 +324,66 @@ def test_profile_main_no_promote_flag_suppresses(uci_seeds_parquet, monkeypatch,
     assert calls == []
     out = capsys.readouterr().out
     assert "mirrored" not in out
+
+
+def test_profile_main_force_bypasses_sha_cache(uci_seeds_parquet, monkeypatch, capsys, tmp_path):
+    """`--force` re-runs `profile_slug` even when the cached sha matches.
+
+    Without `--force` the cache short-circuit prints `cached: <slug>` and skips
+    `profile_slug`; with `--force` the work runs unconditionally. We assert
+    both halves of that contract in one test so the gate stays exercised.
+    """
+    from scripts.pipeline import profile as profile_mod
+    from scripts.pipeline import promote_profiles
+
+    # Stub promote so we don't touch docs/v1/profiles/ from the test.
+    monkeypatch.setattr(promote_profiles, "promote",
+                        lambda slugs=None, *, check_only=False: (0, 0, []))
+
+    # Seed a fake on-disk profile whose parquet_sha256 matches the real
+    # parquet — that's the exact condition the cache short-circuits on.
+    out_path = profile_mod._profile_path("uci-seeds")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    original_exists = out_path.exists()
+    original_bytes = out_path.read_bytes() if original_exists else None
+    out_path.write_text(json.dumps({
+        "schema_version": 1,
+        "slug": "uci-seeds",
+        "row_count": 0,
+        "parquet_sha256": _sha256(uci_seeds_parquet),
+        "computed_at": "2026-05-12T00:00:00Z",
+        "sample_rows": None,
+        "columns": {},
+    }) + "\n")
+
+    profile_calls: list[str] = []
+    real_profile_slug = profile_mod.profile_slug
+
+    def tracking_profile_slug(*, slug, parquet_path, sample_rows=None):
+        profile_calls.append(slug)
+        return real_profile_slug(slug=slug, parquet_path=parquet_path,
+                                 sample_rows=sample_rows)
+
+    monkeypatch.setattr(profile_mod, "profile_slug", tracking_profile_slug)
+
+    try:
+        # Default run → cache short-circuits, profile_slug NOT called.
+        rc = profile_mod.main(["uci-seeds"])
+        assert rc == 0
+        assert profile_calls == []
+        out = capsys.readouterr().out
+        assert "cached: uci-seeds" in out
+
+        # With --force → cache ignored, profile_slug IS called.
+        rc = profile_mod.main(["uci-seeds", "--force"])
+        assert rc == 0
+        assert profile_calls == ["uci-seeds"]
+        out = capsys.readouterr().out
+        assert "cached: uci-seeds" not in out
+    finally:
+        # Restore the on-disk profile (the fresh write from --force is real,
+        # but tests shouldn't churn a tracked artefact's mtime).
+        if original_bytes is not None:
+            out_path.write_bytes(original_bytes)
+        elif out_path.exists():
+            out_path.unlink()

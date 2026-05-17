@@ -510,6 +510,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--no-promote", action="store_true",
                     help="skip the auto-promote step that mirrors built profiles "
                          "into docs/v{n}/profiles/ (default: promote)")
+    ap.add_argument("--force", action="store_true",
+                    help="bypass the parquet-sha256 cache and re-profile even when "
+                         "the existing profile.json reports an identical hash")
     args = ap.parse_args(argv)
 
     manifest = load_manifest()
@@ -529,7 +532,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"skip: {slug} — no parquet at {parquet}", file=sys.stderr)
             continue
         out = _profile_path(slug)
-        if out.exists():
+        if not args.force and out.exists():
             try:
                 prior = json.loads(out.read_text())
                 if prior.get("parquet_sha256") == _file_sha256(parquet) and \

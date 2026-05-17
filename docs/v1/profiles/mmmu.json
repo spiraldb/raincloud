@@ -3,7 +3,7 @@
   "slug": "mmmu",
   "row_count": 11550,
   "parquet_sha256": "a72bafdbec981a21cf5b850f561db97b3902c5a28cf9119e6b8b3411f7c3359f",
-  "computed_at": "2026-05-13T16:44:39Z",
+  "computed_at": "2026-05-17T13:43:40Z",
   "sample_rows": null,
   "columns": {
     "id": {

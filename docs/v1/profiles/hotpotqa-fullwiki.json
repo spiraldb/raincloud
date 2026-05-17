@@ -3,7 +3,7 @@
   "slug": "hotpotqa-fullwiki",
   "row_count": 105257,
   "parquet_sha256": "b6756a27e19367d4f37adbba86cf9ee4572730445eaec637674687b2c98cf1d1",
-  "computed_at": "2026-05-13T15:52:19Z",
+  "computed_at": "2026-05-17T13:43:39Z",
   "sample_rows": null,
   "columns": {
     "id": {

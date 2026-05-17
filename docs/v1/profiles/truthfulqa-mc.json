@@ -3,7 +3,7 @@
   "slug": "truthfulqa-mc",
   "row_count": 817,
   "parquet_sha256": "cc02b069245fbade0263629f7a23b16f199643a756127eb94ef9ae2cc52537ff",
-  "computed_at": "2026-05-13T16:44:44Z",
+  "computed_at": "2026-05-17T13:43:41Z",
   "sample_rows": null,
   "columns": {
     "question": {

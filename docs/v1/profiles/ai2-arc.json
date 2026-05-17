@@ -3,7 +3,7 @@
   "slug": "ai2-arc",
   "row_count": 7787,
   "parquet_sha256": "85acd4636fd9468718e66f795bb33f32d16709dee50ab9105c2f286efd1e04e6",
-  "computed_at": "2026-05-13T15:52:15Z",
+  "computed_at": "2026-05-17T13:43:37Z",
   "sample_rows": null,
   "columns": {
     "id": {

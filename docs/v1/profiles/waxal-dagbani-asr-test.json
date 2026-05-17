@@ -3,7 +3,7 @@
   "slug": "waxal-dagbani-asr-test",
   "row_count": 1838,
   "parquet_sha256": "eae8a9cb5a57711580c0e374bd14fe901aaa5c903cd5ce29dbdf078cef32b20f",
-  "computed_at": "2026-05-13T16:44:44Z",
+  "computed_at": "2026-05-17T13:43:41Z",
   "sample_rows": null,
   "columns": {
     "id": {

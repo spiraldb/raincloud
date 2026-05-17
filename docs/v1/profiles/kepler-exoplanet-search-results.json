@@ -3,7 +3,7 @@
   "slug": "kepler-exoplanet-search-results",
   "row_count": 9564,
   "parquet_sha256": "a9bf0bddc568e719ab789f341cc6805d79eaddb2ea779bdef593ab9fbc1f4d5d",
-  "computed_at": "2026-05-13T15:52:15Z",
+  "computed_at": "2026-05-17T13:43:39Z",
   "sample_rows": null,
   "columns": {
     "kepid": {

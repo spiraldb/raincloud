@@ -3,7 +3,7 @@
   "slug": "mnist",
   "row_count": 70000,
   "parquet_sha256": "48533689b58e91740da03c67114473d38c61d1c31a8f47d12514b24f5857cec4",
-  "computed_at": "2026-05-13T15:52:13Z",
+  "computed_at": "2026-05-17T13:43:40Z",
   "sample_rows": null,
   "columns": {
     "image": null,
