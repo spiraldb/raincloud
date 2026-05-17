@@ -369,11 +369,24 @@ def test_render_column_detail_dtype_shapes():
     # Percentages are computed against (true + false + null) = 14.
     assert "%" in out
 
-    # No profile → render the "no profile yet" hint, but still show schema stats.
+    # No profile (slug-level) → render the "no profile yet" hint with the
+    # build command, but still show schema stats.
     out = _render_column_detail(
         "y", {"type": "int32", "null_count": 5, "min": 0, "max": 9}, None,
     )
     assert "nulls:" in out and "No profile yet" in out
+    assert "scripts.pipeline.profile" in out
+
+    # Profile WAS loaded but this column's entry is null — e.g. a struct
+    # field. The user shouldn't be told to re-run profile (they'd get the
+    # same answer); show a "skipped by design" hint instead.
+    out = _render_column_detail(
+        "msg", {"type": "struct", "null_count": 0, "min": None, "max": None},
+        None, profile_loaded=True,
+    )
+    assert "No profile yet" not in out
+    assert "scripts.pipeline.profile" not in out
+    assert "skips" in out and "struct" in out
 
     # No data at all → defensive "(no data)" placeholder.
     out = _render_column_detail("z", None, None)

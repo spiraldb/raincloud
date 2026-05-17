@@ -680,7 +680,8 @@ def _render_top_value_bars(
 
 def _render_column_detail(name: str, spec_stat: dict | None,
                           profile_col: dict | None,
-                          *, pane_cells: int = 36) -> str:
+                          *, pane_cells: int = 36,
+                          profile_loaded: bool = False) -> str:
     """Multi-line markup for the right pane of the Columns modal.
 
     Combines parquet schema stats (nulls + row-group min/max from `spec_stat`)
@@ -742,12 +743,26 @@ def _render_column_detail(name: str, spec_stat: dict | None,
             lines += _kv("max:", _format_stat(spec_stat["max"], max_cells=value_cells))
 
     if profile_col is None:
-        lines += [
-            "",
-            "[dim]No profile yet — run "
-            "[b]python -m scripts.pipeline.profile <slug>[/b] "
-            "to populate per-column distribution stats.[/dim]",
-        ]
+        if profile_loaded:
+            # The slug's profile.json was loaded but this column's entry is
+            # `null`. `profile.py` intentionally returns null at the
+            # column-map level for shapes it can't usefully aggregate per
+            # element: struct, variant, list-of-struct, and all-null
+            # columns. Don't ask the user to re-run profile — they'd get
+            # the same answer.
+            lines += [
+                "",
+                "[dim]No per-element distribution: `profile.py` skips this "
+                "column's shape (typically struct / variant / all-null). "
+                "The schema stats above are the source of truth.[/dim]",
+            ]
+        else:
+            lines += [
+                "",
+                "[dim]No profile yet — run "
+                "[b]python -m scripts.pipeline.profile <slug>[/b] "
+                "to populate per-column distribution stats.[/dim]",
+            ]
         return "\n".join(lines)
 
     if "histogram" in profile_col:
@@ -1108,7 +1123,16 @@ class ColumnsModal(_DatasetModal):
         # widget width, which is what we actually want. `Text.from_markup` +
         # `overflow="fold"` was wrapping at Console width (full terminal) and
         # letting wide lines bleed past the right border of the pane.
-        target.update(_render_column_detail(name, spec_stat, prof, pane_cells=pane_cells))
+        # `bool(self.profile_columns)` is the "did profile.py run" signal —
+        # an empty dict means no slug-level profile was loaded, so a null
+        # `prof` for this column means "run profile.py"; a non-empty dict
+        # means the slug WAS profiled and this column was intentionally
+        # skipped.
+        target.update(_render_column_detail(
+            name, spec_stat, prof,
+            pane_cells=pane_cells,
+            profile_loaded=bool(self.profile_columns),
+        ))
 
 
 class BuildConfirmModal(_DatasetModal):
