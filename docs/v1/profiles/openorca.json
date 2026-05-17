@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "slug": "openorca",
+  "row_count": 4233923,
+  "parquet_sha256": "f8d49b63ed654aa5a09310bc4c265e6961374933094915b62814fa02cf33f849",
+  "computed_at": "2026-05-17T06:16:17Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 3757628,
+      "mean_length": 10.27194306556827,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "system_prompt": {
+      "null_count": 0,
+      "ndv_approx": 16,
+      "mean_length": 117.342180998568,
+      "top_values": [
+        {
+          "value": "You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can. While performing the task think step-by-step and justify your steps.",
+          "count": 965253
+        },
+        {
+          "value": "You are an AI assistant. You will be given a task. You must generate a detailed and long answer.",
+          "count": 959340
+        },
+        {
+          "value": "You are a helpful assistant, who always provide explanation. Think like you are answering to a five year old.",
+          "count": 518999
+        },
+        {
+          "value": "You are an AI assistant. Provide a detailed answer so user don\u2019t need to search outside to understand the answer.",
+          "count": 469425
+        },
+        {
+          "value": "",
+          "count": 464912
+        }
+      ],
+      "dtype": "string"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 2483996,
+      "mean_length": 1061.9702970507494,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "response": {
+      "null_count": 0,
+      "ndv_approx": 2906345,
+      "mean_length": 492.58719891693823,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 20.060071711271085,
+      "top_values": [
+        {
+          "value": "3_5M-GPT3_5-Augmented",
+          "count": 3239027
+        },
+        {
+          "value": "1M-GPT4-Augmented",
+          "count": 994896
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

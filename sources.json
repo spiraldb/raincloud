@@ -438,8 +438,8 @@
       },
       "tags": [
         "identifiers",
-        "nested-json",
-        "prose"
+        "prose",
+        "timestamps"
       ]
     },
     {
@@ -502,8 +502,8 @@
       },
       "tags": [
         "identifiers",
-        "nested-json",
-        "prose"
+        "prose",
+        "timestamps"
       ]
     },
     {
@@ -630,7 +630,8 @@
       },
       "tags": [
         "coordinates",
-        "nested-json"
+        "counts",
+        "identifiers"
       ]
     },
     {
@@ -759,7 +760,8 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "coordinates",
+        "counts",
+        "identifiers",
         "nested-json"
       ]
     },
@@ -1021,9 +1023,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "code-strings",
-        "prose",
-        "timestamps"
+        "counts",
+        "identifiers",
+        "measurements"
       ]
     },
     {
@@ -1277,9 +1279,9 @@
         "vortex_skip_reason": null
       },
       "tags": [
-        "code-strings",
-        "identifiers",
-        "prose"
+        "counts",
+        "measurements",
+        "timestamps"
       ]
     },
     {
@@ -1690,11 +1692,7 @@
       "convert": {
         "vortex": false,
         "vortex_skip_reason": "VARIANT-column nested data conversion is not implemented in vortex-data 0.69 chunked-array output. Re-enable when vortex adds the path."
-      },
-      "tags": [
-        "nested-json",
-        "timestamps"
-      ]
+      }
     },
     {
       "slug": "yellow_tripdata_2025",
@@ -11400,9 +11398,9 @@
         "vortex_skip_reason": "Vortex 0.69 cannot accept FixedSizeBinary(16): the parquet stores `event.identifier` as a UUID via that physical type, and `vortex.Array.from_arrow` raises a pyo3_runtime.PanicException on the column. Re-enable once Vortex adds FSB(16) support."
       },
       "tags": [
+        "identifiers",
         "nested-json",
-        "prose",
-        "urls"
+        "timestamps"
       ]
     },
     {
@@ -12879,6 +12877,7 @@
         }
       ],
       "tags": [
+        "identifiers",
         "prose"
       ]
     },
@@ -13328,6 +13327,7 @@
         }
       ],
       "tags": [
+        "counts",
         "prose"
       ]
     },

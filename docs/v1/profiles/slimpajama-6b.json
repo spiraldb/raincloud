@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "slug": "slimpajama-6b",
+  "row_count": 5507693,
+  "parquet_sha256": "5a7c8e405eefd5d05c2b240ce58e85466fbc2aabf383e985e7b52a964556d44c",
+  "computed_at": "2026-05-17T07:25:04Z",
+  "sample_rows": null,
+  "columns": {
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 5351465,
+      "mean_length": 4303.195746204446,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "meta": null,
+    "__index_level_0__": {
+      "null_count": 0,
+      "min": 0,
+      "max": 93472,
+      "mean": 4998.798239662233,
+      "ndv_approx": 18254,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9347.2,
+          18694.4,
+          28041.600000000002,
+          37388.8,
+          46736.0,
+          56083.200000000004,
+          65430.40000000001,
+          74777.6,
+          84124.8,
+          93472.0
+        ],
+        "counts": [
+          5155355,
+          337401,
+          1837,
+          1980,
+          1905,
+          1852,
+          1890,
+          1901,
+          1815,
+          1757
+        ]
+      },
+      "dtype": "uint32"
+    }
+  }
+}
