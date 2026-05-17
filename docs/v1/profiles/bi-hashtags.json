@@ -1,0 +1,2392 @@
+{
+  "schema_version": 1,
+  "slug": "bi-hashtags",
+  "row_count": 511511,
+  "parquet_sha256": "7bd25a6da5aa393d807a9d2cefa21204e2d77aa50b2ef17bf745efcc37974b87",
+  "computed_at": "2026-05-16T06:11:17Z",
+  "sample_rows": null,
+  "columns": {
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          511511
+        ]
+      }
+    },
+    "demographic#gender": {
+      "null_count": 318615,
+      "ndv_approx": 5,
+      "mean_length": 6.860582904777704,
+      "top_values": [
+        {
+          "value": "female",
+          "count": 95913
+        },
+        {
+          "value": "male",
+          "count": 33641
+        },
+        {
+          "value": "unisex",
+          "count": 26593
+        },
+        {
+          "value": "mostly_female",
+          "count": 24770
+        },
+        {
+          "value": "mostly_male",
+          "count": 11979
+        }
+      ],
+      "dtype": "string"
+    },
+    "interaction#author#avatar": {
+      "null_count": 0,
+      "ndv_approx": 203318,
+      "mean_length": 82.1221694157115,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#author#id": {
+      "null_count": 6920,
+      "min": 2017.0,
+      "max": 2370304481.0,
+      "mean": 498696567.45497245,
+      "ndv_approx": 200282,
+      "histogram": {
+        "buckets": [
+          2017.0,
+          237032263.4,
+          474062509.8,
+          711092756.2,
+          948123002.6,
+          1185153249.0,
+          1422183495.4,
+          1659213741.8,
+          1896243988.2,
+          2133274234.6000001,
+          2370304481.0
+        ],
+        "counts": [
+          237182,
+          113889,
+          40570,
+          23048,
+          16772,
+          15744,
+          15092,
+          8053,
+          4750,
+          29491
+        ]
+      },
+      "dtype": "float64"
+    },
+    "interaction#author#language": {
+      "null_count": 0,
+      "ndv_approx": 40,
+      "mean_length": 2.007868843485282,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 490618
+        },
+        {
+          "value": "es",
+          "count": 9900
+        },
+        {
+          "value": "pt",
+          "count": 2730
+        },
+        {
+          "value": "ja",
+          "count": 2257
+        },
+        {
+          "value": "fr",
+          "count": 2139
+        }
+      ],
+      "dtype": "string"
+    },
+    "interaction#author#link": {
+      "null_count": 0,
+      "ndv_approx": 219153,
+      "mean_length": 30.20536215252458,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#author#name": {
+      "null_count": 348,
+      "ndv_approx": 142274,
+      "mean_length": 11.682058364944254,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#author#username": {
+      "null_count": 0,
+      "ndv_approx": 157812,
+      "mean_length": 11.205362152524579,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#content": {
+      "null_count": 0,
+      "ndv_approx": 484126,
+      "mean_length": 78.86976233160186,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#created_at": {
+      "null_count": 0,
+      "ndv_approx": 241704,
+      "mean_length": 31.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#geo#latitude": {
+      "null_count": 483920,
+      "min": -53.1417317,
+      "max": 63.688819,
+      "mean": 37.04218085051285,
+      "ndv_approx": 28640,
+      "histogram": {
+        "buckets": [
+          -53.1417317,
+          -41.45867663,
+          -29.77562156,
+          -18.092566490000003,
+          -6.409511420000001,
+          5.273543650000001,
+          16.956598719999995,
+          28.639653790000004,
+          40.32270886,
+          52.00576392999999,
+          63.688819
+        ],
+        "counts": [
+          2,
+          215,
+          188,
+          78,
+          71,
+          133,
+          1096,
+          14522,
+          11011,
+          275
+        ]
+      },
+      "dtype": "float64"
+    },
+    "interaction#geo#longitude": {
+      "null_count": 483920,
+      "min": -158.18278,
+      "max": 178.4299964,
+      "mean": -84.65029920149937,
+      "ndv_approx": 25525,
+      "histogram": {
+        "buckets": [
+          -158.18278,
+          -124.52150236,
+          -90.86022472,
+          -57.19894708000001,
+          -23.537669440000002,
+          10.123608200000007,
+          43.78488583999999,
+          77.44616348,
+          111.10744112,
+          144.76871875999998,
+          178.42999640000002
+        ],
+        "counts": [
+          42,
+          7869,
+          18820,
+          267,
+          292,
+          109,
+          13,
+          29,
+          68,
+          82
+        ]
+      },
+      "dtype": "float64"
+    },
+    "interaction#hashtags": {
+      "null_count": 1053,
+      "ndv_approx": 73291,
+      "mean_length": 21.57480732988806,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#id": {
+      "null_count": 0,
+      "ndv_approx": 459123,
+      "mean_length": 32.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#link": {
+      "null_count": 0,
+      "ndv_approx": 519260,
+      "mean_length": 56.20536215252458,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#mention_ids": {
+      "null_count": 404839,
+      "ndv_approx": 40155,
+      "mean_length": 14.492687865606719,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#mentions": {
+      "null_count": 404839,
+      "ndv_approx": 42935,
+      "mean_length": 21.05292860356982,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#received_at": {
+      "null_count": 196018,
+      "min": 1391475962.0,
+      "max": 4.74363181673591e+18,
+      "mean": 4.4128897680110817e+18,
+      "ndv_approx": 295063,
+      "histogram": {
+        "buckets": [
+          1391475962.0,
+          4.7436318292591936e+17,
+          9.487263644603628e+17,
+          1.423089545994806e+18,
+          1.8974527275292495e+18,
+          2.371815909063693e+18,
+          2.846179090598136e+18,
+          3.3205422721325793e+18,
+          3.794905453667023e+18,
+          4.2692686352014664e+18,
+          4.74363181673591e+18
+        ],
+        "counts": [
+          21997,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          293496
+        ]
+      },
+      "dtype": "float64"
+    },
+    "interaction#schema#version": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 3,
+      "max": 3,
+      "mean": 3.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          3,
+          3
+        ],
+        "counts": [
+          511511
+        ]
+      }
+    },
+    "interaction#source": {
+      "null_count": 0,
+      "ndv_approx": 898,
+      "mean_length": 14.272535683494588,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "interaction#type": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 7.0,
+      "top_values": [
+        {
+          "value": "twitter",
+          "count": 511511
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#created_at": {
+      "null_count": 0,
+      "ndv_approx": 241704,
+      "mean_length": 31.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#display_urls": {
+      "null_count": 428189,
+      "ndv_approx": 59026,
+      "mean_length": 21.002820383572164,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#domains": {
+      "null_count": 428190,
+      "ndv_approx": 2733,
+      "mean_length": 12.003384500906135,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#filter_level": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.994514291970261,
+      "top_values": [
+        {
+          "value": "medium",
+          "count": 510119
+        },
+        {
+          "value": "none",
+          "count": 1370
+        },
+        {
+          "value": "low",
+          "count": 22
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#geo#latitude": {
+      "null_count": 483920,
+      "min": -53.1417317,
+      "max": 63.688819,
+      "mean": 37.0421808505128,
+      "ndv_approx": 28640,
+      "histogram": {
+        "buckets": [
+          -53.1417317,
+          -41.45867663,
+          -29.77562156,
+          -18.092566490000003,
+          -6.409511420000001,
+          5.273543650000001,
+          16.956598719999995,
+          28.639653790000004,
+          40.32270886,
+          52.00576392999999,
+          63.688819
+        ],
+        "counts": [
+          2,
+          215,
+          188,
+          78,
+          71,
+          133,
+          1096,
+          14522,
+          11011,
+          275
+        ]
+      },
+      "dtype": "float64"
+    },
+    "twitter#geo#longitude": {
+      "null_count": 483920,
+      "min": -158.18278,
+      "max": 178.4299964,
+      "mean": -84.65029920149935,
+      "ndv_approx": 25525,
+      "histogram": {
+        "buckets": [
+          -158.18278,
+          -124.52150236,
+          -90.86022472,
+          -57.19894708000001,
+          -23.537669440000002,
+          10.123608200000007,
+          43.78488583999999,
+          77.44616348,
+          111.10744112,
+          144.76871875999998,
+          178.42999640000002
+        ],
+        "counts": [
+          42,
+          7869,
+          18820,
+          267,
+          292,
+          109,
+          13,
+          29,
+          68,
+          82
+        ]
+      },
+      "dtype": "float64"
+    },
+    "twitter#hashtags": {
+      "null_count": 1053,
+      "ndv_approx": 73291,
+      "mean_length": 21.57480732988806,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#id": {
+      "null_count": 0,
+      "min": 4.29418886178812e+17,
+      "max": 4.39243051740193e+17,
+      "mean": 4.357186773355307e+17,
+      "ndv_approx": 662421,
+      "histogram": {
+        "buckets": [
+          4.29418886178812e+17,
+          4.3040130273495014e+17,
+          4.3138371929108826e+17,
+          4.323661358472263e+17,
+          4.333485524033644e+17,
+          4.343309689595025e+17,
+          4.3531338551564064e+17,
+          4.3629580207177875e+17,
+          4.372782186279168e+17,
+          4.382606351840549e+17,
+          4.39243051740193e+17
+        ],
+        "counts": [
+          18344,
+          90044,
+          14331,
+          40825,
+          18444,
+          12320,
+          51682,
+          21996,
+          52904,
+          190621
+        ]
+      },
+      "dtype": "float64"
+    },
+    "twitter#in_reply_to_screen_name": {
+      "null_count": 458117,
+      "ndv_approx": 17903,
+      "mean_length": 11.362100610555492,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#in_reply_to_status_id": {
+      "null_count": 476638,
+      "min": 2.28147929196675e+17,
+      "max": 4.39242960556016e+17,
+      "mean": 4.349508575007249e+17,
+      "ndv_approx": 29599,
+      "histogram": {
+        "buckets": [
+          2.28147929196675e+17,
+          2.4925743233260912e+17,
+          2.703669354685432e+17,
+          2.914764386044773e+17,
+          3.125859417404114e+17,
+          3.336954448763455e+17,
+          3.548049480122796e+17,
+          3.759144511482137e+17,
+          3.9702395428414784e+17,
+          4.181334574200819e+17,
+          4.39242960556016e+17
+        ],
+        "counts": [
+          1,
+          2,
+          2,
+          10,
+          7,
+          6,
+          9,
+          25,
+          45,
+          34766
+        ]
+      },
+      "dtype": "float64"
+    },
+    "twitter#in_reply_to_user_id": {
+      "null_count": 458489,
+      "min": 1583,
+      "max": 2368108005,
+      "mean": 420847974.5706311,
+      "ndv_approx": 17407,
+      "histogram": {
+        "buckets": [
+          1583.0,
+          236812225.2,
+          473622867.4,
+          710433509.5999999,
+          947244151.8,
+          1184054794.0,
+          1420865436.1999998,
+          1657676078.3999999,
+          1894486720.6,
+          2131297362.8,
+          2368108005.0
+        ],
+        "counts": [
+          27521,
+          11906,
+          4109,
+          1584,
+          2118,
+          1328,
+          1116,
+          1060,
+          255,
+          2025
+        ]
+      },
+      "dtype": "int64"
+    },
+    "twitter#lang": {
+      "null_count": 0,
+      "ndv_approx": 44,
+      "mean_length": 2.000105569577194,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 472567
+        },
+        {
+          "value": "es",
+          "count": 10937
+        },
+        {
+          "value": "de",
+          "count": 5725
+        },
+        {
+          "value": "tl",
+          "count": 3461
+        },
+        {
+          "value": "ar",
+          "count": 2203
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#links": {
+      "null_count": 428189,
+      "ndv_approx": 49290,
+      "mean_length": 30.243321091668466,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#media": {
+      "null_count": 493329,
+      "ndv_approx": 21467,
+      "mean_length": 254.96947530524696,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#mention_ids": {
+      "null_count": 404839,
+      "ndv_approx": 40155,
+      "mean_length": 14.492687865606719,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#mentions": {
+      "null_count": 404839,
+      "ndv_approx": 42935,
+      "mean_length": 21.05292860356982,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#place#country": {
+      "null_count": 484254,
+      "ndv_approx": 52,
+      "mean_length": 12.542576218952929,
+      "top_values": [
+        {
+          "value": "United States",
+          "count": 25185
+        },
+        {
+          "value": "Canada",
+          "count": 1137
+        },
+        {
+          "value": "Brasil",
+          "count": 272
+        },
+        {
+          "value": "United Kingdom",
+          "count": 175
+        },
+        {
+          "value": "Chile",
+          "count": 91
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#place#country_code": {
+      "null_count": 484254,
+      "ndv_approx": 37,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "US",
+          "count": 25185
+        },
+        {
+          "value": "CA",
+          "count": 1137
+        },
+        {
+          "value": "BR",
+          "count": 272
+        },
+        {
+          "value": "GB",
+          "count": 184
+        },
+        {
+          "value": "MX",
+          "count": 106
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#place#full_name": {
+      "null_count": 484253,
+      "ndv_approx": 4123,
+      "mean_length": 13.68064421454252,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#place#id": {
+      "null_count": 484253,
+      "ndv_approx": 5809,
+      "mean_length": 16.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#place#name": {
+      "null_count": 484253,
+      "ndv_approx": 4683,
+      "mean_length": 9.151735270379339,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#place#place_type": {
+      "null_count": 484253,
+      "ndv_approx": 5,
+      "mean_length": 4.170885611563578,
+      "top_values": [
+        {
+          "value": "city",
+          "count": 23590
+        },
+        {
+          "value": "admin",
+          "count": 3396
+        },
+        {
+          "value": "country",
+          "count": 172
+        },
+        {
+          "value": "neighborhood",
+          "count": 94
+        },
+        {
+          "value": "poi",
+          "count": 6
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#place#url": {
+      "null_count": 484253,
+      "ndv_approx": 3681,
+      "mean_length": 56.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#possibly_sensitive": {
+      "null_count": 510264,
+      "ndv_approx": 2,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "true",
+          "count": 966
+        },
+        {
+          "value": "True",
+          "count": 281
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#source": {
+      "null_count": 0,
+      "ndv_approx": 749,
+      "mean_length": 66.8218767533836,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#text": {
+      "null_count": 0,
+      "ndv_approx": 484126,
+      "mean_length": 78.86976233160186,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#created_at": {
+      "null_count": 0,
+      "ndv_approx": 151677,
+      "mean_length": 31.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#description": {
+      "null_count": 73923,
+      "ndv_approx": 135694,
+      "mean_length": 86.71076217812188,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#favourites_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 919202,
+      "mean": 1411.8896582869186,
+      "ndv_approx": 15486,
+      "histogram": {
+        "buckets": [
+          0.0,
+          91920.2,
+          183840.4,
+          275760.6,
+          367680.8,
+          459601.0,
+          551521.2,
+          643441.4,
+          735361.6,
+          827281.7999999999,
+          919202.0
+        ],
+        "counts": [
+          511354,
+          154,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "int32"
+    },
+    "twitter#user#followers_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 7760415,
+      "mean": 2926.7898481166585,
+      "ndv_approx": 15378,
+      "histogram": {
+        "buckets": [
+          0.0,
+          776041.5,
+          1552083.0,
+          2328124.5,
+          3104166.0,
+          3880207.5,
+          4656249.0,
+          5432290.5,
+          6208332.0,
+          6984373.5,
+          7760415.0
+        ],
+        "counts": [
+          511285,
+          145,
+          26,
+          6,
+          2,
+          0,
+          34,
+          12,
+          0,
+          1
+        ]
+      },
+      "dtype": "int32"
+    },
+    "twitter#user#friends_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 795256,
+      "mean": 647.125195743591,
+      "ndv_approx": 7284,
+      "histogram": {
+        "buckets": [
+          0.0,
+          79525.6,
+          159051.2,
+          238576.80000000002,
+          318102.4,
+          397628.0,
+          477153.60000000003,
+          556679.2000000001,
+          636204.8,
+          715730.4,
+          795256.0
+        ],
+        "counts": [
+          511388,
+          97,
+          5,
+          11,
+          7,
+          1,
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "int32"
+    },
+    "twitter#user#geo_enabled": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.630479109931165,
+      "top_values": [
+        {
+          "value": "false",
+          "count": 265147
+        },
+        {
+          "value": "true",
+          "count": 157300
+        },
+        {
+          "value": "False",
+          "count": 57350
+        },
+        {
+          "value": "True",
+          "count": 31714
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#user#id": {
+      "null_count": 6920,
+      "min": 2017.0,
+      "max": 2370304481.0,
+      "mean": 498696567.45497245,
+      "ndv_approx": 200282,
+      "histogram": {
+        "buckets": [
+          2017.0,
+          237032263.4,
+          474062509.8,
+          711092756.2,
+          948123002.6,
+          1185153249.0,
+          1422183495.4,
+          1659213741.8,
+          1896243988.2,
+          2133274234.6000001,
+          2370304481.0
+        ],
+        "counts": [
+          237182,
+          113889,
+          40570,
+          23048,
+          16772,
+          15744,
+          15092,
+          8053,
+          4750,
+          29491
+        ]
+      },
+      "dtype": "float64"
+    },
+    "twitter#user#id_str": {
+      "null_count": 304,
+      "min": 2017.0,
+      "max": 2370304481.0,
+      "mean": 521683343.47639996,
+      "ndv_approx": 200282,
+      "histogram": {
+        "buckets": [
+          2017.0,
+          237032263.4,
+          474062509.8,
+          711092756.2,
+          948123002.6,
+          1185153249.0,
+          1422183495.4,
+          1659213741.8,
+          1896243988.2,
+          2133274234.6000001,
+          2370304481.0
+        ],
+        "counts": [
+          237182,
+          113889,
+          40570,
+          23048,
+          16772,
+          15744,
+          15092,
+          8053,
+          4750,
+          36107
+        ]
+      },
+      "dtype": "float64"
+    },
+    "twitter#user#lang": {
+      "null_count": 0,
+      "ndv_approx": 40,
+      "mean_length": 2.007868843485282,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 490618
+        },
+        {
+          "value": "es",
+          "count": 9900
+        },
+        {
+          "value": "pt",
+          "count": 2730
+        },
+        {
+          "value": "ja",
+          "count": 2257
+        },
+        {
+          "value": "fr",
+          "count": 2139
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#user#listed_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 43130,
+      "mean": 28.308575964153263,
+      "ndv_approx": 1590,
+      "histogram": {
+        "buckets": [
+          0.0,
+          4313.0,
+          8626.0,
+          12939.0,
+          17252.0,
+          21565.0,
+          25878.0,
+          30191.0,
+          34504.0,
+          38817.0,
+          43130.0
+        ],
+        "counts": [
+          511208,
+          166,
+          58,
+          9,
+          3,
+          19,
+          23,
+          15,
+          1,
+          9
+        ]
+      },
+      "dtype": "int32"
+    },
+    "twitter#user#location": {
+      "null_count": 175858,
+      "ndv_approx": 54208,
+      "mean_length": 13.699969909400481,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#name": {
+      "null_count": 348,
+      "ndv_approx": 142274,
+      "mean_length": 11.682058364944254,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#profile_image_url": {
+      "null_count": 0,
+      "ndv_approx": 203318,
+      "mean_length": 82.1221694157115,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#profile_image_url_https": {
+      "null_count": 0,
+      "ndv_approx": 188636,
+      "mean_length": 83.1221694157115,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#screen_name": {
+      "null_count": 0,
+      "ndv_approx": 157812,
+      "mean_length": 11.205362152524579,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#statuses_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1437209,
+      "mean": 17510.827221701977,
+      "ndv_approx": 62013,
+      "histogram": {
+        "buckets": [
+          0.0,
+          143720.9,
+          287441.8,
+          431162.69999999995,
+          574883.6,
+          718604.5,
+          862325.3999999999,
+          1006046.2999999999,
+          1149767.2,
+          1293488.0999999999,
+          1437209.0
+        ],
+        "counts": [
+          504570,
+          3975,
+          382,
+          2418,
+          34,
+          21,
+          1,
+          76,
+          26,
+          8
+        ]
+      },
+      "dtype": "int32"
+    },
+    "twitter#user#time_zone": {
+      "null_count": 128407,
+      "ndv_approx": 166,
+      "mean_length": 21.496557070664885,
+      "top_values": [
+        {
+          "value": "Eastern Time (US & Canada)",
+          "count": 124551
+        },
+        {
+          "value": "Central Time (US & Canada)",
+          "count": 96985
+        },
+        {
+          "value": "Pacific Time (US & Canada)",
+          "count": 38428
+        },
+        {
+          "value": "Quito",
+          "count": 35823
+        },
+        {
+          "value": "Atlantic Time (Canada)",
+          "count": 22442
+        }
+      ],
+      "dtype": "string"
+    },
+    "twitter#user#url": {
+      "null_count": 351650,
+      "ndv_approx": 44194,
+      "mean_length": 33.17266875598176,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "twitter#user#utc_offset": {
+      "null_count": 128407,
+      "min": -39600,
+      "max": 46800,
+      "mean": -19041.679804961575,
+      "ndv_approx": 35,
+      "histogram": {
+        "buckets": [
+          -39600.0,
+          -30960.0,
+          -22320.0,
+          -13680.0,
+          -5040.0,
+          3600.0,
+          12240.0,
+          20880.0,
+          29520.0,
+          38160.0,
+          46800.0
+        ],
+        "counts": [
+          10458,
+          61552,
+          285789,
+          7030,
+          3836,
+          7477,
+          1329,
+          2489,
+          1528,
+          1616
+        ]
+      },
+      "dtype": "int32"
+    },
+    "twitter#user#verified": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.990488963091702,
+      "top_values": [
+        {
+          "value": "false",
+          "count": 418500
+        },
+        {
+          "value": "False",
+          "count": 88146
+        },
+        {
+          "value": "true",
+          "count": 3947
+        },
+        {
+          "value": "True",
+          "count": 918
+        }
+      ],
+      "dtype": "string"
+    },
+    "Contains: suburgatory (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.007106396538881862,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          507876,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3635
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: Castle (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.000392953426221528,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          511310,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          201
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: revenge (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.00215244637945225,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          510410,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1101
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: nashville (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0006803372752492127,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          511163,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          348
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: modernfamily (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.006515988903464442,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          508178,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3333
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: lastmanstanding (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.004445652195162958,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          509237,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2274
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: TheNeighbors (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0056597023328921565,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          508616,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2895
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: TheNeighbors (copy 3)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.011753412927581225,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          505499,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6012
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: TheNeighbors (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.004302937766734244,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          509310,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2201
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: suburgatory (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.027426585156526448,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          497482,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          14029
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: Scandal (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.004580546654910647,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          509168,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2343
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: Scandal (copy 3)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.3628485017917503,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          325910,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          185601
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: Scandal (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.004287297829372193,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          509318,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2193
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: RookieBlue (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.07149797365061553,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          474939,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          36572
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: RookieBlue (copy 6)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0005610827528635748,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          511224,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          287
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: RookieBlue (copy 5)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.056602888305432336,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          482558,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          28953
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: RookieBlue (copy 4)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.2086211244723965,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          404799,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          106712
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: RookieBlue (copy 3)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.011096535558375089,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          505835,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          5676
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: RookieBlue (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.01366148528575143,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          504523,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          6988
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: OnceUponATime (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0003499435984758881,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          511332,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          179
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: Motive (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0003460336141353754,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          511334,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          177
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: Motive (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.017158966278340054,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          502734,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          8777
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: KillerWomen (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0021544013716225064,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          510409,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1102
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: KillerWomen (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0038005047789783602,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          509567,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1944
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: GreysAnatomy (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0008171867271671577,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          511093,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          418
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: GreysAnatomy (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.007239336006459294,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          507808,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3703
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Calculation_6220303224029615": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.009331177628633598,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          506738,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4773
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: Castle (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.004343992602309628,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          509289,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2222
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: AgentsofSHIELD (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0019256672877025127,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          510526,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          985
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: AFV (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.07137285415171912,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          475003,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          36508
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: AFV (copy 2)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.03489270025473548,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          493663,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          17848
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Contains: ABC2020 (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0003343036611138372,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          511340,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          171
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Calculation_6610227171140491": {
+      "dtype": "timestamp[us]",
+      "null_count": 0,
+      "min": "2014-01-31T17:00:15+00:00",
+      "max": "2014-02-27T19:37:58+00:00",
+      "histogram": {
+        "buckets": [
+          "2014-01-31T17:00:15+00:00",
+          "2014-02-03T10:04:01.300000+00:00",
+          "2014-02-06T03:07:47.600000+00:00",
+          "2014-02-08T20:11:33.900000+00:00",
+          "2014-02-11T13:15:20.200000+00:00",
+          "2014-02-14T06:19:06.500000+00:00",
+          "2014-02-16T23:22:52.800000+00:00",
+          "2014-02-19T16:26:39.100000+00:00",
+          "2014-02-22T09:30:25.400000+00:00",
+          "2014-02-25T02:34:11.700000+00:00",
+          "2014-02-27T19:37:58+00:00"
+        ],
+        "counts": [
+          18344,
+          90044,
+          14331,
+          40825,
+          18444,
+          12320,
+          51682,
+          21996,
+          52904,
+          190621
+        ]
+      }
+    },
+    "Contains: TheMiddle (copy)": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.0018083677574871314,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          510586,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          925
+        ]
+      },
+      "dtype": "int16"
+    }
+  }
+}

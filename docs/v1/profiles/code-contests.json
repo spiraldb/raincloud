@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "slug": "code-contests",
+  "row_count": 13610,
+  "parquet_sha256": "029e8c97e41a971d5d6bc91dd1dde7c934a7f9abfdbc05842b25b0a84885526d",
+  "computed_at": "2026-05-17T13:43:38Z",
+  "sample_rows": null,
+  "columns": {
+    "name": {
+      "null_count": 0,
+      "ndv_approx": 12535,
+      "mean_length": 24.83894195444526,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "description": {
+      "null_count": 0,
+      "ndv_approx": 13543,
+      "mean_length": 1775.67340191036,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "public_tests": null,
+    "private_tests": null,
+    "generated_tests": null,
+    "source": {
+      "null_count": 0,
+      "min": 1,
+      "max": 6,
+      "mean": 2.960470242468773,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0,
+          5.5,
+          6.0
+        ],
+        "counts": [
+          768,
+          0,
+          8101,
+          0,
+          1267,
+          0,
+          0,
+          0,
+          1323,
+          2151
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "difficulty": {
+      "null_count": 0,
+      "min": 0,
+      "max": 25,
+      "mean": 5.909772226304188,
+      "ndv_approx": 24,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.5,
+          5.0,
+          7.5,
+          10.0,
+          12.5,
+          15.0,
+          17.5,
+          20.0,
+          22.5,
+          25.0
+        ],
+        "counts": [
+          5074,
+          77,
+          1754,
+          2797,
+          3402,
+          366,
+          103,
+          15,
+          19,
+          3
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "solutions": null,
+    "incorrect_solutions": null,
+    "cf_contest_id": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1623,
+      "mean": 481.5825128581925,
+      "ndv_approx": 1472,
+      "histogram": {
+        "buckets": [
+          0.0,
+          162.3,
+          324.6,
+          486.90000000000003,
+          649.2,
+          811.5,
+          973.8000000000001,
+          1136.1000000000001,
+          1298.4,
+          1460.7,
+          1623.0
+        ],
+        "counts": [
+          6357,
+          800,
+          786,
+          772,
+          814,
+          760,
+          826,
+          941,
+          859,
+          695
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "cf_index": {
+      "null_count": 0,
+      "ndv_approx": 48,
+      "mean_length": 0.6213813372520206,
+      "top_values": [
+        {
+          "value": "",
+          "count": 5513
+        },
+        {
+          "value": "A",
+          "count": 1365
+        },
+        {
+          "value": "B",
+          "count": 1352
+        },
+        {
+          "value": "C",
+          "count": 1343
+        },
+        {
+          "value": "D",
+          "count": 1306
+        }
+      ],
+      "dtype": "string"
+    },
+    "cf_points": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 5250.0,
+      "mean": 646.8662747979427,
+      "ndv_approx": 43,
+      "histogram": {
+        "buckets": [
+          0.0,
+          525.0,
+          1050.0,
+          1575.0,
+          2100.0,
+          2625.0,
+          3150.0,
+          3675.0,
+          4200.0,
+          4725.0,
+          5250.0
+        ],
+        "counts": [
+          9003,
+          1324,
+          1084,
+          874,
+          794,
+          370,
+          103,
+          51,
+          3,
+          4
+        ]
+      },
+      "dtype": "float32"
+    },
+    "cf_rating": {
+      "null_count": 0,
+      "min": 0,
+      "max": 3500,
+      "mean": 1109.1182953710506,
+      "ndv_approx": 32,
+      "histogram": {
+        "buckets": [
+          0.0,
+          350.0,
+          700.0,
+          1050.0,
+          1400.0,
+          1750.0,
+          2100.0,
+          2450.0,
+          2800.0,
+          3150.0,
+          3500.0
+        ],
+        "counts": [
+          5627,
+          0,
+          957,
+          913,
+          1652,
+          1301,
+          1473,
+          822,
+          566,
+          299
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "cf_tags": {
+      "null_count": 0,
+      "length_min": 0,
+      "length_max": 11,
+      "length_mean": 1.8141807494489346,
+      "dtype": "list<string>"
+    },
+    "is_description_translated": {
+      "dtype": "bool",
+      "true_count": 1088,
+      "false_count": 12522,
+      "null_count": 0
+    },
+    "untranslated_description": {
+      "null_count": 0,
+      "ndv_approx": 1118,
+      "mean_length": 79.16936076414402,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "time_limit": null,
+    "memory_limit_bytes": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1073741824,
+      "mean": 272848966.776194,
+      "ndv_approx": 27,
+      "histogram": {
+        "buckets": [
+          0.0,
+          107374182.4,
+          214748364.8,
+          322122547.20000005,
+          429496729.6,
+          536870912.0,
+          644245094.4000001,
+          751619276.8000001,
+          858993459.2,
+          966367641.6,
+          1073741824.0
+        ],
+        "counts": [
+          2205,
+          1304,
+          8336,
+          1,
+          730,
+          183,
+          0,
+          14,
+          0,
+          837
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "input_file": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 0.014548126377663484,
+      "top_values": [
+        {
+          "value": "",
+          "count": 13588
+        },
+        {
+          "value": "input.txt",
+          "count": 22
+        }
+      ],
+      "dtype": "string"
+    },
+    "output_file": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 0.016164584864070537,
+      "top_values": [
+        {
+          "value": "",
+          "count": 13588
+        },
+        {
+          "value": "output.txt",
+          "count": 22
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.987876561351947,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 13328
+        },
+        {
+          "value": "test",
+          "count": 165
+        },
+        {
+          "value": "valid",
+          "count": 117
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

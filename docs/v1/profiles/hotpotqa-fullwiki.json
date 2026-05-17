@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "slug": "hotpotqa-fullwiki",
+  "row_count": 105257,
+  "parquet_sha256": "b6756a27e19367d4f37adbba86cf9ee4572730445eaec637674687b2c98cf1d1",
+  "computed_at": "2026-05-17T13:43:39Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 85803,
+      "mean_length": 24.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 122865,
+      "mean_length": 103.72124419278528,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "answer": {
+      "null_count": 7405,
+      "ndv_approx": 51602,
+      "mean_length": 13.848710297183501,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "type": {
+      "null_count": 7405,
+      "ndv_approx": 2,
+      "mean_length": 6.774353104688713,
+      "top_values": [
+        {
+          "value": "bridge",
+          "count": 78909
+        },
+        {
+          "value": "comparison",
+          "count": 18943
+        }
+      ],
+      "dtype": "string"
+    },
+    "level": {
+      "null_count": 7405,
+      "ndv_approx": 3,
+      "mean_length": 5.161223071577484,
+      "top_values": [
+        {
+          "value": "medium",
+          "count": 56814
+        },
+        {
+          "value": "hard",
+          "count": 23066
+        },
+        {
+          "value": "easy",
+          "count": 17972
+        }
+      ],
+      "dtype": "string"
+    },
+    "supporting_facts": null,
+    "context": null,
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.281406462278043,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 90447
+        },
+        {
+          "value": "validation",
+          "count": 7405
+        },
+        {
+          "value": "test",
+          "count": 7405
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -62,7 +62,7 @@ pytest                          # ~0.5 s on the full suite
 Filter the manifest from the command line instead of grepping the ~545 KB JSON or scrolling [`docs/v1/datasets.md`](docs/v1/datasets.md) (~158 KB):
 
 ```bash
-python -m scripts.pipeline.list_datasets --family uci                  # one slug per line
+python -m scripts.pipeline.list_datasets --handler uci_default         # one slug per line
 python -m scripts.pipeline.list_datasets --handler tighten_types --long
 python -m scripts.pipeline.list_datasets --fetch-type kaggle --kaggle-tos
 python -m scripts.pipeline.list_datasets --reader csv --vortex --count
@@ -70,7 +70,7 @@ python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
 python -m scripts.pipeline.list_datasets --license CC0-1.0 --json | jq -s 'length'
 ```
 
-Filters compose with AND. `--long` emits a wide table (slug + family + handler + fetch type + reader + license + rows + vortex flag), `--json` emits one row per object for piping into `jq`, `--count` emits just the match count. Read-only — sub-second on the full manifest. Always pair with `/raincloud-status` if you need filesystem state for any returned slug.
+Filters compose with AND. `--long` emits a wide table (slug + handler + fetch type + reader + license + rows + vortex flag), `--json` emits one row per object for piping into `jq`, `--count` emits just the match count. Read-only — sub-second on the full manifest. Always pair with `/raincloud-status` if you need filesystem state for any returned slug.
 
 ## Validating `sources.json`
 
@@ -109,7 +109,6 @@ The companion [`sources.schema.md`](sources.schema.md) is the human-friendly ref
       "short_name": "My Dataset",
       "full_name": "My Dataset (publisher attribution)",
       "description": "One-line summary.",
-      "family": "direct",
       "license": { "spdx": "CC0-1.0", "source_url": "...", "redistribution_permitted": true, "attribution_required": false },
       "fetch":     { "type": "http", "urls": ["https://..."], "auth": null },
       "extract":   { "type": "passthrough" },
@@ -128,7 +127,7 @@ The companion [`sources.schema.md`](sources.schema.md) is the human-friendly ref
     python -m scripts.pipeline.validate_manifest
     ```
 
-    Catches typo'd handler names, missing required fields, and family-enum violations in under a second. See [Validating `sources.json`](#validating-sourcesjson) above.
+    Catches typo'd handler names, missing required fields, and closed-vocab violations (tags / showcase / SPDX) in under a second. See [Validating `sources.json`](#validating-sourcesjson) above.
 
 4. **Run the build** for just this slug:
 
@@ -366,7 +365,7 @@ PYTHONUNBUFFERED=1 \
 
 Flags that matter for batch runs:
   - `--loose` — first build of a new slug; you don't yet know the exact row count, so downgrade `expect.rows` mismatches to warnings.
-  - `--clean-workdir` — wipe `_workdir/<slug>/` after each successful build. Essential when running a whole family at once; otherwise decompressed CSVs (Public BI can hit ~100 GB for one workload) accumulate.
+  - `--clean-workdir` — wipe `_workdir/<slug>/` after each successful build. Essential when running large batches at once; otherwise decompressed CSVs (Public BI can hit ~100 GB for one workload) accumulate.
   - `PYTHONUNBUFFERED=1` — makes the tee'd log file update line-by-line instead of flushing only on buffer fill, so progress is inspectable mid-run.
 
 Monitor:
@@ -388,7 +387,7 @@ python -m scripts.pipeline.docs snapshot   # just snapshot.json (per-slug schema
 
 Writes land in `docs/{datasets.md, handlers.md, snapshot.json}` (gitignored scratch). To promote, copy to the tracked `docs/v{schema_version}/`.
 
-Regenerate **after** any of: build, convert run, in-place tightening, manifest edit that changes short_name / license / description / family / expect.rows. Skip if the change doesn't affect the catalog or the handler registry.
+Regenerate **after** any of: build, convert run, in-place tightening, manifest edit that changes short_name / license / description / expect.rows. Skip if the change doesn't affect the catalog or the handler registry.
 
 **`snapshot.json` is the load-bearing fallback** — `datasets.md` regen reads it for any slug whose parquet isn't on disk locally (otherwise the row would dash out the row count, sizes, and column-derived "Data Kind" tag). The no-args form keeps snapshot + datasets in lockstep; if you do a partial regen with `docs.py datasets`, run `docs.py snapshot` first (or just use the no-args form) so the table doesn't drift.
 

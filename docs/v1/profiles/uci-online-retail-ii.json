@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "slug": "uci-online-retail-ii",
+  "row_count": 1067371,
+  "parquet_sha256": "5d44a121d098a4ae118dc097fd35b48e98209ceb88626b2dea55d3d66c5a4db9",
+  "computed_at": "2026-05-16T10:23:52Z",
+  "sample_rows": null,
+  "columns": {
+    "sheet_name": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 14.0,
+      "top_values": [
+        {
+          "value": "Year 2010-2011",
+          "count": 541910
+        },
+        {
+          "value": "Year 2009-2010",
+          "count": 525461
+        }
+      ],
+      "dtype": "large_string"
+    },
+    "Invoice": {
+      "null_count": 0,
+      "ndv_approx": 59397,
+      "mean_length": 6.0182691866277045,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "StockCode": {
+      "null_count": 0,
+      "ndv_approx": 6752,
+      "mean_length": 5.112159689554991,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "Description": {
+      "null_count": 4382,
+      "ndv_approx": 5451,
+      "mean_length": 26.677323095535325,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "Quantity": {
+      "null_count": 0,
+      "ndv_approx": 1007,
+      "mean_length": 1.3247221444090198,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "InvoiceDate": {
+      "null_count": 0,
+      "ndv_approx": 54361,
+      "mean_length": 19.0,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "Price": {
+      "null_count": 0,
+      "ndv_approx": 2706,
+      "mean_length": 3.9638738545454206,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "Customer ID": {
+      "null_count": 243007,
+      "ndv_approx": 5749,
+      "mean_length": 5.0,
+      "top_values": null,
+      "dtype": "large_string"
+    },
+    "Country": {
+      "null_count": 0,
+      "ndv_approx": 52,
+      "mean_length": 13.413628438471722,
+      "top_values": [
+        {
+          "value": "United Kingdom",
+          "count": 981330
+        },
+        {
+          "value": "EIRE",
+          "count": 17866
+        },
+        {
+          "value": "Germany",
+          "count": 17624
+        },
+        {
+          "value": "France",
+          "count": 14330
+        },
+        {
+          "value": "Netherlands",
+          "count": 5140
+        }
+      ],
+      "dtype": "large_string"
+    }
+  }
+}

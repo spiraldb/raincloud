@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "slug": "mmlu",
+  "row_count": 115700,
+  "parquet_sha256": "a079040cebf707cc6ae94cb36880ecf5562350e2c4fda5e9b94e6b61613a1708",
+  "computed_at": "2026-05-16T22:39:28Z",
+  "sample_rows": null,
+  "columns": {
+    "answer": {
+      "null_count": 0,
+      "min": 0,
+      "max": 3,
+      "mean": 1.5505099394987036,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.3,
+          0.6,
+          0.8999999999999999,
+          1.2,
+          1.5,
+          1.7999999999999998,
+          2.1,
+          2.4,
+          2.6999999999999997,
+          3.0
+        ],
+        "counts": [
+          25854,
+          0,
+          0,
+          29627,
+          0,
+          0,
+          30890,
+          0,
+          0,
+          29329
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "choices": {
+      "null_count": 0,
+      "length_min": 4,
+      "length_max": 4,
+      "length_mean": 4.0,
+      "dtype": "list<string>"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 112415,
+      "mean_length": 1290.23044079516,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "subject": {
+      "null_count": 0,
+      "ndv_approx": 67,
+      "mean_length": 2.3799481417458948,
+      "top_values": [
+        {
+          "value": "",
+          "count": 99842
+        },
+        {
+          "value": "professional_law",
+          "count": 1709
+        },
+        {
+          "value": "moral_scenarios",
+          "count": 1000
+        },
+        {
+          "value": "miscellaneous",
+          "count": 874
+        },
+        {
+          "value": "professional_psychology",
+          "count": 686
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 13.569256698357822,
+      "top_values": [
+        {
+          "value": "auxiliary_train",
+          "count": 99842
+        },
+        {
+          "value": "test",
+          "count": 14042
+        },
+        {
+          "value": "validation",
+          "count": 1531
+        },
+        {
+          "value": "dev",
+          "count": 285
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

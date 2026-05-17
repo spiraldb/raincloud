@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "slug": "ultrachat-200k",
+  "row_count": 515311,
+  "parquet_sha256": "2f917f7469b6f43e28d5680b72ed84f43a7b3e06927e7553b95eac7099767a3c",
+  "computed_at": "2026-05-16T22:39:54Z",
+  "sample_rows": null,
+  "columns": {
+    "prompt": {
+      "null_count": 0,
+      "ndv_approx": 464458,
+      "mean_length": 855.0146300001359,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "prompt_id": {
+      "null_count": 0,
+      "ndv_approx": 722983,
+      "mean_length": 64.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "messages": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 14,
+      "length_mean": 5.767359904989414,
+      "dtype": "list<struct>"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 8.900227241413438,
+      "top_values": [
+        {
+          "value": "train_gen",
+          "count": 256032
+        },
+        {
+          "value": "train_sft",
+          "count": 207865
+        },
+        {
+          "value": "test_gen",
+          "count": 28304
+        },
+        {
+          "value": "test_sft",
+          "count": 23110
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

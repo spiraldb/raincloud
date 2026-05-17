@@ -1,0 +1,2278 @@
+{
+  "schema_version": 1,
+  "slug": "bi-rentabilidad",
+  "row_count": 3595905,
+  "parquet_sha256": "fa96932f5b1f7bf5824032c7dfec0ce0972ded0102ebe699b9ea3b44d280d7fe",
+  "computed_at": "2026-05-16T07:40:20Z",
+  "sample_rows": null,
+  "columns": {
+    "AUTOPREVENTA: Costo Fijo": {
+      "null_count": 0,
+      "ndv_approx": 4739,
+      "mean_length": 2.3708718667484265,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AUTOPREVENTA: Costo Variable": {
+      "null_count": 0,
+      "ndv_approx": 28729,
+      "mean_length": 2.372631368181306,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AUTOPREVENTA: Costo de Devoluciones": {
+      "null_count": 0,
+      "ndv_approx": 14593,
+      "mean_length": 2.370992003403872,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AUTOPREVENTA: Tiempos de Venta + Traslado Autopreventa Normal": {
+      "null_count": 0,
+      "ndv_approx": 397,
+      "mean_length": 1.5749490044926104,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AUTOVENTA: Carga Paseante": {
+      "null_count": 0,
+      "ndv_approx": 13602,
+      "mean_length": 1.9509892502721846,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AUTOVENTA: Costo Fijo": {
+      "null_count": 0,
+      "ndv_approx": 5900,
+      "mean_length": 2.12068477893604,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AUTOVENTA: Costo Variable": {
+      "null_count": 0,
+      "ndv_approx": 17627,
+      "mean_length": 2.110327998097836,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AUTOVENTA: Tiempos de Venta + Traslado Autoventa Normal": {
+      "null_count": 0,
+      "ndv_approx": 2003,
+      "mean_length": 1.385368356505525,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BODEGA: CEDIS Propio- Costos Bodega": {
+      "null_count": 0,
+      "ndv_approx": 192552,
+      "mean_length": 11.835497878837177,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BODEGA: Costo Arriendo Terceros": {
+      "null_count": 0,
+      "ndv_approx": 47655,
+      "mean_length": 4.097565981303733,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BODEGA: Costo Especialistas de Operaciones": null,
+    "BODEGA: Distribuidores- Costos Fijos y Variables": {
+      "null_count": 0,
+      "ndv_approx": 75454,
+      "mean_length": 5.051123152586067,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BODEGA: Mermas": null,
+    "CF": {
+      "null_count": 0,
+      "ndv_approx": 135477,
+      "mean_length": 8.369660488806018,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CU": {
+      "null_count": 0,
+      "ndv_approx": 308950,
+      "mean_length": 10.429896507277027,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_1880818214638259": {
+      "null_count": 399545,
+      "ndv_approx": 170149,
+      "mean_length": 8.588061419865097,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calle": {
+      "null_count": 171657,
+      "ndv_approx": 357544,
+      "mean_length": 15.74621259908745,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Canal de Ventas": {
+      "null_count": 0,
+      "ndv_approx": 30,
+      "mean_length": 1.4360184710107748,
+      "top_values": [
+        {
+          "value": "3",
+          "count": 1354833
+        },
+        {
+          "value": "24",
+          "count": 506151
+        },
+        {
+          "value": "7",
+          "count": 303156
+        },
+        {
+          "value": "13",
+          "count": 208080
+        },
+        {
+          "value": "10",
+          "count": 196425
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ciudad UO": {
+      "null_count": 0,
+      "ndv_approx": 27,
+      "mean_length": 8.668878349122126,
+      "top_values": [
+        {
+          "value": "Bogota Norte",
+          "count": 508158
+        },
+        {
+          "value": "Cali",
+          "count": 429651
+        },
+        {
+          "value": "Medellin",
+          "count": 412956
+        },
+        {
+          "value": "Bogota Sur",
+          "count": 334566
+        },
+        {
+          "value": "Pereira",
+          "count": 188370
+        }
+      ],
+      "dtype": "string"
+    },
+    "Descripci\u00f3n de Canal": {
+      "null_count": 2124,
+      "ndv_approx": 27,
+      "mean_length": 17.481672088532942,
+      "top_values": [
+        {
+          "value": "TIENDA DE BARRIO",
+          "count": 1354833
+        },
+        {
+          "value": "CANALES NO TRADICIONALES",
+          "count": 506151
+        },
+        {
+          "value": "RESTAURANTE POPULAR",
+          "count": 303156
+        },
+        {
+          "value": "PANADERIA",
+          "count": 208080
+        },
+        {
+          "value": "COMIDAS RAPIDAS",
+          "count": 196425
+        }
+      ],
+      "dtype": "string"
+    },
+    "Deudor NCB": {
+      "null_count": 3467088,
+      "ndv_approx": 12964,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Deudor": {
+      "null_count": 0,
+      "ndv_approx": 403821,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Dias de Visita CO": {
+      "null_count": 2150982,
+      "ndv_approx": 64,
+      "mean_length": 1.6115094022311223,
+      "top_values": [
+        {
+          "value": "MV",
+          "count": 163890
+        },
+        {
+          "value": "*",
+          "count": 155079
+        },
+        {
+          "value": "LJ",
+          "count": 150327
+        },
+        {
+          "value": "W",
+          "count": 126216
+        },
+        {
+          "value": "WS",
+          "count": 125514
+        }
+      ],
+      "dtype": "string"
+    },
+    "Dias de Visita TA NCB": {
+      "null_count": 3584223,
+      "ndv_approx": 6,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "J",
+          "count": 2088
+        },
+        {
+          "value": "S",
+          "count": 2016
+        },
+        {
+          "value": "V",
+          "count": 2007
+        },
+        {
+          "value": "M",
+          "count": 1962
+        },
+        {
+          "value": "L",
+          "count": 1899
+        }
+      ],
+      "dtype": "string"
+    },
+    "Dias de Visita TA": {
+      "null_count": 2885490,
+      "ndv_approx": 25,
+      "mean_length": 1.0145182745296764,
+      "top_values": [
+        {
+          "value": "*",
+          "count": 253989
+        },
+        {
+          "value": "V",
+          "count": 77436
+        },
+        {
+          "value": "M",
+          "count": 77085
+        },
+        {
+          "value": "J",
+          "count": 76509
+        },
+        {
+          "value": "L",
+          "count": 76014
+        }
+      ],
+      "dtype": "string"
+    },
+    "D\u00edas de Entrega": {
+      "null_count": 882,
+      "ndv_approx": 65,
+      "mean_length": 1.610266193011839,
+      "top_values": [
+        {
+          "value": "MV",
+          "count": 528156
+        },
+        {
+          "value": "LJ",
+          "count": 510255
+        },
+        {
+          "value": "WS",
+          "count": 498321
+        },
+        {
+          "value": "W",
+          "count": 275094
+        },
+        {
+          "value": "J",
+          "count": 273177
+        }
+      ],
+      "dtype": "string"
+    },
+    "D\u00edas de Visita PR NCB": {
+      "null_count": 3470337,
+      "ndv_approx": 23,
+      "mean_length": 1.0760464449541285,
+      "top_values": [
+        {
+          "value": "W",
+          "count": 19692
+        },
+        {
+          "value": "L",
+          "count": 19620
+        },
+        {
+          "value": "V",
+          "count": 19449
+        },
+        {
+          "value": "J",
+          "count": 19449
+        },
+        {
+          "value": "M",
+          "count": 19368
+        }
+      ],
+      "dtype": "string"
+    },
+    "D\u00edas de Visita PR": {
+      "null_count": 1437615,
+      "ndv_approx": 53,
+      "mean_length": 1.4003461073349734,
+      "top_values": [
+        {
+          "value": "LJ",
+          "count": 241380
+        },
+        {
+          "value": "MV",
+          "count": 240309
+        },
+        {
+          "value": "WS",
+          "count": 232488
+        },
+        {
+          "value": "W",
+          "count": 213543
+        },
+        {
+          "value": "M",
+          "count": 207603
+        }
+      ],
+      "dtype": "string"
+    },
+    "D\u00efas de Entrega NCB": {
+      "null_count": 3554496,
+      "ndv_approx": 16,
+      "mean_length": 1.1369267550532494,
+      "top_values": [
+        {
+          "value": "V",
+          "count": 6417
+        },
+        {
+          "value": "L",
+          "count": 6372
+        },
+        {
+          "value": "W",
+          "count": 6345
+        },
+        {
+          "value": "J",
+          "count": 5895
+        },
+        {
+          "value": "M",
+          "count": 5562
+        }
+      ],
+      "dtype": "string"
+    },
+    "Figura Especifica": {
+      "null_count": 2511,
+      "ndv_approx": 23,
+      "mean_length": 14.186730149824928,
+      "top_values": [
+        {
+          "value": "Geografica GVC 2.0",
+          "count": 1029573
+        },
+        {
+          "value": "Dist. Camion",
+          "count": 715473
+        },
+        {
+          "value": "Geografica GVC 1.0",
+          "count": 490572
+        },
+        {
+          "value": "Autopreventa",
+          "count": 331371
+        },
+        {
+          "value": "Autoventa",
+          "count": 246285
+        }
+      ],
+      "dtype": "string"
+    },
+    "Figura": {
+      "null_count": 0,
+      "ndv_approx": 15,
+      "mean_length": 16.13261334768299,
+      "top_values": [
+        {
+          "value": "Preventa Geografica",
+          "count": 1677744
+        },
+        {
+          "value": "Distribuidores",
+          "count": 1124559
+        },
+        {
+          "value": "Autopreventa",
+          "count": 278361
+        },
+        {
+          "value": "Autoventa",
+          "count": 248823
+        },
+        {
+          "value": "Preventa On Premise",
+          "count": 54315
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fijo / Din\u00e1mica": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 5.548491408977712,
+      "top_values": [
+        {
+          "value": "FIJA",
+          "count": 2203848
+        },
+        {
+          "value": "DINAMICA",
+          "count": 1392057
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fx CO": {
+      "null_count": 2164653,
+      "ndv_approx": 7,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 714303
+        },
+        {
+          "value": "2",
+          "count": 555057
+        },
+        {
+          "value": "3",
+          "count": 106236
+        },
+        {
+          "value": "6",
+          "count": 33525
+        },
+        {
+          "value": "0",
+          "count": 17982
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fx Entrega Total NCB": {
+      "null_count": 3467097,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 105102
+        },
+        {
+          "value": "2",
+          "count": 23526
+        },
+        {
+          "value": "6",
+          "count": 153
+        },
+        {
+          "value": "3",
+          "count": 27
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fx Entrega Total": {
+      "null_count": 162,
+      "ndv_approx": 6,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "2",
+          "count": 1726137
+        },
+        {
+          "value": "1",
+          "count": 1649160
+        },
+        {
+          "value": "3",
+          "count": 162072
+        },
+        {
+          "value": "6",
+          "count": 52101
+        },
+        {
+          "value": "4",
+          "count": 4500
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fx PR NCB": {
+      "null_count": 3467088,
+      "ndv_approx": 5,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 116757
+        },
+        {
+          "value": "2",
+          "count": 11880
+        },
+        {
+          "value": "6",
+          "count": 117
+        },
+        {
+          "value": "5",
+          "count": 36
+        },
+        {
+          "value": "3",
+          "count": 27
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fx PR": {
+      "null_count": 1438137,
+      "ndv_approx": 7,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 1294893
+        },
+        {
+          "value": "2",
+          "count": 811485
+        },
+        {
+          "value": "3",
+          "count": 22626
+        },
+        {
+          "value": "6",
+          "count": 14103
+        },
+        {
+          "value": "0",
+          "count": 13527
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fx TA NCB": {
+      "null_count": 3584223,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 11682
+        }
+      ],
+      "dtype": "string"
+    },
+    "Fx TA": {
+      "null_count": 3026979,
+      "ndv_approx": 7,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 465597
+        },
+        {
+          "value": "0",
+          "count": 96912
+        },
+        {
+          "value": "3",
+          "count": 3861
+        },
+        {
+          "value": "2",
+          "count": 2502
+        },
+        {
+          "value": "5",
+          "count": 27
+        }
+      ],
+      "dtype": "string"
+    },
+    "FxED": {
+      "null_count": 3569382,
+      "ndv_approx": 7,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 13365
+        },
+        {
+          "value": "2",
+          "count": 5229
+        },
+        {
+          "value": "3",
+          "count": 4581
+        },
+        {
+          "value": "1",
+          "count": 2079
+        },
+        {
+          "value": "6",
+          "count": 747
+        }
+      ],
+      "dtype": "string"
+    },
+    "GEC NCB": {
+      "null_count": 3467097,
+      "ndv_approx": 5,
+      "mean_length": 1.0001397428731136,
+      "top_values": [
+        {
+          "value": "P",
+          "count": 99801
+        },
+        {
+          "value": "O",
+          "count": 28899
+        },
+        {
+          "value": "B",
+          "count": 90
+        },
+        {
+          "value": "CD",
+          "count": 9
+        },
+        {
+          "value": "CC",
+          "count": 9
+        }
+      ],
+      "dtype": "string"
+    },
+    "GEC": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 1.0339135766934888,
+      "top_values": [
+        {
+          "value": "P",
+          "count": 2414169
+        },
+        {
+          "value": "B",
+          "count": 853596
+        },
+        {
+          "value": "O",
+          "count": 206190
+        },
+        {
+          "value": "SA",
+          "count": 41247
+        },
+        {
+          "value": "CB",
+          "count": 26838
+        }
+      ],
+      "dtype": "string"
+    },
+    "GERENTES VENTA: Coordinadores Bronces": {
+      "null_count": 0,
+      "ndv_approx": 12,
+      "mean_length": 2.137974445932248,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3319461
+        },
+        {
+          "value": "5556.72830618506",
+          "count": 43668
+        },
+        {
+          "value": "5910.08245767626",
+          "count": 31770
+        },
+        {
+          "value": "7182.31357321705",
+          "count": 30105
+        },
+        {
+          "value": "8228.33340988287",
+          "count": 29457
+        }
+      ],
+      "dtype": "string"
+    },
+    "GERENTES VENTA: Costo Gerente de Ventas Normal": {
+      "null_count": 0,
+      "ndv_approx": 697,
+      "mean_length": 14.538930533481835,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "GUC": {
+      "null_count": 0,
+      "ndv_approx": 11,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "CAL",
+          "count": 618021
+        },
+        {
+          "value": "BON",
+          "count": 508158
+        },
+        {
+          "value": "MED",
+          "count": 412956
+        },
+        {
+          "value": "BUC",
+          "count": 411399
+        },
+        {
+          "value": "BOS",
+          "count": 334566
+        }
+      ],
+      "dtype": "string"
+    },
+    "Gerencia": {
+      "null_count": 0,
+      "ndv_approx": 52,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "VO01",
+          "count": 238788
+        },
+        {
+          "value": "PD01",
+          "count": 185211
+        },
+        {
+          "value": "BD01",
+          "count": 184023
+        },
+        {
+          "value": "IB01",
+          "count": 183789
+        },
+        {
+          "value": "KA02",
+          "count": 175023
+        }
+      ],
+      "dtype": "string"
+    },
+    "IN": {
+      "null_count": 0,
+      "ndv_approx": 389780,
+      "mean_length": 8.254784817730169,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Implementaci\u00f3n Venta": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 6.302157036962878,
+      "top_values": [
+        {
+          "value": "GVC 2.0",
+          "count": 1489644
+        },
+        {
+          "value": "GVF",
+          "count": 784791
+        },
+        {
+          "value": "GVC 1.0",
+          "count": 555804
+        },
+        {
+          "value": "For\u00e1neo KOF",
+          "count": 346239
+        },
+        {
+          "value": "NO GVF",
+          "count": 196705
+        }
+      ],
+      "dtype": "string"
+    },
+    "Jefatura de Reparto NCB": {
+      "null_count": 3467106,
+      "ndv_approx": 15,
+      "mean_length": 3.0000698763189155,
+      "top_values": [
+        {
+          "value": "BNO",
+          "count": 12933
+        },
+        {
+          "value": "MLV",
+          "count": 12537
+        },
+        {
+          "value": "MLW",
+          "count": 12033
+        },
+        {
+          "value": "BSD",
+          "count": 11853
+        },
+        {
+          "value": "KAR",
+          "count": 11214
+        }
+      ],
+      "dtype": "string"
+    },
+    "Jefatura de Reparto": {
+      "null_count": 0,
+      "ndv_approx": 133,
+      "mean_length": 3.0000200227759075,
+      "top_values": [
+        {
+          "value": "BSA",
+          "count": 146115
+        },
+        {
+          "value": "BSD",
+          "count": 92538
+        },
+        {
+          "value": "CUA",
+          "count": 91017
+        },
+        {
+          "value": "VOA",
+          "count": 77076
+        },
+        {
+          "value": "PDA",
+          "count": 75069
+        }
+      ],
+      "dtype": "string"
+    },
+    "Jefe de Ventas NCB": {
+      "null_count": 3467097,
+      "ndv_approx": 16,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "BS4",
+          "count": 17856
+        },
+        {
+          "value": "BS8",
+          "count": 13392
+        },
+        {
+          "value": "ML8",
+          "count": 12438
+        },
+        {
+          "value": "ML9",
+          "count": 12141
+        },
+        {
+          "value": "KAN",
+          "count": 11268
+        }
+      ],
+      "dtype": "string"
+    },
+    "Jefe de Ventas": {
+      "null_count": 0,
+      "ndv_approx": 183,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "BD2",
+          "count": 50697
+        },
+        {
+          "value": "BD1",
+          "count": 49905
+        },
+        {
+          "value": "NE1",
+          "count": 45171
+        },
+        {
+          "value": "KAS",
+          "count": 45072
+        },
+        {
+          "value": "VO1",
+          "count": 44145
+        }
+      ],
+      "dtype": "string"
+    },
+    "Latitud AUTO PREV": {
+      "null_count": 56406,
+      "ndv_approx": 289873,
+      "mean_length": 8.297261561593887,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Latitud": {
+      "null_count": 974094,
+      "ndv_approx": 137330,
+      "mean_length": 1.7663122932965039,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Locaci\u00f3n": {
+      "null_count": 0,
+      "ndv_approx": 27,
+      "mean_length": 8.6687757323956,
+      "top_values": [
+        {
+          "value": "Bogota Norte",
+          "count": 508158
+        },
+        {
+          "value": "Cali",
+          "count": 429651
+        },
+        {
+          "value": "Medellin",
+          "count": 412956
+        },
+        {
+          "value": "Bogota Sur",
+          "count": 334566
+        },
+        {
+          "value": "Pereira",
+          "count": 188370
+        }
+      ],
+      "dtype": "string"
+    },
+    "Locaci\u00f3n (copy)": {
+      "null_count": 399545,
+      "ndv_approx": 27,
+      "mean_length": 8.6687757323956,
+      "top_values": [
+        {
+          "value": "Bogota Norte",
+          "count": 451696
+        },
+        {
+          "value": "Cali",
+          "count": 381912
+        },
+        {
+          "value": "Medellin",
+          "count": 367072
+        },
+        {
+          "value": "Bogota Sur",
+          "count": 297392
+        },
+        {
+          "value": "Pereira",
+          "count": 167440
+        }
+      ],
+      "dtype": "string"
+    },
+    "Longitud AUTO PREV": {
+      "null_count": 56162,
+      "ndv_approx": 168360,
+      "mean_length": 9.907798108506748,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Longitud": {
+      "null_count": 974078,
+      "ndv_approx": 31555,
+      "mean_length": 3.5464841883160103,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "MATCH PR con NCB": {
+      "null_count": 3531249,
+      "ndv_approx": 2,
+      "mean_length": 4.999860801781737,
+      "top_values": [
+        {
+          "value": "FALSE",
+          "count": 64647
+        },
+        {
+          "value": "TRUE",
+          "count": 9
+        }
+      ],
+      "dtype": "string"
+    },
+    "MERCADEO: Costo Refrigeraci\u00f3n": {
+      "null_count": 0,
+      "ndv_approx": 34260,
+      "mean_length": 8.227896732533257,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "MERCADEO: PDE": {
+      "null_count": 0,
+      "ndv_approx": 6159,
+      "mean_length": 1.9479708168041148,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "MERCADEO: PDV- Descuentos Habituales": {
+      "null_count": 0,
+      "ndv_approx": 15621,
+      "mean_length": 1.217917881590309,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "MERCADEO: PDV- Descuentos No Habituales": {
+      "null_count": 0,
+      "ndv_approx": 94572,
+      "mean_length": 3.1484713862018046,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "MERCADEO: Prorrateo Mercaderistas": {
+      "null_count": 0,
+      "ndv_approx": 17,
+      "mean_length": 12.151379694402383,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 1455327
+        },
+        {
+          "value": "1.7710713210421e-05",
+          "count": 508158
+        },
+        {
+          "value": "0.000125672873510253",
+          "count": 429651
+        },
+        {
+          "value": "0.000238891543239369",
+          "count": 188370
+        },
+        {
+          "value": "0.000154051555920715",
+          "count": 175266
+        }
+      ],
+      "dtype": "string"
+    },
+    "Modalidad de Venta": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 10.421534495488618,
+      "top_values": [
+        {
+          "value": "Preventa",
+          "count": 1799478
+        },
+        {
+          "value": "Distribuidores",
+          "count": 1124559
+        },
+        {
+          "value": "Autopreventa",
+          "count": 331371
+        },
+        {
+          "value": "Autoventa",
+          "count": 267723
+        },
+        {
+          "value": "Televenta Oficinas",
+          "count": 41247
+        }
+      ],
+      "dtype": "string"
+    },
+    "Modalidad reparto": {
+      "null_count": 0,
+      "ndv_approx": 13,
+      "mean_length": 12.08108973957877,
+      "top_values": [
+        {
+          "value": "Ent. Preventa",
+          "count": 1497150
+        },
+        {
+          "value": "Dist. Camion",
+          "count": 716589
+        },
+        {
+          "value": "Autopreventa",
+          "count": 331416
+        },
+        {
+          "value": "Autoventa",
+          "count": 271035
+        },
+        {
+          "value": "Dist. Moto",
+          "count": 268011
+        }
+      ],
+      "dtype": "string"
+    },
+    "Municipio": {
+      "null_count": 72,
+      "ndv_approx": 629,
+      "mean_length": 7.886038089088119,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "NCB": {
+      "null_count": 3467088,
+      "ndv_approx": 1,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "NCB",
+          "count": 128817
+        }
+      ],
+      "dtype": "string"
+    },
+    "NIT": {
+      "null_count": 275688,
+      "ndv_approx": 295965,
+      "mean_length": 7.523033886038172,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Nombre del Cliente": {
+      "null_count": 165780,
+      "ndv_approx": 295373,
+      "mean_length": 17.248236142997705,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Number of Records": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 3595905
+        }
+      ],
+      "dtype": "string"
+    },
+    "ON-OFF": {
+      "null_count": 70443,
+      "ndv_approx": 2,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "OP",
+          "count": 1887840
+        },
+        {
+          "value": "HM",
+          "count": 1637622
+        }
+      ],
+      "dtype": "string"
+    },
+    "OP. DISTRIBUIDORES: Costo Fijo": {
+      "null_count": 0,
+      "ndv_approx": 89729,
+      "mean_length": 4.999113992166089,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "OP. DISTRIBUIDORES: Costo Variable": {
+      "null_count": 0,
+      "ndv_approx": 58713,
+      "mean_length": 4.978202705577594,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "OP. DISTRIBUIDORES: Filtro de Validaci\u00f3n Costo Variable": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "NO",
+          "count": 2611305
+        },
+        {
+          "value": "SI",
+          "count": 984600
+        }
+      ],
+      "dtype": "string"
+    },
+    "OP. DISTRIBUIDORES: Mayoristas": {
+      "null_count": 0,
+      "ndv_approx": 17,
+      "mean_length": 1.0556382885532294,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3582225
+        },
+        {
+          "value": "86325.4680306902",
+          "count": 3519
+        },
+        {
+          "value": "251879.012461059",
+          "count": 2889
+        },
+        {
+          "value": "115.499082571002",
+          "count": 2160
+        },
+        {
+          "value": "47369.1828571429",
+          "count": 1575
+        }
+      ],
+      "dtype": "string"
+    },
+    "OP. DISTRIBUIDORES: NO GVF": {
+      "null_count": 0,
+      "ndv_approx": 467,
+      "mean_length": 1.8143538274787572,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "OP. DISTRIBUIDORES: Prorrateo Visitas": {
+      "null_count": 0,
+      "ndv_approx": 89636,
+      "mean_length": 4.031145427924264,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "OTROS VENTA: Costo de Rotaci\u00f3n Pre/Televendedores": {
+      "null_count": 18,
+      "ndv_approx": 18,
+      "mean_length": 8.035237759139818,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 1888515
+        },
+        {
+          "value": "1129.9300918197",
+          "count": 312660
+        },
+        {
+          "value": "677.273571237246",
+          "count": 246402
+        },
+        {
+          "value": "594.958154027154",
+          "count": 238419
+        },
+        {
+          "value": "3606.87676788174",
+          "count": 121959
+        }
+      ],
+      "dtype": "string"
+    },
+    "PREVENTA NCB: Costo de Prevendedor NCB": {
+      "null_count": 1006587,
+      "ndv_approx": 174,
+      "mean_length": 1.736984796768879,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2460582
+        },
+        {
+          "value": "8019.12129890501",
+          "count": 2988
+        },
+        {
+          "value": "42813.7038112171",
+          "count": 2835
+        },
+        {
+          "value": "39500.185507388",
+          "count": 2790
+        },
+        {
+          "value": "45316.8783667273",
+          "count": 2790
+        }
+      ],
+      "dtype": "string"
+    },
+    "PREVENTA NCB: Tiempos de Venta + Traslado Preventa NCB": {
+      "null_count": 1006587,
+      "ndv_approx": 21,
+      "mean_length": 1.7433385934056767,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2460510
+        },
+        {
+          "value": "6.93949977668602",
+          "count": 35082
+        },
+        {
+          "value": "6.67509922346851",
+          "count": 22068
+        },
+        {
+          "value": "6.76592200458797",
+          "count": 20061
+        },
+        {
+          "value": "6.90628090999011",
+          "count": 18531
+        }
+      ],
+      "dtype": "string"
+    },
+    "PREVENTA: Costo de Prevendedor Normal": {
+      "null_count": 0,
+      "ndv_approx": 4740,
+      "mean_length": 8.360264801211377,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "PREVENTA: Tiempos de Venta + Traslado Preventa Normal": {
+      "null_count": 0,
+      "ndv_approx": 242,
+      "mean_length": 6.246460348646585,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 1808829
+        },
+        {
+          "value": "7.10582996171287",
+          "count": 142479
+        },
+        {
+          "value": "7.6",
+          "count": 129663
+        },
+        {
+          "value": "7.27781765972721",
+          "count": 115578
+        },
+        {
+          "value": "7.35",
+          "count": 98271
+        }
+      ],
+      "dtype": "string"
+    },
+    "Poblaci\u00f3n Distribuidor GVF/GVI": {
+      "null_count": 0,
+      "ndv_approx": 100,
+      "mean_length": 8.813493682397059,
+      "top_values": [
+        {
+          "value": "No Aplica",
+          "count": 2420567
+        },
+        {
+          "value": "Armenia",
+          "count": 75069
+        },
+        {
+          "value": "Pasto",
+          "count": 63774
+        },
+        {
+          "value": "Manizales",
+          "count": 49977
+        },
+        {
+          "value": "Popayan",
+          "count": 45072
+        }
+      ],
+      "dtype": "string"
+    },
+    "Precio Prom. CF": {
+      "null_count": 0,
+      "ndv_approx": 303014,
+      "mean_length": 15.585503510242901,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Precio Prom. CU": {
+      "null_count": 0,
+      "ndv_approx": 270819,
+      "mean_length": 15.894822861004393,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Costo Supervisores": {
+      "null_count": 0,
+      "ndv_approx": 178548,
+      "mean_length": 7.1936427686493385,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Costo de Bodegas Secundarias": {
+      "null_count": 0,
+      "ndv_approx": 17470,
+      "mean_length": 1.7908921398090327,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Costo de Depreciaci\u00f3n": {
+      "null_count": 0,
+      "ndv_approx": 211432,
+      "mean_length": 10.12016668960943,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Costo de Mantenimiento": {
+      "null_count": 0,
+      "ndv_approx": 46687,
+      "mean_length": 9.548836801862118,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Devoluciones": {
+      "null_count": 0,
+      "ndv_approx": 196385,
+      "mean_length": 8.43502484075636,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Merma de Ruta": {
+      "null_count": 0,
+      "ndv_approx": 172197,
+      "mean_length": 8.42329149407451,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Rutas Dinamicas- Costos Fijos": {
+      "null_count": 0,
+      "ndv_approx": 166613,
+      "mean_length": 6.7638563866398025,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Rutas Dinamicas- Costos Variables": {
+      "null_count": 0,
+      "ndv_approx": 162072,
+      "mean_length": 6.744011312868388,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Rutas Fijas- Costos Fijos": {
+      "null_count": 0,
+      "ndv_approx": 53240,
+      "mean_length": 2.6843409378167666,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Rutas Fijas- Costos Variables": {
+      "null_count": 0,
+      "ndv_approx": 40611,
+      "mean_length": 2.684438548849316,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Tiempos de Reparto Fijo + Variable": {
+      "null_count": 0,
+      "ndv_approx": 218384,
+      "mean_length": 5.5483637637813015,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "REPARTO: Visitas de Reparto Acumulado Ene-May": {
+      "null_count": 0,
+      "ndv_approx": 123,
+      "mean_length": 1.8529502308876347,
+      "top_values": [
+        {
+          "value": "20",
+          "count": 269235
+        },
+        {
+          "value": "21",
+          "count": 239472
+        },
+        {
+          "value": "40",
+          "count": 190458
+        },
+        {
+          "value": "42",
+          "count": 162180
+        },
+        {
+          "value": "22",
+          "count": 150768
+        }
+      ],
+      "dtype": "string"
+    },
+    "Raz\u00f3n Social": {
+      "null_count": 227862,
+      "ndv_approx": 289008,
+      "mean_length": 19.344972436515803,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Rentabilidad": {
+      "null_count": 0,
+      "ndv_approx": 364962,
+      "mean_length": 16.063407125605377,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Ruta CO": {
+      "null_count": 2182527,
+      "ndv_approx": 978,
+      "mean_length": 6.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Ruta ED": {
+      "null_count": 3582720,
+      "ndv_approx": 87,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "MLED01",
+          "count": 1557
+        },
+        {
+          "value": "BQ5600",
+          "count": 972
+        },
+        {
+          "value": "KA1140",
+          "count": 756
+        },
+        {
+          "value": "CJ3700",
+          "count": 540
+        },
+        {
+          "value": "PD1440",
+          "count": 396
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ruta PR NCB": {
+      "null_count": 3467088,
+      "ndv_approx": 54,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "KA2N23",
+          "count": 3285
+        },
+        {
+          "value": "ML2A21",
+          "count": 3258
+        },
+        {
+          "value": "ML1821",
+          "count": 3258
+        },
+        {
+          "value": "BS3411",
+          "count": 3177
+        },
+        {
+          "value": "ML1922",
+          "count": 3168
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ruta PR": {
+      "null_count": 1451664,
+      "ndv_approx": 1039,
+      "mean_length": 6.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Ruta TA NCB": {
+      "null_count": 3584223,
+      "ndv_approx": 3,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "FC3B12",
+          "count": 5319
+        },
+        {
+          "value": "FC4A12",
+          "count": 3960
+        },
+        {
+          "value": "FC5C11",
+          "count": 2403
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ruta TA": {
+      "null_count": 3123666,
+      "ndv_approx": 91,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "FC5R04",
+          "count": 6669
+        },
+        {
+          "value": "FC5R02",
+          "count": 6597
+        },
+        {
+          "value": "FC5R01",
+          "count": 6498
+        },
+        {
+          "value": "FC5U02",
+          "count": 6462
+        },
+        {
+          "value": "FC5R05",
+          "count": 6453
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ruta de Reparto NCB": {
+      "null_count": 3465801,
+      "ndv_approx": 297,
+      "mean_length": 5.98256779192031,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Ruta de Reparto": {
+      "null_count": 0,
+      "ndv_approx": 1344,
+      "mean_length": 6.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Ruta de Venta NCB": {
+      "null_count": 3467088,
+      "ndv_approx": 54,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "KA2N23",
+          "count": 3285
+        },
+        {
+          "value": "ML2A21",
+          "count": 3258
+        },
+        {
+          "value": "ML1821",
+          "count": 3258
+        },
+        {
+          "value": "BS3411",
+          "count": 3177
+        },
+        {
+          "value": "ML1922",
+          "count": 3168
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ruta de Venta": {
+      "null_count": 0,
+      "ndv_approx": 2026,
+      "mean_length": 6.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Sede Foraneo Sintec": {
+      "null_count": 399545,
+      "ndv_approx": 2,
+      "mean_length": 4.995880313857012,
+      "top_values": [
+        {
+          "value": "Sede",
+          "count": 2135296
+        },
+        {
+          "value": "Foraneo",
+          "count": 1061064
+        }
+      ],
+      "dtype": "string"
+    },
+    "Sede/For\u00e1neo": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 5.300269056051258,
+      "top_values": [
+        {
+          "value": "Sede",
+          "count": 2037357
+        },
+        {
+          "value": "Foraneo",
+          "count": 1558548
+        }
+      ],
+      "dtype": "string"
+    },
+    "T1: Cedis Propio": {
+      "null_count": 0,
+      "ndv_approx": 340233,
+      "mean_length": 11.861585052997786,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "T1: Distruidor Tercero": {
+      "null_count": 0,
+      "ndv_approx": 81582,
+      "mean_length": 5.018120612196373,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "TELEVENTA OFIC: Costo Televendedor Normal": null,
+    "TELEVENTA OFIC: Tiempos de Venta": null,
+    "TELEVENTA: Costo Televendedor NCB": {
+      "null_count": 1006587,
+      "ndv_approx": 5,
+      "mean_length": 1.0144559300943337,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2577636
+        },
+        {
+          "value": "2348",
+          "count": 5319
+        },
+        {
+          "value": "3885",
+          "count": 3960
+        },
+        {
+          "value": "11645",
+          "count": 2385
+        },
+        {
+          "value": "8734",
+          "count": 18
+        }
+      ],
+      "dtype": "string"
+    },
+    "TELEVENTA: Costo de Televendedor Normal": {
+      "null_count": 0,
+      "ndv_approx": 159,
+      "mean_length": 2.4412143813587956,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3249558
+        },
+        {
+          "value": "14980.040250029",
+          "count": 6669
+        },
+        {
+          "value": "14499.8545044245",
+          "count": 6570
+        },
+        {
+          "value": "15945.1156452662",
+          "count": 6435
+        },
+        {
+          "value": "15030.3354675046",
+          "count": 6426
+        }
+      ],
+      "dtype": "string"
+    },
+    "TELEVENTA: Tiempos de Venta Televenta NCB": {
+      "null_count": 1006587,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2577636
+        },
+        {
+          "value": "4",
+          "count": 11664
+        },
+        {
+          "value": "3",
+          "count": 18
+        }
+      ],
+      "dtype": "string"
+    },
+    "TELEVENTA: Tiempos de Venta Televenta Normal": {
+      "null_count": 0,
+      "ndv_approx": 14,
+      "mean_length": 1.1893603974521019,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3215871
+        },
+        {
+          "value": "3",
+          "count": 302184
+        },
+        {
+          "value": "2.83333333333333",
+          "count": 39258
+        },
+        {
+          "value": "3.5",
+          "count": 33552
+        },
+        {
+          "value": "9",
+          "count": 2394
+        }
+      ],
+      "dtype": "string"
+    },
+    "TOTAL BODEGA C/ARRIENDOS": {
+      "null_count": 0,
+      "ndv_approx": 291564,
+      "mean_length": 15.893078376653444,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "TOTAL MERCADEO": {
+      "null_count": 0,
+      "ndv_approx": 212319,
+      "mean_length": 13.40269556620656,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "TOTAL REPARTO": {
+      "null_count": 0,
+      "ndv_approx": 269863,
+      "mean_length": 10.953925089789635,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "TOTAL T1": {
+      "null_count": 0,
+      "ndv_approx": 367691,
+      "mean_length": 15.879705665194159,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "TOTAL VENTA": {
+      "null_count": 0,
+      "ndv_approx": 135315,
+      "mean_length": 15.892990777008848,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Total CdS": {
+      "null_count": 0,
+      "ndv_approx": 418671,
+      "mean_length": 15.887254251711322,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Tradicional/ Moderno": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 10.198593399992491,
+      "top_values": [
+        {
+          "value": "Tradicional",
+          "count": 3256443
+        },
+        {
+          "value": "*",
+          "count": 253989
+        },
+        {
+          "value": "Moderno",
+          "count": 85473
+        }
+      ],
+      "dtype": "string"
+    },
+    "UO": {
+      "null_count": 0,
+      "ndv_approx": 25,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "CO20",
+          "count": 508158
+        },
+        {
+          "value": "CO24",
+          "count": 429651
+        },
+        {
+          "value": "CO23",
+          "count": 412956
+        },
+        {
+          "value": "CO22",
+          "count": 334566
+        },
+        {
+          "value": "CO28",
+          "count": 188370
+        }
+      ],
+      "dtype": "string"
+    },
+    "Util. Bruta": {
+      "null_count": 0,
+      "ndv_approx": 344547,
+      "mean_length": 10.07261760252287,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VENTA:  MERMA DE VENTA": {
+      "null_count": 0,
+      "ndv_approx": 66633,
+      "mean_length": 15.870445131336895,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VENTA: Coord, OL, Merc. 14": {
+      "null_count": 0,
+      "ndv_approx": 823,
+      "mean_length": 1.015990689409203,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VENTA: Costo Renta Equipo Televenta NCB": {
+      "null_count": 1006587,
+      "ndv_approx": 4,
+      "mean_length": 1.0135348381311218,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2577636
+        },
+        {
+          "value": "1053",
+          "count": 5319
+        },
+        {
+          "value": "1414",
+          "count": 3960
+        },
+        {
+          "value": "2330",
+          "count": 2403
+        }
+      ],
+      "dtype": "string"
+    },
+    "VENTA: Costo Renta de Equipo Televenta Normal": {
+      "null_count": 0,
+      "ndv_approx": 194,
+      "mean_length": 2.8928456118835175,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3123891
+        },
+        {
+          "value": "965.928571428571",
+          "count": 16686
+        },
+        {
+          "value": "995.2928",
+          "count": 15750
+        },
+        {
+          "value": "856.829201101928",
+          "count": 12807
+        },
+        {
+          "value": "954.076687116564",
+          "count": 11520
+        }
+      ],
+      "dtype": "string"
+    },
+    "VENTA: Costo Total Mercaderistas": {
+      "null_count": 0,
+      "ndv_approx": 13,
+      "mean_length": 9.705069516575104,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 1455327
+        },
+        {
+          "value": "177.25696473797",
+          "count": 508158
+        },
+        {
+          "value": "1257.79192761242",
+          "count": 429651
+        },
+        {
+          "value": "2390.9364548495",
+          "count": 188370
+        },
+        {
+          "value": "1541.81883537024",
+          "count": 175266
+        }
+      ],
+      "dtype": "string"
+    },
+    "VENTA: Costo de Handheld Rutas Autoventa": {
+      "null_count": 0,
+      "ndv_approx": 1259,
+      "mean_length": 5.419512195121952,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VENTA: Costo de Handheld Rutas NCBs": {
+      "null_count": 1006587,
+      "ndv_approx": 96,
+      "mean_length": 1.7080242751180041,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2460573
+        },
+        {
+          "value": "1345.74468085106",
+          "count": 6147
+        },
+        {
+          "value": "1502.54460784314",
+          "count": 5166
+        },
+        {
+          "value": "1493.75779727096",
+          "count": 4950
+        },
+        {
+          "value": "1314.28571428571",
+          "count": 3069
+        }
+      ],
+      "dtype": "string"
+    },
+    "VENTA: Costo de Handheld Rutas Preventa": {
+      "null_count": 0,
+      "ndv_approx": 1300,
+      "mean_length": 9.585110563265715,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VENTA: Costos EDI": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 1.0452014166113954,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3585069
+        },
+        {
+          "value": "69952.6133482103",
+          "count": 4293
+        },
+        {
+          "value": "104928.920022315",
+          "count": 4104
+        },
+        {
+          "value": "34976.3066741052",
+          "count": 1359
+        },
+        {
+          "value": "209857.840044631",
+          "count": 585
+        }
+      ],
+      "dtype": "string"
+    },
+    "VENTA: Descuentos Lista de Precios": {
+      "null_count": 0,
+      "ndv_approx": 23,
+      "mean_length": 1.0003929469771866,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3595698
+        },
+        {
+          "value": "67686693",
+          "count": 9
+        },
+        {
+          "value": "35067352",
+          "count": 9
+        },
+        {
+          "value": "105782597",
+          "count": 9
+        },
+        {
+          "value": "42183172",
+          "count": 9
+        }
+      ],
+      "dtype": "string"
+    },
+    "Zona": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "OC",
+          "count": 1346679
+        },
+        {
+          "value": "CE",
+          "count": 1242639
+        },
+        {
+          "value": "NR",
+          "count": 1006587
+        }
+      ],
+      "dtype": "string"
+    },
+    "GEC (group)": {
+      "null_count": 399545,
+      "ndv_approx": 5,
+      "mean_length": 1.0339135766934888,
+      "top_values": [
+        {
+          "value": "P",
+          "count": 2145928
+        },
+        {
+          "value": "B",
+          "count": 758752
+        },
+        {
+          "value": "O",
+          "count": 183280
+        },
+        {
+          "value": "CA",
+          "count": 71736
+        },
+        {
+          "value": "SA",
+          "count": 36664
+        }
+      ],
+      "dtype": "string"
+    },
+    "SEDE FORANEO SINTEC": {
+      "null_count": 399545,
+      "ndv_approx": 2,
+      "mean_length": 4.995880313857012,
+      "top_values": [
+        {
+          "value": "Sede",
+          "count": 2135296
+        },
+        {
+          "value": "Foraneo",
+          "count": 1061064
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

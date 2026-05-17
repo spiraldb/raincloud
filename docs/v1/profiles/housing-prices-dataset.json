@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "slug": "housing-prices-dataset",
+  "row_count": 545,
+  "parquet_sha256": "86360c2ba3d2f91339d85759aba8ca9f54a9aa069a1277d1534ddbb2cc389da2",
+  "computed_at": "2026-05-16T08:55:38Z",
+  "sample_rows": null,
+  "columns": {
+    "price": {
+      "null_count": 0,
+      "min": 1750000,
+      "max": 13300000,
+      "mean": 4766729.247706422,
+      "ndv_approx": 235,
+      "histogram": {
+        "buckets": [
+          1750000.0,
+          2905000.0,
+          4060000.0,
+          5215000.0,
+          6370000.0,
+          7525000.0,
+          8680000.0,
+          9835000.0,
+          10990000.0,
+          12145000.0,
+          13300000.0
+        ],
+        "counts": [
+          61,
+          163,
+          139,
+          89,
+          46,
+          25,
+          13,
+          4,
+          1,
+          4
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "area": {
+      "null_count": 0,
+      "min": 1650,
+      "max": 16200,
+      "mean": 5150.54128440367,
+      "ndv_approx": 238,
+      "histogram": {
+        "buckets": [
+          1650.0,
+          3105.0,
+          4560.0,
+          6015.0,
+          7470.0,
+          8925.0,
+          10380.0,
+          11835.0,
+          13290.0,
+          14745.0,
+          16200.0
+        ],
+        "counts": [
+          73,
+          198,
+          117,
+          88,
+          39,
+          15,
+          8,
+          5,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "bedrooms": {
+      "null_count": 0,
+      "min": 1,
+      "max": 6,
+      "mean": 2.9651376146788992,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0,
+          5.5,
+          6.0
+        ],
+        "counts": [
+          2,
+          0,
+          136,
+          0,
+          300,
+          0,
+          95,
+          0,
+          10,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "bathrooms": {
+      "null_count": 0,
+      "min": 1,
+      "max": 4,
+      "mean": 1.2862385321100918,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.3,
+          1.6,
+          1.9,
+          2.2,
+          2.5,
+          2.8,
+          3.1,
+          3.4,
+          3.6999999999999997,
+          4.0
+        ],
+        "counts": [
+          401,
+          0,
+          0,
+          133,
+          0,
+          0,
+          10,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "stories": {
+      "null_count": 0,
+      "min": 1,
+      "max": 4,
+      "mean": 1.8055045871559634,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.3,
+          1.6,
+          1.9,
+          2.2,
+          2.5,
+          2.8,
+          3.1,
+          3.4,
+          3.6999999999999997,
+          4.0
+        ],
+        "counts": [
+          227,
+          0,
+          0,
+          238,
+          0,
+          0,
+          39,
+          0,
+          0,
+          41
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "mainroad": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.858715596330275,
+      "top_values": [
+        {
+          "value": "yes",
+          "count": 468
+        },
+        {
+          "value": "no",
+          "count": 77
+        }
+      ],
+      "dtype": "string"
+    },
+    "guestroom": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.1779816513761467,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 448
+        },
+        {
+          "value": "yes",
+          "count": 97
+        }
+      ],
+      "dtype": "string"
+    },
+    "basement": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.3504587155963304,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 354
+        },
+        {
+          "value": "yes",
+          "count": 191
+        }
+      ],
+      "dtype": "string"
+    },
+    "hotwaterheating": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0458715596330275,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 520
+        },
+        {
+          "value": "yes",
+          "count": 25
+        }
+      ],
+      "dtype": "string"
+    },
+    "airconditioning": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.315596330275229,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 373
+        },
+        {
+          "value": "yes",
+          "count": 172
+        }
+      ],
+      "dtype": "string"
+    },
+    "parking": {
+      "null_count": 0,
+      "min": 0,
+      "max": 3,
+      "mean": 0.6935779816513762,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.3,
+          0.6,
+          0.8999999999999999,
+          1.2,
+          1.5,
+          1.7999999999999998,
+          2.1,
+          2.4,
+          2.6999999999999997,
+          3.0
+        ],
+        "counts": [
+          299,
+          0,
+          0,
+          126,
+          0,
+          0,
+          108,
+          0,
+          0,
+          12
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "prefarea": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.234862385321101,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 417
+        },
+        {
+          "value": "yes",
+          "count": 128
+        }
+      ],
+      "dtype": "string"
+    },
+    "furnishingstatus": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 11.735779816513762,
+      "top_values": [
+        {
+          "value": "semi-furnished",
+          "count": 227
+        },
+        {
+          "value": "unfurnished",
+          "count": 178
+        },
+        {
+          "value": "furnished",
+          "count": 140
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

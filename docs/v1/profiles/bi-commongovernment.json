@@ -1,0 +1,1323 @@
+{
+  "schema_version": 1,
+  "slug": "bi-commongovernment",
+  "row_count": 141123827,
+  "parquet_sha256": "6d082e94e515cc96cd2ab7a3add860b3a776ec6e0d121b7e1ec63b2e1d5b5685",
+  "computed_at": "2026-05-17T01:11:11Z",
+  "sample_rows": null,
+  "columns": {
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          141123827
+        ]
+      }
+    },
+    "a_aid_acontid_agencyid": {
+      "null_count": 0,
+      "ndv_approx": 200,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "9700",
+          "count": 68452260
+        },
+        {
+          "value": "4732",
+          "count": 15822916
+        },
+        {
+          "value": "3600",
+          "count": 13298700
+        },
+        {
+          "value": "1900",
+          "count": 4478036
+        },
+        {
+          "value": "1540",
+          "count": 4062805
+        }
+      ],
+      "dtype": "string"
+    },
+    "a_aid_acontid_piid": {
+      "null_count": 0,
+      "ndv_approx": 4444999,
+      "mean_length": 10.127768126639593,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ag_name": {
+      "null_count": 0,
+      "ndv_approx": 47,
+      "mean_length": 50.0,
+      "top_values": [
+        {
+          "value": "OFFICE OF SECRETARY OF DEFENSE                    ",
+          "count": 36312252
+        },
+        {
+          "value": "GENERAL SERVICES ADMINISTRATION                   ",
+          "count": 19215010
+        },
+        {
+          "value": "DEPARTMENT OF ARMY                                ",
+          "count": 14839195
+        },
+        {
+          "value": "DEPARTMENT OF VETERANS AFFAIRS                    ",
+          "count": 13299103
+        },
+        {
+          "value": "DEPARTMENT OF NAVY                                ",
+          "count": 11465432
+        }
+      ],
+      "dtype": "string"
+    },
+    "agency_code": {
+      "null_count": 0,
+      "ndv_approx": 46,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "97",
+          "count": 36312252
+        },
+        {
+          "value": "47",
+          "count": 19215010
+        },
+        {
+          "value": "21",
+          "count": 14839195
+        },
+        {
+          "value": "36",
+          "count": 13299103
+        },
+        {
+          "value": "17",
+          "count": 11465432
+        }
+      ],
+      "dtype": "string"
+    },
+    "ase_rowid": {
+      "null_count": 0,
+      "min": 0,
+      "max": 7383842,
+      "mean": 780128.5217080388,
+      "ndv_approx": 2550946,
+      "histogram": {
+        "buckets": [
+          0.0,
+          738384.2,
+          1476768.4,
+          2215152.5999999996,
+          2953536.8,
+          3691921.0,
+          4430305.199999999,
+          5168689.399999999,
+          5907073.6,
+          6645457.8,
+          7383842.0
+        ],
+        "counts": [
+          113351862,
+          6527183,
+          2957643,
+          1214057,
+          0,
+          3129750,
+          8500999,
+          0,
+          0,
+          5442333
+        ]
+      },
+      "dtype": "int32"
+    },
+    "award_type": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 13.779432554645787,
+      "top_values": [
+        {
+          "value": "DELIVERY ORDER",
+          "count": 82058923
+        },
+        {
+          "value": "PURCHASE ORDER",
+          "count": 35804921
+        },
+        {
+          "value": "BPA CALL",
+          "count": 13381244
+        },
+        {
+          "value": "DEFINITIVE CONTRACT",
+          "count": 9795283
+        },
+        {
+          "value": "TRAINING GRANT",
+          "count": 50440
+        }
+      ],
+      "dtype": "string"
+    },
+    "award_type_code": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "C",
+          "count": 82058923
+        },
+        {
+          "value": "B",
+          "count": 35804921
+        },
+        {
+          "value": "A",
+          "count": 13381244
+        },
+        {
+          "value": "D",
+          "count": 9795283
+        },
+        {
+          "value": "T",
+          "count": 50440
+        }
+      ],
+      "dtype": "string"
+    },
+    "award_type_key": {
+      "null_count": 0,
+      "min": -1,
+      "max": 9,
+      "mean": 2.6286884566983857,
+      "ndv_approx": 10,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0
+        ],
+        "counts": [
+          1326,
+          0,
+          13381244,
+          35804921,
+          82058923,
+          9795283,
+          21199,
+          10478,
+          13,
+          50440
+        ]
+      },
+      "dtype": "int16"
+    },
+    "baseandalloptionsvalue": {
+      "null_count": 0,
+      "min": -2425191017275.02,
+      "max": 2425204539689.89,
+      "mean": 240154.96921924627,
+      "ndv_approx": 2953445,
+      "histogram": {
+        "buckets": [
+          -2425191017275.02,
+          -1940151461578.529,
+          -1455111905882.038,
+          -970072350185.5469,
+          -485032794489.0559,
+          6761207.435058594,
+          485046316903.9263,
+          970085872600.417,
+          1455125428296.9082,
+          1940164983993.3994,
+          2425204539689.89
+        ],
+        "counts": [
+          13,
+          0,
+          0,
+          0,
+          140639572,
+          484229,
+          0,
+          0,
+          0,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "baseandexercisedoptionsvalue": {
+      "null_count": 0,
+      "min": -344733702433.01,
+      "max": 344733911303.88,
+      "mean": 202418.65095968085,
+      "ndv_approx": 2890078,
+      "histogram": {
+        "buckets": [
+          -344733702433.01,
+          -275786941059.32104,
+          -206840179685.63202,
+          -137893418311.94302,
+          -68946656938.25403,
+          104435.43493652344,
+          68946865809.12396,
+          137893627182.813,
+          206840388556.50195,
+          275787149930.1909,
+          344733911303.8799
+        ],
+        "counts": [
+          13,
+          0,
+          0,
+          26,
+          128917474,
+          12206288,
+          13,
+          0,
+          0,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "bureau_code": {
+      "null_count": 0,
+      "ndv_approx": 81,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "00",
+          "count": 55997305
+        },
+        {
+          "value": "AS",
+          "count": 32146089
+        },
+        {
+          "value": "32",
+          "count": 16087750
+        },
+        {
+          "value": "40",
+          "count": 7172823
+        },
+        {
+          "value": "24",
+          "count": 2089164
+        }
+      ],
+      "dtype": "string"
+    },
+    "bureau_name": {
+      "null_count": 0,
+      "ndv_approx": 158,
+      "mean_length": 40.0,
+      "top_values": [
+        {
+          "value": "DEFENSE LOGISTICS AGENCY                ",
+          "count": 32146089
+        },
+        {
+          "value": "FEDERAL ACQUISITION SERVICE             ",
+          "count": 16087763
+        },
+        {
+          "value": "DEPT OF THE ARMY                        ",
+          "count": 14839195
+        },
+        {
+          "value": "VETERANS AFFAIRS, DEPARTMENT OF         ",
+          "count": 13299103
+        },
+        {
+          "value": "DEPT OF THE NAVY                        ",
+          "count": 11465432
+        }
+      ],
+      "dtype": "string"
+    },
+    "cd_contactiontype": {
+      "null_count": 377,
+      "ndv_approx": 10,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "C",
+          "count": 82058923
+        },
+        {
+          "value": "B",
+          "count": 35804921
+        },
+        {
+          "value": "A",
+          "count": 13381244
+        },
+        {
+          "value": "D",
+          "count": 9795283
+        },
+        {
+          "value": "T",
+          "count": 50440
+        }
+      ],
+      "dtype": "string"
+    },
+    "co_name": {
+      "null_count": 17277,
+      "ndv_approx": 3380,
+      "mean_length": 43.999849206149534,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "co_state": {
+      "null_count": 997377,
+      "ndv_approx": 65,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "PA",
+          "count": 27554793
+        },
+        {
+          "value": "DC",
+          "count": 15389020
+        },
+        {
+          "value": "VA",
+          "count": 11883871
+        },
+        {
+          "value": "MO",
+          "count": 8216647
+        },
+        {
+          "value": "MD",
+          "count": 7592446
+        }
+      ],
+      "dtype": "string"
+    },
+    "code": {
+      "null_count": 0,
+      "ndv_approx": 51,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "97",
+          "count": 34876331
+        },
+        {
+          "value": "21",
+          "count": 18635074
+        },
+        {
+          "value": "17",
+          "count": 17868092
+        },
+        {
+          "value": "36",
+          "count": 13347662
+        },
+        {
+          "value": "57",
+          "count": 8340920
+        }
+      ],
+      "dtype": "string"
+    },
+    "contract_num": {
+      "null_count": 17194532,
+      "ndv_approx": 1645771,
+      "mean_length": 50.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "contract_signeddate": {
+      "null_count": 0,
+      "ndv_approx": 2511,
+      "mean_length": 20.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "contractingofficeagencyid": {
+      "null_count": 0,
+      "ndv_approx": 178,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "97AS",
+          "count": 32146089
+        },
+        {
+          "value": "4732",
+          "count": 16087750
+        },
+        {
+          "value": "2100",
+          "count": 14839195
+        },
+        {
+          "value": "3600",
+          "count": 13299103
+        },
+        {
+          "value": "1700",
+          "count": 11465432
+        }
+      ],
+      "dtype": "string"
+    },
+    "count_fetched": {
+      "null_count": 0,
+      "min": 0,
+      "max": 47374150,
+      "mean": 339497.85931197857,
+      "ndv_approx": 1349,
+      "histogram": {
+        "buckets": [
+          0.0,
+          4737415.0,
+          9474830.0,
+          14212245.0,
+          18949660.0,
+          23687075.0,
+          28424490.0,
+          33161905.0,
+          37899320.0,
+          42636735.0,
+          47374150.0
+        ],
+        "counts": [
+          140287107,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          836720
+        ]
+      },
+      "dtype": "int32"
+    },
+    "count_total": {
+      "null_count": 0,
+      "min": 0,
+      "max": 47374150,
+      "mean": 339497.85931197857,
+      "ndv_approx": 1349,
+      "histogram": {
+        "buckets": [
+          0.0,
+          4737415.0,
+          9474830.0,
+          14212245.0,
+          18949660.0,
+          23687075.0,
+          28424490.0,
+          33161905.0,
+          37899320.0,
+          42636735.0,
+          47374150.0
+        ],
+        "counts": [
+          140287107,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          836720
+        ]
+      },
+      "dtype": "int32"
+    },
+    "description": {
+      "null_count": 0,
+      "ndv_approx": 59,
+      "mean_length": 39.73915608170121,
+      "top_values": [
+        {
+          "value": "OFFICE OF SECRETARY OF DEFENSE          ",
+          "count": 34876331
+        },
+        {
+          "value": "DEPARTMENT OF ARMY                      ",
+          "count": 18635074
+        },
+        {
+          "value": "DEPARTMENT OF NAVY                      ",
+          "count": 17868092
+        },
+        {
+          "value": "DEPARTMENT OF VETERANS AFFAIRS          ",
+          "count": 13347662
+        },
+        {
+          "value": "DEPARTMENT OF AIR FORCE                 ",
+          "count": 8340920
+        }
+      ],
+      "dtype": "string"
+    },
+    "fk_epa_des_prod": {
+      "null_count": 433232,
+      "min": -1,
+      "max": 5,
+      "mean": 4.546769711223412,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          -0.4,
+          0.19999999999999996,
+          0.7999999999999998,
+          1.4,
+          2.0,
+          2.5999999999999996,
+          3.2,
+          3.8,
+          4.3999999999999995,
+          5.0
+        ],
+        "counts": [
+          795960,
+          0,
+          0,
+          14503977,
+          0,
+          66976,
+          305215,
+          0,
+          162213,
+          124856254
+        ]
+      },
+      "dtype": "int16"
+    },
+    "fk_rec_mat": {
+      "null_count": 1973364,
+      "min": -1,
+      "max": 12,
+      "mean": 2.871855575500313,
+      "ndv_approx": 13,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          0.30000000000000004,
+          1.6,
+          2.9000000000000004,
+          4.2,
+          5.5,
+          6.800000000000001,
+          8.1,
+          9.4,
+          10.700000000000001,
+          12.0
+        ],
+        "counts": [
+          4737004,
+          867577,
+          2032497,
+          130376789,
+          208108,
+          689956,
+          67292,
+          37253,
+          20535,
+          113452
+        ]
+      },
+      "dtype": "int16"
+    },
+    "ftsdollar": {
+      "null_count": 0,
+      "min": -28000000.0,
+      "max": 52304441.85,
+      "mean": 442.3140536701143,
+      "ndv_approx": 45390,
+      "histogram": {
+        "buckets": [
+          -28000000.0,
+          -19969555.815,
+          -11939111.63,
+          -3908667.4450000003,
+          4121776.7399999984,
+          12152220.924999997,
+          20182665.11,
+          28213109.294999994,
+          36243553.48,
+          44273997.66499999,
+          52304441.849999994
+        ],
+        "counts": [
+          39,
+          13,
+          156,
+          141120732,
+          2268,
+          385,
+          156,
+          52,
+          13,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "funding_agency": {
+      "null_count": 2659,
+      "ndv_approx": 73,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "97  ",
+          "count": 34876331
+        },
+        {
+          "value": "21  ",
+          "count": 18635074
+        },
+        {
+          "value": "17  ",
+          "count": 17868092
+        },
+        {
+          "value": "36  ",
+          "count": 13346908
+        },
+        {
+          "value": "57  ",
+          "count": 8340920
+        }
+      ],
+      "dtype": "string"
+    },
+    "funding_agency_key": {
+      "null_count": 0,
+      "min": -1,
+      "max": 1704064396,
+      "mean": 1303450146.3947616,
+      "ndv_approx": 54,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          170406438.7,
+          340812878.4,
+          511219318.09999996,
+          681625757.8,
+          852032197.5,
+          1022438637.1999999,
+          1192845076.8999999,
+          1363251516.6,
+          1533657956.3,
+          1704064396.0
+        ],
+        "counts": [
+          6333,
+          301593,
+          0,
+          0,
+          0,
+          0,
+          0,
+          138391260,
+          632741,
+          1791900
+        ]
+      },
+      "dtype": "int32"
+    },
+    "funding_agency_name": {
+      "null_count": 0,
+      "ndv_approx": 51,
+      "mean_length": 40.0,
+      "top_values": [
+        {
+          "value": "OFFICE OF SECRETARY OF DEFENSE          ",
+          "count": 34876331
+        },
+        {
+          "value": "DEPARTMENT OF ARMY                      ",
+          "count": 18635074
+        },
+        {
+          "value": "DEPARTMENT OF NAVY                      ",
+          "count": 17868092
+        },
+        {
+          "value": "DEPARTMENT OF VETERANS AFFAIRS          ",
+          "count": 13346908
+        },
+        {
+          "value": "DEPARTMENT OF AIR FORCE                 ",
+          "count": 8340920
+        }
+      ],
+      "dtype": "string"
+    },
+    "gsadollar": {
+      "null_count": 0,
+      "min": -43968866.12,
+      "max": 151708068.53,
+      "mean": 10998.725093697736,
+      "ndv_approx": 542966,
+      "histogram": {
+        "buckets": [
+          -43968866.12,
+          -24401172.654999997,
+          -4833479.189999998,
+          14734214.274999999,
+          34301907.74,
+          53869601.205000006,
+          73437294.66999999,
+          93004988.13499999,
+          112572681.6,
+          132140375.065,
+          151708068.53
+        ],
+        "counts": [
+          117,
+          1742,
+          141114594,
+          6051,
+          963,
+          232,
+          72,
+          13,
+          13,
+          30
+        ]
+      },
+      "dtype": "float64"
+    },
+    "gsaotherdollar": {
+      "null_count": 0,
+      "min": -6497461.06,
+      "max": 38962074.0,
+      "mean": 893.2234382808841,
+      "ndv_approx": 114968,
+      "histogram": {
+        "buckets": [
+          -6497461.06,
+          -1951507.5539999995,
+          2594445.9520000005,
+          7140399.458,
+          11686352.964000002,
+          16232306.470000003,
+          20778259.976,
+          25324213.482,
+          29870166.988,
+          34416120.493999995,
+          38962074.0
+        ],
+        "counts": [
+          260,
+          141120534,
+          2214,
+          520,
+          130,
+          78,
+          52,
+          26,
+          0,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "gwacs": {
+      "null_count": 0,
+      "min": -97483372.0,
+      "max": 104897995.95,
+      "mean": 1963.0722620804431,
+      "ndv_approx": 23382,
+      "histogram": {
+        "buckets": [
+          -97483372.0,
+          -77245235.205,
+          -57007098.410000004,
+          -36768961.61500001,
+          -16530824.820000008,
+          3707311.974999994,
+          23945448.76999998,
+          44183585.565,
+          64421722.359999985,
+          84659859.15499997,
+          104897995.94999999
+        ],
+        "counts": [
+          13,
+          0,
+          0,
+          52,
+          141106220,
+          16437,
+          793,
+          182,
+          52,
+          78
+        ]
+      },
+      "dtype": "float64"
+    },
+    "level1_category": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 18.435046698386376,
+      "top_values": [
+        {
+          "value": "MEDICAL",
+          "count": 31036850
+        },
+        {
+          "value": "FACILITIES & CONSTRUCTION",
+          "count": 27581687
+        },
+        {
+          "value": "INDUSTRIAL PRODUCTS & SERVICES",
+          "count": 24124110
+        },
+        {
+          "value": "PROFESSIONAL SERVICES",
+          "count": 18439665
+        },
+        {
+          "value": "IT",
+          "count": 16940245
+        }
+      ],
+      "dtype": "string"
+    },
+    "level2_category": {
+      "null_count": 0,
+      "ndv_approx": 55,
+      "mean_length": 26.270736315845518,
+      "top_values": [
+        {
+          "value": "MEDICAL EQUIPMENT AND ACCESSORIES AND SUPPLIES",
+          "count": 16809074
+        },
+        {
+          "value": "FACILITY RELATED SERVICES",
+          "count": 13149137
+        },
+        {
+          "value": "DRUGS AND PHARMACEUTICAL PRODUCTS",
+          "count": 10777491
+        },
+        {
+          "value": "HARDWARE & TOOLS",
+          "count": 10679545
+        },
+        {
+          "value": "MANAGEMENT ADVISORY SERVICES",
+          "count": 9016624
+        }
+      ],
+      "dtype": "string"
+    },
+    "naics_code": {
+      "null_count": 0,
+      "ndv_approx": 1446,
+      "mean_length": 6.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "naics_name": {
+      "null_count": 0,
+      "ndv_approx": 1093,
+      "mean_length": 35.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "nongsadollar": {
+      "null_count": 0,
+      "min": -344733702433.01,
+      "max": 344733911303.88,
+      "mean": 118118.33582896212,
+      "ndv_approx": 2967590,
+      "histogram": {
+        "buckets": [
+          -344733702433.01,
+          -275786941059.32104,
+          -206840179685.63202,
+          -137893418311.94302,
+          -68946656938.25403,
+          104435.43493652344,
+          68946865809.12396,
+          137893627182.813,
+          206840388556.50195,
+          275787149930.1909,
+          344733911303.8799
+        ],
+        "counts": [
+          13,
+          0,
+          0,
+          13,
+          130156189,
+          10967586,
+          13,
+          0,
+          0,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "obligatedamount": {
+      "null_count": 0,
+      "min": -344733702433.01,
+      "max": 344733911303.88,
+      "mean": 133207.086494649,
+      "ndv_approx": 3098164,
+      "histogram": {
+        "buckets": [
+          -344733702433.01,
+          -275786941059.32104,
+          -206840179685.63202,
+          -137893418311.94302,
+          -68946656938.25403,
+          104435.43493652344,
+          68946865809.12396,
+          137893627182.813,
+          206840388556.50195,
+          275787149930.1909,
+          344733911303.8799
+        ],
+        "counts": [
+          13,
+          0,
+          0,
+          13,
+          127815009,
+          13308766,
+          13,
+          0,
+          0,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "obligatedamount_1": {
+      "dtype": "float64",
+      "null_count": 2117594,
+      "min": 0.0,
+      "max": 0.0,
+      "mean": 0.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.0
+        ],
+        "counts": [
+          139006233
+        ]
+      }
+    },
+    "pbsdollar": {
+      "null_count": 0,
+      "min": -22082500.0,
+      "max": 26925764.88,
+      "mean": 791.4158179603601,
+      "ndv_approx": 63712,
+      "histogram": {
+        "buckets": [
+          -22082500.0,
+          -17181673.512000002,
+          -12280847.024,
+          -7380020.536,
+          -2479194.0480000004,
+          2421632.4399999976,
+          7322458.927999999,
+          12223285.416000001,
+          17124111.904,
+          22024938.391999997,
+          26925764.879999995
+        ],
+        "counts": [
+          13,
+          13,
+          26,
+          117,
+          141118665,
+          4378,
+          403,
+          82,
+          91,
+          39
+        ]
+      },
+      "dtype": "float64"
+    },
+    "primary_contract_piid": {
+      "null_count": 0,
+      "ndv_approx": 5224560,
+      "mean_length": 50.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "prod_or_serv_code": {
+      "null_count": 0,
+      "ndv_approx": 1365,
+      "mean_length": 4.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "prod_or_serv_code_desc": {
+      "null_count": 338,
+      "ndv_approx": 1430,
+      "mean_length": 35.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "psc_code": {
+      "null_count": 0,
+      "ndv_approx": 1365,
+      "mean_length": 4.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "psc_code_description": {
+      "null_count": 0,
+      "ndv_approx": 2059,
+      "mean_length": 45.41798014732126,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "psc_key": {
+      "null_count": 0,
+      "min": -2129302314,
+      "max": 2144435626,
+      "mean": -1633918415.3220956,
+      "ndv_approx": 1504,
+      "histogram": {
+        "buckets": [
+          -2129302314.0,
+          -1701928520.0,
+          -1274554726.0,
+          -847180932.0,
+          -419807138.0,
+          7566656.0,
+          434940450.0,
+          862314244.0,
+          1289688038.0,
+          1717061832.0,
+          2144435626.0
+        ],
+        "counts": [
+          288,
+          134998996,
+          6087585,
+          7178,
+          228,
+          2895,
+          4535,
+          5456,
+          7666,
+          9000
+        ]
+      },
+      "dtype": "int32"
+    },
+    "quarter": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "4",
+          "count": 40859143
+        },
+        {
+          "value": "3",
+          "count": 34966659
+        },
+        {
+          "value": "2",
+          "count": 32936397
+        },
+        {
+          "value": "1",
+          "count": 32361628
+        }
+      ],
+      "dtype": "string"
+    },
+    "refidvid_agencyid": {
+      "null_count": 0,
+      "ndv_approx": 164,
+      "mean_length": 3.0288791629779146,
+      "top_values": [
+        {
+          "value": " ",
+          "count": 45682763
+        },
+        {
+          "value": "9700",
+          "count": 43989902
+        },
+        {
+          "value": "4730",
+          "count": 20785960
+        },
+        {
+          "value": "3600",
+          "count": 7103157
+        },
+        {
+          "value": "4732",
+          "count": 4265564
+        }
+      ],
+      "dtype": "string"
+    },
+    "refidvid_piid": {
+      "null_count": 17481571,
+      "ndv_approx": 166711,
+      "mean_length": 9.51728465711593,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "short_name": {
+      "null_count": 0,
+      "ndv_approx": 58,
+      "mean_length": 4.5021400036154064,
+      "top_values": [
+        {
+          "value": "SEC DEF",
+          "count": 34876331
+        },
+        {
+          "value": "ARMY",
+          "count": 18635074
+        },
+        {
+          "value": "NAVY",
+          "count": 17868092
+        },
+        {
+          "value": "VA",
+          "count": 13347662
+        },
+        {
+          "value": "USAF",
+          "count": 8340920
+        }
+      ],
+      "dtype": "string"
+    },
+    "signeddate": {
+      "null_count": 0,
+      "ndv_approx": 2372,
+      "mean_length": 19.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "vend_contoffbussizedeterm": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "O",
+          "count": 81893201
+        },
+        {
+          "value": "S",
+          "count": 59230626
+        }
+      ],
+      "dtype": "string"
+    },
+    "vend_dunsnumber": {
+      "null_count": 0,
+      "ndv_approx": 306506,
+      "mean_length": 8.915558391142554,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "vend_vendorname": {
+      "null_count": 8449,
+      "ndv_approx": 387271,
+      "mean_length": 34.24422550177345,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "whocanuse": {
+      "null_count": 1355399,
+      "ndv_approx": 1167,
+      "mean_length": 27.273755135888056,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "year": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "2011",
+          "count": 33582068
+        },
+        {
+          "value": "2012",
+          "count": 30202497
+        },
+        {
+          "value": "2015",
+          "count": 29625745
+        },
+        {
+          "value": "2013",
+          "count": 22470347
+        },
+        {
+          "value": "2014",
+          "count": 20826654
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

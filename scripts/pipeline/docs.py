@@ -43,9 +43,11 @@ from __future__ import annotations
 import re
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pyarrow.parquet as pq
 
+from .discovery import SHOWCASE_TIERS, _is_variant_field, bucket_for_size
 from .spec import (
     REPO_ROOT,
     load_manifest,
@@ -68,22 +70,14 @@ SNAPSHOT_JSON = REPO_ROOT / "docs" / "snapshot.json"
 
 # ---------- shared helpers ----------
 
-_KIND_BY_FAMILY = {
-    "nyc-tlc": "Tabular (Parquet)",
-    "public-bi": "Tabular (CSV)",
-    "uci": "Tabular (CSV)",
-}
-
-
 def _data_kind(spec: dict, column_names: set[str] | None = None) -> str:
     """Best-effort inference of the 'Data Kind' label.
 
     `column_names` may come from a live parquet schema OR from the snapshot
     fallback — both cases need to recognise the `content` blob convention.
+    Inferred from `parse.reader` + `transform.handler`; falls through to
+    "Tabular (CSV)" for the default case.
     """
-    family = spec.get("family", "")
-    if family in _KIND_BY_FAMILY:
-        return _KIND_BY_FAMILY[family]
     reader = spec_field(spec, "parse.reader", "csv")
     handler = spec_field(spec, "transform.handler", "")
     if reader == "parquet":
@@ -146,6 +140,38 @@ def _size_label(bytes_: int | None) -> str:
 
 # ---------- datasets.md ----------
 
+_TIER_TITLES = {
+    "encoding": "Encoding",
+    "stress":   "Stress",
+}
+
+
+def _render_curated_picks(manifest: dict) -> str:
+    """Render a curated-picks Markdown block keyed by SHOWCASE_TIERS.
+
+    Member slugs come from sources.json `showcase` arrays; up to 8 per tier
+    (deterministic by manifest order). Empty tiers get a one-line
+    placeholder rather than disappearing.
+    """
+    lines: list[str] = ["## Curated picks", ""]
+    for tier in SHOWCASE_TIERS:
+        members = [s for s in manifest.get("datasets", [])
+                   if tier in (s.get("showcase") or [])]
+        title = _TIER_TITLES.get(tier, tier)
+        lines.append(f"### {title}")
+        if not members:
+            lines.append("_No picks yet — curation pass pending._")
+            lines.append("")
+            continue
+        for spec in members[:8]:
+            desc = (spec.get("description") or "").splitlines()[0][:140]
+            lines.append(f"- **[{spec['slug']}](#{spec['slug']})** — {desc}")
+        lines.append("")
+    lines.append("---")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def generate_datasets_md():
     manifest = load_manifest()
     snapshot_slugs = _load_snapshot_slugs(manifest.get("schema_version"))
@@ -155,9 +181,15 @@ def generate_datasets_md():
         slug = spec["slug"]
         parquet = prepared_parquet(slug)
         snap = snapshot_slugs.get(slug, {})
+        meta = None
         if parquet.exists():
-            meta = pq.ParquetFile(parquet).metadata
-            schema = pq.ParquetFile(parquet).schema_arrow
+            try:
+                pf = pq.ParquetFile(parquet)
+                meta = pf.metadata
+                schema = pf.schema_arrow
+            except Exception:
+                meta = None
+        if meta is not None:
             row_count = f"{meta.num_rows:,}"
             row_groups = f"{meta.num_row_groups:,}"
             parquet_size = _size_label(parquet.stat().st_size)
@@ -208,7 +240,7 @@ def generate_datasets_md():
     sep = ("|--------------------|-------------------|---------------------"
            "|----------------------|-----------|---------|-----------"
            "|----------------------|---------------------|--------------------|")
-    out = [_generation_header("datasets"), header, sep]
+    out = [_generation_header("datasets"), "", _render_curated_picks(manifest), header, sep]
     for r in rows:
         out.append("| " + " | ".join(r) + " |")
 
@@ -345,6 +377,128 @@ def generate_handlers_md():
 
 # ---------- snapshot.json ----------
 
+def _is_nested_arrow_type(arrow_type) -> bool:
+    import pyarrow as pa
+    return (
+        pa.types.is_list(arrow_type)
+        or pa.types.is_large_list(arrow_type)
+        or pa.types.is_fixed_size_list(arrow_type)
+        or pa.types.is_struct(arrow_type)
+        or pa.types.is_map(arrow_type)
+    )
+
+
+_HIGH_CARDINALITY_RATIO = 0.5   # NDV / row_count threshold to flag a string column
+
+
+def _high_cardinality_from_profile(profile_path: "Path") -> bool | None:
+    """True if any string-typed column has ndv_approx / row_count >= ratio.
+
+    Returns False when no string column meets the bar, None when no profile
+    exists or the profile is malformed. Reads profile.json only — does not
+    open the parquet.
+    """
+    import json as _json
+    if not profile_path.exists():
+        return None
+    try:
+        profile = _json.loads(profile_path.read_text())
+    except Exception:
+        return None
+    rows = profile.get("row_count") or 0
+    if rows <= 0:
+        return None
+    for col in (profile.get("columns") or {}).values():
+        if not col:
+            continue
+        if col.get("dtype") not in {"string", "binary", "large_string", "large_binary"}:
+            continue
+        ndv = col.get("ndv_approx") or 0
+        if ndv / rows >= _HIGH_CARDINALITY_RATIO:
+            return True
+    return False
+
+
+def _shape_traits_from_schema(schema) -> dict[str, bool | None]:
+    """Compute the schema-derivable subset of TRAIT_FLAGS.
+
+    `high_cardinality_present` is left null here — Task 10 populates it
+    from profile.json when available.
+    """
+    import pyarrow as pa
+    n_cols = len(schema)
+    n_string = 0
+    has_nested = False
+    has_timestamp = False
+    has_variant = False
+    for field in schema:
+        t = field.type
+        if pa.types.is_string(t) or pa.types.is_large_string(t):
+            n_string += 1
+        if _is_nested_arrow_type(t):
+            has_nested = True
+        if pa.types.is_timestamp(t) or pa.types.is_date(t):
+            has_timestamp = True
+        if _is_variant_field(field):
+            has_variant = True
+            # variant is a struct payload, so also nested
+            has_nested = True
+
+    return {
+        "has_nested": has_nested,
+        "has_timestamp": has_timestamp,
+        "has_variant": has_variant,
+        "string_heavy": (n_cols > 0) and (n_string / n_cols > 0.5),
+        "wide_row": n_cols > 50,
+        "high_cardinality_present": None,
+    }
+
+
+def _snapshot_for_slug(*, slug: str, parquet_path: Path, prior_snapshot: dict | None) -> dict:
+    """Build the discovery-specific subset of a per-slug snapshot record.
+
+    Owned fields:
+      - `size_bucket`   — from parquet bytes via discovery.bucket_for_size.
+      - `shape_traits`  — schema-derived; Task 10 backfills high_cardinality_present.
+
+    Tasks 10 will further refine `high_cardinality_present` from profile.json.
+
+    Falls back to prior snapshot values per the "load-bearing snapshot"
+    invariant: partial regens must not dash-out tracked ground truth.
+
+    The `slug` param is currently informational only.
+    """
+    _OWNED_KEYS = ("size_bucket", "shape_traits")
+    record: dict = {}
+
+    if parquet_path.exists():
+        record["size_bucket"] = bucket_for_size(parquet_path.stat().st_size)
+        # Read schema metadata only — no full file scan. Fall back to prior
+        # (or null) on a malformed/empty parquet so this stays robust.
+        try:
+            schema = pq.read_schema(parquet_path)
+            record["shape_traits"] = _shape_traits_from_schema(schema)
+            # If a per-slug profile exists, backfill high_cardinality_present.
+            profile_path = parquet_path.parent.parent / "profile.json"
+            record["shape_traits"]["high_cardinality_present"] = (
+                _high_cardinality_from_profile(profile_path)
+            )
+        except Exception:
+            if prior_snapshot is not None and "shape_traits" in prior_snapshot:
+                record["shape_traits"] = prior_snapshot["shape_traits"]
+            else:
+                record["shape_traits"] = None
+    elif prior_snapshot is not None:
+        for k in _OWNED_KEYS:
+            if k in prior_snapshot:
+                record[k] = prior_snapshot[k]
+    else:
+        record["size_bucket"] = None
+        record["shape_traits"] = None
+
+    return record
+
+
 def generate_snapshot(*, overwrite_missing: bool = False):
     """Per-slug record of canonical-build state for the TUI / agents.
 
@@ -389,6 +543,7 @@ def generate_snapshot(*, overwrite_missing: bool = False):
         parquet = prepared_parquet(slug)
         vortex = prepared_vortex(slug)
         expected_rows = spec_field(spec, "expect.rows")
+        prior_for_slug = existing_slugs.get(slug)
         fresh: dict = {
             "expected_rows": expected_rows,
             "last_built_rows": None,        # populated below from parquet metadata
@@ -412,6 +567,19 @@ def generate_snapshot(*, overwrite_missing: bool = False):
                 n_with_schema += 1
             except Exception as e:
                 fresh["columns_error"] = f"{type(e).__name__}: {str(e)[:120]}"
+        # Discovery-axis fields: size_bucket + shape_traits. Adds to `fresh`
+        # without disturbing existing fields. When the parquet is missing this
+        # run, the helper preserves the prior snapshot's values so partial
+        # regens don't dash out tracked ground truth. The merge tuple below
+        # mirrors `_OWNED_KEYS` inside the helper.
+        snap_fragment = _snapshot_for_slug(
+            slug=slug,
+            parquet_path=parquet,
+            prior_snapshot=prior_for_slug,
+        )
+        for k in ("size_bucket", "shape_traits"):
+            if k in snap_fragment:
+                fresh[k] = snap_fragment[k]
         fresh_has_data = (fresh["parquet_bytes"] is not None
                           or fresh["vortex_bytes"] is not None
                           or fresh["columns"] is not None)

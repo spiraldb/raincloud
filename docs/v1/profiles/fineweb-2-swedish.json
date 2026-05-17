@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "slug": "fineweb-2-swedish",
+  "row_count": 3626000,
+  "parquet_sha256": "a0c3ab9b0b050b3e882711fcea7f705e567ffc3f9a9c16aad8dc8845ea76d6c7",
+  "computed_at": "2026-05-13T16:44:37Z",
+  "sample_rows": null,
+  "columns": {
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 3567259,
+      "mean_length": 2826.218474627689,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 3384007,
+      "mean_length": 47.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "dump": {
+      "null_count": 0,
+      "ndv_approx": 92,
+      "mean_length": 15.0,
+      "top_values": [
+        {
+          "value": "CC-MAIN-2023-40",
+          "count": 80655
+        },
+        {
+          "value": "CC-MAIN-2023-50",
+          "count": 74468
+        },
+        {
+          "value": "CC-MAIN-2023-06",
+          "count": 69644
+        },
+        {
+          "value": "CC-MAIN-2022-21",
+          "count": 69251
+        },
+        {
+          "value": "CC-MAIN-2022-49",
+          "count": 68992
+        }
+      ],
+      "dtype": "string"
+    },
+    "url": {
+      "null_count": 0,
+      "ndv_approx": 3305369,
+      "mean_length": 66.50017457253172,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "date": {
+      "null_count": 0,
+      "ndv_approx": 4459394,
+      "mean_length": 20.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "file_path": {
+      "null_count": 0,
+      "ndv_approx": 121702,
+      "mean_length": 127.12510810810811,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "language": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "swe",
+          "count": 3626000
+        }
+      ],
+      "dtype": "string"
+    },
+    "language_score": {
+      "null_count": 0,
+      "min": 0.6288349032402039,
+      "max": 1.0000100135803223,
+      "mean": 0.9983551521592224,
+      "ndv_approx": 112179,
+      "histogram": {
+        "buckets": [
+          0.6288349032402039,
+          0.6659524142742157,
+          0.7030699253082275,
+          0.7401874363422394,
+          0.7773049473762512,
+          0.8144224584102631,
+          0.8515399694442749,
+          0.8886574804782867,
+          0.9257749915122986,
+          0.9628925025463104,
+          1.0000100135803223
+        ],
+        "counts": [
+          1231,
+          1312,
+          1434,
+          1587,
+          2049,
+          3931,
+          5580,
+          5266,
+          15375,
+          3588235
+        ]
+      },
+      "dtype": "float64"
+    },
+    "language_script": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "Latn",
+          "count": 3626000
+        }
+      ],
+      "dtype": "string"
+    },
+    "minhash_cluster_size": {
+      "null_count": 0,
+      "min": 1,
+      "max": 2151305,
+      "mean": 26.598046883618313,
+      "ndv_approx": 4542,
+      "histogram": {
+        "buckets": [
+          1.0,
+          215131.4,
+          430261.8,
+          645392.2,
+          860522.6,
+          1075653.0,
+          1290783.4,
+          1505913.8,
+          1721044.2,
+          1936174.5999999999,
+          2151305.0
+        ],
+        "counts": [
+          3625981,
+          15,
+          0,
+          0,
+          2,
+          1,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "top_langs": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "{}",
+          "count": 3626000
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 3626000
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

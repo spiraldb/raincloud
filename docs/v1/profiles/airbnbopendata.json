@@ -1,0 +1,616 @@
+{
+  "schema_version": 1,
+  "slug": "airbnbopendata",
+  "row_count": 102599,
+  "parquet_sha256": "b2d98d3613b1a4731cd76f713ccb091fe37d2ed673768b8b15d991a1a7ce0555",
+  "computed_at": "2026-05-16T05:14:21Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "min": 1001254,
+      "max": 57367417,
+      "mean": 29146234.522129845,
+      "ndv_approx": 97374,
+      "histogram": {
+        "buckets": [
+          1001254.0,
+          6637870.3,
+          12274486.6,
+          17911102.9,
+          23547719.2,
+          29184335.5,
+          34820951.8,
+          40457568.1,
+          46094184.4,
+          51730800.699999996,
+          57367417.0
+        ],
+        "counts": [
+          10331,
+          10206,
+          10228,
+          10415,
+          10206,
+          10206,
+          10389,
+          10206,
+          10206,
+          10206
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "NAME": {
+      "null_count": 250,
+      "ndv_approx": 74518,
+      "mean_length": 37.572941601774325,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "host id": {
+      "null_count": 0,
+      "min": 123600518,
+      "max": 98763129024,
+      "mean": 49254111474.32867,
+      "ndv_approx": 139683,
+      "histogram": {
+        "buckets": [
+          123600518.0,
+          9987553368.6,
+          19851506219.2,
+          29715459069.800003,
+          39579411920.4,
+          49443364771.0,
+          59307317621.600006,
+          69171270472.2,
+          79035223322.8,
+          88899176173.40001,
+          98763129024.0
+        ],
+        "counts": [
+          10624,
+          10107,
+          10299,
+          10350,
+          10264,
+          10247,
+          9998,
+          10301,
+          10199,
+          10210
+        ]
+      },
+      "dtype": "uint64"
+    },
+    "host_identity_verified": {
+      "null_count": 289,
+      "ndv_approx": 2,
+      "mean_length": 9.501319519108591,
+      "top_values": [
+        {
+          "value": "unconfirmed",
+          "count": 51200
+        },
+        {
+          "value": "verified",
+          "count": 51110
+        }
+      ],
+      "dtype": "string"
+    },
+    "host name": {
+      "null_count": 406,
+      "ndv_approx": 11330,
+      "mean_length": 6.173015764289139,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "neighbourhood group": {
+      "null_count": 29,
+      "ndv_approx": 6,
+      "mean_length": 8.135478210002924,
+      "top_values": [
+        {
+          "value": "Manhattan",
+          "count": 43792
+        },
+        {
+          "value": "Brooklyn",
+          "count": 41842
+        },
+        {
+          "value": "Queens",
+          "count": 13267
+        },
+        {
+          "value": "Bronx",
+          "count": 2712
+        },
+        {
+          "value": "Staten Island",
+          "count": 955
+        }
+      ],
+      "dtype": "string"
+    },
+    "neighbourhood": {
+      "null_count": 16,
+      "ndv_approx": 238,
+      "mean_length": 11.871265219383329,
+      "top_values": [
+        {
+          "value": "Bedford-Stuyvesant",
+          "count": 7937
+        },
+        {
+          "value": "Williamsburg",
+          "count": 7775
+        },
+        {
+          "value": "Harlem",
+          "count": 5466
+        },
+        {
+          "value": "Bushwick",
+          "count": 4982
+        },
+        {
+          "value": "Hell's Kitchen",
+          "count": 3965
+        }
+      ],
+      "dtype": "string"
+    },
+    "lat": {
+      "null_count": 8,
+      "min": 40.49979,
+      "max": 40.91697,
+      "mean": 40.72809387037124,
+      "ndv_approx": 19288,
+      "histogram": {
+        "buckets": [
+          40.49979,
+          40.541508,
+          40.583225999999996,
+          40.624944,
+          40.666661999999995,
+          40.70838,
+          40.750098,
+          40.791816,
+          40.833534,
+          40.875251999999996,
+          40.91697
+        ],
+        "counts": [
+          36,
+          454,
+          2089,
+          8219,
+          28607,
+          29462,
+          19133,
+          10588,
+          3401,
+          602
+        ]
+      },
+      "dtype": "float64"
+    },
+    "long": {
+      "null_count": 8,
+      "min": -74.24984,
+      "max": -73.70522,
+      "mean": -73.9496439558098,
+      "ndv_approx": 17324,
+      "histogram": {
+        "buckets": [
+          -74.24984,
+          -74.195378,
+          -74.140916,
+          -74.086454,
+          -74.031992,
+          -73.97753,
+          -73.923068,
+          -73.868606,
+          -73.814144,
+          -73.759682,
+          -73.70522
+        ],
+        "counts": [
+          25,
+          120,
+          398,
+          487,
+          29668,
+          52085,
+          13253,
+          3643,
+          2094,
+          818
+        ]
+      },
+      "dtype": "float64"
+    },
+    "country": {
+      "null_count": 532,
+      "ndv_approx": 1,
+      "mean_length": 13.0,
+      "top_values": [
+        {
+          "value": "United States",
+          "count": 102067
+        }
+      ],
+      "dtype": "string"
+    },
+    "country code": {
+      "null_count": 131,
+      "ndv_approx": 1,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "US",
+          "count": 102468
+        }
+      ],
+      "dtype": "string"
+    },
+    "instant_bookable": {
+      "dtype": "bool",
+      "true_count": 51020,
+      "false_count": 51474,
+      "null_count": 105
+    },
+    "cancellation_policy": {
+      "null_count": 76,
+      "ndv_approx": 3,
+      "mean_length": 7.334666367546794,
+      "top_values": [
+        {
+          "value": "moderate",
+          "count": 34343
+        },
+        {
+          "value": "strict",
+          "count": 34106
+        },
+        {
+          "value": "flexible",
+          "count": 34074
+        }
+      ],
+      "dtype": "string"
+    },
+    "room type": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 13.546262634138735,
+      "top_values": [
+        {
+          "value": "Entire home/apt",
+          "count": 53701
+        },
+        {
+          "value": "Private room",
+          "count": 46556
+        },
+        {
+          "value": "Shared room",
+          "count": 2226
+        },
+        {
+          "value": "Hotel room",
+          "count": 116
+        }
+      ],
+      "dtype": "string"
+    },
+    "Construction year": {
+      "null_count": 214,
+      "min": 2003,
+      "max": 2022,
+      "mean": 2012.487463983982,
+      "ndv_approx": 20,
+      "histogram": {
+        "buckets": [
+          2003.0,
+          2004.9,
+          2006.8,
+          2008.7,
+          2010.6,
+          2012.5,
+          2014.4,
+          2016.3,
+          2018.2,
+          2020.1,
+          2022.0
+        ],
+        "counts": [
+          10162,
+          10355,
+          10331,
+          10321,
+          10189,
+          10261,
+          10111,
+          10123,
+          10359,
+          10173
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "price": {
+      "null_count": 247,
+      "ndv_approx": 1166,
+      "mean_length": 5.306950523682977,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "service fee": {
+      "null_count": 273,
+      "ndv_approx": 242,
+      "mean_length": 4.6113304536481445,
+      "top_values": [
+        {
+          "value": "$41 ",
+          "count": 526
+        },
+        {
+          "value": "$216 ",
+          "count": 524
+        },
+        {
+          "value": "$81 ",
+          "count": 519
+        },
+        {
+          "value": "$177 ",
+          "count": 518
+        },
+        {
+          "value": "$57 ",
+          "count": 513
+        }
+      ],
+      "dtype": "string"
+    },
+    "minimum nights": {
+      "null_count": 409,
+      "min": -1223,
+      "max": 5645,
+      "mean": 8.13584499461787,
+      "ndv_approx": 163,
+      "histogram": {
+        "buckets": [
+          -1223.0,
+          -536.2,
+          150.5999999999999,
+          837.3999999999996,
+          1524.1999999999998,
+          2211.0,
+          2897.7999999999993,
+          3584.5999999999995,
+          4271.4,
+          4958.2,
+          5645.0
+        ],
+        "counts": [
+          1,
+          101925,
+          253,
+          8,
+          0,
+          1,
+          1,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "int16"
+    },
+    "number of reviews": {
+      "null_count": 183,
+      "min": 0,
+      "max": 1024,
+      "mean": 27.483742774566473,
+      "ndv_approx": 555,
+      "histogram": {
+        "buckets": [
+          0.0,
+          102.4,
+          204.8,
+          307.20000000000005,
+          409.6,
+          512.0,
+          614.4000000000001,
+          716.8000000000001,
+          819.2,
+          921.6,
+          1024.0
+        ],
+        "counts": [
+          95145,
+          5685,
+          1195,
+          271,
+          83,
+          23,
+          6,
+          3,
+          2,
+          3
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "last review": {
+      "null_count": 15893,
+      "ndv_approx": 3040,
+      "mean_length": 8.80922888842756,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "reviews per month": {
+      "null_count": 15879,
+      "min": 0.01,
+      "max": 90.0,
+      "mean": 1.3740219095941069,
+      "ndv_approx": 953,
+      "histogram": {
+        "buckets": [
+          0.01,
+          9.008999999999999,
+          18.008,
+          27.006999999999998,
+          36.00599999999999,
+          45.00499999999999,
+          54.00399999999999,
+          63.00299999999999,
+          72.002,
+          81.00099999999999,
+          89.99999999999999
+        ],
+        "counts": [
+          86409,
+          288,
+          10,
+          5,
+          1,
+          1,
+          3,
+          1,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "review rate number": {
+      "null_count": 326,
+      "min": 1,
+      "max": 5,
+      "mean": 3.279105922384207,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          9212,
+          0,
+          23098,
+          0,
+          0,
+          23265,
+          0,
+          23329,
+          0,
+          23369
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "calculated host listings count": {
+      "null_count": 319,
+      "min": 1,
+      "max": 332,
+      "mean": 7.936605396949551,
+      "ndv_approx": 67,
+      "histogram": {
+        "buckets": [
+          1.0,
+          34.1,
+          67.2,
+          100.30000000000001,
+          133.4,
+          166.5,
+          199.60000000000002,
+          232.70000000000002,
+          265.8,
+          298.90000000000003,
+          332.0
+        ],
+        "counts": [
+          97850,
+          1540,
+          832,
+          654,
+          173,
+          217,
+          504,
+          0,
+          0,
+          510
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "availability 365": {
+      "null_count": 448,
+      "min": -10,
+      "max": 3677,
+      "mean": 141.13325371264108,
+      "ndv_approx": 478,
+      "histogram": {
+        "buckets": [
+          -10.0,
+          358.7,
+          727.4,
+          1096.1,
+          1464.8,
+          1833.5,
+          2202.2,
+          2570.9,
+          2939.6,
+          3308.2999999999997,
+          3677.0
+        ],
+        "counts": [
+          93997,
+          8153,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "int16"
+    },
+    "house_rules": {
+      "null_count": 52131,
+      "ndv_approx": 1638,
+      "mean_length": 286.0634461440913,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "license": {
+      "null_count": 102597,
+      "ndv_approx": 1,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "41662/AL",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

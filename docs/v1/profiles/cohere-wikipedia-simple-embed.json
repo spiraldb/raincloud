@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "slug": "cohere-wikipedia-simple-embed",
+  "row_count": 646424,
+  "parquet_sha256": "0c684c09301bc601461c699a659ddf1680811afd0b17f1794704751da6abaeaa",
+  "computed_at": "2026-05-16T08:44:41Z",
+  "sample_rows": null,
+  "columns": {
+    "_id": {
+      "null_count": 0,
+      "ndv_approx": 531782,
+      "mean_length": 23.99051551303788,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "url": {
+      "null_count": 0,
+      "ndv_approx": 238229,
+      "mean_length": 55.436193581921465,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "title": {
+      "null_count": 0,
+      "ndv_approx": 194194,
+      "mean_length": 17.134967142309073,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 597064,
+      "mean_length": 271.21214558865387,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "emb": null
+  }
+}

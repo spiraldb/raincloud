@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "slug": "anthropic-economic-index",
+  "row_count": 425257,
+  "parquet_sha256": "e54895929c1f8e54f31a59d061f476aa2f2cfd28da1928af9b3e34c6501271c1",
+  "computed_at": "2026-05-17T13:39:14Z",
+  "sample_rows": null,
+  "columns": {
+    "geo_id": {
+      "null_count": 32,
+      "ndv_approx": 1661,
+      "mean_length": 5.274007878182139,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "geography": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 7.751665463472676,
+      "top_values": [
+        {
+          "value": "global",
+          "count": 271313
+        },
+        {
+          "value": "country-state",
+          "count": 98494
+        },
+        {
+          "value": "country",
+          "count": 55450
+        }
+      ],
+      "dtype": "string"
+    },
+    "date_start": {
+      "dtype": "date32",
+      "null_count": 0,
+      "min": "2026-02-05T00:00:00+00:00",
+      "max": "2026-02-05T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2026-02-05T00:00:00+00:00",
+          "2026-02-05T00:00:00+00:00"
+        ],
+        "counts": [
+          425257
+        ]
+      }
+    },
+    "date_end": {
+      "dtype": "date32",
+      "null_count": 0,
+      "min": "2026-02-12T00:00:00+00:00",
+      "max": "2026-02-12T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2026-02-12T00:00:00+00:00",
+          "2026-02-12T00:00:00+00:00"
+        ],
+        "counts": [
+          425257
+        ]
+      }
+    },
+    "platform_and_product": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 30.0,
+      "top_values": [
+        {
+          "value": "Claude AI (Free, Pro, and Max)",
+          "count": 425257
+        }
+      ],
+      "dtype": "string"
+    },
+    "facet": {
+      "null_count": 0,
+      "ndv_approx": 34,
+      "mean_length": 19.235398829413743,
+      "top_values": [
+        {
+          "value": "request",
+          "count": 90556
+        },
+        {
+          "value": "onet_task",
+          "count": 37516
+        },
+        {
+          "value": "onet_task::ai_autonomy",
+          "count": 29331
+        },
+        {
+          "value": "onet_task::human_education_years",
+          "count": 29331
+        },
+        {
+          "value": "onet_task::ai_education_years",
+          "count": 29327
+        }
+      ],
+      "dtype": "string"
+    },
+    "level": {
+      "null_count": 0,
+      "min": 0,
+      "max": 2,
+      "mean": 0.18752660156093845,
+      "ndv_approx": 3,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.2,
+          0.4,
+          0.6000000000000001,
+          0.8,
+          1.0,
+          1.2000000000000002,
+          1.4000000000000001,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          366015,
+          0,
+          0,
+          0,
+          0,
+          38737,
+          0,
+          0,
+          0,
+          20505
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "variable": {
+      "null_count": 0,
+      "ndv_approx": 144,
+      "mean_length": 25.404941012140895,
+      "top_values": [
+        {
+          "value": "request_count",
+          "count": 45278
+        },
+        {
+          "value": "request_pct",
+          "count": 45278
+        },
+        {
+          "value": "onet_task_count",
+          "count": 18758
+        },
+        {
+          "value": "onet_task_pct",
+          "count": 18758
+        },
+        {
+          "value": "onet_task_collaboration_pct",
+          "count": 8765
+        }
+      ],
+      "dtype": "string"
+    },
+    "cluster_name": {
+      "null_count": 2896,
+      "ndv_approx": 25576,
+      "mean_length": 92.19990718840045,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "value": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 1000000.0,
+      "mean": 186.39871756139266,
+      "ndv_approx": 171349,
+      "histogram": {
+        "buckets": [
+          0.0,
+          100000.0,
+          200000.0,
+          300000.0,
+          400000.0,
+          500000.0,
+          600000.0,
+          700000.0,
+          800000.0,
+          900000.0,
+          1000000.0
+        ],
+        "counts": [
+          425211,
+          22,
+          9,
+          2,
+          2,
+          1,
+          1,
+          0,
+          1,
+          8
+        ]
+      },
+      "dtype": "float64"
+    }
+  }
+}

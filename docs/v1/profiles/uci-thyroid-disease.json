@@ -1,0 +1,540 @@
+{
+  "schema_version": 1,
+  "slug": "uci-thyroid-disease",
+  "row_count": 2800,
+  "parquet_sha256": "31149ebfabf63f6a3e3dd7f5ee75f607e29d360d6c5f9b28d21a53eabb9d03bc",
+  "computed_at": "2026-05-16T10:24:12Z",
+  "sample_rows": null,
+  "columns": {
+    "f0": {
+      "null_count": 0,
+      "ndv_approx": 91,
+      "mean_length": 1.9928571428571429,
+      "top_values": [
+        {
+          "value": "59",
+          "count": 75
+        },
+        {
+          "value": "70",
+          "count": 74
+        },
+        {
+          "value": "60",
+          "count": 66
+        },
+        {
+          "value": "63",
+          "count": 64
+        },
+        {
+          "value": "72",
+          "count": 64
+        }
+      ],
+      "dtype": "string"
+    },
+    "f1": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "F",
+          "count": 1830
+        },
+        {
+          "value": "M",
+          "count": 860
+        },
+        {
+          "value": "?",
+          "count": 110
+        }
+      ],
+      "dtype": "string"
+    },
+    "f2": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2470
+        },
+        {
+          "value": "t",
+          "count": 330
+        }
+      ],
+      "dtype": "string"
+    },
+    "f3": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2760
+        },
+        {
+          "value": "t",
+          "count": 40
+        }
+      ],
+      "dtype": "string"
+    },
+    "f4": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2766
+        },
+        {
+          "value": "t",
+          "count": 34
+        }
+      ],
+      "dtype": "string"
+    },
+    "f5": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2690
+        },
+        {
+          "value": "t",
+          "count": 110
+        }
+      ],
+      "dtype": "string"
+    },
+    "f6": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2759
+        },
+        {
+          "value": "t",
+          "count": 41
+        }
+      ],
+      "dtype": "string"
+    },
+    "f7": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2761
+        },
+        {
+          "value": "t",
+          "count": 39
+        }
+      ],
+      "dtype": "string"
+    },
+    "f8": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2752
+        },
+        {
+          "value": "t",
+          "count": 48
+        }
+      ],
+      "dtype": "string"
+    },
+    "f9": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2637
+        },
+        {
+          "value": "t",
+          "count": 163
+        }
+      ],
+      "dtype": "string"
+    },
+    "f10": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2627
+        },
+        {
+          "value": "t",
+          "count": 173
+        }
+      ],
+      "dtype": "string"
+    },
+    "f11": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2786
+        },
+        {
+          "value": "t",
+          "count": 14
+        }
+      ],
+      "dtype": "string"
+    },
+    "f12": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2775
+        },
+        {
+          "value": "t",
+          "count": 25
+        }
+      ],
+      "dtype": "string"
+    },
+    "f13": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2729
+        },
+        {
+          "value": "t",
+          "count": 71
+        }
+      ],
+      "dtype": "string"
+    },
+    "f14": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2799
+        },
+        {
+          "value": "t",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "f15": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2665
+        },
+        {
+          "value": "t",
+          "count": 135
+        }
+      ],
+      "dtype": "string"
+    },
+    "f16": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "t",
+          "count": 2516
+        },
+        {
+          "value": "f",
+          "count": 284
+        }
+      ],
+      "dtype": "string"
+    },
+    "f17": {
+      "null_count": 0,
+      "ndv_approx": 297,
+      "mean_length": 2.8978571428571427,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "f18": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "t",
+          "count": 2215
+        },
+        {
+          "value": "f",
+          "count": 585
+        }
+      ],
+      "dtype": "string"
+    },
+    "f19": {
+      "null_count": 0,
+      "ndv_approx": 65,
+      "mean_length": 2.4132142857142855,
+      "top_values": [
+        {
+          "value": "?",
+          "count": 585
+        },
+        {
+          "value": "2",
+          "count": 169
+        },
+        {
+          "value": "1.8",
+          "count": 160
+        },
+        {
+          "value": "2.2",
+          "count": 156
+        },
+        {
+          "value": "2.3",
+          "count": 137
+        }
+      ],
+      "dtype": "string"
+    },
+    "f20": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "t",
+          "count": 2616
+        },
+        {
+          "value": "f",
+          "count": 184
+        }
+      ],
+      "dtype": "string"
+    },
+    "f21": {
+      "null_count": 0,
+      "ndv_approx": 202,
+      "mean_length": 2.469642857142857,
+      "top_values": [
+        {
+          "value": "?",
+          "count": 184
+        },
+        {
+          "value": "101",
+          "count": 62
+        },
+        {
+          "value": "93",
+          "count": 53
+        },
+        {
+          "value": "98",
+          "count": 47
+        },
+        {
+          "value": "103",
+          "count": 47
+        }
+      ],
+      "dtype": "string"
+    },
+    "f22": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "t",
+          "count": 2503
+        },
+        {
+          "value": "f",
+          "count": 297
+        }
+      ],
+      "dtype": "string"
+    },
+    "f23": {
+      "null_count": 0,
+      "ndv_approx": 143,
+      "mean_length": 3.5360714285714288,
+      "top_values": [
+        {
+          "value": "?",
+          "count": 297
+        },
+        {
+          "value": "0.99",
+          "count": 81
+        },
+        {
+          "value": "1",
+          "count": 71
+        },
+        {
+          "value": "0.93",
+          "count": 70
+        },
+        {
+          "value": "0.91",
+          "count": 68
+        }
+      ],
+      "dtype": "string"
+    },
+    "f24": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "t",
+          "count": 2505
+        },
+        {
+          "value": "f",
+          "count": 295
+        }
+      ],
+      "dtype": "string"
+    },
+    "f25": {
+      "null_count": 0,
+      "ndv_approx": 200,
+      "mean_length": 2.459285714285714,
+      "top_values": [
+        {
+          "value": "?",
+          "count": 295
+        },
+        {
+          "value": "100",
+          "count": 52
+        },
+        {
+          "value": "107",
+          "count": 52
+        },
+        {
+          "value": "98",
+          "count": 51
+        },
+        {
+          "value": "93",
+          "count": 51
+        }
+      ],
+      "dtype": "string"
+    },
+    "f26": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "f",
+          "count": 2800
+        }
+      ],
+      "dtype": "string"
+    },
+    "f27": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "?",
+          "count": 2800
+        }
+      ],
+      "dtype": "string"
+    },
+    "f28": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 4.3075,
+      "top_values": [
+        {
+          "value": "other",
+          "count": 1632
+        },
+        {
+          "value": "SVI",
+          "count": 771
+        },
+        {
+          "value": "SVHC",
+          "count": 275
+        },
+        {
+          "value": "STMW",
+          "count": 91
+        },
+        {
+          "value": "SVHD",
+          "count": 31
+        }
+      ],
+      "dtype": "string"
+    },
+    "f29": {
+      "null_count": 0,
+      "ndv_approx": 3018,
+      "mean_length": 14.516428571428571,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

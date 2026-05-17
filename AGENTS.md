@@ -25,13 +25,13 @@ Validates `sources.json` against [`sources.schema.json`](sources.schema.json) (D
 For catalog queries that would otherwise require greping the ~545 KB `sources.json` (or scrolling ~158 KB of [`docs/v1/datasets.md`](docs/v1/datasets.md)):
 
 ```bash
-python -m scripts.pipeline.list_datasets --family uci --count
+python -m scripts.pipeline.list_datasets --handler uci_default --count
 python -m scripts.pipeline.list_datasets --handler tighten_types --long
 python -m scripts.pipeline.list_datasets --fetch-type kaggle --kaggle-tos
 python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
 ```
 
-Filters compose with AND across `--family`, `--handler`, `--license`, `--fetch-type`, `--reader`, `--vortex` / `--no-vortex`, `--kaggle-tos`, `--grep`. Output modes: default (one slug per line), `--long` (wide table), `--json` (jq-friendly), `--count`.
+Filters compose with AND across `--handler`, `--license`, `--fetch-type`, `--reader`, `--vortex` / `--no-vortex`, `--kaggle-tos`, `--grep`. Output modes: default (one slug per line), `--long` (wide table), `--json` (jq-friendly), `--count`.
 
 If the user wants to *browse* interactively rather than query, point them at `python -m scripts.pipeline.browse` (read-only Textual TUI over the same data; requires `uv sync --extra tui --inexact`). It's a human-facing tool — don't try to run it from an agent context, since it won't render and will hang waiting for keystrokes.
 

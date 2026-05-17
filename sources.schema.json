@@ -26,7 +26,7 @@
     "DatasetSpec": {
       "type": "object",
       "required": [
-        "slug", "short_name", "full_name", "description", "family",
+        "slug", "short_name", "full_name", "description",
         "license", "fetch", "extract", "parse", "transform", "write", "expect"
       ],
       "additionalProperties": false,
@@ -39,11 +39,6 @@
         "short_name": { "type": "string", "minLength": 1 },
         "full_name":  { "type": "string", "minLength": 1 },
         "description": { "type": "string" },
-        "family": {
-          "type": "string",
-          "enum": ["direct", "kaggle-upstream", "nyc-tlc", "public-bi", "uci"],
-          "description": "Curatorial grouping. Adding a new family is a deliberate choice — discuss before extending the enum."
-        },
         "license": { "$ref": "#/$defs/License" },
         "fetch":   { "$ref": "#/$defs/Fetch" },
         "extract": { "$ref": "#/$defs/Extract" },
@@ -69,6 +64,31 @@
             }
           },
           "description": "Optional canonical references for the dataset beyond `license.source_url`. Most useful for surfacing the underlying paper or the project homepage in the TUI."
+        },
+        "tags": {
+          "type": "array",
+          "default": [],
+          "uniqueItems": true,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "enum": [
+              "urls", "prose", "enums", "identifiers", "code-strings",
+              "timestamps", "embeddings", "counts", "monetary", "measurements",
+              "coordinates", "binary-payload", "nested-json"
+            ]
+          },
+          "description": "Closed-vocab data-kind tags (0–3) describing the *content shape* a slug exercises (URLs / prose / enums / identifiers / code / timestamps / embeddings / counts / money / measurements / coordinates / binary blobs / nested JSON). Used by the TUI faceted side panel and `list_datasets --tag`. See `scripts/pipeline/discovery.py:TAG_VOCAB` for the authoritative list."
+        },
+        "showcase": {
+          "type": "array",
+          "default": [],
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["encoding", "stress"]
+          },
+          "description": "Editorial showcase tiers. See `scripts/pipeline/discovery.py:SHOWCASE_TIERS`."
         }
       }
     },
@@ -121,6 +141,11 @@
         },
         "expected_bytes": { "type": ["integer", "null"], "minimum": 0 },
         "expected_sha256": { "type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$" },
+        "verify_tls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to verify TLS certs when fetching from HTTPS URLs. Default true. Set to false only as a documented escape hatch for upstreams whose certs have rotted but whose payload integrity we cover via expected_sha256."
+        },
         "notes": { "type": ["string", "null"] }
       }
     },

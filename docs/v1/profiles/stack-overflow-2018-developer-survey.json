@@ -1,0 +1,3417 @@
+{
+  "schema_version": 1,
+  "slug": "stack-overflow-2018-developer-survey",
+  "row_count": 98855,
+  "parquet_sha256": "84b3f3ab439cc08849f80db4e62e1c52268026d8c587269705b336f2fa1190ff",
+  "computed_at": "2026-05-16T10:12:15Z",
+  "sample_rows": null,
+  "columns": {
+    "Respondent": {
+      "null_count": 0,
+      "min": 1,
+      "max": 101592,
+      "mean": 50822.97163522331,
+      "ndv_approx": 95269,
+      "histogram": {
+        "buckets": [
+          1.0,
+          10160.1,
+          20319.2,
+          30478.300000000003,
+          40637.4,
+          50796.5,
+          60955.600000000006,
+          71114.7,
+          81273.8,
+          91432.90000000001,
+          101592.0
+        ],
+        "counts": [
+          9865,
+          9879,
+          9870,
+          9900,
+          9888,
+          9876,
+          9882,
+          9902,
+          9888,
+          9905
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Hobby": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.808224166708816,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 79897
+        },
+        {
+          "value": "No",
+          "count": 18958
+        }
+      ],
+      "dtype": "string"
+    },
+    "OpenSource": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.4358504880886147,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 55769
+        },
+        {
+          "value": "Yes",
+          "count": 43086
+        }
+      ],
+      "dtype": "string"
+    },
+    "Country": {
+      "null_count": 412,
+      "ndv_approx": 189,
+      "mean_length": 9.254461972918339,
+      "top_values": [
+        {
+          "value": "United States",
+          "count": 20309
+        },
+        {
+          "value": "India",
+          "count": 13721
+        },
+        {
+          "value": "Germany",
+          "count": 6459
+        },
+        {
+          "value": "United Kingdom",
+          "count": 6221
+        },
+        {
+          "value": "Canada",
+          "count": 3393
+        }
+      ],
+      "dtype": "string"
+    },
+    "Student": {
+      "null_count": 3954,
+      "ndv_approx": 3,
+      "mean_length": 5.098218143117565,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 70399
+        },
+        {
+          "value": "Yes, full-time",
+          "count": 18394
+        },
+        {
+          "value": "Yes, part-time",
+          "count": 6108
+        }
+      ],
+      "dtype": "string"
+    },
+    "Employment": {
+      "null_count": 3534,
+      "ndv_approx": 6,
+      "mean_length": 23.125953357602206,
+      "top_values": [
+        {
+          "value": "Employed full-time",
+          "count": 70495
+        },
+        {
+          "value": "Independent contractor, freelancer, or self-employed",
+          "count": 9282
+        },
+        {
+          "value": "Not employed, but looking for work",
+          "count": 5805
+        },
+        {
+          "value": "Employed part-time",
+          "count": 5380
+        },
+        {
+          "value": "Not employed, and not looking for work",
+          "count": 4132
+        }
+      ],
+      "dtype": "string"
+    },
+    "FormalEducation": {
+      "null_count": 4152,
+      "ndv_approx": 10,
+      "mean_length": 45.28052965587151,
+      "top_values": [
+        {
+          "value": "Bachelor\u2019s degree (BA, BS, B.Eng., etc.)",
+          "count": 43659
+        },
+        {
+          "value": "Master\u2019s degree (MA, MS, M.Eng., MBA, etc.)",
+          "count": 21396
+        },
+        {
+          "value": "Some college/university study without earning a degree",
+          "count": 11710
+        },
+        {
+          "value": "Secondary school (e.g. American high school, German Realschule or Gymnasium, etc.)",
+          "count": 8951
+        },
+        {
+          "value": "Associate degree",
+          "count": 2970
+        }
+      ],
+      "dtype": "string"
+    },
+    "UndergradMajor": {
+      "null_count": 19819,
+      "ndv_approx": 12,
+      "mean_length": 60.482451034971405,
+      "top_values": [
+        {
+          "value": "Computer science, computer engineering, or software engineering",
+          "count": 50336
+        },
+        {
+          "value": "Another engineering discipline (ex. civil, electrical, mechanical)",
+          "count": 6945
+        },
+        {
+          "value": "Information systems, information technology, or system administration",
+          "count": 6507
+        },
+        {
+          "value": "A natural science (ex. biology, chemistry, physics)",
+          "count": 3050
+        },
+        {
+          "value": "Mathematics or statistics",
+          "count": 2818
+        }
+      ],
+      "dtype": "string"
+    },
+    "CompanySize": {
+      "null_count": 27324,
+      "ndv_approx": 9,
+      "mean_length": 20.755798185402135,
+      "top_values": [
+        {
+          "value": "20 to 99 employees",
+          "count": 16996
+        },
+        {
+          "value": "100 to 499 employees",
+          "count": 14011
+        },
+        {
+          "value": "10,000 or more employees",
+          "count": 9757
+        },
+        {
+          "value": "10 to 19 employees",
+          "count": 8007
+        },
+        {
+          "value": "1,000 to 4,999 employees",
+          "count": 7634
+        }
+      ],
+      "dtype": "string"
+    },
+    "DevType": {
+      "null_count": 6757,
+      "ndv_approx": 8990,
+      "mean_length": 64.42718625811635,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "YearsCoding": {
+      "null_count": 5020,
+      "ndv_approx": 11,
+      "mean_length": 9.922417008578888,
+      "top_values": [
+        {
+          "value": "3-5 years",
+          "count": 23313
+        },
+        {
+          "value": "6-8 years",
+          "count": 19338
+        },
+        {
+          "value": "9-11 years",
+          "count": 12169
+        },
+        {
+          "value": "0-2 years",
+          "count": 10682
+        },
+        {
+          "value": "12-14 years",
+          "count": 8030
+        }
+      ],
+      "dtype": "string"
+    },
+    "YearsCodingProf": {
+      "null_count": 20952,
+      "ndv_approx": 11,
+      "mean_length": 9.544356443269194,
+      "top_values": [
+        {
+          "value": "0-2 years",
+          "count": 23421
+        },
+        {
+          "value": "3-5 years",
+          "count": 21362
+        },
+        {
+          "value": "6-8 years",
+          "count": 11385
+        },
+        {
+          "value": "9-11 years",
+          "count": 7573
+        },
+        {
+          "value": "12-14 years",
+          "count": 4287
+        }
+      ],
+      "dtype": "string"
+    },
+    "JobSatisfaction": {
+      "null_count": 29579,
+      "ndv_approx": 7,
+      "mean_length": 20.982143888215255,
+      "top_values": [
+        {
+          "value": "Moderately satisfied",
+          "count": 26005
+        },
+        {
+          "value": "Extremely satisfied",
+          "count": 12436
+        },
+        {
+          "value": "Slightly satisfied",
+          "count": 10012
+        },
+        {
+          "value": "Slightly dissatisfied",
+          "count": 7057
+        },
+        {
+          "value": "Moderately dissatisfied",
+          "count": 6318
+        }
+      ],
+      "dtype": "string"
+    },
+    "CareerSatisfaction": {
+      "null_count": 22351,
+      "ndv_approx": 7,
+      "mean_length": 20.976929310885705,
+      "top_values": [
+        {
+          "value": "Moderately satisfied",
+          "count": 27926
+        },
+        {
+          "value": "Extremely satisfied",
+          "count": 14316
+        },
+        {
+          "value": "Slightly satisfied",
+          "count": 13484
+        },
+        {
+          "value": "Slightly dissatisfied",
+          "count": 6587
+        },
+        {
+          "value": "Neither satisfied nor dissatisfied",
+          "count": 6316
+        }
+      ],
+      "dtype": "string"
+    },
+    "HopeFiveYears": {
+      "null_count": 23137,
+      "ndv_approx": 6,
+      "mean_length": 55.60014791727198,
+      "top_values": [
+        {
+          "value": "Working in a different or more specialized technical role than the one I'm in now",
+          "count": 25643
+        },
+        {
+          "value": "Working as a founder or co-founder of my own company",
+          "count": 19444
+        },
+        {
+          "value": "Doing the same work",
+          "count": 14724
+        },
+        {
+          "value": "Working as an engineering manager or other functional manager",
+          "count": 7483
+        },
+        {
+          "value": "Working as a product manager or project manager",
+          "count": 5004
+        }
+      ],
+      "dtype": "string"
+    },
+    "JobSearchStatus": {
+      "null_count": 19367,
+      "ndv_approx": 3,
+      "mean_length": 51.50588768115942,
+      "top_values": [
+        {
+          "value": "I\u2019m not actively looking, but I am open to new opportunities",
+          "count": 47556
+        },
+        {
+          "value": "I am not interested in new job opportunities",
+          "count": 19296
+        },
+        {
+          "value": "I am actively looking for a job",
+          "count": 12636
+        }
+      ],
+      "dtype": "string"
+    },
+    "LastNewJob": {
+      "null_count": 19966,
+      "ndv_approx": 5,
+      "mean_length": 22.22453066967511,
+      "top_values": [
+        {
+          "value": "Less than a year ago",
+          "count": 27321
+        },
+        {
+          "value": "Between 1 and 2 years ago",
+          "count": 17332
+        },
+        {
+          "value": "More than 4 years ago",
+          "count": 14871
+        },
+        {
+          "value": "Between 2 and 4 years ago",
+          "count": 14792
+        },
+        {
+          "value": "I've never had a job",
+          "count": 4573
+        }
+      ],
+      "dtype": "string"
+    },
+    "AssessJob1": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 6.397088900500112,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          4981,
+          3874,
+          4070,
+          4635,
+          5676,
+          6841,
+          8186,
+          9359,
+          10200,
+          9163
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob2": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 6.673523923266403,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          2301,
+          3122,
+          3946,
+          4874,
+          6326,
+          7850,
+          9102,
+          9886,
+          10165,
+          9413
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob3": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 5.906874673434351,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          3694,
+          5199,
+          5997,
+          6639,
+          7348,
+          7894,
+          8231,
+          8328,
+          7862,
+          5793
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob4": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 4.065790848697469,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          11586,
+          11358,
+          10266,
+          8521,
+          6894,
+          5475,
+          4384,
+          3499,
+          2857,
+          2145
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob5": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 3.953243263417183,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          12263,
+          12069,
+          10328,
+          8385,
+          6640,
+          5109,
+          4134,
+          3327,
+          2825,
+          1905
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob6": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 4.407195640815108,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          9117,
+          9248,
+          9424,
+          9351,
+          8327,
+          6934,
+          5236,
+          4075,
+          3294,
+          1979
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob7": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 5.67318056281257,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          6872,
+          5847,
+          5987,
+          6510,
+          6652,
+          6882,
+          6600,
+          6361,
+          6929,
+          8345
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob8": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 4.225199671568261,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          10694,
+          9935,
+          9618,
+          8958,
+          7805,
+          6236,
+          5021,
+          4033,
+          2927,
+          1758
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob9": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 7.64000895722923,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          1102,
+          1908,
+          2378,
+          3249,
+          4385,
+          5803,
+          7358,
+          9100,
+          11351,
+          20351
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessJob10": {
+      "null_count": 31870,
+      "min": 1,
+      "max": 10,
+      "mean": 6.057803985967007,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.9,
+          2.8,
+          3.7,
+          4.6,
+          5.5,
+          6.4,
+          7.3,
+          8.2,
+          9.1,
+          10.0
+        ],
+        "counts": [
+          4375,
+          4425,
+          4971,
+          5864,
+          6932,
+          7961,
+          8733,
+          9017,
+          8575,
+          6132
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits1": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 1.8841769617055362,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          45588,
+          7361,
+          3758,
+          2390,
+          1638,
+          1215,
+          854,
+          666,
+          523,
+          925
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits2": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 6.080609384146154,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          2080,
+          9049,
+          6298,
+          6553,
+          5602,
+          5742,
+          5816,
+          6074,
+          6036,
+          11668
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits3": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 4.450553005329801,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          5594,
+          15689,
+          10377,
+          7612,
+          5755,
+          4608,
+          3870,
+          3336,
+          3171,
+          4906
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits4": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 7.563218213746572,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          1319,
+          2540,
+          3596,
+          4343,
+          4935,
+          5330,
+          5794,
+          6468,
+          7630,
+          22963
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits5": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 7.068101297020857,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          956,
+          2354,
+          3852,
+          5224,
+          6527,
+          7611,
+          7938,
+          8259,
+          8409,
+          13788
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits6": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 5.765581194737977,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          1382,
+          7020,
+          10227,
+          7808,
+          6664,
+          6032,
+          5802,
+          5785,
+          5652,
+          8546
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits7": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 6.94819618595767,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          938,
+          3000,
+          4630,
+          5708,
+          6661,
+          7083,
+          7574,
+          7647,
+          7359,
+          14318
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits8": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 5.615052835885271,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          3031,
+          7233,
+          7497,
+          7601,
+          7719,
+          7287,
+          6706,
+          5905,
+          4898,
+          7041
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits9": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 7.920746172094026,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          705,
+          1979,
+          3140,
+          4057,
+          4571,
+          5091,
+          5616,
+          6373,
+          7733,
+          25653
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits10": {
+      "null_count": 33937,
+      "min": 1,
+      "max": 11,
+      "mean": 6.865060537909363,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          956,
+          3240,
+          4498,
+          5644,
+          6557,
+          7333,
+          7890,
+          8017,
+          8012,
+          12771
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AssessBenefits11": {
+      "null_count": 33938,
+      "min": 1,
+      "max": 11,
+      "mean": 5.83862470539304,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0
+        ],
+        "counts": [
+          2369,
+          5453,
+          7045,
+          7978,
+          8289,
+          7586,
+          7058,
+          6388,
+          5495,
+          7256
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobContactPriorities1": {
+      "null_count": 50149,
+      "min": 1,
+      "max": 5,
+      "mean": 3.035396049767996,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          6661,
+          0,
+          12877,
+          0,
+          0,
+          10377,
+          0,
+          9659,
+          0,
+          9132
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobContactPriorities2": {
+      "null_count": 50149,
+      "min": 1,
+      "max": 5,
+      "mean": 1.5605880179033385,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          31147,
+          0,
+          11219,
+          0,
+          0,
+          3796,
+          0,
+          1683,
+          0,
+          861
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobContactPriorities3": {
+      "null_count": 50149,
+      "min": 1,
+      "max": 5,
+      "mean": 3.8499979468648626,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          3516,
+          0,
+          6068,
+          0,
+          0,
+          7018,
+          0,
+          9708,
+          0,
+          22396
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobContactPriorities4": {
+      "null_count": 50149,
+      "min": 1,
+      "max": 5,
+      "mean": 3.005112306492013,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          5287,
+          0,
+          11625,
+          0,
+          0,
+          14540,
+          0,
+          12060,
+          0,
+          5194
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobContactPriorities5": {
+      "null_count": 50149,
+      "min": 1,
+      "max": 5,
+      "mean": 3.54890567897179,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          2095,
+          0,
+          6917,
+          0,
+          0,
+          12975,
+          0,
+          15596,
+          0,
+          11123
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobEmailPriorities1": {
+      "null_count": 52642,
+      "min": 1,
+      "max": 7,
+      "mean": 3.709540605457339,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          9721,
+          6616,
+          0,
+          6178,
+          0,
+          6126,
+          5844,
+          0,
+          5878,
+          5850
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobEmailPriorities2": {
+      "null_count": 52642,
+      "min": 1,
+      "max": 7,
+      "mean": 4.224309177071387,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          3781,
+          6151,
+          0,
+          7230,
+          0,
+          7678,
+          7688,
+          0,
+          7502,
+          6183
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobEmailPriorities3": {
+      "null_count": 52642,
+      "min": 1,
+      "max": 7,
+      "mean": 3.796572393049575,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          9186,
+          6358,
+          0,
+          6262,
+          0,
+          6107,
+          6010,
+          0,
+          5745,
+          6545
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobEmailPriorities4": {
+      "null_count": 52642,
+      "min": 1,
+      "max": 7,
+      "mean": 3.0156016705256095,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          9112,
+          11916,
+          0,
+          9589,
+          0,
+          6700,
+          4293,
+          0,
+          2837,
+          1766
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobEmailPriorities5": {
+      "null_count": 52642,
+      "min": 1,
+      "max": 7,
+      "mean": 3.4433384545474217,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          10039,
+          8232,
+          0,
+          7371,
+          0,
+          6221,
+          5192,
+          0,
+          4439,
+          4719
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobEmailPriorities6": {
+      "null_count": 52642,
+      "min": 1,
+      "max": 7,
+      "mean": 4.974249670006276,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          2789,
+          3528,
+          0,
+          4318,
+          0,
+          5817,
+          7531,
+          0,
+          9457,
+          12773
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "JobEmailPriorities7": {
+      "null_count": 52642,
+      "min": 1,
+      "max": 7,
+      "mean": 4.836388029342393,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          1585,
+          3412,
+          0,
+          5265,
+          0,
+          7564,
+          9655,
+          0,
+          10355,
+          8377
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "UpdateCV": {
+      "null_count": 33316,
+      "ndv_approx": 9,
+      "mean_length": 42.7334869314454,
+      "top_values": [
+        {
+          "value": "My job status or other personal status changed",
+          "count": 27344
+        },
+        {
+          "value": "A recruiter contacted me",
+          "count": 9071
+        },
+        {
+          "value": "I had a negative experience or interaction at work",
+          "count": 7339
+        },
+        {
+          "value": "A friend told me about a job opportunity",
+          "count": 6997
+        },
+        {
+          "value": "I saw an employer\u2019s advertisement",
+          "count": 6756
+        }
+      ],
+      "dtype": "string"
+    },
+    "Currency": {
+      "null_count": 36847,
+      "ndv_approx": 21,
+      "mean_length": 16.06020190943104,
+      "top_values": [
+        {
+          "value": "U.S. dollars ($)",
+          "count": 20601
+        },
+        {
+          "value": "Euros (\u20ac)",
+          "count": 15201
+        },
+        {
+          "value": "Indian rupees (\u20b9)",
+          "count": 7908
+        },
+        {
+          "value": "British pounds sterling (\u00a3)",
+          "count": 4856
+        },
+        {
+          "value": "Canadian dollars (C$)",
+          "count": 2535
+        }
+      ],
+      "dtype": "string"
+    },
+    "Salary": {
+      "null_count": 48277,
+      "ndv_approx": 4723,
+      "mean_length": 4.987445134248092,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SalaryType": {
+      "null_count": 47785,
+      "ndv_approx": 3,
+      "mean_length": 6.514039553553945,
+      "top_values": [
+        {
+          "value": "Monthly",
+          "count": 26252
+        },
+        {
+          "value": "Yearly",
+          "count": 22556
+        },
+        {
+          "value": "Weekly",
+          "count": 2262
+        }
+      ],
+      "dtype": "string"
+    },
+    "ConvertedSalary": {
+      "null_count": 51153,
+      "min": 0.0,
+      "max": 2000000.0,
+      "mean": 95780.86178776571,
+      "ndv_approx": 7327,
+      "histogram": {
+        "buckets": [
+          0.0,
+          200000.0,
+          400000.0,
+          600000.0,
+          800000.0,
+          1000000.0,
+          1200000.0,
+          1400000.0,
+          1600000.0,
+          1800000.0,
+          2000000.0
+        ],
+        "counts": [
+          45090,
+          835,
+          409,
+          348,
+          244,
+          419,
+          47,
+          45,
+          12,
+          253
+        ]
+      },
+      "dtype": "float64"
+    },
+    "CurrencySymbol": {
+      "null_count": 40205,
+      "ndv_approx": 81,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "USD",
+          "count": 17330
+        },
+        {
+          "value": "EUR",
+          "count": 12781
+        },
+        {
+          "value": "INR",
+          "count": 6633
+        },
+        {
+          "value": "GBP",
+          "count": 4196
+        },
+        {
+          "value": "CAD",
+          "count": 2122
+        }
+      ],
+      "dtype": "string"
+    },
+    "CommunicationTools": {
+      "null_count": 41885,
+      "ndv_approx": 1309,
+      "mean_length": 74.07591714937686,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "TimeFullyProductive": {
+      "null_count": 46983,
+      "ndv_approx": 5,
+      "mean_length": 18.34752853177051,
+      "top_values": [
+        {
+          "value": "One to three months",
+          "count": 23163
+        },
+        {
+          "value": "Less than a month",
+          "count": 15579
+        },
+        {
+          "value": "Three to six months",
+          "count": 9026
+        },
+        {
+          "value": "Six to nine months",
+          "count": 2625
+        },
+        {
+          "value": "Nine months to a year",
+          "count": 875
+        }
+      ],
+      "dtype": "string"
+    },
+    "EducationTypes": {
+      "null_count": 30895,
+      "ndv_approx": 359,
+      "mean_length": 195.17260153031194,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SelfTaughtTypes": {
+      "null_count": 41501,
+      "ndv_approx": 438,
+      "mean_length": 225.41419953272657,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "TimeAfterBootcamp": {
+      "null_count": 92203,
+      "ndv_approx": 7,
+      "mean_length": 44.14386650631389,
+      "top_values": [
+        {
+          "value": "I already had a full-time job as a developer when I began the program",
+          "count": 3025
+        },
+        {
+          "value": "Immediately after graduating",
+          "count": 1085
+        },
+        {
+          "value": "One to three months",
+          "count": 668
+        },
+        {
+          "value": "I haven\u2019t gotten a developer job",
+          "count": 581
+        },
+        {
+          "value": "Less than a month",
+          "count": 496
+        }
+      ],
+      "dtype": "string"
+    },
+    "HackathonReasons": {
+      "null_count": 73164,
+      "ndv_approx": 132,
+      "mean_length": 149.27573858549687,
+      "top_values": [
+        {
+          "value": "To improve my general technical skills or programming ability;To improve my knowledge of a specific programming language, framework, or other technology;Because I find it enjoyable",
+          "count": 3160
+        },
+        {
+          "value": "Because I find it enjoyable",
+          "count": 3048
+        },
+        {
+          "value": "To improve my general technical skills or programming ability;Because I find it enjoyable",
+          "count": 1902
+        },
+        {
+          "value": "To improve my general technical skills or programming ability;To improve my knowledge of a specific programming language, framework, or other technology;To improve my ability to work on a team with other programmers;Because I find it enjoyable",
+          "count": 1061
+        },
+        {
+          "value": "To improve my general technical skills or programming ability",
+          "count": 875
+        }
+      ],
+      "dtype": "string"
+    },
+    "AgreeDisagree1": {
+      "null_count": 30638,
+      "ndv_approx": 5,
+      "mean_length": 11.448524561326355,
+      "top_values": [
+        {
+          "value": "Agree",
+          "count": 36777
+        },
+        {
+          "value": "Neither Agree nor Disagree",
+          "count": 14676
+        },
+        {
+          "value": "Strongly agree",
+          "count": 11332
+        },
+        {
+          "value": "Disagree",
+          "count": 3941
+        },
+        {
+          "value": "Strongly disagree",
+          "count": 1491
+        }
+      ],
+      "dtype": "string"
+    },
+    "AgreeDisagree2": {
+      "null_count": 30509,
+      "ndv_approx": 5,
+      "mean_length": 13.549688350452112,
+      "top_values": [
+        {
+          "value": "Agree",
+          "count": 18673
+        },
+        {
+          "value": "Neither Agree nor Disagree",
+          "count": 17995
+        },
+        {
+          "value": "Disagree",
+          "count": 17523
+        },
+        {
+          "value": "Strongly disagree",
+          "count": 8826
+        },
+        {
+          "value": "Strongly agree",
+          "count": 5329
+        }
+      ],
+      "dtype": "string"
+    },
+    "AgreeDisagree3": {
+      "null_count": 30491,
+      "ndv_approx": 5,
+      "mean_length": 14.332631209408461,
+      "top_values": [
+        {
+          "value": "Disagree",
+          "count": 23341
+        },
+        {
+          "value": "Neither Agree nor Disagree",
+          "count": 17133
+        },
+        {
+          "value": "Strongly disagree",
+          "count": 15361
+        },
+        {
+          "value": "Agree",
+          "count": 9877
+        },
+        {
+          "value": "Strongly agree",
+          "count": 2652
+        }
+      ],
+      "dtype": "string"
+    },
+    "LanguageWorkedWith": {
+      "null_count": 20521,
+      "ndv_approx": 23107,
+      "mean_length": 37.3630735057574,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "LanguageDesireNextYear": {
+      "null_count": 25611,
+      "ndv_approx": 21036,
+      "mean_length": 31.709805581344547,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "DatabaseWorkedWith": {
+      "null_count": 32585,
+      "ndv_approx": 6729,
+      "mean_length": 27.878331069865702,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "DatabaseDesireNextYear": {
+      "null_count": 41357,
+      "ndv_approx": 12999,
+      "mean_length": 36.50116525792201,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "PlatformWorkedWith": {
+      "null_count": 32856,
+      "ndv_approx": 10660,
+      "mean_length": 29.486143729450447,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "PlatformDesireNextYear": {
+      "null_count": 37502,
+      "ndv_approx": 13699,
+      "mean_length": 36.24870829462292,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "FrameworkWorkedWith": {
+      "null_count": 47235,
+      "ndv_approx": 996,
+      "mean_length": 15.420011623401782,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "FrameworkDesireNextYear": {
+      "null_count": 43637,
+      "ndv_approx": 1947,
+      "mean_length": 20.075591292694412,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "IDE": {
+      "null_count": 23457,
+      "ndv_approx": 8358,
+      "mean_length": 31.51737446616621,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "OperatingSystem": {
+      "null_count": 22676,
+      "ndv_approx": 4,
+      "mean_length": 7.396881030205175,
+      "top_values": [
+        {
+          "value": "Windows",
+          "count": 38022
+        },
+        {
+          "value": "MacOS",
+          "count": 20325
+        },
+        {
+          "value": "Linux-based",
+          "count": 17684
+        },
+        {
+          "value": "BSD/Unix",
+          "count": 148
+        }
+      ],
+      "dtype": "string"
+    },
+    "NumberMonitors": {
+      "null_count": 22457,
+      "ndv_approx": 4,
+      "mean_length": 1.1420194245922668,
+      "top_values": [
+        {
+          "value": "2",
+          "count": 39063
+        },
+        {
+          "value": "1",
+          "count": 24362
+        },
+        {
+          "value": "3",
+          "count": 10984
+        },
+        {
+          "value": "More than 4",
+          "count": 1085
+        },
+        {
+          "value": "4",
+          "count": 904
+        }
+      ],
+      "dtype": "string"
+    },
+    "Methodology": {
+      "null_count": 39874,
+      "ndv_approx": 576,
+      "mean_length": 33.383920245502786,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VersionControl": {
+      "null_count": 24557,
+      "ndv_approx": 107,
+      "mean_length": 14.318555008210181,
+      "top_values": [
+        {
+          "value": "Git",
+          "count": 44133
+        },
+        {
+          "value": "Git;Subversion",
+          "count": 6789
+        },
+        {
+          "value": "Git;Team Foundation Version Control",
+          "count": 4208
+        },
+        {
+          "value": "I don't use version control",
+          "count": 2988
+        },
+        {
+          "value": "Subversion",
+          "count": 1962
+        }
+      ],
+      "dtype": "string"
+    },
+    "CheckInCode": {
+      "null_count": 26500,
+      "ndv_approx": 5,
+      "mean_length": 20.95795729389814,
+      "top_values": [
+        {
+          "value": "Multiple times per day",
+          "count": 43566
+        },
+        {
+          "value": "A few times per week",
+          "count": 13808
+        },
+        {
+          "value": "Once a day",
+          "count": 6587
+        },
+        {
+          "value": "Weekly or a few times per month",
+          "count": 4983
+        },
+        {
+          "value": "Less than once per month",
+          "count": 2337
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdBlocker": {
+      "null_count": 22800,
+      "ndv_approx": 3,
+      "mean_length": 3.902715140358951,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 55011
+        },
+        {
+          "value": "No",
+          "count": 17144
+        },
+        {
+          "value": "I'm not sure/I don't know",
+          "count": 3900
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdBlockerDisable": {
+      "null_count": 43957,
+      "ndv_approx": 3,
+      "mean_length": 4.1280920980727895,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 38798
+        },
+        {
+          "value": "No",
+          "count": 13210
+        },
+        {
+          "value": "I'm not sure/I can't remember",
+          "count": 2890
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdBlockerReasons": {
+      "null_count": 61110,
+      "ndv_approx": 65,
+      "mean_length": 118.76418068618361,
+      "top_values": [
+        {
+          "value": "The website I was visiting forced me to disable it to access their content",
+          "count": 7410
+        },
+        {
+          "value": "The ad-blocking software was causing display issues on a website",
+          "count": 3843
+        },
+        {
+          "value": "I wanted to support the website I was visiting by viewing their ads",
+          "count": 3583
+        },
+        {
+          "value": "The website I was visiting forced me to disable it to access their content;The ad-blocking software was causing display issues on a website",
+          "count": 2976
+        },
+        {
+          "value": "The website I was visiting forced me to disable it to access their content;The website I was visiting asked me to disable it;I wanted to support the website I was visiting by viewing their ads",
+          "count": 2372
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdsAgreeDisagree1": {
+      "null_count": 24370,
+      "ndv_approx": 5,
+      "mean_length": 16.981754715714573,
+      "top_values": [
+        {
+          "value": "Somewhat agree",
+          "count": 29875
+        },
+        {
+          "value": "Neither agree nor disagree",
+          "count": 13693
+        },
+        {
+          "value": "Strongly agree",
+          "count": 11657
+        },
+        {
+          "value": "Somewhat disagree",
+          "count": 10464
+        },
+        {
+          "value": "Strongly disagree",
+          "count": 8796
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdsAgreeDisagree2": {
+      "null_count": 24442,
+      "ndv_approx": 5,
+      "mean_length": 17.53732546732426,
+      "top_values": [
+        {
+          "value": "Somewhat agree",
+          "count": 27589
+        },
+        {
+          "value": "Neither agree nor disagree",
+          "count": 17665
+        },
+        {
+          "value": "Strongly agree",
+          "count": 12078
+        },
+        {
+          "value": "Somewhat disagree",
+          "count": 9960
+        },
+        {
+          "value": "Strongly disagree",
+          "count": 7121
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdsAgreeDisagree3": {
+      "null_count": 24441,
+      "ndv_approx": 5,
+      "mean_length": 18.430940414438144,
+      "top_values": [
+        {
+          "value": "Neither agree nor disagree",
+          "count": 22096
+        },
+        {
+          "value": "Somewhat agree",
+          "count": 16738
+        },
+        {
+          "value": "Somewhat disagree",
+          "count": 14644
+        },
+        {
+          "value": "Strongly agree",
+          "count": 14056
+        },
+        {
+          "value": "Strongly disagree",
+          "count": 6880
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdsActions": {
+      "null_count": 39341,
+      "ndv_approx": 16,
+      "mean_length": 91.24826091339852,
+      "top_values": [
+        {
+          "value": "Stopped going to a website because of their advertising",
+          "count": 16992
+        },
+        {
+          "value": "Saw an online advertisement and then researched it (without clicking on the ad)",
+          "count": 7393
+        },
+        {
+          "value": "Clicked on an online advertisement;Saw an online advertisement and then researched it (without clicking on the ad)",
+          "count": 6422
+        },
+        {
+          "value": "Clicked on an online advertisement",
+          "count": 6248
+        },
+        {
+          "value": "Saw an online advertisement and then researched it (without clicking on the ad);Stopped going to a website because of their advertising",
+          "count": 6239
+        }
+      ],
+      "dtype": "string"
+    },
+    "AdsPriorities1": {
+      "null_count": 38376,
+      "min": 1,
+      "max": 7,
+      "mean": 2.7268804047685973,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          23470,
+          10910,
+          0,
+          7544,
+          0,
+          6087,
+          5267,
+          0,
+          4093,
+          3108
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AdsPriorities2": {
+      "null_count": 38376,
+      "min": 1,
+      "max": 7,
+      "mean": 3.8057838257907703,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          7832,
+          9383,
+          0,
+          9900,
+          0,
+          10485,
+          10087,
+          0,
+          8047,
+          4745
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AdsPriorities3": {
+      "null_count": 38376,
+      "min": 1,
+      "max": 7,
+      "mean": 3.3409447907538152,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          8553,
+          13570,
+          0,
+          12733,
+          0,
+          10333,
+          7513,
+          0,
+          5171,
+          2606
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AdsPriorities4": {
+      "null_count": 38376,
+      "min": 1,
+      "max": 7,
+      "mean": 3.782469948246499,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          8322,
+          9365,
+          0,
+          9917,
+          0,
+          10343,
+          9666,
+          0,
+          7807,
+          5059
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AdsPriorities5": {
+      "null_count": 38376,
+      "min": 1,
+      "max": 7,
+      "mean": 4.3836042262603545,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          5590,
+          7484,
+          0,
+          7912,
+          0,
+          8319,
+          9609,
+          0,
+          11454,
+          10111
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AdsPriorities6": {
+      "null_count": 38376,
+      "min": 1,
+      "max": 7,
+      "mean": 5.138808512045504,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          3109,
+          4343,
+          0,
+          5602,
+          0,
+          6661,
+          8666,
+          0,
+          12471,
+          19627
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AdsPriorities7": {
+      "null_count": 38376,
+      "min": 1,
+      "max": 7,
+      "mean": 4.821458688139685,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          3603,
+          5424,
+          0,
+          6871,
+          0,
+          8251,
+          9673,
+          0,
+          11435,
+          15222
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "AIDangerous": {
+      "null_count": 35740,
+      "ndv_approx": 4,
+      "mean_length": 53.77594866513507,
+      "top_values": [
+        {
+          "value": "Algorithms making important decisions",
+          "count": 18020
+        },
+        {
+          "value": "Artificial intelligence surpassing human intelligence (\"the singularity\")",
+          "count": 17645
+        },
+        {
+          "value": "Evolving definitions of \"fairness\" in algorithmic versus human decisions",
+          "count": 14958
+        },
+        {
+          "value": "Increasing automation of jobs",
+          "count": 12492
+        }
+      ],
+      "dtype": "string"
+    },
+    "AIInteresting": {
+      "null_count": 33488,
+      "ndv_approx": 4,
+      "mean_length": 46.47143053834504,
+      "top_values": [
+        {
+          "value": "Increasing automation of jobs",
+          "count": 26644
+        },
+        {
+          "value": "Algorithms making important decisions",
+          "count": 15379
+        },
+        {
+          "value": "Artificial intelligence surpassing human intelligence (\"the singularity\")",
+          "count": 15231
+        },
+        {
+          "value": "Evolving definitions of \"fairness\" in algorithmic versus human decisions",
+          "count": 8113
+        }
+      ],
+      "dtype": "string"
+    },
+    "AIResponsible": {
+      "null_count": 33302,
+      "ndv_approx": 4,
+      "mean_length": 36.68666575137675,
+      "top_values": [
+        {
+          "value": "The developers or the people creating the AI",
+          "count": 31348
+        },
+        {
+          "value": "A governmental or other regulatory body",
+          "count": 18263
+        },
+        {
+          "value": "Prominent industry leaders",
+          "count": 10885
+        },
+        {
+          "value": "Nobody",
+          "count": 5057
+        }
+      ],
+      "dtype": "string"
+    },
+    "AIFuture": {
+      "null_count": 29127,
+      "ndv_approx": 2,
+      "mean_length": 71.21182308398348,
+      "top_values": [
+        {
+          "value": "I'm excited about the possibilities more than worried about the dangers.",
+          "count": 50773
+        },
+        {
+          "value": "I'm worried about the dangers more than I'm excited about the possibilities.",
+          "count": 13269
+        },
+        {
+          "value": "I don't care about it, or I haven't thought about it.",
+          "count": 5686
+        }
+      ],
+      "dtype": "string"
+    },
+    "EthicsChoice": {
+      "null_count": 28073,
+      "ndv_approx": 3,
+      "mean_length": 9.008829928512899,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 41441
+        },
+        {
+          "value": "Depends on what it is",
+          "count": 25931
+        },
+        {
+          "value": "Yes",
+          "count": 3410
+        }
+      ],
+      "dtype": "string"
+    },
+    "EthicsReport": {
+      "null_count": 28429,
+      "ndv_approx": 4,
+      "mean_length": 23.529378354584953,
+      "top_values": [
+        {
+          "value": "Depends on what it is",
+          "count": 32812
+        },
+        {
+          "value": "Yes, but only within the company",
+          "count": 25160
+        },
+        {
+          "value": "Yes, and publicly",
+          "count": 9200
+        },
+        {
+          "value": "No",
+          "count": 3254
+        }
+      ],
+      "dtype": "string"
+    },
+    "EthicsResponsible": {
+      "null_count": 34315,
+      "ndv_approx": 3,
+      "mean_length": 38.63377750232414,
+      "top_values": [
+        {
+          "value": "Upper management at the company/organization",
+          "count": 37118
+        },
+        {
+          "value": "The person who came up with the idea",
+          "count": 14726
+        },
+        {
+          "value": "The developer who wrote it",
+          "count": 12696
+        }
+      ],
+      "dtype": "string"
+    },
+    "EthicalImplications": {
+      "null_count": 29546,
+      "ndv_approx": 2,
+      "mean_length": 5.508447676347949,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 55200
+        },
+        {
+          "value": "Unsure / I don't know",
+          "count": 9893
+        },
+        {
+          "value": "No",
+          "count": 4216
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowRecommend": {
+      "null_count": 22366,
+      "ndv_approx": 11,
+      "mean_length": 11.398357933820549,
+      "top_values": [
+        {
+          "value": "10 (Very Likely)",
+          "count": 52790
+        },
+        {
+          "value": "9",
+          "count": 8450
+        },
+        {
+          "value": "8",
+          "count": 7667
+        },
+        {
+          "value": "7",
+          "count": 3887
+        },
+        {
+          "value": "6",
+          "count": 1320
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowVisit": {
+      "null_count": 22044,
+      "ndv_approx": 6,
+      "mean_length": 22.67918657483954,
+      "top_values": [
+        {
+          "value": "Daily or almost daily",
+          "count": 24964
+        },
+        {
+          "value": "Multiple times per day",
+          "count": 23864
+        },
+        {
+          "value": "A few times per week",
+          "count": 17179
+        },
+        {
+          "value": "A few times per month or weekly",
+          "count": 8819
+        },
+        {
+          "value": "Less than once per month or monthly",
+          "count": 1564
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowHasAccount": {
+      "null_count": 22064,
+      "ndv_approx": 3,
+      "mean_length": 3.9771327369092733,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 67146
+        },
+        {
+          "value": "No",
+          "count": 6725
+        },
+        {
+          "value": "I'm not sure / I can't remember",
+          "count": 2920
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowParticipate": {
+      "null_count": 33115,
+      "ndv_approx": 6,
+      "mean_length": 33.692637663522966,
+      "top_values": [
+        {
+          "value": "Less than once per month or monthly",
+          "count": 25778
+        },
+        {
+          "value": "A few times per month or weekly",
+          "count": 14866
+        },
+        {
+          "value": "I have never participated in Q&A on Stack Overflow",
+          "count": 11393
+        },
+        {
+          "value": "A few times per week",
+          "count": 7665
+        },
+        {
+          "value": "Daily or almost daily",
+          "count": 3908
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowJobs": {
+      "null_count": 23558,
+      "ndv_approx": 3,
+      "mean_length": 37.43969879278059,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 38727
+        },
+        {
+          "value": "No, I knew that Stack Overflow had a jobs board but have never used or visited it",
+          "count": 26968
+        },
+        {
+          "value": "No, I didn't know that Stack Overflow had a jobs board",
+          "count": 9602
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowDevStory": {
+      "null_count": 33178,
+      "ndv_approx": 4,
+      "mean_length": 30.58442072567261,
+      "top_values": [
+        {
+          "value": "No, and I don't know what that is",
+          "count": 24019
+        },
+        {
+          "value": "No, I know what it is but I don't have one",
+          "count": 15564
+        },
+        {
+          "value": "No, I have one but it's out of date",
+          "count": 15128
+        },
+        {
+          "value": "Yes",
+          "count": 10966
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowJobsRecommend": {
+      "null_count": 60538,
+      "ndv_approx": 11,
+      "mean_length": 5.387686927473445,
+      "top_values": [
+        {
+          "value": "10 (Very Likely)",
+          "count": 10137
+        },
+        {
+          "value": "5",
+          "count": 5963
+        },
+        {
+          "value": "7",
+          "count": 5429
+        },
+        {
+          "value": "8",
+          "count": 5194
+        },
+        {
+          "value": "6",
+          "count": 3782
+        }
+      ],
+      "dtype": "string"
+    },
+    "StackOverflowConsiderMember": {
+      "null_count": 22848,
+      "ndv_approx": 3,
+      "mean_length": 4.770350099332957,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 42146
+        },
+        {
+          "value": "No",
+          "count": 17019
+        },
+        {
+          "value": "I'm not sure",
+          "count": 16842
+        }
+      ],
+      "dtype": "string"
+    },
+    "HypotheticalTools1": {
+      "null_count": 28787,
+      "ndv_approx": 5,
+      "mean_length": 19.529599817320317,
+      "top_values": [
+        {
+          "value": "Somewhat interested",
+          "count": 21315
+        },
+        {
+          "value": "Not at all interested",
+          "count": 14229
+        },
+        {
+          "value": "A little bit interested",
+          "count": 13617
+        },
+        {
+          "value": "Very interested",
+          "count": 13345
+        },
+        {
+          "value": "Extremely interested",
+          "count": 7562
+        }
+      ],
+      "dtype": "string"
+    },
+    "HypotheticalTools2": {
+      "null_count": 28803,
+      "ndv_approx": 5,
+      "mean_length": 19.703220464797578,
+      "top_values": [
+        {
+          "value": "Not at all interested",
+          "count": 20278
+        },
+        {
+          "value": "Somewhat interested",
+          "count": 15770
+        },
+        {
+          "value": "A little bit interested",
+          "count": 13374
+        },
+        {
+          "value": "Very interested",
+          "count": 13084
+        },
+        {
+          "value": "Extremely interested",
+          "count": 7546
+        }
+      ],
+      "dtype": "string"
+    },
+    "HypotheticalTools3": {
+      "null_count": 28856,
+      "ndv_approx": 5,
+      "mean_length": 19.239689138416264,
+      "top_values": [
+        {
+          "value": "Somewhat interested",
+          "count": 18144
+        },
+        {
+          "value": "Very interested",
+          "count": 17127
+        },
+        {
+          "value": "Not at all interested",
+          "count": 12896
+        },
+        {
+          "value": "A little bit interested",
+          "count": 12554
+        },
+        {
+          "value": "Extremely interested",
+          "count": 9278
+        }
+      ],
+      "dtype": "string"
+    },
+    "HypotheticalTools4": {
+      "null_count": 28869,
+      "ndv_approx": 5,
+      "mean_length": 18.967879290143742,
+      "top_values": [
+        {
+          "value": "Very interested",
+          "count": 19133
+        },
+        {
+          "value": "Somewhat interested",
+          "count": 18292
+        },
+        {
+          "value": "Extremely interested",
+          "count": 12342
+        },
+        {
+          "value": "A little bit interested",
+          "count": 10752
+        },
+        {
+          "value": "Not at all interested",
+          "count": 9467
+        }
+      ],
+      "dtype": "string"
+    },
+    "HypotheticalTools5": {
+      "null_count": 28810,
+      "ndv_approx": 5,
+      "mean_length": 19.093696909129847,
+      "top_values": [
+        {
+          "value": "Somewhat interested",
+          "count": 18004
+        },
+        {
+          "value": "Very interested",
+          "count": 17967
+        },
+        {
+          "value": "Extremely interested",
+          "count": 12913
+        },
+        {
+          "value": "A little bit interested",
+          "count": 11598
+        },
+        {
+          "value": "Not at all interested",
+          "count": 9563
+        }
+      ],
+      "dtype": "string"
+    },
+    "WakeTime": {
+      "null_count": 26709,
+      "ndv_approx": 11,
+      "mean_length": 22.183669226291133,
+      "top_values": [
+        {
+          "value": "Between 7:01 - 8:00 AM",
+          "count": 21250
+        },
+        {
+          "value": "Between 6:01 - 7:00 AM",
+          "count": 20322
+        },
+        {
+          "value": "Between 8:01 - 9:00 AM",
+          "count": 10592
+        },
+        {
+          "value": "Between 5:00 - 6:00 AM",
+          "count": 8922
+        },
+        {
+          "value": "I do not have a set schedule",
+          "count": 3842
+        }
+      ],
+      "dtype": "string"
+    },
+    "HoursComputer": {
+      "null_count": 26722,
+      "ndv_approx": 5,
+      "mean_length": 11.803945489581745,
+      "top_values": [
+        {
+          "value": "9 - 12 hours",
+          "count": 37983
+        },
+        {
+          "value": "5 - 8 hours",
+          "count": 22070
+        },
+        {
+          "value": "Over 12 hours",
+          "count": 9549
+        },
+        {
+          "value": "1 - 4 hours",
+          "count": 2349
+        },
+        {
+          "value": "Less than 1 hour",
+          "count": 182
+        }
+      ],
+      "dtype": "string"
+    },
+    "HoursOutside": {
+      "null_count": 26831,
+      "ndv_approx": 5,
+      "mean_length": 13.760746417860712,
+      "top_values": [
+        {
+          "value": "1 - 2 hours",
+          "count": 27788
+        },
+        {
+          "value": "30 - 59 minutes",
+          "count": 24002
+        },
+        {
+          "value": "Less than 30 minutes",
+          "count": 11223
+        },
+        {
+          "value": "3 - 4 hours",
+          "count": 7186
+        },
+        {
+          "value": "Over 4 hours",
+          "count": 1825
+        }
+      ],
+      "dtype": "string"
+    },
+    "SkipMeals": {
+      "null_count": 26909,
+      "ndv_approx": 4,
+      "mean_length": 10.714633197120062,
+      "top_values": [
+        {
+          "value": "Never",
+          "count": 45772
+        },
+        {
+          "value": "1 - 2 times per week",
+          "count": 18164
+        },
+        {
+          "value": "3 - 4 times per week",
+          "count": 4303
+        },
+        {
+          "value": "Daily or almost every day",
+          "count": 3707
+        }
+      ],
+      "dtype": "string"
+    },
+    "ErgonomicDevices": {
+      "null_count": 64797,
+      "ndv_approx": 16,
+      "mean_length": 30.847201832168654,
+      "top_values": [
+        {
+          "value": "Ergonomic keyboard or mouse",
+          "count": 10164
+        },
+        {
+          "value": "Standing desk",
+          "count": 9935
+        },
+        {
+          "value": "Wrist/hand supports or braces",
+          "count": 3276
+        },
+        {
+          "value": "Standing desk;Ergonomic keyboard or mouse",
+          "count": 3047
+        },
+        {
+          "value": "Ergonomic keyboard or mouse;Wrist/hand supports or braces",
+          "count": 2006
+        }
+      ],
+      "dtype": "string"
+    },
+    "Exercise": {
+      "null_count": 26747,
+      "ndv_approx": 3,
+      "mean_length": 22.930118710822654,
+      "top_values": [
+        {
+          "value": "I don't typically exercise",
+          "count": 26995
+        },
+        {
+          "value": "1 - 2 times per week",
+          "count": 20932
+        },
+        {
+          "value": "3 - 4 times per week",
+          "count": 14318
+        },
+        {
+          "value": "Daily or almost every day",
+          "count": 9863
+        }
+      ],
+      "dtype": "string"
+    },
+    "Gender": {
+      "null_count": 34386,
+      "ndv_approx": 16,
+      "mean_length": 4.6556484511935965,
+      "top_values": [
+        {
+          "value": "Male",
+          "count": 59458
+        },
+        {
+          "value": "Female",
+          "count": 4025
+        },
+        {
+          "value": "Non-binary, genderqueer, or gender non-conforming",
+          "count": 284
+        },
+        {
+          "value": "Female;Transgender",
+          "count": 145
+        },
+        {
+          "value": "Male;Non-binary, genderqueer, or gender non-conforming",
+          "count": 128
+        }
+      ],
+      "dtype": "string"
+    },
+    "SexualOrientation": {
+      "null_count": 39090,
+      "ndv_approx": 12,
+      "mean_length": 23.592303187484312,
+      "top_values": [
+        {
+          "value": "Straight or heterosexual",
+          "count": 55013
+        },
+        {
+          "value": "Bisexual or Queer",
+          "count": 1950
+        },
+        {
+          "value": "Gay or Lesbian",
+          "count": 1181
+        },
+        {
+          "value": "Asexual",
+          "count": 717
+        },
+        {
+          "value": "Straight or heterosexual;Bisexual or Queer",
+          "count": 351
+        }
+      ],
+      "dtype": "string"
+    },
+    "EducationParents": {
+      "null_count": 37042,
+      "ndv_approx": 10,
+      "mean_length": 47.12201316875091,
+      "top_values": [
+        {
+          "value": "Bachelor\u2019s degree (BA, BS, B.Eng., etc.)",
+          "count": 18090
+        },
+        {
+          "value": "Master\u2019s degree (MA, MS, M.Eng., MBA, etc.)",
+          "count": 13630
+        },
+        {
+          "value": "Secondary school (e.g. American high school, German Realschule or Gymnasium, etc.)",
+          "count": 10664
+        },
+        {
+          "value": "Some college/university study without earning a degree",
+          "count": 5715
+        },
+        {
+          "value": "Other doctoral degree (Ph.D, Ed.D., etc.)",
+          "count": 3710
+        }
+      ],
+      "dtype": "string"
+    },
+    "RaceEthnicity": {
+      "null_count": 41382,
+      "ndv_approx": 78,
+      "mean_length": 26.062690306752735,
+      "top_values": [
+        {
+          "value": "White or of European descent",
+          "count": 40541
+        },
+        {
+          "value": "South Asian",
+          "count": 6213
+        },
+        {
+          "value": "Hispanic or Latino/Latina",
+          "count": 2718
+        },
+        {
+          "value": "East Asian",
+          "count": 2350
+        },
+        {
+          "value": "Middle Eastern",
+          "count": 1774
+        }
+      ],
+      "dtype": "string"
+    },
+    "Age": {
+      "null_count": 34281,
+      "ndv_approx": 6,
+      "mean_length": 17.02536624647691,
+      "top_values": [
+        {
+          "value": "25 - 34 years old",
+          "count": 31759
+        },
+        {
+          "value": "18 - 24 years old",
+          "count": 15249
+        },
+        {
+          "value": "35 - 44 years old",
+          "count": 11477
+        },
+        {
+          "value": "45 - 54 years old",
+          "count": 3313
+        },
+        {
+          "value": "Under 18 years old",
+          "count": 1638
+        }
+      ],
+      "dtype": "string"
+    },
+    "Dependents": {
+      "null_count": 36259,
+      "ndv_approx": 2,
+      "mean_length": 2.289443414914691,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 44478
+        },
+        {
+          "value": "Yes",
+          "count": 18118
+        }
+      ],
+      "dtype": "string"
+    },
+    "MilitaryUS": {
+      "null_count": 83074,
+      "ndv_approx": 2,
+      "mean_length": 2.046765097268868,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 15043
+        },
+        {
+          "value": "Yes",
+          "count": 738
+        }
+      ],
+      "dtype": "string"
+    },
+    "SurveyTooLong": {
+      "null_count": 32914,
+      "ndv_approx": 3,
+      "mean_length": 29.563609893692846,
+      "top_values": [
+        {
+          "value": "The survey was an appropriate length",
+          "count": 33257
+        },
+        {
+          "value": "The survey was too long",
+          "count": 32214
+        },
+        {
+          "value": "The survey was too short",
+          "count": 470
+        }
+      ],
+      "dtype": "string"
+    },
+    "SurveyEasy": {
+      "null_count": 32976,
+      "ndv_approx": 4,
+      "mean_length": 15.03691616448337,
+      "top_values": [
+        {
+          "value": "Somewhat easy",
+          "count": 24434
+        },
+        {
+          "value": "Very easy",
+          "count": 21503
+        },
+        {
+          "value": "Neither easy nor difficult",
+          "count": 15300
+        },
+        {
+          "value": "Somewhat difficult",
+          "count": 4165
+        },
+        {
+          "value": "Very difficult",
+          "count": 477
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

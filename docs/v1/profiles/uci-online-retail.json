@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "slug": "uci-online-retail",
+  "row_count": 541909,
+  "parquet_sha256": "c0d99b2907203d9d4e495967ff2555b9346118013df67a8c44484269237e9dcc",
+  "computed_at": "2026-05-13T16:44:44Z",
+  "sample_rows": null,
+  "columns": {
+    "invoiceno": {
+      "null_count": 0,
+      "ndv_approx": 29590,
+      "mean_length": 6.017144944999991,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "stockcode": {
+      "null_count": 0,
+      "ndv_approx": 4975,
+      "mean_length": 5.086844839262681,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "description": {
+      "null_count": 1454,
+      "ndv_approx": 3911,
+      "mean_length": 26.64377977814989,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "quantity": {
+      "null_count": 0,
+      "min": -80995,
+      "max": 80995,
+      "mean": 9.55224954743324,
+      "ndv_approx": 749,
+      "histogram": {
+        "buckets": [
+          -80995.0,
+          -64796.0,
+          -48597.0,
+          -32398.0,
+          -16199.0,
+          0.0,
+          16199.0,
+          32398.0,
+          48597.0,
+          64796.0,
+          80995.0
+        ],
+        "counts": [
+          2,
+          0,
+          0,
+          0,
+          10622,
+          531283,
+          0,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "int32"
+    },
+    "invoicedate": {
+      "null_count": 0,
+      "ndv_approx": 22500,
+      "mean_length": 14.980317728622333,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "unitprice": {
+      "null_count": 0,
+      "min": -11062.06,
+      "max": 38970.0,
+      "mean": 4.611113626083471,
+      "ndv_approx": 1653,
+      "histogram": {
+        "buckets": [
+          -11062.06,
+          -6058.853999999999,
+          -1055.6479999999992,
+          3947.558000000001,
+          8950.764000000001,
+          13953.97,
+          18957.176,
+          23960.382000000005,
+          28963.588000000003,
+          33966.794,
+          38970.0
+        ],
+        "counts": [
+          2,
+          0,
+          541864,
+          33,
+          6,
+          3,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "customerid": {
+      "null_count": 135080,
+      "min": 12346,
+      "max": 18287,
+      "mean": 15287.690570239585,
+      "ndv_approx": 3612,
+      "histogram": {
+        "buckets": [
+          12346.0,
+          12940.1,
+          13534.2,
+          14128.3,
+          14722.4,
+          15316.5,
+          15910.6,
+          16504.7,
+          17098.8,
+          17692.9,
+          18287.0
+        ],
+        "counts": [
+          43760,
+          37481,
+          38062,
+          49596,
+          44765,
+          37667,
+          34064,
+          40381,
+          38682,
+          42371
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "country": {
+      "null_count": 0,
+      "ndv_approx": 44,
+      "mean_length": 13.376203384701121,
+      "top_values": [
+        {
+          "value": "United Kingdom",
+          "count": 495478
+        },
+        {
+          "value": "Germany",
+          "count": 9495
+        },
+        {
+          "value": "France",
+          "count": 8557
+        },
+        {
+          "value": "EIRE",
+          "count": 8196
+        },
+        {
+          "value": "Spain",
+          "count": 2533
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

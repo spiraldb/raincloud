@@ -1,0 +1,691 @@
+{
+  "schema_version": 1,
+  "slug": "bi-citymaxcapita",
+  "row_count": 912657,
+  "parquet_sha256": "d46daa5f44cc839a446fe36e005c716f1d85910390ee223def51b63dedc5bb9b",
+  "computed_at": "2026-05-16T05:15:22Z",
+  "sample_rows": null,
+  "columns": {
+    "City/Admin": {
+      "null_count": 49,
+      "ndv_approx": 5,
+      "mean_length": 4.207646656614888,
+      "top_values": [
+        {
+          "value": "city",
+          "count": 754510
+        },
+        {
+          "value": "admin",
+          "count": 149446
+        },
+        {
+          "value": "neighborhood",
+          "count": 4998
+        },
+        {
+          "value": "poi",
+          "count": 2723
+        },
+        {
+          "value": "country",
+          "count": 931
+        }
+      ],
+      "dtype": "string"
+    },
+    "City/State": {
+      "null_count": 174401,
+      "ndv_approx": 10847,
+      "mean_length": 13.091420862139962,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "City": {
+      "null_count": 158147,
+      "ndv_approx": 9424,
+      "mean_length": 9.072791613099893,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Created Date/Time": {
+      "null_count": 0,
+      "min": 41790.8448726852,
+      "max": 42347.2080208333,
+      "mean": 42138.14015441309,
+      "ndv_approx": 729924,
+      "histogram": {
+        "buckets": [
+          41790.8448726852,
+          41846.48118750001,
+          41902.11750231482,
+          41957.75381712963,
+          42013.39013194444,
+          42069.02644675925,
+          42124.66276157406,
+          42180.29907638887,
+          42235.93539120368,
+          42291.57170601849,
+          42347.2080208333
+        ],
+        "counts": [
+          32616,
+          31819,
+          29662,
+          42304,
+          138865,
+          123543,
+          118918,
+          146479,
+          128070,
+          120381
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Date Joined": {
+      "null_count": 0,
+      "min": 38860.9968402778,
+      "max": 42346.678287037,
+      "mean": 40894.710959122,
+      "ndv_approx": 371082,
+      "histogram": {
+        "buckets": [
+          38860.9968402778,
+          39209.56498495372,
+          39558.13312962964,
+          39906.70127430556,
+          40255.26941898148,
+          40603.837563657406,
+          40952.405708333325,
+          41300.97385300924,
+          41649.54199768516,
+          41998.11014236108,
+          42346.678287037
+        ],
+        "counts": [
+          3119,
+          7279,
+          68341,
+          139407,
+          99958,
+          156987,
+          154009,
+          121026,
+          111235,
+          51296
+        ]
+      },
+      "dtype": "float64"
+    },
+    "FF Ratio": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 99633.2,
+      "mean": 10.427112047570915,
+      "ndv_approx": 3939,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9963.32,
+          19926.64,
+          29889.96,
+          39853.28,
+          49816.6,
+          59779.92,
+          69743.23999999999,
+          79706.56,
+          89669.88,
+          99633.2
+        ],
+        "counts": [
+          912634,
+          5,
+          9,
+          4,
+          0,
+          0,
+          1,
+          1,
+          0,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Favorites": {
+      "null_count": 0,
+      "min": -1,
+      "max": 677952,
+      "mean": 5946.292924943325,
+      "ndv_approx": 46413,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          67794.3,
+          135589.6,
+          203384.90000000002,
+          271180.2,
+          338975.5,
+          406770.80000000005,
+          474566.10000000003,
+          542361.4,
+          610156.7000000001,
+          677952.0
+        ],
+        "counts": [
+          906352,
+          5076,
+          948,
+          167,
+          105,
+          4,
+          0,
+          2,
+          0,
+          3
+        ]
+      },
+      "dtype": "int32"
+    },
+    "First Link in Tweet": {
+      "null_count": 713134,
+      "ndv_approx": 159109,
+      "mean_length": 42.16281330974374,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Followers": {
+      "null_count": 0,
+      "min": -8,
+      "max": 9756688,
+      "mean": 2306.8828486496022,
+      "ndv_approx": 21904,
+      "histogram": {
+        "buckets": [
+          -8.0,
+          975661.6,
+          1951331.2,
+          2927000.8,
+          3902670.4,
+          4878340.0,
+          5854009.6,
+          6829679.2,
+          7805348.8,
+          8781018.4,
+          9756688.0
+        ],
+        "counts": [
+          912612,
+          31,
+          2,
+          3,
+          3,
+          0,
+          5,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Following": {
+      "null_count": 0,
+      "min": -204,
+      "max": 676051,
+      "mean": 1145.419085154664,
+      "ndv_approx": 14913,
+      "histogram": {
+        "buckets": [
+          -204.0,
+          67421.5,
+          135047.0,
+          202672.5,
+          270298.0,
+          337923.5,
+          405549.0,
+          473174.5,
+          540800.0,
+          608425.5,
+          676051.0
+        ],
+        "counts": [
+          910247,
+          1689,
+          446,
+          256,
+          9,
+          5,
+          0,
+          0,
+          0,
+          5
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Gender": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "U",
+          "count": 558279
+        },
+        {
+          "value": "M",
+          "count": 231077
+        },
+        {
+          "value": "F",
+          "count": 123301
+        }
+      ],
+      "dtype": "string"
+    },
+    "Influencer?": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.18465096964138772,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          744134,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          168523
+        ]
+      },
+      "dtype": "int16"
+    },
+    "Keyword": {
+      "null_count": 0,
+      "ndv_approx": 16,
+      "mean_length": 5.84562765639227,
+      "top_values": [
+        {
+          "value": "faggot",
+          "count": 90128
+        },
+        {
+          "value": "cunt",
+          "count": 86366
+        },
+        {
+          "value": "disabled",
+          "count": 77386
+        },
+        {
+          "value": "fuckboy",
+          "count": 74043
+        },
+        {
+          "value": "fag",
+          "count": 72474
+        }
+      ],
+      "dtype": "string"
+    },
+    "LPF": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 556000.0,
+      "mean": 25.597839714153398,
+      "ndv_approx": 11355,
+      "histogram": {
+        "buckets": [
+          0.0,
+          55600.0,
+          111200.0,
+          166800.0,
+          222400.0,
+          278000.0,
+          333600.0,
+          389200.0,
+          444800.0,
+          500400.0,
+          556000.0
+        ],
+        "counts": [
+          912654,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Language": {
+      "null_count": 0,
+      "ndv_approx": 48,
+      "mean_length": 2.006803213036223,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 904313
+        },
+        {
+          "value": "es",
+          "count": 3100
+        },
+        {
+          "value": "en-gb",
+          "count": 1453
+        },
+        {
+          "value": "fr",
+          "count": 734
+        },
+        {
+          "value": "pl",
+          "count": 616
+        }
+      ],
+      "dtype": "string"
+    },
+    "Lat": {
+      "null_count": 479485,
+      "min": -41.291042,
+      "max": 90.0,
+      "mean": 37.52038750209793,
+      "ndv_approx": 312315,
+      "histogram": {
+        "buckets": [
+          -41.291042,
+          -28.161937799999997,
+          -15.032833599999996,
+          -1.903729399999996,
+          11.225374800000004,
+          24.354479000000005,
+          37.483583200000005,
+          50.612687400000006,
+          63.741791600000006,
+          76.8708958,
+          90.0
+        ],
+        "counts": [
+          1,
+          0,
+          3,
+          2,
+          532,
+          186381,
+          246183,
+          62,
+          7,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Listed Number": {
+      "null_count": 1,
+      "min": 0,
+      "max": 59106,
+      "mean": 37.640850440910924,
+      "ndv_approx": 2228,
+      "histogram": {
+        "buckets": [
+          0.0,
+          5910.6,
+          11821.2,
+          17731.800000000003,
+          23642.4,
+          29553.0,
+          35463.600000000006,
+          41374.200000000004,
+          47284.8,
+          53195.4,
+          59106.0
+        ],
+        "counts": [
+          912552,
+          93,
+          5,
+          2,
+          2,
+          0,
+          0,
+          1,
+          0,
+          1
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Long Domain": {
+      "null_count": 713134,
+      "ndv_approx": 8830,
+      "mean_length": 11.207910867418795,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Long": {
+      "null_count": 479485,
+      "min": -159.67570487,
+      "max": 174.781618,
+      "mean": -91.28675742536576,
+      "ndv_approx": 349286,
+      "histogram": {
+        "buckets": [
+          -159.67570487,
+          -126.229972583,
+          -92.78424029600001,
+          -59.33850800900001,
+          -25.89277572200001,
+          7.552956564999988,
+          40.99868885199999,
+          74.44442113899999,
+          107.89015342599998,
+          141.33588571299998,
+          174.78161799999998
+        ],
+        "counts": [
+          528,
+          162640,
+          269971,
+          2,
+          18,
+          3,
+          8,
+          1,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          912657
+        ]
+      }
+    },
+    "Region": {
+      "null_count": 25908,
+      "ndv_approx": 5,
+      "mean_length": 7.503352132339591,
+      "top_values": [
+        {
+          "value": "northeast",
+          "count": 232410
+        },
+        {
+          "value": "west",
+          "count": 203641
+        },
+        {
+          "value": "southeast",
+          "count": 187593
+        },
+        {
+          "value": "midwest",
+          "count": 154473
+        },
+        {
+          "value": "southwest",
+          "count": 108632
+        }
+      ],
+      "dtype": "string"
+    },
+    "Short Domain": {
+      "null_count": 713134,
+      "ndv_approx": 7057,
+      "mean_length": 10.124206231862994,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "State/Country": {
+      "null_count": 49,
+      "ndv_approx": 15305,
+      "mean_length": 13.318986903467863,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "State": {
+      "null_count": 25908,
+      "ndv_approx": 55,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "CA",
+          "count": 133970
+        },
+        {
+          "value": "NY",
+          "count": 93304
+        },
+        {
+          "value": "TX",
+          "count": 79400
+        },
+        {
+          "value": "FL",
+          "count": 65908
+        },
+        {
+          "value": "PA",
+          "count": 35814
+        }
+      ],
+      "dtype": "string"
+    },
+    "Tweet Text": {
+      "null_count": 0,
+      "ndv_approx": 887091,
+      "mean_length": 85.61901787856775,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Tweets": {
+      "null_count": 0,
+      "min": -1,
+      "max": 1316658,
+      "mean": 37498.95568543275,
+      "ndv_approx": 152589,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          131664.9,
+          263330.8,
+          394996.69999999995,
+          526662.6,
+          658328.5,
+          789994.3999999999,
+          921660.2999999999,
+          1053326.2,
+          1184992.0999999999,
+          1316658.0
+        ],
+        "counts": [
+          864126,
+          29576,
+          8315,
+          2372,
+          1437,
+          436,
+          223,
+          85,
+          3668,
+          2419
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Twitter Client": {
+      "null_count": 3,
+      "ndv_approx": 328,
+      "mean_length": 17.219385440703707,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "User Bio": {
+      "null_count": 108012,
+      "ndv_approx": 424639,
+      "mean_length": 74.14866183223657,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "User Loc": {
+      "null_count": 270738,
+      "ndv_approx": 137708,
+      "mean_length": 13.73913531146453,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Username 1": {
+      "null_count": 15214,
+      "ndv_approx": 310749,
+      "mean_length": 10.961118422005631,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Username": {
+      "null_count": 0,
+      "ndv_approx": 342263,
+      "mean_length": 11.23508831905086,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

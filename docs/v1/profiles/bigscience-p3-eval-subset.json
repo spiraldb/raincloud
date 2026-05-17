@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "slug": "bigscience-p3-eval-subset",
+  "row_count": 102963,
+  "parquet_sha256": "4a0b6e364f0271940bb6c4182602890491b41516c87cc0e4e043905b196bee90",
+  "computed_at": "2026-05-16T22:39:28Z",
+  "sample_rows": null,
+  "columns": {
+    "answer_choices": {
+      "null_count": 0,
+      "length_min": 2,
+      "length_max": 3,
+      "length_mean": 2.0053999980575545,
+      "dtype": "list<string>"
+    },
+    "inputs": {
+      "null_count": 0,
+      "length_min": 17,
+      "length_max": 600,
+      "length_mean": 99.11925643192215,
+      "dtype": "list<int32>"
+    },
+    "inputs_pretokenized": {
+      "null_count": 0,
+      "ndv_approx": 95375,
+      "mean_length": 419.16368015694957,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "targets": {
+      "null_count": 0,
+      "length_min": 2,
+      "length_max": 17,
+      "length_mean": 2.5876771267348464,
+      "dtype": "list<int32>"
+    },
+    "targets_pretokenized": {
+      "null_count": 0,
+      "ndv_approx": 3124,
+      "mean_length": 6.699328885133495,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 102963
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

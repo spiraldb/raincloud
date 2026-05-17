@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "slug": "jsonbench-bluesky-100m",
+  "row_count": 100000000,
+  "parquet_sha256": "d6225aeaa945fc54f1877051304dca88c64760214be5b0e1c506e7538cd60993",
+  "computed_at": "2026-05-17T05:00:52Z",
+  "sample_rows": null,
+  "columns": {
+    "data": null
+  }
+}

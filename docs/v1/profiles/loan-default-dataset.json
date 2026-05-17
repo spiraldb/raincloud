@@ -1,0 +1,843 @@
+{
+  "schema_version": 1,
+  "slug": "loan-default-dataset",
+  "row_count": 148670,
+  "parquet_sha256": "9c18836133bf53bb368230fba554e70796d8f1748c768aa4f29f547e8faf7162",
+  "computed_at": "2026-05-16T08:59:47Z",
+  "sample_rows": null,
+  "columns": {
+    "ID": {
+      "null_count": 0,
+      "min": 24890,
+      "max": 173559,
+      "mean": 99224.5,
+      "ndv_approx": 136531,
+      "histogram": {
+        "buckets": [
+          24890.0,
+          39756.9,
+          54623.8,
+          69490.7,
+          84357.6,
+          99224.5,
+          114091.4,
+          128958.3,
+          143825.2,
+          158692.1,
+          173559.0
+        ],
+        "counts": [
+          14867,
+          14867,
+          14867,
+          14867,
+          14867,
+          14867,
+          14867,
+          14867,
+          14867,
+          14867
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "year": {
+      "dtype": "uint16",
+      "null_count": 0,
+      "min": 2019,
+      "max": 2019,
+      "mean": 2019.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          2019,
+          2019
+        ],
+        "counts": [
+          148670
+        ]
+      }
+    },
+    "loan_limit": {
+      "null_count": 3344,
+      "ndv_approx": 2,
+      "mean_length": 2.068659427769291,
+      "top_values": [
+        {
+          "value": "cf",
+          "count": 135348
+        },
+        {
+          "value": "ncf",
+          "count": 9978
+        }
+      ],
+      "dtype": "string"
+    },
+    "Gender": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 7.938239052936033,
+      "top_values": [
+        {
+          "value": "Male",
+          "count": 42346
+        },
+        {
+          "value": "Joint",
+          "count": 41399
+        },
+        {
+          "value": "Sex Not Available",
+          "count": 37659
+        },
+        {
+          "value": "Female",
+          "count": 27266
+        }
+      ],
+      "dtype": "string"
+    },
+    "approv_in_adv": {
+      "null_count": 908,
+      "ndv_approx": 1,
+      "mean_length": 4.686780092310608,
+      "top_values": [
+        {
+          "value": "nopre",
+          "count": 124621
+        },
+        {
+          "value": "pre",
+          "count": 23141
+        }
+      ],
+      "dtype": "string"
+    },
+    "loan_type": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "type1",
+          "count": 113173
+        },
+        {
+          "value": "type2",
+          "count": 20762
+        },
+        {
+          "value": "type3",
+          "count": 14735
+        }
+      ],
+      "dtype": "string"
+    },
+    "loan_purpose": {
+      "null_count": 134,
+      "ndv_approx": 4,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "p3",
+          "count": 55934
+        },
+        {
+          "value": "p4",
+          "count": 54799
+        },
+        {
+          "value": "p1",
+          "count": 34529
+        },
+        {
+          "value": "p2",
+          "count": 3274
+        }
+      ],
+      "dtype": "string"
+    },
+    "Credit_Worthiness": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "l1",
+          "count": 142344
+        },
+        {
+          "value": "l2",
+          "count": 6326
+        }
+      ],
+      "dtype": "string"
+    },
+    "open_credit": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 3.99626017353871,
+      "top_values": [
+        {
+          "value": "nopc",
+          "count": 148114
+        },
+        {
+          "value": "opc",
+          "count": 556
+        }
+      ],
+      "dtype": "string"
+    },
+    "business_or_commercial": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.720696845362212,
+      "top_values": [
+        {
+          "value": "nob/c",
+          "count": 127908
+        },
+        {
+          "value": "b/c",
+          "count": 20762
+        }
+      ],
+      "dtype": "string"
+    },
+    "loan_amount": {
+      "null_count": 0,
+      "min": 16500,
+      "max": 3576500,
+      "mean": 331117.7439967714,
+      "ndv_approx": 193,
+      "histogram": {
+        "buckets": [
+          16500.0,
+          372500.0,
+          728500.0,
+          1084500.0,
+          1440500.0,
+          1796500.0,
+          2152500.0,
+          2508500.0,
+          2864500.0,
+          3220500.0,
+          3576500.0
+        ],
+        "counts": [
+          95926,
+          50085,
+          2059,
+          423,
+          121,
+          32,
+          12,
+          4,
+          6,
+          2
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "rate_of_interest": {
+      "null_count": 36439,
+      "min": 0.0,
+      "max": 8.0,
+      "mean": 4.045475804366537,
+      "ndv_approx": 125,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.8,
+          1.6,
+          2.4000000000000004,
+          3.2,
+          4.0,
+          4.800000000000001,
+          5.6000000000000005,
+          6.4,
+          7.2,
+          8.0
+        ],
+        "counts": [
+          1,
+          0,
+          7,
+          5816,
+          56798,
+          38924,
+          9839,
+          830,
+          11,
+          5
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Interest_rate_spread": {
+      "null_count": 36639,
+      "min": -3.638,
+      "max": 3.357,
+      "mean": 0.4416556604868321,
+      "ndv_approx": 22744,
+      "histogram": {
+        "buckets": [
+          -3.638,
+          -2.9385,
+          -2.239,
+          -1.5394999999999999,
+          -0.8399999999999999,
+          -0.14049999999999985,
+          0.5590000000000002,
+          1.2584999999999997,
+          1.9580000000000002,
+          2.6575000000000006,
+          3.357
+        ],
+        "counts": [
+          1,
+          0,
+          0,
+          330,
+          11833,
+          58311,
+          32550,
+          8948,
+          55,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Upfront_charges": {
+      "null_count": 39642,
+      "min": 0.0,
+      "max": 60000.0,
+      "mean": 3224.996126591196,
+      "ndv_approx": 50400,
+      "histogram": {
+        "buckets": [
+          0.0,
+          6000.0,
+          12000.0,
+          18000.0,
+          24000.0,
+          30000.0,
+          36000.0,
+          42000.0,
+          48000.0,
+          54000.0,
+          60000.0
+        ],
+        "counts": [
+          91233,
+          15569,
+          1850,
+          317,
+          44,
+          10,
+          3,
+          0,
+          1,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "term": {
+      "null_count": 41,
+      "min": 96.0,
+      "max": 360.0,
+      "mean": 335.1365816899797,
+      "ndv_approx": 30,
+      "histogram": {
+        "buckets": [
+          96.0,
+          122.4,
+          148.8,
+          175.2,
+          201.6,
+          228.0,
+          254.39999999999998,
+          280.79999999999995,
+          307.2,
+          333.6,
+          360.0
+        ],
+        "counts": [
+          737,
+          356,
+          257,
+          12998,
+          174,
+          5941,
+          144,
+          2912,
+          2952,
+          122158
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Neg_ammortization": {
+      "null_count": 121,
+      "ndv_approx": 2,
+      "mean_length": 7.0,
+      "top_values": [
+        {
+          "value": "not_neg",
+          "count": 133420
+        },
+        {
+          "value": "neg_amm",
+          "count": 15129
+        }
+      ],
+      "dtype": "string"
+    },
+    "interest_only": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 7.047824039819735,
+      "top_values": [
+        {
+          "value": "not_int",
+          "count": 141560
+        },
+        {
+          "value": "int_only",
+          "count": 7110
+        }
+      ],
+      "dtype": "string"
+    },
+    "lump_sum_payment": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 7.908952714064707,
+      "top_values": [
+        {
+          "value": "not_lpsm",
+          "count": 145286
+        },
+        {
+          "value": "lpsm",
+          "count": 3384
+        }
+      ],
+      "dtype": "string"
+    },
+    "property_value": {
+      "null_count": 15098,
+      "min": 8000.0,
+      "max": 16508000.0,
+      "mean": 497893.46569640347,
+      "ndv_approx": 433,
+      "histogram": {
+        "buckets": [
+          8000.0,
+          1658000.0,
+          3308000.0,
+          4958000.0,
+          6608000.0,
+          8258000.0,
+          9908000.0,
+          11558000.0,
+          13208000.0,
+          14858000.0,
+          16508000.0
+        ],
+        "counts": [
+          131772,
+          1644,
+          129,
+          19,
+          2,
+          2,
+          2,
+          1,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "construction_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "sb",
+          "count": 148637
+        },
+        {
+          "value": "mh",
+          "count": 33
+        }
+      ],
+      "dtype": "string"
+    },
+    "occupancy_type": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "pr",
+          "count": 138201
+        },
+        {
+          "value": "ir",
+          "count": 7340
+        },
+        {
+          "value": "sr",
+          "count": 3129
+        }
+      ],
+      "dtype": "string"
+    },
+    "Secured_by": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "home",
+          "count": 148637
+        },
+        {
+          "value": "land",
+          "count": 33
+        }
+      ],
+      "dtype": "string"
+    },
+    "total_units": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "1U",
+          "count": 146480
+        },
+        {
+          "value": "2U",
+          "count": 1477
+        },
+        {
+          "value": "3U",
+          "count": 393
+        },
+        {
+          "value": "4U",
+          "count": 320
+        }
+      ],
+      "dtype": "string"
+    },
+    "income": {
+      "null_count": 9150,
+      "min": 0.0,
+      "max": 578580.0,
+      "mean": 6957.338876146789,
+      "ndv_approx": 950,
+      "histogram": {
+        "buckets": [
+          0.0,
+          57858.0,
+          115716.0,
+          173574.0,
+          231432.0,
+          289290.0,
+          347148.0,
+          405006.0,
+          462864.0,
+          520722.0,
+          578580.0
+        ],
+        "counts": [
+          139332,
+          144,
+          30,
+          4,
+          2,
+          5,
+          2,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "credit_type": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.3981906235286203,
+      "top_values": [
+        {
+          "value": "CIB",
+          "count": 48152
+        },
+        {
+          "value": "CRIF",
+          "count": 43901
+        },
+        {
+          "value": "EXP",
+          "count": 41319
+        },
+        {
+          "value": "EQUI",
+          "count": 15298
+        }
+      ],
+      "dtype": "string"
+    },
+    "Credit_Score": {
+      "null_count": 0,
+      "min": 500,
+      "max": 900,
+      "mean": 699.7891033833322,
+      "ndv_approx": 427,
+      "histogram": {
+        "buckets": [
+          500.0,
+          540.0,
+          580.0,
+          620.0,
+          660.0,
+          700.0,
+          740.0,
+          780.0,
+          820.0,
+          860.0,
+          900.0
+        ],
+        "counts": [
+          14831,
+          14906,
+          15001,
+          14856,
+          14796,
+          14668,
+          14708,
+          14816,
+          14889,
+          15199
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "co-applicant_credit_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "CIB",
+          "count": 74392
+        },
+        {
+          "value": "EXP",
+          "count": 74278
+        }
+      ],
+      "dtype": "string"
+    },
+    "age": {
+      "null_count": 200,
+      "ndv_approx": 7,
+      "mean_length": 4.885337105139086,
+      "top_values": [
+        {
+          "value": "45-54",
+          "count": 34720
+        },
+        {
+          "value": "35-44",
+          "count": 32818
+        },
+        {
+          "value": "55-64",
+          "count": 32534
+        },
+        {
+          "value": "65-74",
+          "count": 20744
+        },
+        {
+          "value": "25-34",
+          "count": 19142
+        }
+      ],
+      "dtype": "string"
+    },
+    "submission_of_application": {
+      "null_count": 200,
+      "ndv_approx": 2,
+      "mean_length": 7.3546575065669835,
+      "top_values": [
+        {
+          "value": "to_inst",
+          "count": 95814
+        },
+        {
+          "value": "not_inst",
+          "count": 52656
+        }
+      ],
+      "dtype": "string"
+    },
+    "LTV": {
+      "null_count": 15098,
+      "min": 0.967478198,
+      "max": 7831.25,
+      "mean": 72.74645733386802,
+      "ndv_approx": 8638,
+      "histogram": {
+        "buckets": [
+          0.967478198,
+          783.9957303781999,
+          1567.0239825584,
+          2350.0522347386,
+          3133.0804869188,
+          3916.108739099,
+          4699.1369912792,
+          5482.1652434594,
+          6265.1934956396,
+          7048.2217478198,
+          7831.25
+        ],
+        "counts": [
+          133566,
+          0,
+          1,
+          1,
+          0,
+          0,
+          2,
+          0,
+          1,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Region": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 5.158532319903141,
+      "top_values": [
+        {
+          "value": "North",
+          "count": 74722
+        },
+        {
+          "value": "south",
+          "count": 64016
+        },
+        {
+          "value": "central",
+          "count": 8697
+        },
+        {
+          "value": "North-East",
+          "count": 1235
+        }
+      ],
+      "dtype": "string"
+    },
+    "Security_Type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 6.000443936234613,
+      "top_values": [
+        {
+          "value": "direct",
+          "count": 148637
+        },
+        {
+          "value": "Indriect",
+          "count": 33
+        }
+      ],
+      "dtype": "string"
+    },
+    "Status": {
+      "null_count": 0,
+      "min": 0,
+      "max": 1,
+      "mean": 0.24644514696979888,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.1,
+          0.2,
+          0.30000000000000004,
+          0.4,
+          0.5,
+          0.6000000000000001,
+          0.7000000000000001,
+          0.8,
+          0.9,
+          1.0
+        ],
+        "counts": [
+          112031,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          36639
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "dtir1": {
+      "null_count": 24121,
+      "min": 5.0,
+      "max": 61.0,
+      "mean": 37.73293242017198,
+      "ndv_approx": 62,
+      "histogram": {
+        "buckets": [
+          5.0,
+          10.6,
+          16.2,
+          21.799999999999997,
+          27.4,
+          33.0,
+          38.599999999999994,
+          44.199999999999996,
+          49.8,
+          55.4,
+          61.0
+        ],
+        "counts": [
+          2399,
+          2417,
+          4966,
+          10389,
+          14648,
+          25773,
+          31048,
+          23518,
+          4729,
+          4662
+        ]
+      },
+      "dtype": "float64"
+    }
+  }
+}

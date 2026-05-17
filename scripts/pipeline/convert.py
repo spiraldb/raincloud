@@ -24,7 +24,7 @@ vxio.write`, so Arrow-supported types round-trip cleanly without ever
 materialising the full table. Types the current Vortex release doesn't
 accept (e.g. any `FixedSizeBinary` in 0.69) raise at `vortex.Array.from_arrow`;
 this module reports the failure and continues with the next slug when run
-in `--all` / `--family` mode.
+in `--all` mode.
 
 Caveats:
   - Parquet VARIANT columns surface in Vortex as their shredded struct
@@ -40,7 +40,6 @@ Caveats:
 Usage:
     python -m scripts.pipeline.convert                # every slug with convert.vortex
     python -m scripts.pipeline.convert <slug>...
-    python -m scripts.pipeline.convert --family uci
     python -m scripts.pipeline.convert --all
 """
 
@@ -193,7 +192,6 @@ def convert_hydrated(spec: dict) -> Path | None:
 def main(argv):
     ap = argparse.ArgumentParser()
     ap.add_argument("slugs", nargs="*", help="specific slugs to convert")
-    ap.add_argument("--family")
     ap.add_argument("--all", action="store_true")
     args = ap.parse_args(argv)
 
@@ -202,12 +200,10 @@ def main(argv):
     if args.slugs:
         for s in args.slugs:
             selected += list(iter_datasets(m, slug=s))
-    if args.family:
-        selected += list(iter_datasets(m, family=args.family))
     if args.all:
         selected = list(iter_datasets(m))
     if not selected:
-        print("nothing selected; pass slugs, --family, or --all", file=sys.stderr)
+        print("nothing selected; pass slugs or --all", file=sys.stderr)
         return 2
 
     n_converted = n_no_opt_in = n_no_parquet = n_failed = 0

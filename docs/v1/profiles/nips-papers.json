@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "slug": "nips-papers",
+  "row_count": 9680,
+  "parquet_sha256": "411f4e358f8db1c5322b7b29040b2cf70639c7d46f1543cc9748bb75c83a70f6",
+  "computed_at": "2026-05-16T09:00:09Z",
+  "sample_rows": null,
+  "columns": {
+    "source_id": {
+      "null_count": 0,
+      "min": 1,
+      "max": 9406,
+      "mean": 1963.827479338843,
+      "ndv_approx": 4489,
+      "histogram": {
+        "buckets": [
+          1.0,
+          941.5,
+          1882.0,
+          2822.5,
+          3763.0,
+          4703.5,
+          5644.0,
+          6584.5,
+          7525.0,
+          8465.5,
+          9406.0
+        ],
+        "counts": [
+          3279,
+          2694,
+          1682,
+          853,
+          219,
+          322,
+          225,
+          187,
+          122,
+          97
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "year": {
+      "null_count": 0,
+      "min": 1987,
+      "max": 2019,
+      "mean": 2009.4987603305785,
+      "ndv_approx": 28,
+      "histogram": {
+        "buckets": [
+          1987.0,
+          1990.2,
+          1993.4,
+          1996.6,
+          1999.8,
+          2003.0,
+          2006.2,
+          2009.4,
+          2012.6,
+          2015.8,
+          2019.0
+        ],
+        "counts": [
+          428,
+          429,
+          444,
+          451,
+          556,
+          816,
+          729,
+          968,
+          1174,
+          3685
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "title": {
+      "null_count": 0,
+      "ndv_approx": 8147,
+      "mean_length": 61.19535123966942,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "abstract": {
+      "null_count": 3319,
+      "ndv_approx": 6213,
+      "mean_length": 1042.8124508725043,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "full_text": {
+      "null_count": 3,
+      "ndv_approx": 10004,
+      "mean_length": 32302.433605456237,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

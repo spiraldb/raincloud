@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "slug": "anthropic-interviewer",
+  "row_count": 1250,
+  "parquet_sha256": "63ce777948587a5b82a98b80cccc448bfaf4a44d4d285a0b5f38abbbb91c7c54",
+  "computed_at": "2026-05-13T16:44:19Z",
+  "sample_rows": null,
+  "columns": {
+    "transcript_id": {
+      "null_count": 0,
+      "ndv_approx": 1284,
+      "mean_length": 9.9,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 1229,
+      "mean_length": 9126.4208,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0000",
+          "count": 1250
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,820 @@
+{
+  "schema_version": 1,
+  "slug": "uci-automobile",
+  "row_count": 205,
+  "parquet_sha256": "40901c4176f63b8092e8ef066dd6b0cd829f04b2786c8907e1c42fac60345f43",
+  "computed_at": "2026-05-16T10:21:47Z",
+  "sample_rows": null,
+  "columns": {
+    "normalized_losses": {
+      "null_count": 41,
+      "min": 65,
+      "max": 256,
+      "mean": 122.0,
+      "ndv_approx": 50,
+      "histogram": {
+        "buckets": [
+          65.0,
+          84.1,
+          103.2,
+          122.30000000000001,
+          141.4,
+          160.5,
+          179.60000000000002,
+          198.70000000000002,
+          217.8,
+          236.9,
+          256.0
+        ],
+        "counts": [
+          17,
+          46,
+          31,
+          20,
+          21,
+          18,
+          9,
+          0,
+          1,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "make": {
+      "null_count": 0,
+      "ndv_approx": 17,
+      "mean_length": 6.478048780487805,
+      "top_values": [
+        {
+          "value": "toyota",
+          "count": 32
+        },
+        {
+          "value": "nissan",
+          "count": 18
+        },
+        {
+          "value": "mazda",
+          "count": 17
+        },
+        {
+          "value": "honda",
+          "count": 13
+        },
+        {
+          "value": "mitsubishi",
+          "count": 13
+        }
+      ],
+      "dtype": "string"
+    },
+    "fuel_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 3.292682926829268,
+      "top_values": [
+        {
+          "value": "gas",
+          "count": 185
+        },
+        {
+          "value": "diesel",
+          "count": 20
+        }
+      ],
+      "dtype": "string"
+    },
+    "aspiration": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 3.3609756097560974,
+      "top_values": [
+        {
+          "value": "std",
+          "count": 168
+        },
+        {
+          "value": "turbo",
+          "count": 37
+        }
+      ],
+      "dtype": "string"
+    },
+    "num_of_doors": {
+      "null_count": 2,
+      "min": 2,
+      "max": 4,
+      "mean": 3.123152709359606,
+      "ndv_approx": 2,
+      "histogram": {
+        "buckets": [
+          2.0,
+          2.2,
+          2.4,
+          2.6,
+          2.8,
+          3.0,
+          3.2,
+          3.4000000000000004,
+          3.6,
+          3.8,
+          4.0
+        ],
+        "counts": [
+          89,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          114
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "body_style": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 6.619512195121951,
+      "top_values": [
+        {
+          "value": "sedan",
+          "count": 96
+        },
+        {
+          "value": "hatchback",
+          "count": 70
+        },
+        {
+          "value": "wagon",
+          "count": 25
+        },
+        {
+          "value": "hardtop",
+          "count": 8
+        },
+        {
+          "value": "convertible",
+          "count": 6
+        }
+      ],
+      "dtype": "string"
+    },
+    "drive_wheels": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "fwd",
+          "count": 120
+        },
+        {
+          "value": "rwd",
+          "count": 76
+        },
+        {
+          "value": "4wd",
+          "count": 9
+        }
+      ],
+      "dtype": "string"
+    },
+    "engine_location": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.985365853658537,
+      "top_values": [
+        {
+          "value": "front",
+          "count": 202
+        },
+        {
+          "value": "rear",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "wheel_base": {
+      "null_count": 0,
+      "min": 86.6,
+      "max": 120.9,
+      "mean": 98.75658536585378,
+      "ndv_approx": 56,
+      "histogram": {
+        "buckets": [
+          86.6,
+          90.03,
+          93.46,
+          96.89,
+          100.32,
+          103.75,
+          107.18,
+          110.61,
+          114.04,
+          117.47,
+          120.9
+        ],
+        "counts": [
+          8,
+          9,
+          83,
+          42,
+          24,
+          14,
+          15,
+          3,
+          6,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "length": {
+      "null_count": 0,
+      "min": 141.1,
+      "max": 208.1,
+      "mean": 174.04926829268305,
+      "ndv_approx": 73,
+      "histogram": {
+        "buckets": [
+          141.1,
+          147.79999999999998,
+          154.5,
+          161.2,
+          167.9,
+          174.6,
+          181.3,
+          188.0,
+          194.7,
+          201.4,
+          208.1
+        ],
+        "counts": [
+          3,
+          3,
+          29,
+          23,
+          54,
+          39,
+          23,
+          20,
+          8,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "width": {
+      "null_count": 0,
+      "min": 60.3,
+      "max": 72.3,
+      "mean": 65.90780487804875,
+      "ndv_approx": 39,
+      "histogram": {
+        "buckets": [
+          60.3,
+          61.5,
+          62.699999999999996,
+          63.9,
+          65.1,
+          66.3,
+          67.5,
+          68.7,
+          69.89999999999999,
+          71.1,
+          72.3
+        ],
+        "counts": [
+          1,
+          2,
+          36,
+          39,
+          44,
+          42,
+          20,
+          7,
+          6,
+          8
+        ]
+      },
+      "dtype": "float64"
+    },
+    "height": {
+      "null_count": 0,
+      "min": 47.8,
+      "max": 59.8,
+      "mean": 53.724878048780525,
+      "ndv_approx": 47,
+      "histogram": {
+        "buckets": [
+          47.8,
+          49.0,
+          50.199999999999996,
+          51.4,
+          52.599999999999994,
+          53.8,
+          55.0,
+          56.199999999999996,
+          57.4,
+          58.599999999999994,
+          59.8
+        ],
+        "counts": [
+          3,
+          9,
+          28,
+          25,
+          33,
+          41,
+          38,
+          15,
+          4,
+          9
+        ]
+      },
+      "dtype": "float64"
+    },
+    "curb_weight": {
+      "null_count": 0,
+      "min": 1488,
+      "max": 4066,
+      "mean": 2555.5658536585365,
+      "ndv_approx": 166,
+      "histogram": {
+        "buckets": [
+          1488.0,
+          1745.8,
+          2003.6,
+          2261.4,
+          2519.2,
+          2777.0,
+          3034.8,
+          3292.6000000000004,
+          3550.4,
+          3808.2000000000003,
+          4066.0
+        ],
+        "counts": [
+          2,
+          29,
+          33,
+          50,
+          25,
+          23,
+          26,
+          8,
+          5,
+          4
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "engine_type": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 3.126829268292683,
+      "top_values": [
+        {
+          "value": "ohc",
+          "count": 148
+        },
+        {
+          "value": "ohcf",
+          "count": 15
+        },
+        {
+          "value": "ohcv",
+          "count": 13
+        },
+        {
+          "value": "l",
+          "count": 12
+        },
+        {
+          "value": "dohc",
+          "count": 12
+        }
+      ],
+      "dtype": "string"
+    },
+    "num_of_cylinders": {
+      "null_count": 0,
+      "min": 2,
+      "max": 12,
+      "mean": 4.380487804878049,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0,
+          11.0,
+          12.0
+        ],
+        "counts": [
+          4,
+          1,
+          159,
+          11,
+          24,
+          0,
+          5,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "engine_size": {
+      "null_count": 0,
+      "min": 61,
+      "max": 326,
+      "mean": 126.90731707317073,
+      "ndv_approx": 43,
+      "histogram": {
+        "buckets": [
+          61.0,
+          87.5,
+          114.0,
+          140.5,
+          167.0,
+          193.5,
+          220.0,
+          246.5,
+          273.0,
+          299.5,
+          326.0
+        ],
+        "counts": [
+          6,
+          95,
+          46,
+          30,
+          14,
+          7,
+          2,
+          2,
+          0,
+          3
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "fuel_system": {
+      "null_count": 0,
+      "ndv_approx": 9,
+      "mean_length": 3.897560975609756,
+      "top_values": [
+        {
+          "value": "mpfi",
+          "count": 94
+        },
+        {
+          "value": "2bbl",
+          "count": 66
+        },
+        {
+          "value": "idi",
+          "count": 20
+        },
+        {
+          "value": "1bbl",
+          "count": 11
+        },
+        {
+          "value": "spdi",
+          "count": 9
+        }
+      ],
+      "dtype": "string"
+    },
+    "bore": {
+      "null_count": 4,
+      "min": 2.54,
+      "max": 3.94,
+      "mean": 3.3297512437810957,
+      "ndv_approx": 45,
+      "histogram": {
+        "buckets": [
+          2.54,
+          2.68,
+          2.82,
+          2.96,
+          3.1,
+          3.24,
+          3.38,
+          3.52,
+          3.66,
+          3.8,
+          3.94
+        ],
+        "counts": [
+          1,
+          1,
+          8,
+          37,
+          40,
+          24,
+          27,
+          42,
+          17,
+          4
+        ]
+      },
+      "dtype": "float64"
+    },
+    "stroke": {
+      "null_count": 4,
+      "min": 2.07,
+      "max": 4.17,
+      "mean": 3.2554228855721337,
+      "ndv_approx": 42,
+      "histogram": {
+        "buckets": [
+          2.07,
+          2.28,
+          2.4899999999999998,
+          2.7,
+          2.91,
+          3.12,
+          3.33,
+          3.54,
+          3.75,
+          3.96,
+          4.17
+        ],
+        "counts": [
+          3,
+          1,
+          13,
+          7,
+          30,
+          52,
+          71,
+          15,
+          7,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "compression_ratio": {
+      "null_count": 0,
+      "min": 7.0,
+      "max": 23.0,
+      "mean": 10.142536585365855,
+      "ndv_approx": 29,
+      "histogram": {
+        "buckets": [
+          7.0,
+          8.6,
+          10.2,
+          11.8,
+          13.4,
+          15.0,
+          16.6,
+          18.200000000000003,
+          19.8,
+          21.4,
+          23.0
+        ],
+        "counts": [
+          56,
+          128,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          5,
+          15
+        ]
+      },
+      "dtype": "float64"
+    },
+    "horsepower": {
+      "null_count": 2,
+      "min": 48,
+      "max": 288,
+      "mean": 104.25615763546799,
+      "ndv_approx": 56,
+      "histogram": {
+        "buckets": [
+          48.0,
+          72.0,
+          96.0,
+          120.0,
+          144.0,
+          168.0,
+          192.0,
+          216.0,
+          240.0,
+          264.0,
+          288.0
+        ],
+        "counts": [
+          55,
+          49,
+          49,
+          13,
+          23,
+          8,
+          4,
+          0,
+          1,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "peak_rpm": {
+      "null_count": 2,
+      "min": 4150,
+      "max": 6600,
+      "mean": 5125.369458128079,
+      "ndv_approx": 26,
+      "histogram": {
+        "buckets": [
+          4150.0,
+          4395.0,
+          4640.0,
+          4885.0,
+          5130.0,
+          5375.0,
+          5620.0,
+          5865.0,
+          6110.0,
+          6355.0,
+          6600.0
+        ],
+        "counts": [
+          17,
+          10,
+          41,
+          31,
+          31,
+          51,
+          8,
+          12,
+          0,
+          2
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "city_mpg": {
+      "null_count": 0,
+      "min": 13,
+      "max": 49,
+      "mean": 25.21951219512195,
+      "ndv_approx": 29,
+      "histogram": {
+        "buckets": [
+          13.0,
+          16.6,
+          20.2,
+          23.8,
+          27.4,
+          31.0,
+          34.6,
+          38.2,
+          41.8,
+          45.4,
+          49.0
+        ],
+        "counts": [
+          12,
+          46,
+          24,
+          56,
+          18,
+          31,
+          15,
+          0,
+          1,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "highway_mpg": {
+      "null_count": 0,
+      "min": 16,
+      "max": 54,
+      "mean": 30.75121951219512,
+      "ndv_approx": 29,
+      "histogram": {
+        "buckets": [
+          16.0,
+          19.8,
+          23.6,
+          27.4,
+          31.2,
+          35.0,
+          38.8,
+          42.599999999999994,
+          46.4,
+          50.199999999999996,
+          54.0
+        ],
+        "counts": [
+          7,
+          17,
+          44,
+          47,
+          39,
+          32,
+          8,
+          6,
+          3,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "price": {
+      "null_count": 4,
+      "min": 5118,
+      "max": 45400,
+      "mean": 13207.129353233831,
+      "ndv_approx": 175,
+      "histogram": {
+        "buckets": [
+          5118.0,
+          9146.2,
+          13174.4,
+          17202.6,
+          21230.8,
+          25259.0,
+          29287.199999999997,
+          33315.399999999994,
+          37343.6,
+          41371.799999999996,
+          45400.0
+        ],
+        "counts": [
+          81,
+          45,
+          35,
+          17,
+          6,
+          3,
+          4,
+          7,
+          2,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "symboling": {
+      "null_count": 0,
+      "min": -2,
+      "max": 3,
+      "mean": 0.8341463414634146,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          -2.0,
+          -1.5,
+          -1.0,
+          -0.5,
+          0.0,
+          0.5,
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0
+        ],
+        "counts": [
+          3,
+          0,
+          22,
+          0,
+          67,
+          0,
+          54,
+          0,
+          32,
+          27
+        ]
+      },
+      "dtype": "int8"
+    }
+  }
+}

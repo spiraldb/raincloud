@@ -1,7 +1,7 @@
 ---
 name: raincloud-convert
 description: Run only stage 7 — emit a sibling .vortex next to each opted-in parquet. Use when the user asks to (re)convert parquet files to Vortex format without rebuilding from raw bytes.
-argument-hint: <slug>... | --family <name> | --all
+argument-hint: <slug>... | --all
 disable-model-invocation: true
 allowed-tools: Bash(python -m scripts.pipeline.convert *)
 ---
@@ -14,7 +14,6 @@ python -m scripts.pipeline.convert $ARGUMENTS
 
 Selection (at least one required):
 - `<slug>...` — positional slugs
-- `--family <name>` — every dataset in a family
 - `--all` — every dataset in the manifest
 
 Behavior:

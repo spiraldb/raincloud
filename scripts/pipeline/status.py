@@ -14,7 +14,6 @@ For each DatasetSpec in sources.json, walk the filesystem and report:
 Usage:
     python -m scripts.pipeline.status                  # all slugs, full scan
     python -m scripts.pipeline.status <slug>...
-    python -m scripts.pipeline.status --family <name>
     python -m scripts.pipeline.status --fast           # skip parquet footer reads
     python -m scripts.pipeline.status --missing-only   # only incomplete slugs
     python -m scripts.pipeline.status --json           # machine-readable
@@ -104,7 +103,6 @@ def _vortex_status(spec: dict, m: dict) -> dict:
 def gather(spec: dict, m: dict, *, fast: bool) -> dict:
     return {
         "slug": spec["slug"],
-        "family": spec.get("family"),
         "raw":     _raw_status(spec),
         "work":    _workdir_status(spec["slug"]),
         "parquet": _parquet_status(spec, m, fast=fast),
@@ -203,7 +201,6 @@ def render_summary(rows: list[dict]) -> str:
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     ap.add_argument("slugs", nargs="*", help="specific slugs (default: all)")
-    ap.add_argument("--family", help="filter to one family")
     ap.add_argument("--all", action="store_true", help="all slugs (the default)")
     ap.add_argument("--fast", action="store_true",
                     help="skip parquet footer reads (no row count, no JSON-column check)")
@@ -215,8 +212,6 @@ def main(argv):
     m = load_manifest()
     if args.slugs:
         selected = [d for s in args.slugs for d in iter_datasets(m, slug=s)]
-    elif args.family:
-        selected = list(iter_datasets(m, family=args.family))
     else:
         selected = list(iter_datasets(m))
 

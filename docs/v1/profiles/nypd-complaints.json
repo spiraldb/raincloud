@@ -1,0 +1,760 @@
+{
+  "schema_version": 1,
+  "slug": "nypd-complaints",
+  "row_count": 8781310,
+  "parquet_sha256": "63de55bec9adf3bb6e5a30a5038f71c432e3c640b8c0dc7d39896f478a72f729",
+  "computed_at": "2026-05-17T01:58:46Z",
+  "sample_rows": null,
+  "columns": {
+    "CMPLNT_NUM": {
+      "null_count": 0,
+      "ndv_approx": 10506146,
+      "mean_length": 8.537960737065426,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CMPLNT_FR_DT": {
+      "null_count": 642,
+      "ndv_approx": 11781,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CMPLNT_FR_TM": {
+      "null_count": 0,
+      "ndv_approx": 1120,
+      "mean_length": 7.999990889741963,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CMPLNT_TO_DT": {
+      "null_count": 1779467,
+      "ndv_approx": 10431,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CMPLNT_TO_TM": {
+      "null_count": 0,
+      "ndv_approx": 1120,
+      "mean_length": 7.595940924531761,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ADDR_PCT_CD": {
+      "null_count": 771,
+      "min": 1,
+      "max": 123,
+      "mean": 63.63179492739569,
+      "ndv_approx": 78,
+      "histogram": {
+        "buckets": [
+          1.0,
+          13.2,
+          25.4,
+          37.599999999999994,
+          49.8,
+          62.0,
+          74.19999999999999,
+          86.39999999999999,
+          98.6,
+          110.8,
+          123.0
+        ],
+        "counts": [
+          662995,
+          902813,
+          517289,
+          1657844,
+          478599,
+          1135644,
+          967167,
+          247344,
+          1218358,
+          992486
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "RPT_DT": {
+      "null_count": 0,
+      "ndv_approx": 8316,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "KY_CD": {
+      "null_count": 0,
+      "min": 101,
+      "max": 881,
+      "mean": 297.37119598328724,
+      "ndv_approx": 83,
+      "histogram": {
+        "buckets": [
+          101.0,
+          179.0,
+          257.0,
+          335.0,
+          413.0,
+          491.0,
+          569.0,
+          647.0,
+          725.0,
+          803.0,
+          881.0
+        ],
+        "counts": [
+          2750968,
+          565958,
+          0,
+          4272967,
+          115,
+          0,
+          1174589,
+          16696,
+          0,
+          17
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "OFNS_DESC": {
+      "null_count": 0,
+      "ndv_approx": 85,
+      "mean_length": 18.29588979320853,
+      "top_values": [
+        {
+          "value": "PETIT LARCENY",
+          "count": 1533133
+        },
+        {
+          "value": "HARRASSMENT 2",
+          "count": 1173192
+        },
+        {
+          "value": "ASSAULT 3 & RELATED OFFENSES",
+          "count": 926994
+        },
+        {
+          "value": "CRIMINAL MISCHIEF & RELATED OF",
+          "count": 861627
+        },
+        {
+          "value": "GRAND LARCENY",
+          "count": 768581
+        }
+      ],
+      "dtype": "string"
+    },
+    "PD_CD": {
+      "null_count": 7593,
+      "min": 100,
+      "max": 975,
+      "mean": 412.1226219172558,
+      "ndv_approx": 408,
+      "histogram": {
+        "buckets": [
+          100.0,
+          187.5,
+          275.0,
+          362.5,
+          450.0,
+          537.5,
+          625.0,
+          712.5,
+          800.0,
+          887.5,
+          975.0
+        ],
+        "counts": [
+          1452083,
+          1401799,
+          1543080,
+          1189159,
+          398771,
+          229630,
+          1715870,
+          564104,
+          39704,
+          239517
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "PD_DESC": {
+      "null_count": 0,
+      "ndv_approx": 444,
+      "mean_length": 25.91771056937974,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CRM_ATPT_CPTD_CD": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 8.999942605374368,
+      "top_values": [
+        {
+          "value": "COMPLETED",
+          "count": 8635197
+        },
+        {
+          "value": "ATTEMPTED",
+          "count": 145945
+        },
+        {
+          "value": "(null)",
+          "count": 168
+        }
+      ],
+      "dtype": "string"
+    },
+    "LAW_CAT_CD": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 9.162989121213123,
+      "top_values": [
+        {
+          "value": "MISDEMEANOR",
+          "count": 4840287
+        },
+        {
+          "value": "FELONY",
+          "count": 2749772
+        },
+        {
+          "value": "VIOLATION",
+          "count": 1191251
+        }
+      ],
+      "dtype": "string"
+    },
+    "BORO_NM": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 7.401737212329368,
+      "top_values": [
+        {
+          "value": "BROOKLYN",
+          "count": 2560334
+        },
+        {
+          "value": "MANHATTAN",
+          "count": 2081685
+        },
+        {
+          "value": "BRONX",
+          "count": 1924436
+        },
+        {
+          "value": "QUEENS",
+          "count": 1797688
+        },
+        {
+          "value": "STATEN ISLAND",
+          "count": 409686
+        }
+      ],
+      "dtype": "string"
+    },
+    "LOC_OF_OCCUR_DESC": {
+      "null_count": 170,
+      "ndv_approx": 6,
+      "mean_length": 6.622349489929554,
+      "top_values": [
+        {
+          "value": "INSIDE",
+          "count": 4498773
+        },
+        {
+          "value": "FRONT OF",
+          "count": 2085426
+        },
+        {
+          "value": "(null)",
+          "count": 1790523
+        },
+        {
+          "value": "OPPOSITE OF",
+          "count": 221917
+        },
+        {
+          "value": "REAR OF",
+          "count": 179829
+        }
+      ],
+      "dtype": "string"
+    },
+    "PREM_TYP_DESC": {
+      "null_count": 0,
+      "ndv_approx": 105,
+      "mean_length": 14.277862414605565,
+      "top_values": [
+        {
+          "value": "STREET",
+          "count": 2748770
+        },
+        {
+          "value": "RESIDENCE - APT. HOUSE",
+          "count": 1882325
+        },
+        {
+          "value": "RESIDENCE-HOUSE",
+          "count": 865572
+        },
+        {
+          "value": "RESIDENCE - PUBLIC HOUSING",
+          "count": 643973
+        },
+        {
+          "value": "CHAIN STORE",
+          "count": 241076
+        }
+      ],
+      "dtype": "string"
+    },
+    "JURIS_DESC": {
+      "null_count": 0,
+      "ndv_approx": 29,
+      "mean_length": 16.252623469618996,
+      "top_values": [
+        {
+          "value": "N.Y. POLICE DEPT",
+          "count": 7829171
+        },
+        {
+          "value": "N.Y. HOUSING POLICE",
+          "count": 652239
+        },
+        {
+          "value": "N.Y. TRANSIT POLICE",
+          "count": 194955
+        },
+        {
+          "value": "PORT AUTHORITY",
+          "count": 39523
+        },
+        {
+          "value": "OTHER",
+          "count": 26512
+        }
+      ],
+      "dtype": "string"
+    },
+    "JURISDICTION_CODE": {
+      "null_count": 0,
+      "min": 0,
+      "max": 97,
+      "mean": 0.6814465039954175,
+      "ndv_approx": 25,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9.7,
+          19.4,
+          29.099999999999998,
+          38.8,
+          48.5,
+          58.199999999999996,
+          67.89999999999999,
+          77.6,
+          87.3,
+          97.0
+        ],
+        "counts": [
+          8723188,
+          8985,
+          0,
+          0,
+          0,
+          98,
+          0,
+          20069,
+          632,
+          28338
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "PARKS_NM": {
+      "null_count": 0,
+      "ndv_approx": 1371,
+      "mean_length": 6.055245629638402,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "HADEVELOPT": {
+      "null_count": 0,
+      "ndv_approx": 35,
+      "mean_length": 6.010722204318035,
+      "top_values": [
+        {
+          "value": "(null)",
+          "count": 8750592
+        },
+        {
+          "value": "INGERSOLL",
+          "count": 4435
+        },
+        {
+          "value": "WALD",
+          "count": 2539
+        },
+        {
+          "value": "WILLIAMSBURG",
+          "count": 2399
+        },
+        {
+          "value": "NOSTRAND",
+          "count": 2314
+        }
+      ],
+      "dtype": "string"
+    },
+    "HOUSING_PSA": {
+      "null_count": 0,
+      "ndv_approx": 4381,
+      "mean_length": 5.807629499471036,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "X_COORD_CD": {
+      "null_count": 466,
+      "min": 0,
+      "max": 1067306,
+      "mean": 1005107.4638481222,
+      "ndv_approx": 74261,
+      "histogram": {
+        "buckets": [
+          0.0,
+          106730.6,
+          213461.2,
+          320191.80000000005,
+          426922.4,
+          533653.0,
+          640383.6000000001,
+          747114.2000000001,
+          853844.8,
+          960575.4,
+          1067306.0
+        ],
+        "counts": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          315465,
+          8465368
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Y_COORD_CD": {
+      "null_count": 466,
+      "min": 0,
+      "max": 271909,
+      "mean": 207267.31663391355,
+      "ndv_approx": 87086,
+      "histogram": {
+        "buckets": [
+          0.0,
+          27190.9,
+          54381.8,
+          81572.70000000001,
+          108763.6,
+          135954.5,
+          163145.40000000002,
+          190336.30000000002,
+          217527.2,
+          244718.1,
+          271909.0
+        ],
+        "counts": [
+          11,
+          0,
+          0,
+          0,
+          32823,
+          639247,
+          2233627,
+          2711176,
+          1976287,
+          1187673
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "SUSP_AGE_GROUP": {
+      "null_count": 0,
+      "ndv_approx": 311,
+      "mean_length": 5.7425761076650295,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SUSP_RACE": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 7.309949882192976,
+      "top_values": [
+        {
+          "value": "(null)",
+          "count": 3606911
+        },
+        {
+          "value": "BLACK",
+          "count": 1904811
+        },
+        {
+          "value": "UNKNOWN",
+          "count": 1411391
+        },
+        {
+          "value": "WHITE HISPANIC",
+          "count": 868300
+        },
+        {
+          "value": "WHITE",
+          "count": 535297
+        }
+      ],
+      "dtype": "string"
+    },
+    "SUSP_SEX": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 3.122351904214747,
+      "top_values": [
+        {
+          "value": "(null)",
+          "count": 3727406
+        },
+        {
+          "value": "M",
+          "count": 3108313
+        },
+        {
+          "value": "U",
+          "count": 996256
+        },
+        {
+          "value": "F",
+          "count": 949335
+        }
+      ],
+      "dtype": "string"
+    },
+    "TRANSIT_DISTRICT": {
+      "null_count": 8587055,
+      "min": 1,
+      "max": 34,
+      "mean": 13.87443309052534,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          1.0,
+          4.3,
+          7.6,
+          10.899999999999999,
+          14.2,
+          17.5,
+          20.799999999999997,
+          24.099999999999998,
+          27.4,
+          30.7,
+          34.0
+        ],
+        "counts": [
+          91889,
+          0,
+          0,
+          28880,
+          0,
+          18011,
+          3179,
+          0,
+          12213,
+          40083
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Latitude": {
+      "null_count": 466,
+      "min": 0.0,
+      "max": 40.91295931,
+      "mean": 40.735477197184316,
+      "ndv_approx": 160693,
+      "histogram": {
+        "buckets": [
+          0.0,
+          4.091295930999999,
+          8.182591861999999,
+          12.273887792999998,
+          16.365183723999998,
+          20.456479654999995,
+          24.547775585999997,
+          28.639071516999998,
+          32.730367447999996,
+          36.82166337899999,
+          40.91295930999999
+        ],
+        "counts": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          8780833
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Longitude": {
+      "null_count": 466,
+      "min": -74.25495171,
+      "max": 0.0,
+      "mean": -73.92460923222399,
+      "ndv_approx": 116402,
+      "histogram": {
+        "buckets": [
+          -74.25495171,
+          -66.829456539,
+          -59.403961368,
+          -51.978466197,
+          -44.552971026,
+          -37.127475855,
+          -29.701980684000006,
+          -22.276485513000004,
+          -14.850990342000003,
+          -7.4254951710000086,
+          0.0
+        ],
+        "counts": [
+          8780833,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          11
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Lat_Lon": {
+      "null_count": 466,
+      "ndv_approx": 134329,
+      "mean_length": 23.92599526879193,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "PATROL_BORO": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 21.507428618281327,
+      "top_values": [
+        {
+          "value": "PATROL BORO BRONX",
+          "count": 1925181
+        },
+        {
+          "value": "PATROL BORO BKLYN NORTH",
+          "count": 1281823
+        },
+        {
+          "value": "PATROL BORO BKLYN SOUTH",
+          "count": 1279769
+        },
+        {
+          "value": "PATROL BORO MAN SOUTH",
+          "count": 1054923
+        },
+        {
+          "value": "PATROL BORO MAN NORTH",
+          "count": 1028218
+        }
+      ],
+      "dtype": "string"
+    },
+    "STATION_NAME": {
+      "null_count": 0,
+      "ndv_approx": 474,
+      "mean_length": 6.21187271602984,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VIC_AGE_GROUP": {
+      "null_count": 0,
+      "ndv_approx": 319,
+      "mean_length": 5.267985300598657,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "VIC_RACE": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 8.748778029701718,
+      "top_values": [
+        {
+          "value": "UNKNOWN",
+          "count": 2845495
+        },
+        {
+          "value": "BLACK",
+          "count": 2125013
+        },
+        {
+          "value": "WHITE",
+          "count": 1460907
+        },
+        {
+          "value": "WHITE HISPANIC",
+          "count": 1450555
+        },
+        {
+          "value": "ASIAN / PACIFIC ISLANDER",
+          "count": 545960
+        }
+      ],
+      "dtype": "string"
+    },
+    "VIC_SEX": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 1.000175372467206,
+      "top_values": [
+        {
+          "value": "F",
+          "count": 3436761
+        },
+        {
+          "value": "M",
+          "count": 2927049
+        },
+        {
+          "value": "E",
+          "count": 1270003
+        },
+        {
+          "value": "D",
+          "count": 1141123
+        },
+        {
+          "value": "L",
+          "count": 6062
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

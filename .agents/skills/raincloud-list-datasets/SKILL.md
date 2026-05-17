@@ -1,7 +1,7 @@
 ---
 name: raincloud-list-datasets
-description: Filter and list datasets from sources.json without grepping a 313 KB JSON file. Use when the user asks "which slugs use handler X", "show me all UCI datasets", "what's gated behind Kaggle ToS", or any other catalog-shape question that's faster than reading docs/v1/datasets.md (55 KB) end to end.
-argument-hint: [--family <f>] [--handler <h>] [--license <spdx>] [--fetch-type <t>] [--reader <r>] [--vortex|--no-vortex] [--kaggle-tos] [--grep <pattern>] [--long|--json|--count]
+description: Filter and list datasets from sources.json without grepping a 545 KB JSON file. Use when the user asks "which slugs use handler X", "show me all UCI datasets", "what's gated behind Kaggle ToS", or any other catalog-shape question that's faster than reading docs/v1/datasets.md end to end.
+argument-hint: [--handler <h>] [--license <spdx>] [--fetch-type <t>] [--reader <r>] [--vortex|--no-vortex] [--kaggle-tos] [--grep <pattern>] [--long|--json|--count]
 allowed-tools: Bash(python -m scripts.pipeline.list_datasets *)
 ---
 
@@ -17,8 +17,7 @@ Filters (compose with AND):
 
 | Flag | Filter |
 |---|---|
-| `--family <f>` | `family` ∈ `direct`, `kaggle-upstream`, `nyc-tlc`, `public-bi`, `uci` |
-| `--handler <h>` | `transform.handler` exact match (e.g. `tighten_types`, `glove_split`) |
+| `--handler <h>` | `transform.handler` exact match (e.g. `tighten_types`, `glove_split`, `uci_default`) |
 | `--license <spdx>` | `license.spdx` exact match (e.g. `CC0-1.0`, `Apache-2.0`) |
 | `--fetch-type <t>` | `fetch.type` ∈ `http`, `kaggle`, `huggingface`, `custom` |
 | `--reader <r>` | `parse.reader` ∈ `csv`, `parquet`, `jsonl`, `xml`, `pbf`, `custom` |
@@ -28,7 +27,7 @@ Filters (compose with AND):
 
 Output modes (default = one slug per line):
 
-- `--long` — wide table with slug, family, handler, fetch type, reader, license, row count, vortex flag.
+- `--long` — wide table with slug, handler, fetch type, reader, license, row count, vortex flag.
 - `--json` — one JSON object per matching dataset (pipe into `jq` for further filtering).
 - `--count` — just the count of matches.
 
@@ -51,3 +50,7 @@ python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
 Pair with `/raincloud-status <slug>` to check filesystem state of any returned slug, and `/raincloud-validate-manifest` after editing the manifest based on findings.
 
 Context: [SKILLS.md](../../context/SKILLS.md), [sources.schema.md](../../context/sources.schema.md), [`docs/v1/datasets.md`](../../../docs/v1/datasets.md) for full-row metadata.
+
+## New discovery axes (0.1.4)
+
+`--showcase`, `--tag`, `--size`, `--trait`, `--view`, `--inspect`, `--tags-help`, `--showcase-help`. See the `raincloud-discover` skill for the full vocabulary and patterns.

@@ -1,0 +1,930 @@
+{
+  "schema_version": 1,
+  "slug": "nyc-parking-tickets",
+  "row_count": 11353336,
+  "parquet_sha256": "65b82124ca094b58bc1871f9a15715d14f60380d8f142839e6e3119939dc85db",
+  "computed_at": "2026-05-16T09:12:16Z",
+  "sample_rows": null,
+  "columns": {
+    "Summons Number": {
+      "null_count": 0,
+      "min": 1055675280,
+      "max": 9272725392,
+      "mean": 6953766209.599722,
+      "ndv_approx": 9467157,
+      "histogram": {
+        "buckets": [
+          1055675280.0,
+          1877380291.2,
+          2699085302.4,
+          3520790313.6000004,
+          4342495324.8,
+          5164200336.0,
+          5985905347.200001,
+          6807610358.400001,
+          7629315369.6,
+          8451020380.8,
+          9272725392.0
+        ],
+        "counts": [
+          266171,
+          392878,
+          0,
+          542991,
+          3530881,
+          907489,
+          90,
+          0,
+          0,
+          5712836
+        ]
+      },
+      "dtype": "uint64"
+    },
+    "Plate ID": {
+      "null_count": 133,
+      "ndv_approx": 2527051,
+      "mean_length": 6.859299441752253,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Registration State": {
+      "null_count": 0,
+      "ndv_approx": 74,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "NY",
+          "count": 7975341
+        },
+        {
+          "value": "NJ",
+          "count": 1291276
+        },
+        {
+          "value": "PA",
+          "count": 460523
+        },
+        {
+          "value": "FL",
+          "count": 237062
+        },
+        {
+          "value": "CT",
+          "count": 213576
+        }
+      ],
+      "dtype": "string"
+    },
+    "Plate Type": {
+      "null_count": 0,
+      "ndv_approx": 74,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "PAS",
+          "count": 9274869
+        },
+        {
+          "value": "COM",
+          "count": 1090427
+        },
+        {
+          "value": "OMT",
+          "count": 446714
+        },
+        {
+          "value": "SRF",
+          "count": 129996
+        },
+        {
+          "value": "OMS",
+          "count": 114343
+        }
+      ],
+      "dtype": "string"
+    },
+    "Issue Date": {
+      "null_count": 1421,
+      "ndv_approx": 1065,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Violation Code": {
+      "null_count": 0,
+      "min": 0,
+      "max": 99,
+      "mean": 32.95161210766597,
+      "ndv_approx": 98,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9.9,
+          19.8,
+          29.700000000000003,
+          39.6,
+          49.5,
+          59.400000000000006,
+          69.3,
+          79.2,
+          89.10000000000001,
+          99.0
+        ],
+        "counts": [
+          1054560,
+          1660549,
+          1695799,
+          4283963,
+          1256857,
+          150185,
+          266779,
+          819483,
+          107858,
+          57303
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Vehicle Body Type": {
+      "null_count": 35284,
+      "ndv_approx": 859,
+      "mean_length": 3.785116378684247,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Vehicle Make": {
+      "null_count": 16370,
+      "ndv_approx": 4924,
+      "mean_length": 4.59407472863551,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Issuing Agency": {
+      "null_count": 0,
+      "ndv_approx": 27,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "T",
+          "count": 5712961
+        },
+        {
+          "value": "V",
+          "count": 4073860
+        },
+        {
+          "value": "M",
+          "count": 909214
+        },
+        {
+          "value": "S",
+          "count": 393013
+        },
+        {
+          "value": "P",
+          "count": 227249
+        }
+      ],
+      "dtype": "string"
+    },
+    "Street Code1": {
+      "null_count": 0,
+      "min": 0,
+      "max": 98260,
+      "mean": 17079.75594582949,
+      "ndv_approx": 7530,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9826.0,
+          19652.0,
+          29478.0,
+          39304.0,
+          49130.0,
+          58956.0,
+          68782.0,
+          78608.0,
+          88434.0,
+          98260.0
+        ],
+        "counts": [
+          5703521,
+          1864210,
+          976349,
+          1251513,
+          327533,
+          418262,
+          364597,
+          282544,
+          91699,
+          73108
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Street Code2": {
+      "null_count": 0,
+      "min": 0,
+      "max": 98310,
+      "mean": 14384.350533534813,
+      "ndv_approx": 7465,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9831.0,
+          19662.0,
+          29493.0,
+          39324.0,
+          49155.0,
+          58986.0,
+          68817.0,
+          78648.0,
+          88479.0,
+          98310.0
+        ],
+        "counts": [
+          6280262,
+          1978902,
+          920897,
+          709217,
+          550365,
+          302226,
+          226724,
+          229502,
+          78261,
+          76980
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Street Code3": {
+      "null_count": 0,
+      "min": 0,
+      "max": 98280,
+      "mean": 14317.889927066371,
+      "ndv_approx": 7190,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9828.0,
+          19656.0,
+          29484.0,
+          39312.0,
+          49140.0,
+          58968.0,
+          68796.0,
+          78624.0,
+          88452.0,
+          98280.0
+        ],
+        "counts": [
+          6400278,
+          1816562,
+          923141,
+          723690,
+          556101,
+          311343,
+          252563,
+          220392,
+          80576,
+          68690
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Vehicle Expiration Date": {
+      "null_count": 0,
+      "min": 0,
+      "max": 88888888,
+      "mean": 18719081.45866008,
+      "ndv_approx": 4432,
+      "histogram": {
+        "buckets": [
+          0.0,
+          8888888.8,
+          17777777.6,
+          26666666.400000002,
+          35555555.2,
+          44444444.0,
+          53333332.800000004,
+          62222221.60000001,
+          71111110.4,
+          79999999.2,
+          88888888.0
+        ],
+        "counts": [
+          5180475,
+          0,
+          4898614,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1274247
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Violation Location": {
+      "null_count": 4989447,
+      "min": 1,
+      "max": 988,
+      "mean": 54.74881208644588,
+      "ndv_approx": 201,
+      "histogram": {
+        "buckets": [
+          1.0,
+          99.7,
+          198.4,
+          297.1,
+          395.8,
+          494.5,
+          593.2,
+          691.9,
+          790.6,
+          889.3000000000001,
+          988.0
+        ],
+        "counts": [
+          4928197,
+          1435602,
+          10,
+          7,
+          6,
+          1,
+          14,
+          3,
+          42,
+          7
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Violation Precinct": {
+      "null_count": 0,
+      "min": 0,
+      "max": 988,
+      "mean": 30.68836886356574,
+      "ndv_approx": 208,
+      "histogram": {
+        "buckets": [
+          0.0,
+          98.8,
+          197.6,
+          296.4,
+          395.2,
+          494.0,
+          592.8,
+          691.6,
+          790.4,
+          889.1999999999999,
+          988.0
+        ],
+        "counts": [
+          9917639,
+          1435607,
+          10,
+          7,
+          6,
+          1,
+          14,
+          3,
+          42,
+          7
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Issuer Precinct": {
+      "null_count": 0,
+      "min": 0,
+      "max": 997,
+      "mean": 29.16070923999783,
+      "ndv_approx": 470,
+      "histogram": {
+        "buckets": [
+          0.0,
+          99.7,
+          199.4,
+          299.1,
+          398.8,
+          498.5,
+          598.2,
+          697.9,
+          797.6,
+          897.3000000000001,
+          997.0
+        ],
+        "counts": [
+          9982397,
+          1357515,
+          79,
+          1118,
+          516,
+          177,
+          1228,
+          30,
+          4652,
+          5624
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Issuer Code": {
+      "null_count": 0,
+      "min": 0,
+      "max": 999931,
+      "mean": 219127.39943775116,
+      "ndv_approx": 22841,
+      "histogram": {
+        "buckets": [
+          0.0,
+          99993.1,
+          199986.2,
+          299979.30000000005,
+          399972.4,
+          499965.5,
+          599958.6000000001,
+          699951.7000000001,
+          799944.8,
+          899937.9,
+          999931.0
+        ],
+        "counts": [
+          5153041,
+          20937,
+          1143,
+          5704903,
+          344,
+          64570,
+          160993,
+          570,
+          3694,
+          243141
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Issuer Command": {
+      "null_count": 4981349,
+      "ndv_approx": 1505,
+      "mean_length": 3.9997821715581026,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Issuer Squad": {
+      "null_count": 5374321,
+      "ndv_approx": 48,
+      "mean_length": 1.193285181589275,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 412474
+        },
+        {
+          "value": "M",
+          "count": 398277
+        },
+        {
+          "value": "H",
+          "count": 329393
+        },
+        {
+          "value": "E",
+          "count": 313764
+        },
+        {
+          "value": "G",
+          "count": 312901
+        }
+      ],
+      "dtype": "string"
+    },
+    "Violation Time": {
+      "null_count": 426,
+      "ndv_approx": 2984,
+      "mean_length": 4.9997240355116,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Time First Observed": {
+      "null_count": 10708882,
+      "ndv_approx": 3077,
+      "mean_length": 4.998316404274005,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Violation County": {
+      "null_count": 312375,
+      "ndv_approx": 20,
+      "mean_length": 1.835577808851965,
+      "top_values": [
+        {
+          "value": "NY",
+          "count": 2597940
+        },
+        {
+          "value": "QN",
+          "count": 1649061
+        },
+        {
+          "value": "BK",
+          "count": 1352862
+        },
+        {
+          "value": "K",
+          "count": 1334635
+        },
+        {
+          "value": "BX",
+          "count": 1312987
+        }
+      ],
+      "dtype": "string"
+    },
+    "Violation In Front Of Or Opposite": {
+      "null_count": 5030246,
+      "ndv_approx": 7,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "F",
+          "count": 3860730
+        },
+        {
+          "value": "O",
+          "count": 1396993
+        },
+        {
+          "value": "I",
+          "count": 1060169
+        },
+        {
+          "value": "R",
+          "count": 3884
+        },
+        {
+          "value": "X",
+          "count": 1311
+        }
+      ],
+      "dtype": "string"
+    },
+    "House Number": {
+      "null_count": 5080559,
+      "ndv_approx": 36328,
+      "mean_length": 3.0875363495306782,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Street Name": {
+      "null_count": 1114,
+      "ndv_approx": 49384,
+      "mean_length": 14.274217505612558,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Intersecting Street": {
+      "null_count": 5421529,
+      "ndv_approx": 191386,
+      "mean_length": 9.71365858666676,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Date First Observed": {
+      "null_count": 0,
+      "min": 0,
+      "max": 20300829,
+      "mean": 87684.8534191184,
+      "ndv_approx": 665,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2030082.9,
+          4060165.8,
+          6090248.699999999,
+          8120331.6,
+          10150414.5,
+          12180497.399999999,
+          14210580.299999999,
+          16240663.2,
+          18270746.099999998,
+          20300829.0
+        ],
+        "counts": [
+          11304183,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          49153
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Law Section": {
+      "null_count": 0,
+      "min": 0,
+      "max": 9999,
+      "mean": 686.4656933433486,
+      "ndv_approx": 9,
+      "histogram": {
+        "buckets": [
+          0.0,
+          999.9,
+          1999.8,
+          2999.7,
+          3999.6,
+          4999.5,
+          5999.4,
+          6999.3,
+          7999.2,
+          8999.1,
+          9999.0
+        ],
+        "counts": [
+          7152558,
+          4200776,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Sub Division": {
+      "null_count": 1062,
+      "ndv_approx": 103,
+      "mean_length": 1.5396487963556904,
+      "top_values": [
+        {
+          "value": "B",
+          "count": 3072791
+        },
+        {
+          "value": "H1",
+          "count": 1272505
+        },
+        {
+          "value": "C",
+          "count": 1210557
+        },
+        {
+          "value": "D",
+          "count": 926731
+        },
+        {
+          "value": "D1",
+          "count": 916361
+        }
+      ],
+      "dtype": "string"
+    },
+    "Violation Legal Code": {
+      "null_count": 6371984,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "T",
+          "count": 4981349
+        },
+        {
+          "value": "0",
+          "count": 2
+        },
+        {
+          "value": "4",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Days Parking In Effect    ": {
+      "null_count": 5088934,
+      "ndv_approx": 161,
+      "mean_length": 5.783082886443111,
+      "top_values": [
+        {
+          "value": "YYYYYYY",
+          "count": 2702718
+        },
+        {
+          "value": "YYYYYY",
+          "count": 1382033
+        },
+        {
+          "value": "YYYYY",
+          "count": 712105
+        },
+        {
+          "value": "Y  Y",
+          "count": 642814
+        },
+        {
+          "value": "Y",
+          "count": 453418
+        }
+      ],
+      "dtype": "string"
+    },
+    "From Hours In Effect": {
+      "null_count": 7635069,
+      "ndv_approx": 375,
+      "mean_length": 4.863377482036658,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "To Hours In Effect": {
+      "null_count": 7635072,
+      "ndv_approx": 415,
+      "mean_length": 4.863359352644137,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Vehicle Color": {
+      "null_count": 1161000,
+      "ndv_approx": 1553,
+      "mean_length": 2.6305790939388185,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Unregistered Vehicle?": {
+      "dtype": "uint8",
+      "null_count": 11087072,
+      "min": 0,
+      "max": 0,
+      "mean": 0.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          0,
+          0
+        ],
+        "counts": [
+          266264
+        ]
+      }
+    },
+    "Vehicle Year": {
+      "null_count": 0,
+      "min": 0,
+      "max": 2069,
+      "mean": 1650.8074438209176,
+      "ndv_approx": 116,
+      "histogram": {
+        "buckets": [
+          0.0,
+          206.9,
+          413.8,
+          620.7,
+          827.6,
+          1034.5,
+          1241.4,
+          1448.3,
+          1655.2,
+          1862.1000000000001,
+          2069.0
+        ],
+        "counts": [
+          2066227,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          9287109
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Meter Number": {
+      "null_count": 9813974,
+      "ndv_approx": 14533,
+      "mean_length": 5.136563069635343,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Feet From Curb": {
+      "null_count": 0,
+      "min": 0,
+      "max": 98,
+      "mean": 0.07783676973886794,
+      "ndv_approx": 27,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9.8,
+          19.6,
+          29.400000000000002,
+          39.2,
+          49.0,
+          58.800000000000004,
+          68.60000000000001,
+          78.4,
+          88.2,
+          98.0
+        ],
+        "counts": [
+          11350263,
+          3057,
+          2,
+          1,
+          8,
+          0,
+          2,
+          0,
+          1,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Violation Post Code": {
+      "null_count": 5640495,
+      "ndv_approx": 538,
+      "mean_length": 2.116809482357377,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Violation Description": {
+      "null_count": 266925,
+      "ndv_approx": 147,
+      "mean_length": 25.823856431084867,
+      "top_values": [
+        {
+          "value": "PHTO SCHOOL ZN SPEED VIOLATION",
+          "count": 3025001
+        },
+        {
+          "value": "21-No Parking (street clean)",
+          "count": 909976
+        },
+        {
+          "value": "38-Failure to Dsplay Meter Rec",
+          "count": 885386
+        },
+        {
+          "value": "14-No Standing",
+          "count": 633536
+        },
+        {
+          "value": "BUS LANE VIOLATION",
+          "count": 542979
+        }
+      ],
+      "dtype": "string"
+    },
+    "No Standing or Stopping Violation": null,
+    "Hydrant Violation": null,
+    "Double Parking Violation": {
+      "dtype": "uint8",
+      "null_count": 7139612,
+      "min": 20,
+      "max": 20,
+      "mean": 20.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          20,
+          20
+        ],
+        "counts": [
+          4213724
+        ]
+      }
+    },
+    "Fiscal Year": {
+      "dtype": "uint16",
+      "null_count": 0,
+      "min": 2026,
+      "max": 2026,
+      "mean": 2026.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          2026,
+          2026
+        ],
+        "counts": [
+          11353336
+        ]
+      }
+    }
+  }
+}

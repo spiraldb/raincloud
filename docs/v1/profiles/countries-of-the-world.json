@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "slug": "countries-of-the-world",
+  "row_count": 262,
+  "parquet_sha256": "d939f78280bd89048d51b1310aa2f239f8e06435c6392703e2c71b599ac5ff64",
+  "computed_at": "2026-05-16T08:45:12Z",
+  "sample_rows": null,
+  "columns": {
+    "region": {
+      "null_count": 0,
+      "ndv_approx": 15,
+      "mean_length": 12.412213740458014,
+      "top_values": [
+        {
+          "value": "africa",
+          "count": 56
+        },
+        {
+          "value": "europe",
+          "count": 55
+        },
+        {
+          "value": "central-america-n-caribbean",
+          "count": 33
+        },
+        {
+          "value": "australia-oceania",
+          "count": 30
+        },
+        {
+          "value": "east-n-southeast-asia",
+          "count": 22
+        }
+      ],
+      "dtype": "string"
+    },
+    "country_code": {
+      "null_count": 0,
+      "ndv_approx": 305,
+      "mean_length": 2.030534351145038,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "data": null
+  }
+}

@@ -1,0 +1,451 @@
+{
+  "schema_version": 1,
+  "slug": "uci-bank-marketing",
+  "row_count": 45211,
+  "parquet_sha256": "bf7080000d19a98c2f118f9687b8ac241501b5be703f3617ea536df886ee6014",
+  "computed_at": "2026-05-16T10:21:48Z",
+  "sample_rows": null,
+  "columns": {
+    "age": {
+      "null_count": 0,
+      "min": 18,
+      "max": 95,
+      "mean": 40.93621021432837,
+      "ndv_approx": 76,
+      "histogram": {
+        "buckets": [
+          18.0,
+          25.7,
+          33.4,
+          41.1,
+          48.8,
+          56.5,
+          64.2,
+          71.9,
+          79.6,
+          87.3,
+          95.0
+        ],
+        "counts": [
+          1336,
+          11747,
+          12925,
+          8015,
+          7066,
+          3312,
+          377,
+          303,
+          116,
+          14
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "job": {
+      "null_count": 288,
+      "ndv_approx": 10,
+      "mean_length": 9.501480310753957,
+      "top_values": [
+        {
+          "value": "blue-collar",
+          "count": 9732
+        },
+        {
+          "value": "management",
+          "count": 9458
+        },
+        {
+          "value": "technician",
+          "count": 7597
+        },
+        {
+          "value": "admin.",
+          "count": 5171
+        },
+        {
+          "value": "services",
+          "count": 4154
+        }
+      ],
+      "dtype": "string"
+    },
+    "marital": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 6.832275331224702,
+      "top_values": [
+        {
+          "value": "married",
+          "count": 27214
+        },
+        {
+          "value": "single",
+          "count": 12790
+        },
+        {
+          "value": "divorced",
+          "count": 5207
+        }
+      ],
+      "dtype": "string"
+    },
+    "education": {
+      "null_count": 1857,
+      "ndv_approx": 3,
+      "mean_length": 8.377150897264382,
+      "top_values": [
+        {
+          "value": "secondary",
+          "count": 23202
+        },
+        {
+          "value": "tertiary",
+          "count": 13301
+        },
+        {
+          "value": "primary",
+          "count": 6851
+        }
+      ],
+      "dtype": "string"
+    },
+    "default": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.0180265864502003,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 44396
+        },
+        {
+          "value": "yes",
+          "count": 815
+        }
+      ],
+      "dtype": "string"
+    },
+    "balance": {
+      "null_count": 0,
+      "min": -8019,
+      "max": 102127,
+      "mean": 1362.2720576850766,
+      "ndv_approx": 6194,
+      "histogram": {
+        "buckets": [
+          -8019.0,
+          2995.6000000000004,
+          14010.2,
+          25024.800000000003,
+          36039.4,
+          47054.0,
+          58068.600000000006,
+          69083.2,
+          80097.8,
+          91112.40000000001,
+          102127.0
+        ],
+        "counts": [
+          39587,
+          5233,
+          294,
+          58,
+          21,
+          7,
+          6,
+          1,
+          2,
+          2
+        ]
+      },
+      "dtype": "int32"
+    },
+    "housing": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.555838180973657,
+      "top_values": [
+        {
+          "value": "yes",
+          "count": 25130
+        },
+        {
+          "value": "no",
+          "count": 20081
+        }
+      ],
+      "dtype": "string"
+    },
+    "loan": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.160226493552454,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 37967
+        },
+        {
+          "value": "yes",
+          "count": 7244
+        }
+      ],
+      "dtype": "string"
+    },
+    "contact": {
+      "null_count": 13020,
+      "ndv_approx": 2,
+      "mean_length": 8.090273678978596,
+      "top_values": [
+        {
+          "value": "cellular",
+          "count": 29285
+        },
+        {
+          "value": "telephone",
+          "count": 2906
+        }
+      ],
+      "dtype": "string"
+    },
+    "day_of_week": {
+      "null_count": 0,
+      "min": 1,
+      "max": 31,
+      "mean": 15.80641879188693,
+      "ndv_approx": 29,
+      "histogram": {
+        "buckets": [
+          1.0,
+          4.0,
+          7.0,
+          10.0,
+          13.0,
+          16.0,
+          19.0,
+          22.0,
+          25.0,
+          28.0,
+          31.0
+        ],
+        "counts": [
+          2694,
+          5287,
+          5220,
+          3606,
+          5136,
+          5662,
+          6535,
+          2291,
+          2996,
+          5784
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "month": {
+      "null_count": 0,
+      "ndv_approx": 11,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "may",
+          "count": 13766
+        },
+        {
+          "value": "jul",
+          "count": 6895
+        },
+        {
+          "value": "aug",
+          "count": 6247
+        },
+        {
+          "value": "jun",
+          "count": 5341
+        },
+        {
+          "value": "nov",
+          "count": 3970
+        }
+      ],
+      "dtype": "string"
+    },
+    "duration": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4918,
+      "mean": 258.1630797814691,
+      "ndv_approx": 2029,
+      "histogram": {
+        "buckets": [
+          0.0,
+          491.8,
+          983.6,
+          1475.4,
+          1967.2,
+          2459.0,
+          2950.8,
+          3442.6,
+          3934.4,
+          4426.2,
+          4918.0
+        ],
+        "counts": [
+          39677,
+          4425,
+          865,
+          176,
+          43,
+          11,
+          11,
+          2,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "campaign": {
+      "null_count": 0,
+      "min": 1,
+      "max": 63,
+      "mean": 2.763840658246887,
+      "ndv_approx": 45,
+      "histogram": {
+        "buckets": [
+          1.0,
+          7.2,
+          13.4,
+          19.6,
+          25.8,
+          32.0,
+          38.2,
+          44.4,
+          50.6,
+          56.800000000000004,
+          63.0
+        ],
+        "counts": [
+          42882,
+          1622,
+          420,
+          165,
+          75,
+          33,
+          7,
+          3,
+          2,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "pdays": {
+      "null_count": 0,
+      "min": -1,
+      "max": 871,
+      "mean": 40.19782796222158,
+      "ndv_approx": 624,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          86.2,
+          173.4,
+          260.6,
+          347.8,
+          435.0,
+          522.2,
+          609.4,
+          696.6,
+          783.8000000000001,
+          871.0
+        ],
+        "counts": [
+          37516,
+          2299,
+          2154,
+          1825,
+          1229,
+          98,
+          39,
+          18,
+          18,
+          15
+        ]
+      },
+      "dtype": "int16"
+    },
+    "previous": {
+      "null_count": 0,
+      "min": 0,
+      "max": 275,
+      "mean": 0.5803233726305546,
+      "ndv_approx": 41,
+      "histogram": {
+        "buckets": [
+          0.0,
+          27.5,
+          55.0,
+          82.5,
+          110.0,
+          137.5,
+          165.0,
+          192.5,
+          220.0,
+          247.5,
+          275.0
+        ],
+        "counts": [
+          45190,
+          18,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "poutcome": {
+      "null_count": 36959,
+      "ndv_approx": 3,
+      "mean_length": 6.554047503635482,
+      "top_values": [
+        {
+          "value": "failure",
+          "count": 4901
+        },
+        {
+          "value": "other",
+          "count": 1840
+        },
+        {
+          "value": "success",
+          "count": 1511
+        }
+      ],
+      "dtype": "string"
+    },
+    "y": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.1169848045829553,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 39922
+        },
+        {
+          "value": "yes",
+          "count": 5289
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

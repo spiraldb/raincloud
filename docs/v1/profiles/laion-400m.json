@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "slug": "laion-400m",
+  "row_count": 2820459,
+  "parquet_sha256": "f5a4d4c77db647b5b5493af8ae2c3b0aff220991be9b85cb7932c993fc019a0d",
+  "computed_at": "2026-05-17T01:58:33Z",
+  "sample_rows": null,
+  "columns": {
+    "url": {
+      "null_count": 0,
+      "ndv_approx": 2783928,
+      "mean_length": 99.16095429857339,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "NSFW": {
+      "null_count": 3404,
+      "ndv_approx": 217,
+      "mean_length": 7.8503305757253585,
+      "top_values": [
+        {
+          "value": "UNLIKELY",
+          "count": 2645749
+        },
+        {
+          "value": "UNSURE",
+          "count": 129012
+        },
+        {
+          "value": "NSFW",
+          "count": 41488
+        },
+        {
+          "value": "False",
+          "count": 492
+        },
+        {
+          "value": "?",
+          "count": 42
+        }
+      ],
+      "dtype": "string"
+    },
+    "similarity": {
+      "null_count": 4169,
+      "min": 0.0,
+      "max": 1000.0,
+      "mean": 0.33583099504410857,
+      "ndv_approx": 1895481,
+      "histogram": {
+        "buckets": [
+          0.0,
+          100.0,
+          200.0,
+          300.0,
+          400.0,
+          500.0,
+          600.0,
+          700.0,
+          800.0,
+          900.0,
+          1000.0
+        ],
+        "counts": [
+          2816281,
+          0,
+          2,
+          1,
+          0,
+          2,
+          0,
+          1,
+          0,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "LICENSE": {
+      "null_count": 3095,
+      "ndv_approx": 608,
+      "mean_length": 1.054697937504703,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "caption": {
+      "null_count": 123,
+      "ndv_approx": 2686755,
+      "mean_length": 57.689658608052376,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "key": {
+      "null_count": 0,
+      "min": 0,
+      "max": 9999,
+      "mean": 4999.536252787224,
+      "ndv_approx": 8571,
+      "histogram": {
+        "buckets": [
+          0.0,
+          999.9,
+          1999.8,
+          2999.7,
+          3999.6,
+          4999.5,
+          5999.4,
+          6999.3,
+          7999.2,
+          8999.1,
+          9999.0
+        ],
+        "counts": [
+          282247,
+          281649,
+          282356,
+          282153,
+          282096,
+          282193,
+          281787,
+          281917,
+          281888,
+          282173
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "original_width": {
+      "null_count": 0,
+      "min": 14,
+      "max": 17319,
+      "mean": 412.514868679176,
+      "ndv_approx": 4407,
+      "histogram": {
+        "buckets": [
+          14.0,
+          1744.5,
+          3475.0,
+          5205.5,
+          6936.0,
+          8666.5,
+          10397.0,
+          12127.5,
+          13858.0,
+          15588.5,
+          17319.0
+        ],
+        "counts": [
+          2795501,
+          23862,
+          976,
+          92,
+          15,
+          8,
+          4,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "original_height": {
+      "null_count": 0,
+      "min": 13,
+      "max": 24825,
+      "mean": 375.83686343251225,
+      "ndv_approx": 4553,
+      "histogram": {
+        "buckets": [
+          13.0,
+          2494.2,
+          4975.4,
+          7456.599999999999,
+          9937.8,
+          12419.0,
+          14900.199999999999,
+          17381.399999999998,
+          19862.6,
+          22343.8,
+          24825.0
+        ],
+        "counts": [
+          2815077,
+          4958,
+          290,
+          83,
+          32,
+          13,
+          4,
+          1,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    }
+  }
+}

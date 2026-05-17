@@ -1,7 +1,7 @@
 ---
 name: raincloud-large-build
-description: Run a memory- or runtime-heavy build safely with memory caps, scratch redirection, nohup, and progress logging. Use for multi-hour or multi-GB builds (JSONBench 100M, Wikipedia Structured Contents, OSM Germany, Public BI families).
-argument-hint: <slug> [--family <name> | --all] [--loose] [--clean-workdir]
+description: Run a memory- or runtime-heavy build safely with memory caps, scratch redirection, nohup, and progress logging. Use for multi-hour or multi-GB builds (JSONBench 100M, Wikipedia Structured Contents, OSM Germany, Public BI batches).
+argument-hint: <slug>... [--all] [--loose] [--clean-workdir]
 disable-model-invocation: true
 ---
 
@@ -21,7 +21,7 @@ PYTHONUNBUFFERED=1 \
 
 Flag rationale:
 - `--loose` — first build of a new slug, before `expect.rows` is known. Downgrades row-count mismatches from errors to warnings.
-- `--clean-workdir` — wipe `_workdir/<slug>/` after each successful build. Essential for whole-family runs (Public BI decompressed CSVs can hit ~100 GB).
+- `--clean-workdir` — wipe `_workdir/<slug>/` after each successful build. Essential for large batch runs (Public BI decompressed CSVs can hit ~100 GB).
 - `RAINCLOUD_DUCKDB_MEMORY_LIMIT` — caps DuckDB's working set; default (~80% of system RAM) can swap-thrash on heavily-nested VARIANT shredding. 96 GB is the tested ceiling for Open Food Facts.
 - `RAINCLOUD_DUCKDB_TEMP_DIRECTORY` — point at a large volume; the system tempdir often runs out on big builds.
 - `PYTHONUNBUFFERED=1` — log file flushes line-by-line so progress is inspectable mid-run.

@@ -12,7 +12,7 @@ gates where drift should block.
 
 Examples:
     python -m scripts.pipeline.build clickbench-hits
-    python -m scripts.pipeline.build --family uci
+    python -m scripts.pipeline.build uci-iris uci-wine-quality
     python -m scripts.pipeline.build --all --strict   # CI mode
 """
 from __future__ import annotations
@@ -34,7 +34,7 @@ from .write import write
 
 def run_one(spec: dict, *, strict: bool, clean_workdir: bool = False) -> bool:
     print("\n" + "=" * 72)
-    print(f"  {spec['slug']}  [{spec['family']}]")
+    print(f"  {spec['slug']}")
     print("=" * 72)
     try:
         inputs = fetch(spec)
@@ -62,7 +62,6 @@ def run_one(spec: dict, *, strict: bool, clean_workdir: bool = False) -> bool:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("slugs", nargs="*", help="specific slugs to build")
-    ap.add_argument("--family", help="build all datasets in this family")
     ap.add_argument("--all", action="store_true", help="build every dataset")
     ap.add_argument("--strict", action="store_true",
                     help="upgrade validate-stage drift warnings to hard errors "
@@ -78,13 +77,11 @@ def main() -> int:
     if args.slugs:
         for s in args.slugs:
             selected += list(iter_datasets(m, slug=s))
-    if args.family:
-        selected += list(iter_datasets(m, family=args.family))
     if args.all:
         selected = list(iter_datasets(m))
 
     if not selected:
-        print("no datasets selected; pass slugs, --family, or --all", file=sys.stderr)
+        print("no datasets selected; pass slugs or --all", file=sys.stderr)
         return 2
 
     ok = failed = 0

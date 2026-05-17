@@ -1,0 +1,684 @@
+{
+  "schema_version": 1,
+  "slug": "uci-chronic-kidney-disease",
+  "row_count": 400,
+  "parquet_sha256": "a4a5d4166f5b9c87b7885145a4a064c2eb8244e1ab5a7708f69ec5bb0c5f59e9",
+  "computed_at": "2026-05-16T10:22:03Z",
+  "sample_rows": null,
+  "columns": {
+    "age": {
+      "null_count": 9,
+      "min": 2,
+      "max": 90,
+      "mean": 51.48337595907928,
+      "ndv_approx": 81,
+      "histogram": {
+        "buckets": [
+          2.0,
+          10.8,
+          19.6,
+          28.400000000000002,
+          37.2,
+          46.0,
+          54.800000000000004,
+          63.60000000000001,
+          72.4,
+          81.2,
+          90.0
+        ],
+        "counts": [
+          10,
+          11,
+          20,
+          39,
+          44,
+          71,
+          90,
+          75,
+          28,
+          3
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "bp": {
+      "null_count": 12,
+      "min": 50,
+      "max": 180,
+      "mean": 76.46907216494846,
+      "ndv_approx": 11,
+      "histogram": {
+        "buckets": [
+          50.0,
+          63.0,
+          76.0,
+          89.0,
+          102.0,
+          115.0,
+          128.0,
+          141.0,
+          154.0,
+          167.0,
+          180.0
+        ],
+        "counts": [
+          76,
+          112,
+          116,
+          78,
+          3,
+          1,
+          1,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "sg": {
+      "null_count": 47,
+      "min": 1.005,
+      "max": 1.025,
+      "mean": 1.0174079320113256,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.005,
+          1.007,
+          1.009,
+          1.011,
+          1.013,
+          1.015,
+          1.017,
+          1.019,
+          1.021,
+          1.023,
+          1.025
+        ],
+        "counts": [
+          7,
+          0,
+          84,
+          0,
+          0,
+          75,
+          0,
+          106,
+          0,
+          81
+        ]
+      },
+      "dtype": "float64"
+    },
+    "al": {
+      "null_count": 46,
+      "min": 0,
+      "max": 5,
+      "mean": 1.0169491525423728,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.5,
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0
+        ],
+        "counts": [
+          199,
+          0,
+          44,
+          0,
+          43,
+          0,
+          43,
+          0,
+          24,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "su": {
+      "null_count": 49,
+      "min": 0,
+      "max": 5,
+      "mean": 0.45014245014245013,
+      "ndv_approx": 6,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.5,
+          1.0,
+          1.5,
+          2.0,
+          2.5,
+          3.0,
+          3.5,
+          4.0,
+          4.5,
+          5.0
+        ],
+        "counts": [
+          290,
+          0,
+          13,
+          0,
+          18,
+          0,
+          14,
+          0,
+          13,
+          3
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "rbc": {
+      "null_count": 152,
+      "ndv_approx": 2,
+      "mean_length": 6.379032258064516,
+      "top_values": [
+        {
+          "value": "normal",
+          "count": 201
+        },
+        {
+          "value": "abnormal",
+          "count": 47
+        }
+      ],
+      "dtype": "string"
+    },
+    "pc": {
+      "null_count": 65,
+      "ndv_approx": 2,
+      "mean_length": 6.453731343283582,
+      "top_values": [
+        {
+          "value": "normal",
+          "count": 259
+        },
+        {
+          "value": "abnormal",
+          "count": 76
+        }
+      ],
+      "dtype": "string"
+    },
+    "pcc": {
+      "null_count": 4,
+      "ndv_approx": 2,
+      "mean_length": 9.681818181818182,
+      "top_values": [
+        {
+          "value": "notpresent",
+          "count": 354
+        },
+        {
+          "value": "present",
+          "count": 42
+        }
+      ],
+      "dtype": "string"
+    },
+    "ba": {
+      "null_count": 4,
+      "ndv_approx": 2,
+      "mean_length": 9.833333333333334,
+      "top_values": [
+        {
+          "value": "notpresent",
+          "count": 374
+        },
+        {
+          "value": "present",
+          "count": 22
+        }
+      ],
+      "dtype": "string"
+    },
+    "bgr": {
+      "null_count": 44,
+      "min": 22,
+      "max": 490,
+      "mean": 148.0365168539326,
+      "ndv_approx": 178,
+      "histogram": {
+        "buckets": [
+          22.0,
+          68.8,
+          115.6,
+          162.39999999999998,
+          209.2,
+          256.0,
+          302.79999999999995,
+          349.59999999999997,
+          396.4,
+          443.2,
+          490.0
+        ],
+        "counts": [
+          1,
+          156,
+          109,
+          26,
+          29,
+          14,
+          7,
+          4,
+          6,
+          4
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "bu": {
+      "null_count": 19,
+      "min": 1.5,
+      "max": 391.0,
+      "mean": 57.425721784776904,
+      "ndv_approx": 126,
+      "histogram": {
+        "buckets": [
+          1.5,
+          40.45,
+          79.4,
+          118.35000000000001,
+          157.3,
+          196.25,
+          235.20000000000002,
+          274.15000000000003,
+          313.1,
+          352.05,
+          391.0
+        ],
+        "counts": [
+          185,
+          120,
+          38,
+          17,
+          10,
+          7,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "sc": {
+      "null_count": 17,
+      "min": 0.4,
+      "max": 76.0,
+      "mean": 3.0724543080939934,
+      "ndv_approx": 83,
+      "histogram": {
+        "buckets": [
+          0.4,
+          7.96,
+          15.52,
+          23.08,
+          30.639999999999997,
+          38.199999999999996,
+          45.76,
+          53.31999999999999,
+          60.879999999999995,
+          68.44,
+          76.0
+        ],
+        "counts": [
+          354,
+          21,
+          4,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "sod": {
+      "null_count": 87,
+      "min": 4.5,
+      "max": 163.0,
+      "mean": 137.52875399361022,
+      "ndv_approx": 39,
+      "histogram": {
+        "buckets": [
+          4.5,
+          20.35,
+          36.2,
+          52.05,
+          67.9,
+          83.75,
+          99.6,
+          115.45,
+          131.3,
+          147.15,
+          163.0
+        ],
+        "counts": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          7,
+          32,
+          255,
+          18
+        ]
+      },
+      "dtype": "float64"
+    },
+    "pot": {
+      "null_count": 88,
+      "min": 2.5,
+      "max": 47.0,
+      "mean": 4.627243589743592,
+      "ndv_approx": 36,
+      "histogram": {
+        "buckets": [
+          2.5,
+          6.95,
+          11.4,
+          15.850000000000001,
+          20.3,
+          24.75,
+          29.200000000000003,
+          33.650000000000006,
+          38.1,
+          42.550000000000004,
+          47.0
+        ],
+        "counts": [
+          309,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "hemo": {
+      "null_count": 52,
+      "min": 3.1,
+      "max": 17.8,
+      "mean": 12.526436781609195,
+      "ndv_approx": 122,
+      "histogram": {
+        "buckets": [
+          3.1,
+          4.57,
+          6.040000000000001,
+          7.51,
+          8.98,
+          10.450000000000001,
+          11.92,
+          13.39,
+          14.860000000000001,
+          16.330000000000002,
+          17.800000000000004
+        ],
+        "counts": [
+          1,
+          6,
+          8,
+          25,
+          51,
+          56,
+          47,
+          61,
+          62,
+          31
+        ]
+      },
+      "dtype": "float64"
+    },
+    "pcv": {
+      "null_count": 71,
+      "min": 9,
+      "max": 54,
+      "mean": 38.88449848024316,
+      "ndv_approx": 38,
+      "histogram": {
+        "buckets": [
+          9.0,
+          13.5,
+          18.0,
+          22.5,
+          27.0,
+          31.5,
+          36.0,
+          40.5,
+          45.0,
+          49.5,
+          54.0
+        ],
+        "counts": [
+          1,
+          4,
+          8,
+          18,
+          41,
+          44,
+          51,
+          68,
+          49,
+          45
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "wbcc": {
+      "null_count": 106,
+      "min": 2200,
+      "max": 26400,
+      "mean": 8406.122448979591,
+      "ndv_approx": 98,
+      "histogram": {
+        "buckets": [
+          2200.0,
+          4620.0,
+          7040.0,
+          9460.0,
+          11880.0,
+          14300.0,
+          16720.0,
+          19140.0,
+          21560.0,
+          23980.0,
+          26400.0
+        ],
+        "counts": [
+          17,
+          90,
+          93,
+          68,
+          14,
+          8,
+          2,
+          0,
+          1,
+          1
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "rbcc": {
+      "null_count": 131,
+      "min": 2.1,
+      "max": 8.0,
+      "mean": 4.707434944237919,
+      "ndv_approx": 40,
+      "histogram": {
+        "buckets": [
+          2.1,
+          2.6900000000000004,
+          3.2800000000000002,
+          3.87,
+          4.460000000000001,
+          5.050000000000001,
+          5.640000000000001,
+          6.23,
+          6.82,
+          7.41,
+          8.0
+        ],
+        "counts": [
+          8,
+          16,
+          34,
+          38,
+          70,
+          51,
+          37,
+          14,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "htn": {
+      "null_count": 2,
+      "ndv_approx": 2,
+      "mean_length": 2.369346733668342,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 251
+        },
+        {
+          "value": "yes",
+          "count": 147
+        }
+      ],
+      "dtype": "string"
+    },
+    "dm": {
+      "null_count": 2,
+      "ndv_approx": 3,
+      "mean_length": 2.3467336683417086,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 260
+        },
+        {
+          "value": "yes",
+          "count": 137
+        },
+        {
+          "value": "\tno",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "cad": {
+      "null_count": 2,
+      "ndv_approx": 2,
+      "mean_length": 2.0854271356783918,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 364
+        },
+        {
+          "value": "yes",
+          "count": 34
+        }
+      ],
+      "dtype": "string"
+    },
+    "appet": {
+      "null_count": 1,
+      "ndv_approx": 2,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "good",
+          "count": 317
+        },
+        {
+          "value": "poor",
+          "count": 82
+        }
+      ],
+      "dtype": "string"
+    },
+    "pe": {
+      "null_count": 1,
+      "ndv_approx": 2,
+      "mean_length": 2.1904761904761907,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 323
+        },
+        {
+          "value": "yes",
+          "count": 76
+        }
+      ],
+      "dtype": "string"
+    },
+    "ane": {
+      "null_count": 1,
+      "ndv_approx": 2,
+      "mean_length": 2.1503759398496243,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 339
+        },
+        {
+          "value": "yes",
+          "count": 60
+        }
+      ],
+      "dtype": "string"
+    },
+    "class": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.13,
+      "top_values": [
+        {
+          "value": "ckd",
+          "count": 248
+        },
+        {
+          "value": "notckd",
+          "count": 150
+        },
+        {
+          "value": "ckd\t",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

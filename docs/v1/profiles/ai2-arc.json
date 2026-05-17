@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "slug": "ai2-arc",
+  "row_count": 7787,
+  "parquet_sha256": "85acd4636fd9468718e66f795bb33f32d16709dee50ab9105c2f286efd1e04e6",
+  "computed_at": "2026-05-17T13:43:37Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 7511,
+      "mean_length": 15.709387440606138,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 9634,
+      "mean_length": 118.22820084756646,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "choices": null,
+    "answerKey": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "C",
+          "count": 1960
+        },
+        {
+          "value": "B",
+          "count": 1940
+        },
+        {
+          "value": "D",
+          "count": 1811
+        },
+        {
+          "value": "A",
+          "count": 1803
+        },
+        {
+          "value": "3",
+          "count": 72
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.102350070630538,
+      "top_values": [
+        {
+          "value": "test",
+          "count": 3548
+        },
+        {
+          "value": "train",
+          "count": 3370
+        },
+        {
+          "value": "validation",
+          "count": 869
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "slug": "crimes-in-boston",
+  "row_count": 319073,
+  "parquet_sha256": "bfeced53d0db51c50cbbf5f105da07beea015ff3c8e683fc131f7fd070e282bf",
+  "computed_at": "2026-05-16T08:45:31Z",
+  "sample_rows": null,
+  "columns": {
+    "INCIDENT_NUMBER": {
+      "null_count": 0,
+      "ndv_approx": 344317,
+      "mean_length": 10.003315855619247,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "OFFENSE_CODE": {
+      "null_count": 0,
+      "min": 111,
+      "max": 3831,
+      "mean": 2317.546956339145,
+      "ndv_approx": 277,
+      "histogram": {
+        "buckets": [
+          111.0,
+          483.0,
+          855.0,
+          1227.0,
+          1599.0,
+          1971.0,
+          2343.0,
+          2715.0,
+          3087.0,
+          3459.0,
+          3831.0
+        ],
+        "counts": [
+          12600,
+          65983,
+          10820,
+          18794,
+          16752,
+          3015,
+          23563,
+          32552,
+          88665,
+          46329
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "OFFENSE_CODE_GROUP": {
+      "null_count": 0,
+      "ndv_approx": 72,
+      "mean_length": 16.07591993054881,
+      "top_values": [
+        {
+          "value": "Motor Vehicle Accident Response",
+          "count": 37132
+        },
+        {
+          "value": "Larceny",
+          "count": 25935
+        },
+        {
+          "value": "Medical Assistance",
+          "count": 23540
+        },
+        {
+          "value": "Investigate Person",
+          "count": 18750
+        },
+        {
+          "value": "Other",
+          "count": 18075
+        }
+      ],
+      "dtype": "string"
+    },
+    "OFFENSE_DESCRIPTION": {
+      "null_count": 0,
+      "ndv_approx": 214,
+      "mean_length": 24.223550723502147,
+      "top_values": null,
+      "dtype": "binary"
+    },
+    "DISTRICT": {
+      "null_count": 1765,
+      "ndv_approx": 13,
+      "mean_length": 2.327902227488749,
+      "top_values": [
+        {
+          "value": "B2",
+          "count": 49945
+        },
+        {
+          "value": "C11",
+          "count": 42530
+        },
+        {
+          "value": "D4",
+          "count": 41915
+        },
+        {
+          "value": "A1",
+          "count": 35717
+        },
+        {
+          "value": "B3",
+          "count": 35442
+        }
+      ],
+      "dtype": "string"
+    },
+    "REPORTING_AREA": {
+      "null_count": 0,
+      "ndv_approx": 959,
+      "mean_length": 2.7735878623387125,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SHOOTING": {
+      "null_count": 318054,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "Y",
+          "count": 1019
+        }
+      ],
+      "dtype": "string"
+    },
+    "OCCURRED_ON_DATE": {
+      "dtype": "timestamp[ms]",
+      "null_count": 0,
+      "min": "2015-06-15T00:00:00+00:00",
+      "max": "2018-09-03T21:25:00+00:00",
+      "histogram": {
+        "buckets": [
+          "2015-06-15T00:00:00+00:00",
+          "2015-10-10T16:32:30+00:00",
+          "2016-02-05T09:05:00+00:00",
+          "2016-06-02T01:37:30+00:00",
+          "2016-09-27T18:10:00+00:00",
+          "2017-01-23T10:42:30+00:00",
+          "2017-05-21T03:15:00+00:00",
+          "2017-09-15T19:47:30+00:00",
+          "2018-01-11T12:20:00+00:00",
+          "2018-05-09T04:52:30+00:00",
+          "2018-09-03T21:25:00+00:00"
+        ],
+        "counts": [
+          31901,
+          30508,
+          31329,
+          33382,
+          31051,
+          31814,
+          34479,
+          31473,
+          30250,
+          32886
+        ]
+      }
+    },
+    "YEAR": {
+      "null_count": 0,
+      "min": 2015,
+      "max": 2018,
+      "mean": 2016.5605864488691,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          2015.0,
+          2015.3,
+          2015.6,
+          2015.9,
+          2016.2,
+          2016.5,
+          2016.8,
+          2017.1,
+          2017.4,
+          2017.7,
+          2018.0
+        ],
+        "counts": [
+          53388,
+          0,
+          0,
+          99114,
+          0,
+          0,
+          100886,
+          0,
+          0,
+          65685
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "MONTH": {
+      "null_count": 0,
+      "min": 1,
+      "max": 12,
+      "mean": 6.609719405903978,
+      "ndv_approx": 13,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.1,
+          3.2,
+          4.300000000000001,
+          5.4,
+          6.5,
+          7.6000000000000005,
+          8.700000000000001,
+          9.8,
+          10.9,
+          12.0
+        ],
+        "counts": [
+          45263,
+          24146,
+          24086,
+          26199,
+          30568,
+          34556,
+          34823,
+          26543,
+          25737,
+          47152
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "DAY_OF_WEEK": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 7.158098616930922,
+      "top_values": [
+        {
+          "value": "Friday",
+          "count": 48495
+        },
+        {
+          "value": "Wednesday",
+          "count": 46729
+        },
+        {
+          "value": "Thursday",
+          "count": 46656
+        },
+        {
+          "value": "Tuesday",
+          "count": 46383
+        },
+        {
+          "value": "Monday",
+          "count": 45679
+        }
+      ],
+      "dtype": "string"
+    },
+    "HOUR": {
+      "null_count": 0,
+      "min": 0,
+      "max": 23,
+      "mean": 13.118204924891796,
+      "ndv_approx": 24,
+      "histogram": {
+        "buckets": [
+          0.0,
+          2.3,
+          4.6,
+          6.8999999999999995,
+          9.2,
+          11.5,
+          13.799999999999999,
+          16.099999999999998,
+          18.4,
+          20.7,
+          23.0
+        ],
+        "counts": [
+          32068,
+          7997,
+          8337,
+          36633,
+          32795,
+          35525,
+          53582,
+          41065,
+          33438,
+          37633
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "UCR_PART": {
+      "null_count": 90,
+      "ndv_approx": 4,
+      "mean_length": 8.982528849499817,
+      "top_values": [
+        {
+          "value": "Part Three",
+          "count": 158553
+        },
+        {
+          "value": "Part Two",
+          "count": 97569
+        },
+        {
+          "value": "Part One",
+          "count": 61629
+        },
+        {
+          "value": "Other",
+          "count": 1232
+        }
+      ],
+      "dtype": "string"
+    },
+    "STREET": {
+      "null_count": 10871,
+      "ndv_approx": 5504,
+      "mean_length": 11.153366947651216,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Lat": {
+      "null_count": 19999,
+      "min": -1.0,
+      "max": 42.39504158,
+      "mean": 42.21438105977283,
+      "ndv_approx": 15664,
+      "histogram": {
+        "buckets": [
+          -1.0,
+          3.3395041579999996,
+          7.679008315999999,
+          12.018512473999998,
+          16.358016632,
+          20.69752079,
+          25.037024947999996,
+          29.376529105999996,
+          33.716033264,
+          38.05553742199999,
+          42.39504158
+        ],
+        "counts": [
+          745,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          298329
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Long": {
+      "null_count": 19999,
+      "min": -71.17867378,
+      "max": -1.0,
+      "mean": -70.90827235385619,
+      "ndv_approx": 20538,
+      "histogram": {
+        "buckets": [
+          -71.17867378,
+          -64.16080640199999,
+          -57.142939024,
+          -50.125071645999995,
+          -43.107204268,
+          -36.08933689,
+          -29.071469511999993,
+          -22.053602133999995,
+          -15.035734755999997,
+          -8.017867377999998,
+          -1.0
+        ],
+        "counts": [
+          298329,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          745
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Location": {
+      "null_count": 0,
+      "ndv_approx": 17213,
+      "mean_length": 26.80962977124357,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

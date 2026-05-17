@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "slug": "squad-v2",
+  "row_count": 142192,
+  "parquet_sha256": "56f8f72e3a326d7c9dd5d7cc731a6ba6e15e088010a4803ba566ade9fc187251",
+  "computed_at": "2026-05-16T10:12:11Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 144879,
+      "mean_length": 24.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "title": {
+      "null_count": 0,
+      "ndv_approx": 527,
+      "mean_length": 14.335328288511308,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "context": {
+      "null_count": 0,
+      "ndv_approx": 21730,
+      "mean_length": 759.276246202318,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "question": {
+      "null_count": 0,
+      "ndv_approx": 157152,
+      "mean_length": 58.59110920445595,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "answers": null,
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 5.417498874760887,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 130319
+        },
+        {
+          "value": "validation",
+          "count": 11873
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

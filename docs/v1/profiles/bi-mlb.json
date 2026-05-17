@@ -1,0 +1,2365 @@
+{
+  "schema_version": 1,
+  "slug": "bi-mlb",
+  "row_count": 32472563,
+  "parquet_sha256": "a1a56af3a22a4b45381513da8d8568bb089ac6907a1e27925ce920f32115b6e5",
+  "computed_at": "2026-05-16T06:29:45Z",
+  "sample_rows": null,
+  "columns": {
+    "AB": {
+      "null_count": 23271145,
+      "ndv_approx": 562,
+      "mean_length": 1.4285455785184413,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "AVG": {
+      "null_count": 23429466,
+      "ndv_approx": 1370,
+      "mean_length": 3.377211479651274,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BABIP": {
+      "null_count": 23739719,
+      "ndv_approx": 1335,
+      "mean_length": 3.337120186734127,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BB.": {
+      "null_count": 24205666,
+      "ndv_approx": 733,
+      "mean_length": 1.8468632184482279,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BB": {
+      "null_count": 24204110,
+      "ndv_approx": 96,
+      "mean_length": 1.0516886290579386,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 4689660
+        },
+        {
+          "value": "1",
+          "count": 1480157
+        },
+        {
+          "value": "2",
+          "count": 578960
+        },
+        {
+          "value": "3",
+          "count": 318194
+        },
+        {
+          "value": "4",
+          "count": 219908
+        }
+      ],
+      "dtype": "string"
+    },
+    "BIP": {
+      "null_count": 23271145,
+      "ndv_approx": 497,
+      "mean_length": 1.3831338821907666,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "FB.": {
+      "null_count": 23270649,
+      "ndv_approx": 1409,
+      "mean_length": 2.4325829387234004,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "FB": {
+      "null_count": 23271145,
+      "ndv_approx": 151,
+      "mean_length": 1.1519169110674028,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3321958
+        },
+        {
+          "value": "1",
+          "count": 1919703
+        },
+        {
+          "value": "2",
+          "count": 945604
+        },
+        {
+          "value": "3",
+          "count": 464824
+        },
+        {
+          "value": "4",
+          "count": 301267
+        }
+      ],
+      "dtype": "string"
+    },
+    "GB.": {
+      "null_count": 23270649,
+      "ndv_approx": 1614,
+      "mean_length": 2.762821191330412,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "GB": {
+      "null_count": 23271145,
+      "ndv_approx": 259,
+      "mean_length": 1.2233557914660544,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "GIDP": {
+      "null_count": 26276110,
+      "ndv_approx": 26,
+      "mean_length": 1.0043295737093463,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 4364667
+        },
+        {
+          "value": "1",
+          "count": 915933
+        },
+        {
+          "value": "2",
+          "count": 396544
+        },
+        {
+          "value": "3",
+          "count": 200640
+        },
+        {
+          "value": "4",
+          "count": 114980
+        }
+      ],
+      "dtype": "string"
+    },
+    "HBP": {
+      "null_count": 23271145,
+      "ndv_approx": 35,
+      "mean_length": 1.000761947778049,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 7903312
+        },
+        {
+          "value": "1",
+          "count": 840120
+        },
+        {
+          "value": "2",
+          "count": 244819
+        },
+        {
+          "value": "3",
+          "count": 101074
+        },
+        {
+          "value": "4",
+          "count": 47608
+        }
+      ],
+      "dtype": "string"
+    },
+    "HR": {
+      "null_count": 23271145,
+      "ndv_approx": 40,
+      "mean_length": 1.0041646841823728,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 7514657
+        },
+        {
+          "value": "1",
+          "count": 963224
+        },
+        {
+          "value": "2",
+          "count": 310324
+        },
+        {
+          "value": "3",
+          "count": 150457
+        },
+        {
+          "value": "4",
+          "count": 85259
+        }
+      ],
+      "dtype": "string"
+    },
+    "H": {
+      "null_count": 23271145,
+      "ndv_approx": 157,
+      "mean_length": 1.1766183212196206,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2628182
+        },
+        {
+          "value": "1",
+          "count": 2052843
+        },
+        {
+          "value": "2",
+          "count": 1093033
+        },
+        {
+          "value": "3",
+          "count": 541732
+        },
+        {
+          "value": "4",
+          "count": 333808
+        }
+      ],
+      "dtype": "string"
+    },
+    "ISO": {
+      "null_count": 23429466,
+      "ndv_approx": 1976,
+      "mean_length": 2.5295674700824287,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "K.": {
+      "null_count": 24206422,
+      "ndv_approx": 956,
+      "mean_length": 2.292328790423488,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "LD.": {
+      "null_count": 23270649,
+      "ndv_approx": 1533,
+      "mean_length": 2.2414169486913265,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "LD": {
+      "null_count": 23271145,
+      "ndv_approx": 129,
+      "mean_length": 1.0913033186841419,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 4142392
+        },
+        {
+          "value": "1",
+          "count": 1883949
+        },
+        {
+          "value": "2",
+          "count": 794646
+        },
+        {
+          "value": "3",
+          "count": 428540
+        },
+        {
+          "value": "4",
+          "count": 300676
+        }
+      ],
+      "dtype": "string"
+    },
+    "Number of Records": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 32472563
+        }
+      ],
+      "dtype": "string"
+    },
+    "OBP": {
+      "null_count": 23303893,
+      "ndv_approx": 1519,
+      "mean_length": 3.485800994037303,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "PA": {
+      "null_count": 23271145,
+      "ndv_approx": 623,
+      "mean_length": 1.4559272277381594,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "PU.": {
+      "null_count": 23270649,
+      "ndv_approx": 1153,
+      "mean_length": 1.7958983315862331,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "PU": {
+      "null_count": 23271145,
+      "ndv_approx": 87,
+      "mean_length": 1.0267229463980443,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 5651199
+        },
+        {
+          "value": "1",
+          "count": 1585441
+        },
+        {
+          "value": "2",
+          "count": 619549
+        },
+        {
+          "value": "3",
+          "count": 355464
+        },
+        {
+          "value": "4",
+          "count": 235882
+        }
+      ],
+      "dtype": "string"
+    },
+    "SF": {
+      "null_count": 23271145,
+      "ndv_approx": 17,
+      "mean_length": 1.0000711846804482,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 8001115
+        },
+        {
+          "value": "1",
+          "count": 828059
+        },
+        {
+          "value": "2",
+          "count": 226557
+        },
+        {
+          "value": "3",
+          "count": 82616
+        },
+        {
+          "value": "4",
+          "count": 34423
+        }
+      ],
+      "dtype": "string"
+    },
+    "SH": {
+      "null_count": 23271145,
+      "ndv_approx": 25,
+      "mean_length": 1.000660224326294,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 8130649
+        },
+        {
+          "value": "1",
+          "count": 704085
+        },
+        {
+          "value": "2",
+          "count": 193420
+        },
+        {
+          "value": "3",
+          "count": 80641
+        },
+        {
+          "value": "4",
+          "count": 38773
+        }
+      ],
+      "dtype": "string"
+    },
+    "SLG": {
+      "null_count": 23429466,
+      "ndv_approx": 1960,
+      "mean_length": 3.2913654470365628,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SOL": {
+      "null_count": 24204110,
+      "ndv_approx": 65,
+      "mean_length": 1.0203833776402913,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 5383644
+        },
+        {
+          "value": "1",
+          "count": 1363900
+        },
+        {
+          "value": "2",
+          "count": 497470
+        },
+        {
+          "value": "3",
+          "count": 280310
+        },
+        {
+          "value": "4",
+          "count": 187594
+        }
+      ],
+      "dtype": "string"
+    },
+    "SOS": {
+      "null_count": 24204110,
+      "ndv_approx": 135,
+      "mean_length": 1.0974624878438566,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3665716
+        },
+        {
+          "value": "1",
+          "count": 1744228
+        },
+        {
+          "value": "2",
+          "count": 749590
+        },
+        {
+          "value": "3",
+          "count": 373226
+        },
+        {
+          "value": "4",
+          "count": 249581
+        }
+      ],
+      "dtype": "string"
+    },
+    "SO": {
+      "null_count": 24204110,
+      "ndv_approx": 157,
+      "mean_length": 1.128574716455424,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3128384
+        },
+        {
+          "value": "1",
+          "count": 1805067
+        },
+        {
+          "value": "2",
+          "count": 878672
+        },
+        {
+          "value": "3",
+          "count": 416855
+        },
+        {
+          "value": "4",
+          "count": 260793
+        }
+      ],
+      "dtype": "string"
+    },
+    "TB": {
+      "null_count": 23271145,
+      "ndv_approx": 271,
+      "mean_length": 1.2315561579747818,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "X1B": {
+      "null_count": 23271145,
+      "ndv_approx": 125,
+      "mean_length": 1.128283162443006,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3343225
+        },
+        {
+          "value": "1",
+          "count": 2026765
+        },
+        {
+          "value": "2",
+          "count": 923704
+        },
+        {
+          "value": "3",
+          "count": 476974
+        },
+        {
+          "value": "4",
+          "count": 329160
+        }
+      ],
+      "dtype": "string"
+    },
+    "X2B": {
+      "null_count": 23271145,
+      "ndv_approx": 53,
+      "mean_length": 1.0216306877918164,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 5820302
+        },
+        {
+          "value": "1",
+          "count": 1497324
+        },
+        {
+          "value": "2",
+          "count": 595503
+        },
+        {
+          "value": "3",
+          "count": 351294
+        },
+        {
+          "value": "4",
+          "count": 236873
+        }
+      ],
+      "dtype": "string"
+    },
+    "X3B": {
+      "null_count": 23271145,
+      "ndv_approx": 21,
+      "mean_length": 1.000116286424549,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 8130590
+        },
+        {
+          "value": "1",
+          "count": 751783
+        },
+        {
+          "value": "2",
+          "count": 192460
+        },
+        {
+          "value": "3",
+          "count": 70556
+        },
+        {
+          "value": "4",
+          "count": 29754
+        }
+      ],
+      "dtype": "string"
+    },
+    "batter_name": {
+      "null_count": 767573,
+      "ndv_approx": 7774,
+      "mean_length": 12.978213555657957,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "field": {
+      "null_count": 32159303,
+      "ndv_approx": 4,
+      "mean_length": 5.998774181191343,
+      "top_values": [
+        {
+          "value": "Pull",
+          "count": 105236
+        },
+        {
+          "value": "Opposite",
+          "count": 105044
+        },
+        {
+          "value": "Center",
+          "count": 66320
+        },
+        {
+          "value": "Middle",
+          "count": 36660
+        }
+      ],
+      "dtype": "string"
+    },
+    "iBB": {
+      "null_count": 24204110,
+      "ndv_approx": 13,
+      "mean_length": 1.0000061680219987,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 7975481
+        },
+        {
+          "value": "1",
+          "count": 239902
+        },
+        {
+          "value": "2",
+          "count": 38011
+        },
+        {
+          "value": "3",
+          "count": 9666
+        },
+        {
+          "value": "4",
+          "count": 3162
+        }
+      ],
+      "dtype": "string"
+    },
+    "league": {
+      "null_count": 0,
+      "ndv_approx": 18,
+      "mean_length": 2.911244363433832,
+      "top_values": [
+        {
+          "value": "PCL",
+          "count": 3667052
+        },
+        {
+          "value": "MWL",
+          "count": 3209807
+        },
+        {
+          "value": "IL",
+          "count": 3043414
+        },
+        {
+          "value": "SAL",
+          "count": 2778677
+        },
+        {
+          "value": "EL",
+          "count": 2543016
+        }
+      ],
+      "dtype": "string"
+    },
+    "parentteam": {
+      "null_count": 23271145,
+      "ndv_approx": 36,
+      "mean_length": 2.866454822506705,
+      "top_values": [
+        {
+          "value": "ARI",
+          "count": 344813
+        },
+        {
+          "value": "STL",
+          "count": 338336
+        },
+        {
+          "value": "HOU",
+          "count": 337162
+        },
+        {
+          "value": "LAD",
+          "count": 331962
+        },
+        {
+          "value": "NYM",
+          "count": 331728
+        }
+      ],
+      "dtype": "string"
+    },
+    "pwRC.": {
+      "null_count": 23362851,
+      "ndv_approx": 1517,
+      "mean_length": 2.884442010900015,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "stand": {
+      "null_count": 8740664,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "R",
+          "count": 14561473
+        },
+        {
+          "value": "L",
+          "count": 9170426
+        }
+      ],
+      "dtype": "string"
+    },
+    "teamname": {
+      "null_count": 23271145,
+      "ndv_approx": 253,
+      "mean_length": 16.416569054900016,
+      "top_values": [
+        {
+          "value": "Reno Aces",
+          "count": 75334
+        },
+        {
+          "value": "Albuquerque Isotopes",
+          "count": 74156
+        },
+        {
+          "value": "Iowa Cubs",
+          "count": 73996
+        },
+        {
+          "value": "New Orleans Zephyrs",
+          "count": 73460
+        },
+        {
+          "value": "Indianapolis Indians",
+          "count": 71183
+        }
+      ],
+      "dtype": "string"
+    },
+    "wOBA": {
+      "null_count": 23270649,
+      "ndv_approx": 2083,
+      "mean_length": 4.067789266450436,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wRAA": {
+      "null_count": 23271145,
+      "ndv_approx": 959,
+      "mean_length": 3.346741013178621,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wRC.": {
+      "null_count": 23308116,
+      "ndv_approx": 1390,
+      "mean_length": 2.882574147681797,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "wRC": {
+      "null_count": 23271145,
+      "ndv_approx": 1401,
+      "mean_length": 3.1726876227120644,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "year": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "2014",
+          "count": 6529593
+        },
+        {
+          "value": "2012",
+          "count": 6520153
+        },
+        {
+          "value": "2011",
+          "count": 6519133
+        },
+        {
+          "value": "2015",
+          "count": 6463032
+        },
+        {
+          "value": "2013",
+          "count": 6440652
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458112880653": {
+      "null_count": 32259295,
+      "ndv_approx": 2265,
+      "mean_length": 6.349250708029334,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458117070874": {
+      "null_count": 32202343,
+      "ndv_approx": 519,
+      "mean_length": 4.680171711938421,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "atbat_des": {
+      "null_count": 9201928,
+      "ndv_approx": 6633296,
+      "mean_length": 85.60934873500443,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "awayteam": {
+      "null_count": 9201914,
+      "ndv_approx": 163,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "bra",
+          "count": 209456
+        },
+        {
+          "value": "src",
+          "count": 168864
+        },
+        {
+          "value": "tac",
+          "count": 166968
+        },
+        {
+          "value": "oma",
+          "count": 166014
+        },
+        {
+          "value": "slc",
+          "count": 164491
+        }
+      ],
+      "dtype": "string"
+    },
+    "b_height": {
+      "null_count": 9201914,
+      "ndv_approx": 21,
+      "mean_length": 3.2291037091402135,
+      "top_values": [
+        {
+          "value": "6-1",
+          "count": 4230211
+        },
+        {
+          "value": "6-0",
+          "count": 4066032
+        },
+        {
+          "value": "6-2",
+          "count": 3689560
+        },
+        {
+          "value": "5-11",
+          "count": 3195975
+        },
+        {
+          "value": "6-3",
+          "count": 2512993
+        }
+      ],
+      "dtype": "string"
+    },
+    "batted_ball_type": {
+      "null_count": 8841710,
+      "ndv_approx": 4,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "GB",
+          "count": 10747013
+        },
+        {
+          "value": "FB",
+          "count": 6583056
+        },
+        {
+          "value": "LD",
+          "count": 4029670
+        },
+        {
+          "value": "PU",
+          "count": 1675114
+        },
+        {
+          "value": "BU",
+          "count": 596000
+        }
+      ],
+      "dtype": "string"
+    },
+    "day": {
+      "null_count": 9201914,
+      "ndv_approx": 34,
+      "mean_length": 1.7079240033228122,
+      "top_values": [
+        {
+          "value": "26",
+          "count": 817732
+        },
+        {
+          "value": "28",
+          "count": 817126
+        },
+        {
+          "value": "21",
+          "count": 811313
+        },
+        {
+          "value": "25",
+          "count": 804343
+        },
+        {
+          "value": "23",
+          "count": 803961
+        }
+      ],
+      "dtype": "string"
+    },
+    "des": {
+      "null_count": 9202210,
+      "ndv_approx": 18,
+      "mean_length": 7.372560828793616,
+      "top_values": [
+        {
+          "value": "Groundout",
+          "count": 7489854
+        },
+        {
+          "value": "Single",
+          "count": 5219765
+        },
+        {
+          "value": "Flyout",
+          "count": 4552809
+        },
+        {
+          "value": "Pop Out",
+          "count": 1599324
+        },
+        {
+          "value": "Double",
+          "count": 1488840
+        }
+      ],
+      "dtype": "string"
+    },
+    "event": {
+      "null_count": 9202178,
+      "ndv_approx": 25,
+      "mean_length": 7.540922808109965,
+      "top_values": [
+        {
+          "value": "Groundout",
+          "count": 6107960
+        },
+        {
+          "value": "Single",
+          "count": 5370320
+        },
+        {
+          "value": "Flyout",
+          "count": 4281423
+        },
+        {
+          "value": "Pop Out",
+          "count": 1592344
+        },
+        {
+          "value": "Double",
+          "count": 1509765
+        }
+      ],
+      "dtype": "string"
+    },
+    "hometeam": {
+      "null_count": 9201914,
+      "ndv_approx": 163,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "bra",
+          "count": 214913
+        },
+        {
+          "value": "ren",
+          "count": 175961
+        },
+        {
+          "value": "csp",
+          "count": 169102
+        },
+        {
+          "value": "slc",
+          "count": 166578
+        },
+        {
+          "value": "alb",
+          "count": 166552
+        }
+      ],
+      "dtype": "string"
+    },
+    "inning": {
+      "null_count": 8463485,
+      "ndv_approx": 26,
+      "mean_length": 1.0237625951317249,
+      "top_values": [
+        {
+          "value": "3",
+          "count": 2823682
+        },
+        {
+          "value": "4",
+          "count": 2802278
+        },
+        {
+          "value": "5",
+          "count": 2792589
+        },
+        {
+          "value": "1",
+          "count": 2775179
+        },
+        {
+          "value": "2",
+          "count": 2732310
+        }
+      ],
+      "dtype": "string"
+    },
+    "inning_side": {
+      "null_count": 9201914,
+      "ndv_approx": 2,
+      "mean_length": 4.471438334186554,
+      "top_values": [
+        {
+          "value": "top",
+          "count": 11856874
+        },
+        {
+          "value": "bottom",
+          "count": 11413775
+        }
+      ],
+      "dtype": "string"
+    },
+    "level": {
+      "null_count": 9201914,
+      "ndv_approx": 5,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "aaa",
+          "count": 4753506
+        },
+        {
+          "value": "aax",
+          "count": 4570585
+        },
+        {
+          "value": "afa",
+          "count": 4520339
+        },
+        {
+          "value": "afx",
+          "count": 4478759
+        },
+        {
+          "value": "rok",
+          "count": 3140937
+        }
+      ],
+      "dtype": "string"
+    },
+    "month": {
+      "null_count": 8887806,
+      "ndv_approx": 10,
+      "mean_length": 1.0532251402887043,
+      "top_values": [
+        {
+          "value": "7",
+          "count": 5679369
+        },
+        {
+          "value": "8",
+          "count": 5645149
+        },
+        {
+          "value": "6",
+          "count": 4286681
+        },
+        {
+          "value": "5",
+          "count": 3791780
+        },
+        {
+          "value": "4",
+          "count": 2956210
+        }
+      ],
+      "dtype": "string"
+    },
+    "our.x": {
+      "null_count": 9201914,
+      "ndv_approx": 17246,
+      "mean_length": 16.35651811859652,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "our.y": {
+      "null_count": 9201914,
+      "ndv_approx": 3296,
+      "mean_length": 15.888552141369155,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "p_throws": {
+      "null_count": 9054147,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "R",
+          "count": 17268572
+        },
+        {
+          "value": "L",
+          "count": 6149844
+        }
+      ],
+      "dtype": "string"
+    },
+    "pitcher_name": {
+      "null_count": 9741652,
+      "ndv_approx": 6788,
+      "mean_length": 12.869646359532181,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "r": {
+      "null_count": 9201914,
+      "ndv_approx": 267175,
+      "mean_length": 15.885475304105185,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "theta": {
+      "null_count": 9201914,
+      "ndv_approx": 246591,
+      "mean_length": 16.07475666020316,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458064297984": {
+      "null_count": 20798355,
+      "ndv_approx": 737,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "b": {
+      "null_count": 20876122,
+      "ndv_approx": 5,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 7830833
+        },
+        {
+          "value": "1",
+          "count": 2002556
+        },
+        {
+          "value": "2",
+          "count": 1170384
+        },
+        {
+          "value": "3",
+          "count": 592625
+        },
+        {
+          "value": "4",
+          "count": 43
+        }
+      ],
+      "dtype": "string"
+    },
+    "date": {
+      "null_count": 20876122,
+      "ndv_approx": 737,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "gameday_link": {
+      "null_count": 17871157,
+      "ndv_approx": 44565,
+      "mean_length": 30.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "o": {
+      "null_count": 20876122,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 3915481
+        },
+        {
+          "value": "2",
+          "count": 3624712
+        },
+        {
+          "value": "3",
+          "count": 2615271
+        },
+        {
+          "value": "0",
+          "count": 1440977
+        }
+      ],
+      "dtype": "string"
+    },
+    "s": {
+      "null_count": 20876122,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 7794019
+        },
+        {
+          "value": "1",
+          "count": 1943074
+        },
+        {
+          "value": "2",
+          "count": 1858078
+        },
+        {
+          "value": "3",
+          "count": 1270
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_361765767559729157": {
+      "null_count": 23716907,
+      "ndv_approx": 737,
+      "mean_length": 10.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "position": {
+      "null_count": 28698813,
+      "ndv_approx": 9,
+      "mean_length": 12.05355018217953,
+      "top_values": [
+        {
+          "value": "Center Fielder",
+          "count": 618577
+        },
+        {
+          "value": "Right Fielder",
+          "count": 552567
+        },
+        {
+          "value": "Left Fielder",
+          "count": 549459
+        },
+        {
+          "value": "Shortstop",
+          "count": 519805
+        },
+        {
+          "value": "Second Baseman",
+          "count": 476781
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458117263387": {
+      "null_count": 32141843,
+      "ndv_approx": 2,
+      "mean_length": 1.0000151185292694,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 330715
+        },
+        {
+          "value": "50",
+          "count": 5
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458113208334": {
+      "null_count": 32225278,
+      "ndv_approx": 1011,
+      "mean_length": 5.659765048425905,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BIP.": {
+      "null_count": 25148434,
+      "ndv_approx": 1052,
+      "mean_length": 3.315435050365716,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Ba.": {
+      "null_count": 25508482,
+      "ndv_approx": 752,
+      "mean_length": 3.001873039673146,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Balls": {
+      "null_count": 25148508,
+      "ndv_approx": 1018,
+      "mean_length": 1.3741002764179133,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CS": {
+      "null_count": 28148791,
+      "ndv_approx": 30,
+      "mean_length": 1.0010694365937889,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3769690
+        },
+        {
+          "value": "1",
+          "count": 373988
+        },
+        {
+          "value": "2",
+          "count": 89557
+        },
+        {
+          "value": "3",
+          "count": 39097
+        },
+        {
+          "value": "4",
+          "count": 20011
+        }
+      ],
+      "dtype": "string"
+    },
+    "Ca.": {
+      "null_count": 25148434,
+      "ndv_approx": 560,
+      "mean_length": 2.6271626291672363,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521908233621517": {
+      "null_count": 31780435,
+      "ndv_approx": 1939,
+      "mean_length": 4.374323824494891,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Called": {
+      "null_count": 25148508,
+      "ndv_approx": 479,
+      "mean_length": 1.2063747473223507,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "F.": {
+      "null_count": 25148434,
+      "ndv_approx": 513,
+      "mean_length": 2.170711630010886,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Foul": {
+      "null_count": 25148504,
+      "ndv_approx": 456,
+      "mean_length": 1.1594614407120423,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Pitches": {
+      "null_count": 25148512,
+      "ndv_approx": 2606,
+      "mean_length": 1.837335239746419,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "RBI": {
+      "null_count": 28148791,
+      "ndv_approx": 107,
+      "mean_length": 1.0529135208794542,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 2456632
+        },
+        {
+          "value": "1",
+          "count": 785784
+        },
+        {
+          "value": "2",
+          "count": 340290
+        },
+        {
+          "value": "3",
+          "count": 170608
+        },
+        {
+          "value": "4",
+          "count": 101938
+        }
+      ],
+      "dtype": "string"
+    },
+    "R": {
+      "null_count": 9201914,
+      "ndv_approx": 267175,
+      "mean_length": 15.885475304105185,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SB.": {
+      "null_count": 31153756,
+      "ndv_approx": 84,
+      "mean_length": 1.5455513960723593,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 817208
+        },
+        {
+          "value": "1",
+          "count": 223092
+        },
+        {
+          "value": "0.5",
+          "count": 78815
+        },
+        {
+          "value": "0.67",
+          "count": 42183
+        },
+        {
+          "value": "0.75",
+          "count": 22522
+        }
+      ],
+      "dtype": "string"
+    },
+    "SB": {
+      "null_count": 28148791,
+      "ndv_approx": 68,
+      "mean_length": 1.0064712015342159,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 3572792
+        },
+        {
+          "value": "1",
+          "count": 442923
+        },
+        {
+          "value": "2",
+          "count": 123469
+        },
+        {
+          "value": "3",
+          "count": 58427
+        },
+        {
+          "value": "4",
+          "count": 34205
+        }
+      ],
+      "dtype": "string"
+    },
+    "Str.": {
+      "null_count": 25508482,
+      "ndv_approx": 675,
+      "mean_length": 3.441400523629751,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Strikes": {
+      "null_count": 25148504,
+      "ndv_approx": 1510,
+      "mean_length": 1.6536838384289367,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "SwStr.": {
+      "null_count": 25508482,
+      "ndv_approx": 803,
+      "mean_length": 2.7354651676222606,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Swinging": {
+      "null_count": 25148504,
+      "ndv_approx": 375,
+      "mean_length": 1.245547311948197,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Wh.Sw": {
+      "null_count": 25201679,
+      "ndv_approx": 997,
+      "mean_length": 2.6981108486946015,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "opponent": {
+      "null_count": 31778075,
+      "ndv_approx": 163,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "bra",
+          "count": 6352
+        },
+        {
+          "value": "ren",
+          "count": 6336
+        },
+        {
+          "value": "mrb",
+          "count": 6264
+        },
+        {
+          "value": "iow",
+          "count": 6244
+        },
+        {
+          "value": "alb",
+          "count": 6156
+        }
+      ],
+      "dtype": "string"
+    },
+    "opponent_parentteam": {
+      "null_count": 31778075,
+      "ndv_approx": 35,
+      "mean_length": 2.8646369699692436,
+      "top_values": [
+        {
+          "value": "ARI",
+          "count": 26932
+        },
+        {
+          "value": "NYM",
+          "count": 25664
+        },
+        {
+          "value": "STL",
+          "count": 25644
+        },
+        {
+          "value": "MIL",
+          "count": 25172
+        },
+        {
+          "value": "PIT",
+          "count": 24964
+        }
+      ],
+      "dtype": "string"
+    },
+    "opponent_teamname": {
+      "null_count": 31778075,
+      "ndv_approx": 253,
+      "mean_length": 16.421092949050237,
+      "top_values": [
+        {
+          "value": "Reno Aces",
+          "count": 6336
+        },
+        {
+          "value": "Memphis Red Birds",
+          "count": 6264
+        },
+        {
+          "value": "Iowa Cubs",
+          "count": 6244
+        },
+        {
+          "value": "Albuquerque Isotopes",
+          "count": 6156
+        },
+        {
+          "value": "New Orleans Zephyrs",
+          "count": 6044
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458112270348": {
+      "null_count": 32042051,
+      "ndv_approx": 775,
+      "mean_length": 4.323744750436689,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458116673561": {
+      "null_count": 31879647,
+      "ndv_approx": 184,
+      "mean_length": 3.7036814658400177,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 410604
+        },
+        {
+          "value": "33.3333333333333",
+          "count": 18904
+        },
+        {
+          "value": "25",
+          "count": 17972
+        },
+        {
+          "value": "20",
+          "count": 15836
+        },
+        {
+          "value": "50",
+          "count": 15172
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_361765767527686145": {
+      "null_count": 32237813,
+      "ndv_approx": 1507,
+      "mean_length": 4.014670926517572,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "times_faced": {
+      "null_count": 32235017,
+      "ndv_approx": 4,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 76968
+        },
+        {
+          "value": "2",
+          "count": 72354
+        },
+        {
+          "value": "3",
+          "count": 62787
+        },
+        {
+          "value": "4",
+          "count": 25437
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458111905803": {
+      "null_count": 32323811,
+      "ndv_approx": 2981,
+      "mean_length": 6.54243304291707,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458116419608": {
+      "null_count": 32285525,
+      "ndv_approx": 621,
+      "mean_length": 5.823100118692458,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521908233404428": {
+      "null_count": 31755269,
+      "ndv_approx": 1931,
+      "mean_length": 3.633288442396005,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458111283210": {
+      "null_count": 32125238,
+      "ndv_approx": 763,
+      "mean_length": 4.089337076225437,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458116173847": {
+      "null_count": 31964681,
+      "ndv_approx": 182,
+      "mean_length": 3.3971079896511394,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 365628
+        },
+        {
+          "value": "25",
+          "count": 13608
+        },
+        {
+          "value": "33.3333333333333",
+          "count": 13332
+        },
+        {
+          "value": "20",
+          "count": 12417
+        },
+        {
+          "value": "50",
+          "count": 11661
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_496521908233248779": {
+      "null_count": 31478207,
+      "ndv_approx": 1867,
+      "mean_length": 3.747366134462909,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "statei": {
+      "null_count": 31454927,
+      "ndv_approx": 9,
+      "mean_length": 6.231454075917125,
+      "top_values": [
+        {
+          "value": "Bases Empty",
+          "count": 150390
+        },
+        {
+          "value": "1B",
+          "count": 143718
+        },
+        {
+          "value": "2B",
+          "count": 131958
+        },
+        {
+          "value": "1B + 2B",
+          "count": 131592
+        },
+        {
+          "value": "1B + 3B",
+          "count": 118758
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458110861321": {
+      "null_count": 31996595,
+      "ndv_approx": 2890,
+      "mean_length": 4.539746369503832,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458115964950": {
+      "null_count": 31751897,
+      "ndv_approx": 632,
+      "mean_length": 3.587797953559624,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Outs": {
+      "null_count": 31955151,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 172550
+        },
+        {
+          "value": "0",
+          "count": 172536
+        },
+        {
+          "value": "2",
+          "count": 172326
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_361765767503851520": {
+      "null_count": 31959225,
+      "ndv_approx": 1459,
+      "mean_length": 4.335206043581422,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458110562312": {
+      "null_count": 32106582,
+      "ndv_approx": 2002,
+      "mean_length": 6.835854866782702,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458115731477": {
+      "null_count": 32034608,
+      "ndv_approx": 476,
+      "mean_length": 6.2503316550787185,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521908232941578": {
+      "null_count": 31928876,
+      "ndv_approx": 2695,
+      "mean_length": 3.1813782562393436,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "X.1": {
+      "null_count": 31860359,
+      "ndv_approx": 210932,
+      "mean_length": 5.45554913068193,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "pitch.count": {
+      "null_count": 31860359,
+      "ndv_approx": 12,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "0-0",
+          "count": 70989
+        },
+        {
+          "value": "0-2",
+          "count": 70215
+        },
+        {
+          "value": "1-0",
+          "count": 60576
+        },
+        {
+          "value": "3-0",
+          "count": 59898
+        },
+        {
+          "value": "1-2",
+          "count": 56049
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458110046215": {
+      "null_count": 32200727,
+      "ndv_approx": 2631,
+      "mean_length": 4.063391162318457,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458115493908": {
+      "null_count": 32106245,
+      "ndv_approx": 532,
+      "mean_length": 3.5836813915778096,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521908230012937": {
+      "null_count": 32113279,
+      "ndv_approx": 2493,
+      "mean_length": 3.48797051914363,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458109407238": {
+      "null_count": 32277323,
+      "ndv_approx": 2728,
+      "mean_length": 6.3624052448268795,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458115264531": {
+      "null_count": 32381031,
+      "ndv_approx": 1057,
+      "mean_length": 8.740593453655553,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521908229181448": {
+      "null_count": 32286783,
+      "ndv_approx": 1503,
+      "mean_length": 4.4879534933792655,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "homeaway": {
+      "null_count": 32285931,
+      "ndv_approx": 2,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "Home",
+          "count": 94176
+        },
+        {
+          "value": "Away",
+          "count": 92456
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_40532458108895237": {
+      "null_count": 32329087,
+      "ndv_approx": 2788,
+      "mean_length": 7.926872787086342,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458114994194": {
+      "null_count": 32307963,
+      "ndv_approx": 645,
+      "mean_length": 7.4091859052247875,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521908228587527": {
+      "null_count": 32325680,
+      "ndv_approx": 1485,
+      "mean_length": 4.40720165029309,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458108489732": {
+      "null_count": 32364581,
+      "ndv_approx": 3358,
+      "mean_length": 7.626159915541479,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458114363409": {
+      "null_count": 32345309,
+      "ndv_approx": 849,
+      "mean_length": 6.96803243905889,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "OPS": {
+      "null_count": 32472067,
+      "ndv_approx": 405,
+      "mean_length": 14.959677419354838,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 32472147,
+      "ndv_approx": 1,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "Month",
+          "count": 416
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_496521908228263942": {
+      "null_count": 32160423,
+      "ndv_approx": 1465,
+      "mean_length": 4.45255334144935,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_212021079764389888": {
+      "null_count": 32158903,
+      "ndv_approx": 13098,
+      "mean_length": 12.267895173117388,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458107953155": {
+      "null_count": 32238163,
+      "ndv_approx": 1081,
+      "mean_length": 6.623515358361775,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458114015248": {
+      "null_count": 32197195,
+      "ndv_approx": 257,
+      "mean_length": 6.180369541849452,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BIPp": {
+      "null_count": 32348578,
+      "ndv_approx": 487,
+      "mean_length": 2.2508367947735612,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521907637829636": {
+      "null_count": 32349173,
+      "ndv_approx": 1311,
+      "mean_length": 4.531607099440797,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Swing": {
+      "null_count": 32348578,
+      "ndv_approx": 1179,
+      "mean_length": 2.4861071903859338,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "uBB": {
+      "null_count": 32348568,
+      "ndv_approx": 95,
+      "mean_length": 1.4684059841122625,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 19730
+        },
+        {
+          "value": "1",
+          "count": 10570
+        },
+        {
+          "value": "2",
+          "count": 7095
+        },
+        {
+          "value": "3",
+          "count": 5415
+        },
+        {
+          "value": "4",
+          "count": 4780
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_212021079765098497": {
+      "null_count": 32348583,
+      "ndv_approx": 13411,
+      "mean_length": 13.271132440716245,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458107371522": {
+      "null_count": 32373333,
+      "ndv_approx": 4071,
+      "mean_length": 9.456313614834224,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_40532458113540111": {
+      "null_count": 32362258,
+      "ndv_approx": 1215,
+      "mean_length": 8.969901636371878,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Calculation_496521907638001669": {
+      "null_count": 29486255,
+      "ndv_approx": 390,
+      "mean_length": 2.886538160162984,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "P.PA": {
+      "null_count": 29467712,
+      "ndv_approx": 236,
+      "mean_length": 2.6330084253761665,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 362586
+        },
+        {
+          "value": "2",
+          "count": 243612
+        },
+        {
+          "value": "1.5",
+          "count": 205707
+        },
+        {
+          "value": "3",
+          "count": 173583
+        },
+        {
+          "value": "4",
+          "count": 152187
+        }
+      ],
+      "dtype": "string"
+    },
+    "gidp": {
+      "null_count": 26276110,
+      "ndv_approx": 26,
+      "mean_length": 1.0043295737093463,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 4364667
+        },
+        {
+          "value": "1",
+          "count": 915933
+        },
+        {
+          "value": "2",
+          "count": 396544
+        },
+        {
+          "value": "3",
+          "count": 200640
+        },
+        {
+          "value": "4",
+          "count": 114980
+        }
+      ],
+      "dtype": "string"
+    },
+    "team": {
+      "null_count": 29467598,
+      "ndv_approx": 163,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "bra",
+          "count": 26772
+        },
+        {
+          "value": "ren",
+          "count": 23019
+        },
+        {
+          "value": "alb",
+          "count": 22347
+        },
+        {
+          "value": "mrb",
+          "count": 22254
+        },
+        {
+          "value": "mob",
+          "count": 22161
+        }
+      ],
+      "dtype": "string"
+    },
+    "gameday_link - Split 1": {
+      "null_count": 29467598,
+      "ndv_approx": 65197,
+      "mean_length": 30.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "gameday_link - Split 3": {
+      "null_count": 29467598,
+      "ndv_approx": 6,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "08",
+          "count": 723219
+        },
+        {
+          "value": "07",
+          "count": 721677
+        },
+        {
+          "value": "06",
+          "count": 555129
+        },
+        {
+          "value": "05",
+          "count": 495162
+        },
+        {
+          "value": "04",
+          "count": 394338
+        }
+      ],
+      "dtype": "string"
+    },
+    "gameday_link - Split 4": {
+      "null_count": 29467598,
+      "ndv_approx": 29,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "21",
+          "count": 105498
+        },
+        {
+          "value": "26",
+          "count": 105282
+        },
+        {
+          "value": "28",
+          "count": 104931
+        },
+        {
+          "value": "29",
+          "count": 103563
+        },
+        {
+          "value": "25",
+          "count": 103272
+        }
+      ],
+      "dtype": "string"
+    },
+    "gameday_link - Split 5": {
+      "null_count": 29467598,
+      "ndv_approx": 198,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "renaaa",
+          "count": 22869
+        },
+        {
+          "value": "mobaax",
+          "count": 22572
+        },
+        {
+          "value": "mrbaaa",
+          "count": 22419
+        },
+        {
+          "value": "nozaaa",
+          "count": 22383
+        },
+        {
+          "value": "albaaa",
+          "count": 22299
+        }
+      ],
+      "dtype": "string"
+    },
+    "gameday_link - Split 6": {
+      "null_count": 29467598,
+      "ndv_approx": 198,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "renaaa",
+          "count": 23016
+        },
+        {
+          "value": "albaaa",
+          "count": 22461
+        },
+        {
+          "value": "mrbaaa",
+          "count": 22188
+        },
+        {
+          "value": "mobaax",
+          "count": 22155
+        },
+        {
+          "value": "iowaaa",
+          "count": 22113
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_496521907631644673": {
+      "null_count": 29467598,
+      "ndv_approx": 163,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "bra",
+          "count": 26844
+        },
+        {
+          "value": "ren",
+          "count": 22869
+        },
+        {
+          "value": "mob",
+          "count": 22572
+        },
+        {
+          "value": "mrb",
+          "count": 22419
+        },
+        {
+          "value": "noz",
+          "count": 22383
+        }
+      ],
+      "dtype": "string"
+    },
+    "Calculation_496521907632136194": {
+      "null_count": 29467598,
+      "ndv_approx": 163,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "bra",
+          "count": 27153
+        },
+        {
+          "value": "ren",
+          "count": 23016
+        },
+        {
+          "value": "alb",
+          "count": 22461
+        },
+        {
+          "value": "mrb",
+          "count": 22188
+        },
+        {
+          "value": "mob",
+          "count": 22155
+        }
+      ],
+      "dtype": "string"
+    },
+    "fielded_by": {
+      "null_count": 29631778,
+      "ndv_approx": 11837,
+      "mean_length": 12.778358094681575,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,817 @@
+{
+  "schema_version": 1,
+  "slug": "us-accidents",
+  "row_count": 7728394,
+  "parquet_sha256": "1787cc68e060fae1be1cf3411f764d281aad99535b8899fa4075677ccec0f627",
+  "computed_at": "2026-05-16T10:38:02Z",
+  "sample_rows": null,
+  "columns": {
+    "ID": {
+      "null_count": 0,
+      "ndv_approx": 6464135,
+      "mean_length": 8.857495231221389,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Source": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 7.0,
+      "top_values": [
+        {
+          "value": "Source1",
+          "count": 4325632
+        },
+        {
+          "value": "Source2",
+          "count": 3305373
+        },
+        {
+          "value": "Source3",
+          "count": 97389
+        }
+      ],
+      "dtype": "string"
+    },
+    "Severity": {
+      "null_count": 0,
+      "min": 1,
+      "max": 4,
+      "mean": 2.212384487643875,
+      "ndv_approx": 4,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.3,
+          1.6,
+          1.9,
+          2.2,
+          2.5,
+          2.8,
+          3.1,
+          3.4,
+          3.6999999999999997,
+          4.0
+        ],
+        "counts": [
+          67366,
+          0,
+          0,
+          6156981,
+          0,
+          0,
+          1299337,
+          0,
+          0,
+          204710
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Start_Time": {
+      "null_count": 0,
+      "ndv_approx": 7854639,
+      "mean_length": 19.937986339723363,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "End_Time": {
+      "null_count": 0,
+      "ndv_approx": 7726095,
+      "mean_length": 19.937986339723363,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Start_Lat": {
+      "null_count": 0,
+      "min": 24.5548,
+      "max": 49.002201,
+      "mean": 36.20119454947053,
+      "ndv_approx": 2346205,
+      "histogram": {
+        "buckets": [
+          24.5548,
+          26.9995401,
+          29.4442802,
+          31.8890203,
+          34.3337604,
+          36.7785005,
+          39.2232406,
+          41.6679807,
+          44.1127208,
+          46.557460899999995,
+          49.002201
+        ],
+        "counts": [
+          380505,
+          399994,
+          625264,
+          1748718,
+          1018723,
+          1183493,
+          1250566,
+          667351,
+          323576,
+          130204
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Start_Lng": {
+      "null_count": 0,
+      "min": -124.623833,
+      "max": -67.113167,
+      "mean": -94.70254538795533,
+      "ndv_approx": 2512704,
+      "histogram": {
+        "buckets": [
+          -124.623833,
+          -118.8727664,
+          -113.1216998,
+          -107.37063320000001,
+          -101.61956660000001,
+          -95.86850000000001,
+          -90.11743340000001,
+          -84.36636680000001,
+          -78.61530020000001,
+          -72.8642336,
+          -67.113167
+        ],
+        "counts": [
+          1067851,
+          1011512,
+          282103,
+          120962,
+          484801,
+          666745,
+          766230,
+          1942253,
+          1257118,
+          128819
+        ]
+      },
+      "dtype": "float64"
+    },
+    "End_Lat": {
+      "null_count": 3402762,
+      "min": 24.566013,
+      "max": 49.075,
+      "mean": 36.26182889162195,
+      "ndv_approx": 1483440,
+      "histogram": {
+        "buckets": [
+          24.566013,
+          27.0169117,
+          29.4678104,
+          31.9187091,
+          34.369607800000004,
+          36.8205065,
+          39.271405200000004,
+          41.7223039,
+          44.1732026,
+          46.62410130000001,
+          49.075
+        ],
+        "counts": [
+          279376,
+          253324,
+          258325,
+          959972,
+          488606,
+          744385,
+          713057,
+          323818,
+          237940,
+          66829
+        ]
+      },
+      "dtype": "float64"
+    },
+    "End_Lng": {
+      "null_count": 3402762,
+      "min": -124.545748,
+      "max": -67.10924200000001,
+      "mean": -95.7255702600722,
+      "ndv_approx": 1556475,
+      "histogram": {
+        "buckets": [
+          -124.545748,
+          -118.80209740000001,
+          -113.0584468,
+          -107.3147962,
+          -101.57114560000001,
+          -95.827495,
+          -90.0838444,
+          -84.34019380000001,
+          -78.59654320000001,
+          -72.8528926,
+          -67.10924200000001
+        ],
+        "counts": [
+          694116,
+          647145,
+          172955,
+          58825,
+          172495,
+          355464,
+          349273,
+          1058036,
+          774075,
+          43248
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Distance(mi)": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 441.75,
+      "mean": 0.5618422831523626,
+      "ndv_approx": 29715,
+      "histogram": {
+        "buckets": [
+          0.0,
+          44.175,
+          88.35,
+          132.52499999999998,
+          176.7,
+          220.875,
+          265.04999999999995,
+          309.22499999999997,
+          353.4,
+          397.575,
+          441.75
+        ],
+        "counts": [
+          7727366,
+          908,
+          82,
+          26,
+          4,
+          5,
+          0,
+          2,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Description": {
+      "null_count": 5,
+      "ndv_approx": 4212273,
+      "mean_length": 68.83715545374334,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Street": {
+      "null_count": 10869,
+      "ndv_approx": 299376,
+      "mean_length": 11.062817807522489,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "City": {
+      "null_count": 253,
+      "ndv_approx": 16539,
+      "mean_length": 8.775568535822522,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "County": {
+      "null_count": 0,
+      "ndv_approx": 2373,
+      "mean_length": 8.06435386187609,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "State": {
+      "null_count": 0,
+      "ndv_approx": 52,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "CA",
+          "count": 1741433
+        },
+        {
+          "value": "FL",
+          "count": 880192
+        },
+        {
+          "value": "TX",
+          "count": 582837
+        },
+        {
+          "value": "SC",
+          "count": 382557
+        },
+        {
+          "value": "NY",
+          "count": 347960
+        }
+      ],
+      "dtype": "string"
+    },
+    "Zipcode": {
+      "null_count": 1915,
+      "ndv_approx": 640274,
+      "mean_length": 6.467853597997225,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Country": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 2.0,
+      "top_values": [
+        {
+          "value": "US",
+          "count": 7728394
+        }
+      ],
+      "dtype": "string"
+    },
+    "Timezone": {
+      "null_count": 7808,
+      "ndv_approx": 4,
+      "mean_length": 10.055930858098076,
+      "top_values": [
+        {
+          "value": "US/Eastern",
+          "count": 3580167
+        },
+        {
+          "value": "US/Pacific",
+          "count": 2062984
+        },
+        {
+          "value": "US/Central",
+          "count": 1645616
+        },
+        {
+          "value": "US/Mountain",
+          "count": 431819
+        }
+      ],
+      "dtype": "string"
+    },
+    "Airport_Code": {
+      "null_count": 22635,
+      "ndv_approx": 1945,
+      "mean_length": 4.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Weather_Timestamp": {
+      "null_count": 120228,
+      "ndv_approx": 1064204,
+      "mean_length": 19.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Temperature(F)": {
+      "null_count": 163853,
+      "min": -89.0,
+      "max": 207.0,
+      "mean": 61.66328580940964,
+      "ndv_approx": 1013,
+      "histogram": {
+        "buckets": [
+          -89.0,
+          -59.4,
+          -29.799999999999997,
+          -0.19999999999998863,
+          29.400000000000006,
+          59.0,
+          88.60000000000002,
+          118.20000000000002,
+          147.8,
+          177.40000000000003,
+          207.0
+        ],
+        "counts": [
+          21,
+          146,
+          19299,
+          419247,
+          2589496,
+          4142118,
+          394134,
+          59,
+          11,
+          10
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Wind_Chill(F)": {
+      "null_count": 1999019,
+      "min": -89.0,
+      "max": 207.0,
+      "mean": 58.25104839533052,
+      "ndv_approx": 1026,
+      "histogram": {
+        "buckets": [
+          -89.0,
+          -59.4,
+          -29.799999999999997,
+          -0.19999999999998863,
+          29.400000000000006,
+          59.0,
+          88.60000000000002,
+          118.20000000000002,
+          147.8,
+          177.40000000000003,
+          207.0
+        ],
+        "counts": [
+          20,
+          3924,
+          59974,
+          627137,
+          1830992,
+          2927809,
+          279468,
+          36,
+          6,
+          9
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Humidity(%)": {
+      "null_count": 174144,
+      "min": 1.0,
+      "max": 100.0,
+      "mean": 64.83104146672403,
+      "ndv_approx": 134,
+      "histogram": {
+        "buckets": [
+          1.0,
+          10.9,
+          20.8,
+          30.700000000000003,
+          40.6,
+          50.5,
+          60.400000000000006,
+          70.3,
+          80.2,
+          90.10000000000001,
+          100.0
+        ],
+        "counts": [
+          55542,
+          215768,
+          391158,
+          606812,
+          825489,
+          988837,
+          1063085,
+          1075486,
+          1277763,
+          1054310
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Pressure(in)": {
+      "null_count": 140679,
+      "min": 0.0,
+      "max": 58.63,
+      "mean": 29.538985607657253,
+      "ndv_approx": 1073,
+      "histogram": {
+        "buckets": [
+          0.0,
+          5.863,
+          11.726,
+          17.589000000000002,
+          23.452,
+          29.315,
+          35.178000000000004,
+          41.041000000000004,
+          46.904,
+          52.767,
+          58.63
+        ],
+        "counts": [
+          32,
+          2,
+          5,
+          16981,
+          1728626,
+          5841983,
+          56,
+          0,
+          3,
+          27
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Visibility(mi)": {
+      "null_count": 177098,
+      "min": 0.0,
+      "max": 140.0,
+      "mean": 9.090376447963374,
+      "ndv_approx": 125,
+      "histogram": {
+        "buckets": [
+          0.0,
+          14.0,
+          28.0,
+          42.0,
+          56.0,
+          70.0,
+          84.0,
+          98.0,
+          112.0,
+          126.0,
+          140.0
+        ],
+        "counts": [
+          7530288,
+          11774,
+          5563,
+          2643,
+          223,
+          729,
+          13,
+          54,
+          5,
+          4
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Wind_Direction": {
+      "null_count": 175206,
+      "ndv_approx": 26,
+      "mean_length": 2.836185859533749,
+      "top_values": [
+        {
+          "value": "CALM",
+          "count": 961624
+        },
+        {
+          "value": "S",
+          "count": 419989
+        },
+        {
+          "value": "SSW",
+          "count": 384840
+        },
+        {
+          "value": "W",
+          "count": 383913
+        },
+        {
+          "value": "WNW",
+          "count": 378781
+        }
+      ],
+      "dtype": "string"
+    },
+    "Wind_Speed(mph)": {
+      "null_count": 571233,
+      "min": 0.0,
+      "max": 1087.0,
+      "mean": 7.685489595664225,
+      "ndv_approx": 177,
+      "histogram": {
+        "buckets": [
+          0.0,
+          108.7,
+          217.4,
+          326.1,
+          434.8,
+          543.5,
+          652.2,
+          760.9,
+          869.6,
+          978.3000000000001,
+          1087.0
+        ],
+        "counts": [
+          7157031,
+          100,
+          12,
+          1,
+          3,
+          2,
+          2,
+          8,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Precipitation(in)": {
+      "null_count": 2203586,
+      "min": 0.0,
+      "max": 36.47,
+      "mean": 0.008407209807115651,
+      "ndv_approx": 341,
+      "histogram": {
+        "buckets": [
+          0.0,
+          3.647,
+          7.294,
+          10.940999999999999,
+          14.588,
+          18.235,
+          21.881999999999998,
+          25.529,
+          29.176,
+          32.823,
+          36.47
+        ],
+        "counts": [
+          5524298,
+          5,
+          498,
+          0,
+          0,
+          0,
+          6,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Weather_Condition": {
+      "null_count": 173459,
+      "ndv_approx": 129,
+      "mean_length": 7.6729617131054075,
+      "top_values": [
+        {
+          "value": "Fair",
+          "count": 2560802
+        },
+        {
+          "value": "Mostly Cloudy",
+          "count": 1016195
+        },
+        {
+          "value": "Cloudy",
+          "count": 817082
+        },
+        {
+          "value": "Clear",
+          "count": 808743
+        },
+        {
+          "value": "Partly Cloudy",
+          "count": 698972
+        }
+      ],
+      "dtype": "string"
+    },
+    "Amenity": {
+      "dtype": "bool",
+      "true_count": 96334,
+      "false_count": 7632060,
+      "null_count": 0
+    },
+    "Bump": {
+      "dtype": "bool",
+      "true_count": 3514,
+      "false_count": 7724880,
+      "null_count": 0
+    },
+    "Crossing": {
+      "dtype": "bool",
+      "true_count": 873763,
+      "false_count": 6854631,
+      "null_count": 0
+    },
+    "Give_Way": {
+      "dtype": "bool",
+      "true_count": 36582,
+      "false_count": 7691812,
+      "null_count": 0
+    },
+    "Junction": {
+      "dtype": "bool",
+      "true_count": 571342,
+      "false_count": 7157052,
+      "null_count": 0
+    },
+    "No_Exit": {
+      "dtype": "bool",
+      "true_count": 19545,
+      "false_count": 7708849,
+      "null_count": 0
+    },
+    "Railway": {
+      "dtype": "bool",
+      "true_count": 66979,
+      "false_count": 7661415,
+      "null_count": 0
+    },
+    "Roundabout": {
+      "dtype": "bool",
+      "true_count": 249,
+      "false_count": 7728145,
+      "null_count": 0
+    },
+    "Station": {
+      "dtype": "bool",
+      "true_count": 201901,
+      "false_count": 7526493,
+      "null_count": 0
+    },
+    "Stop": {
+      "dtype": "bool",
+      "true_count": 214371,
+      "false_count": 7514023,
+      "null_count": 0
+    },
+    "Traffic_Calming": {
+      "dtype": "bool",
+      "true_count": 7598,
+      "false_count": 7720796,
+      "null_count": 0
+    },
+    "Traffic_Signal": {
+      "dtype": "bool",
+      "true_count": 1143772,
+      "false_count": 6584622,
+      "null_count": 0
+    },
+    "Turning_Loop": {
+      "dtype": "bool",
+      "true_count": 0,
+      "false_count": 7728394,
+      "null_count": 0
+    },
+    "Sunrise_Sunset": {
+      "null_count": 23246,
+      "ndv_approx": 2,
+      "mean_length": 3.6153275706060417,
+      "top_values": [
+        {
+          "value": "Day",
+          "count": 5334553
+        },
+        {
+          "value": "Night",
+          "count": 2370595
+        }
+      ],
+      "dtype": "string"
+    },
+    "Civil_Twilight": {
+      "null_count": 23246,
+      "ndv_approx": 2,
+      "mean_length": 3.521606852976737,
+      "top_values": [
+        {
+          "value": "Day",
+          "count": 5695619
+        },
+        {
+          "value": "Night",
+          "count": 2009529
+        }
+      ],
+      "dtype": "string"
+    },
+    "Nautical_Twilight": {
+      "null_count": 23246,
+      "ndv_approx": 2,
+      "mean_length": 3.422832111725823,
+      "top_values": [
+        {
+          "value": "Day",
+          "count": 6076156
+        },
+        {
+          "value": "Night",
+          "count": 1628992
+        }
+      ],
+      "dtype": "string"
+    },
+    "Astronomical_Twilight": {
+      "null_count": 23246,
+      "ndv_approx": 2,
+      "mean_length": 3.3446007785963356,
+      "top_values": [
+        {
+          "value": "Day",
+          "count": 6377548
+        },
+        {
+          "value": "Night",
+          "count": 1327600
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

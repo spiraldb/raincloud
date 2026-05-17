@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "slug": "120-years-of-olympic-history-athletes-and-results",
+  "row_count": 271116,
+  "parquet_sha256": "c39dfd34997d7ebeea5ec7389d2f22e28eadb143c43bc06ab81a2410433d3bb1",
+  "computed_at": "2026-05-13T16:44:19Z",
+  "sample_rows": null,
+  "columns": {
+    "ID": {
+      "null_count": 0,
+      "min": 1,
+      "max": 135571,
+      "mean": 68248.95439590434,
+      "ndv_approx": 131501,
+      "histogram": {
+        "buckets": [
+          1.0,
+          13558.0,
+          27115.0,
+          40672.0,
+          54229.0,
+          67786.0,
+          81343.0,
+          94900.0,
+          108457.0,
+          122014.0,
+          135571.0
+        ],
+        "counts": [
+          25982,
+          26831,
+          27329,
+          27184,
+          27393,
+          27311,
+          26893,
+          27155,
+          27552,
+          27486
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "Name": {
+      "null_count": 0,
+      "ndv_approx": 128251,
+      "mean_length": 19.341990144440018,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Sex": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "M",
+          "count": 196594
+        },
+        {
+          "value": "F",
+          "count": 74522
+        }
+      ],
+      "dtype": "string"
+    },
+    "Age": {
+      "null_count": 9474,
+      "min": 10,
+      "max": 97,
+      "mean": 25.556898357297374,
+      "ndv_approx": 65,
+      "histogram": {
+        "buckets": [
+          10.0,
+          18.7,
+          27.4,
+          36.099999999999994,
+          44.8,
+          53.5,
+          62.199999999999996,
+          70.89999999999999,
+          79.6,
+          88.3,
+          97.0
+        ],
+        "counts": [
+          20660,
+          163881,
+          63220,
+          9475,
+          3111,
+          855,
+          339,
+          90,
+          9,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Height": {
+      "null_count": 60171,
+      "min": 127,
+      "max": 226,
+      "mean": 175.33896987366376,
+      "ndv_approx": 98,
+      "histogram": {
+        "buckets": [
+          127.0,
+          136.9,
+          146.8,
+          156.7,
+          166.6,
+          176.5,
+          186.4,
+          196.3,
+          206.2,
+          216.10000000000002,
+          226.0
+        ],
+        "counts": [
+          69,
+          787,
+          6217,
+          34655,
+          73122,
+          66847,
+          24645,
+          4098,
+          462,
+          43
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Weight": {
+      "null_count": 62875,
+      "min": 25.0,
+      "max": 214.0,
+      "mean": 70.70239290053351,
+      "ndv_approx": 236,
+      "histogram": {
+        "buckets": [
+          25.0,
+          43.9,
+          62.8,
+          81.69999999999999,
+          100.6,
+          119.5,
+          138.39999999999998,
+          157.29999999999998,
+          176.2,
+          195.1,
+          214.0
+        ],
+        "counts": [
+          2539,
+          59523,
+          103919,
+          36880,
+          3876,
+          1253,
+          200,
+          41,
+          7,
+          3
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Team": {
+      "null_count": 0,
+      "ndv_approx": 1179,
+      "mean_length": 8.414660145472787,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "NOC": {
+      "null_count": 0,
+      "ndv_approx": 256,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "USA",
+          "count": 18853
+        },
+        {
+          "value": "FRA",
+          "count": 12758
+        },
+        {
+          "value": "GBR",
+          "count": 12256
+        },
+        {
+          "value": "ITA",
+          "count": 10715
+        },
+        {
+          "value": "GER",
+          "count": 9830
+        }
+      ],
+      "dtype": "string"
+    },
+    "Games": {
+      "null_count": 0,
+      "ndv_approx": 55,
+      "mean_length": 11.0,
+      "top_values": [
+        {
+          "value": "2000 Summer",
+          "count": 13821
+        },
+        {
+          "value": "1996 Summer",
+          "count": 13780
+        },
+        {
+          "value": "2016 Summer",
+          "count": 13688
+        },
+        {
+          "value": "2008 Summer",
+          "count": 13602
+        },
+        {
+          "value": "2004 Summer",
+          "count": 13443
+        }
+      ],
+      "dtype": "string"
+    },
+    "Year": {
+      "null_count": 0,
+      "min": 1896,
+      "max": 2016,
+      "mean": 1978.3784800601957,
+      "ndv_approx": 37,
+      "histogram": {
+        "buckets": [
+          1896.0,
+          1908.0,
+          1920.0,
+          1932.0,
+          1944.0,
+          1956.0,
+          1968.0,
+          1980.0,
+          1992.0,
+          2004.0,
+          2016.0
+        ],
+        "counts": [
+          5350,
+          7141,
+          15559,
+          10722,
+          16838,
+          25149,
+          32940,
+          35201,
+          54888,
+          67328
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Season": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 6.0,
+      "top_values": [
+        {
+          "value": "Summer",
+          "count": 222552
+        },
+        {
+          "value": "Winter",
+          "count": 48564
+        }
+      ],
+      "dtype": "string"
+    },
+    "City": {
+      "null_count": 0,
+      "ndv_approx": 43,
+      "mean_length": 7.7807912480266745,
+      "top_values": [
+        {
+          "value": "London",
+          "count": 22426
+        },
+        {
+          "value": "Athina",
+          "count": 15556
+        },
+        {
+          "value": "Sydney",
+          "count": 13821
+        },
+        {
+          "value": "Atlanta",
+          "count": 13780
+        },
+        {
+          "value": "Rio de Janeiro",
+          "count": 13688
+        }
+      ],
+      "dtype": "string"
+    },
+    "Sport": {
+      "null_count": 0,
+      "ndv_approx": 63,
+      "mean_length": 9.506657666828959,
+      "top_values": [
+        {
+          "value": "Athletics",
+          "count": 38624
+        },
+        {
+          "value": "Gymnastics",
+          "count": 26707
+        },
+        {
+          "value": "Swimming",
+          "count": 23195
+        },
+        {
+          "value": "Shooting",
+          "count": 11448
+        },
+        {
+          "value": "Cycling",
+          "count": 10859
+        }
+      ],
+      "dtype": "string"
+    },
+    "Event": {
+      "null_count": 0,
+      "ndv_approx": 800,
+      "mean_length": 32.063334513639916,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Medal": {
+      "null_count": 231333,
+      "ndv_approx": 3,
+      "mean_length": 5.3277530603524115,
+      "top_values": [
+        {
+          "value": "Gold",
+          "count": 13372
+        },
+        {
+          "value": "Bronze",
+          "count": 13295
+        },
+        {
+          "value": "Silver",
+          "count": 13116
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

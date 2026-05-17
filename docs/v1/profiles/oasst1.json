@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "slug": "oasst1",
+  "row_count": 88838,
+  "parquet_sha256": "f9a2e6d996dbb2d908f2b3b2743c3212530a2df05cd08ae65b5f1aa186cfbaaa",
+  "computed_at": "2026-05-16T09:42:23Z",
+  "sample_rows": null,
+  "columns": {
+    "message_id": {
+      "null_count": 0,
+      "ndv_approx": 91537,
+      "mean_length": 36.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "parent_id": {
+      "null_count": 10364,
+      "ndv_approx": 46547,
+      "mean_length": 36.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "user_id": {
+      "null_count": 0,
+      "ndv_approx": 14171,
+      "mean_length": 36.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "created_date": {
+      "null_count": 0,
+      "ndv_approx": 91488,
+      "mean_length": 32.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 84134,
+      "mean_length": 493.7596186316666,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "role": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 8.626623742092347,
+      "top_values": [
+        {
+          "value": "assistant",
+          "count": 55668
+        },
+        {
+          "value": "prompter",
+          "count": 33170
+        }
+      ],
+      "dtype": "string"
+    },
+    "lang": {
+      "null_count": 0,
+      "ndv_approx": 25,
+      "mean_length": 2.062236880614152,
+      "top_values": [
+        {
+          "value": "en",
+          "count": 41305
+        },
+        {
+          "value": "es",
+          "count": 23975
+        },
+        {
+          "value": "ru",
+          "count": 7611
+        },
+        {
+          "value": "zh",
+          "count": 3448
+        },
+        {
+          "value": "de",
+          "count": 3195
+        }
+      ],
+      "dtype": "string"
+    },
+    "review_count": {
+      "null_count": 0,
+      "min": 0,
+      "max": 12,
+      "mean": 3.027544519237263,
+      "ndv_approx": 13,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.2,
+          2.4,
+          3.5999999999999996,
+          4.8,
+          6.0,
+          7.199999999999999,
+          8.4,
+          9.6,
+          10.799999999999999,
+          12.0
+        ],
+        "counts": [
+          558,
+          175,
+          84626,
+          3064,
+          330,
+          77,
+          2,
+          2,
+          3,
+          1
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "review_result": {
+      "dtype": "bool",
+      "true_count": 86772,
+      "false_count": 1334,
+      "null_count": 732
+    },
+    "deleted": {
+      "dtype": "bool",
+      "true_count": 1553,
+      "false_count": 87285,
+      "null_count": 0
+    },
+    "rank": {
+      "null_count": 37575,
+      "min": 0,
+      "max": 15,
+      "mean": 0.9311199110469539,
+      "ndv_approx": 18,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.5,
+          3.0,
+          4.5,
+          6.0,
+          7.5,
+          9.0,
+          10.5,
+          12.0,
+          13.5,
+          15.0
+        ],
+        "counts": [
+          37845,
+          12064,
+          1227,
+          72,
+          40,
+          6,
+          4,
+          1,
+          2,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "synthetic": {
+      "dtype": "bool",
+      "true_count": 0,
+      "false_count": 88838,
+      "null_count": 0
+    },
+    "model_name": null,
+    "detoxify": null,
+    "message_tree_id": {
+      "null_count": 0,
+      "ndv_approx": 9828,
+      "mean_length": 36.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "tree_state": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 16.0,
+      "top_values": [
+        {
+          "value": "ready_for_export",
+          "count": 88838
+        }
+      ],
+      "dtype": "string"
+    },
+    "emojis": null,
+    "labels": null,
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 5.247698057137711,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 84437
+        },
+        {
+          "value": "validation",
+          "count": 4401
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

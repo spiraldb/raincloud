@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "slug": "ghcn-daily",
+  "row_count": 3181111576,
+  "parquet_sha256": "f39d0e27318f1dd11c16ed8224ffd0e7a6d7ee482355d4d9a7c115e518dc794f",
+  "computed_at": "2026-05-17T01:58:11Z",
+  "sample_rows": null,
+  "columns": {
+    "station_id": {
+      "null_count": 0,
+      "ndv_approx": 161691,
+      "mean_length": 11.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "date": {
+      "dtype": "date32",
+      "null_count": 0,
+      "min": "1763-01-01T00:00:00+00:00",
+      "max": "2026-05-15T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1763-01-01T00:00:00+00:00",
+          "1789-05-03T07:12:00+00:00",
+          "1815-09-04T14:24:00+00:00",
+          "1842-01-04T21:36:00+00:00",
+          "1868-05-07T04:48:00+00:00",
+          "1894-09-07T12:00:00+00:00",
+          "1921-01-08T19:12:00+00:00",
+          "1947-05-12T02:24:00+00:00",
+          "1973-09-11T09:36:00+00:00",
+          "2000-01-12T16:48:00+00:00",
+          "2026-05-15T00:00:00+00:00"
+        ],
+        "counts": [
+          31974,
+          53736,
+          139626,
+          663623,
+          19154266,
+          187300645,
+          334963674,
+          765035207,
+          896893945,
+          976874880
+        ]
+      }
+    },
+    "element": {
+      "null_count": 0,
+      "ndv_approx": 130,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "PRCP",
+          "count": 1092886373
+        },
+        {
+          "value": "TMAX",
+          "count": 465240966
+        },
+        {
+          "value": "TMIN",
+          "count": 464096823
+        },
+        {
+          "value": "SNOW",
+          "count": 366456311
+        },
+        {
+          "value": "SNWD",
+          "count": 304617250
+        }
+      ],
+      "dtype": "string"
+    },
+    "value": {
+      "null_count": 0,
+      "min": -9990,
+      "max": 99980,
+      "mean": 91.93348545313646,
+      "ndv_approx": 11659,
+      "histogram": {
+        "buckets": [
+          -9990.0,
+          1007.0,
+          12004.0,
+          23001.0,
+          33998.0,
+          44995.0,
+          55992.0,
+          66989.0,
+          77986.0,
+          88983.0,
+          99980.0
+        ],
+        "counts": [
+          3155494778,
+          25508702,
+          102967,
+          4403,
+          105,
+          169,
+          136,
+          114,
+          105,
+          97
+        ]
+      },
+      "dtype": "int32"
+    },
+    "mflag": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 0.09843174705419386,
+      "top_values": [
+        {
+          "value": "",
+          "count": 2867989206
+        },
+        {
+          "value": "P",
+          "count": 173476995
+        },
+        {
+          "value": "H",
+          "count": 82177043
+        },
+        {
+          "value": "T",
+          "count": 45155119
+        },
+        {
+          "value": "B",
+          "count": 5068706
+        }
+      ],
+      "dtype": "string"
+    },
+    "qflag": {
+      "null_count": 0,
+      "ndv_approx": 15,
+      "mean_length": 0.0028761625555758247,
+      "top_values": [
+        {
+          "value": "",
+          "count": 3171962182
+        },
+        {
+          "value": "I",
+          "count": 6340677
+        },
+        {
+          "value": "D",
+          "count": 1187700
+        },
+        {
+          "value": "L",
+          "count": 400451
+        },
+        {
+          "value": "S",
+          "count": 310066
+        }
+      ],
+      "dtype": "string"
+    },
+    "sflag": {
+      "null_count": 0,
+      "ndv_approx": 35,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 1029148294
+        },
+        {
+          "value": "a",
+          "count": 300567298
+        },
+        {
+          "value": "C",
+          "count": 237236206
+        },
+        {
+          "value": "E",
+          "count": 217280027
+        },
+        {
+          "value": "6",
+          "count": 215207481
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

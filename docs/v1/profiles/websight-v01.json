@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "slug": "websight-v01",
+  "row_count": 822987,
+  "parquet_sha256": "9e8d577ff82f94886467977ddf2178d224c4c379fbbaa148e19a0d9ce721babe",
+  "computed_at": "2026-05-16T05:12:32Z",
+  "sample_rows": null,
+  "columns": {
+    "image": null,
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 732513,
+      "mean_length": 1415.9538400971096,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 89,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "0024",
+          "count": 11592
+        },
+        {
+          "value": "0012",
+          "count": 11592
+        },
+        {
+          "value": "0018",
+          "count": 11592
+        },
+        {
+          "value": "0020",
+          "count": 11592
+        },
+        {
+          "value": "0022",
+          "count": 11592
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

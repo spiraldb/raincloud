@@ -1,0 +1,456 @@
+{
+  "schema_version": 1,
+  "slug": "uci-adult",
+  "row_count": 48842,
+  "parquet_sha256": "d57018ac1629ee553c261bb981cbdd82b3e628c54f6b3a055409f476aa6d54b1",
+  "computed_at": "2026-05-16T10:21:43Z",
+  "sample_rows": null,
+  "columns": {
+    "age": {
+      "null_count": 0,
+      "min": 17,
+      "max": 90,
+      "mean": 38.64358543876172,
+      "ndv_approx": 74,
+      "histogram": {
+        "buckets": [
+          17.0,
+          24.3,
+          31.6,
+          38.9,
+          46.2,
+          53.5,
+          60.8,
+          68.1,
+          75.4,
+          82.7,
+          90.0
+        ],
+        "counts": [
+          8432,
+          8686,
+          9120,
+          9157,
+          5965,
+          3876,
+          2456,
+          777,
+          277,
+          96
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "workclass": {
+      "null_count": 963,
+      "ndv_approx": 9,
+      "mean_length": 8.009064516802773,
+      "top_values": [
+        {
+          "value": "Private",
+          "count": 33906
+        },
+        {
+          "value": "Self-emp-not-inc",
+          "count": 3862
+        },
+        {
+          "value": "Local-gov",
+          "count": 3136
+        },
+        {
+          "value": "State-gov",
+          "count": 1981
+        },
+        {
+          "value": "?",
+          "count": 1836
+        }
+      ],
+      "dtype": "string"
+    },
+    "fnlwgt": {
+      "null_count": 0,
+      "min": 12285,
+      "max": 1490400,
+      "mean": 189664.13459727284,
+      "ndv_approx": 25991,
+      "histogram": {
+        "buckets": [
+          12285.0,
+          160096.5,
+          307908.0,
+          455719.5,
+          603531.0,
+          751342.5,
+          899154.0,
+          1046965.5,
+          1194777.0,
+          1342588.5,
+          1490400.0
+        ],
+        "counts": [
+          19939,
+          22790,
+          5225,
+          673,
+          151,
+          35,
+          15,
+          7,
+          3,
+          4
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "education": {
+      "null_count": 0,
+      "ndv_approx": 17,
+      "mean_length": 8.42207526309324,
+      "top_values": [
+        {
+          "value": "HS-grad",
+          "count": 15784
+        },
+        {
+          "value": "Some-college",
+          "count": 10878
+        },
+        {
+          "value": "Bachelors",
+          "count": 8025
+        },
+        {
+          "value": "Masters",
+          "count": 2657
+        },
+        {
+          "value": "Assoc-voc",
+          "count": 2061
+        }
+      ],
+      "dtype": "string"
+    },
+    "education_num": {
+      "null_count": 0,
+      "min": 1,
+      "max": 16,
+      "mean": 10.078088530363212,
+      "ndv_approx": 18,
+      "histogram": {
+        "buckets": [
+          1.0,
+          2.5,
+          4.0,
+          5.5,
+          7.0,
+          8.5,
+          10.0,
+          11.5,
+          13.0,
+          14.5,
+          16.0
+        ],
+        "counts": [
+          330,
+          509,
+          1711,
+          1389,
+          2469,
+          15784,
+          12939,
+          1601,
+          10682,
+          1428
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "marital_status": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 14.406043978543057,
+      "top_values": [
+        {
+          "value": "Married-civ-spouse",
+          "count": 22379
+        },
+        {
+          "value": "Never-married",
+          "count": 16117
+        },
+        {
+          "value": "Divorced",
+          "count": 6633
+        },
+        {
+          "value": "Separated",
+          "count": 1530
+        },
+        {
+          "value": "Widowed",
+          "count": 1518
+        }
+      ],
+      "dtype": "string"
+    },
+    "occupation": {
+      "null_count": 966,
+      "ndv_approx": 17,
+      "mean_length": 12.412712006015541,
+      "top_values": [
+        {
+          "value": "Prof-specialty",
+          "count": 6172
+        },
+        {
+          "value": "Craft-repair",
+          "count": 6112
+        },
+        {
+          "value": "Exec-managerial",
+          "count": 6086
+        },
+        {
+          "value": "Adm-clerical",
+          "count": 5611
+        },
+        {
+          "value": "Sales",
+          "count": 5504
+        }
+      ],
+      "dtype": "string"
+    },
+    "relationship": {
+      "null_count": 0,
+      "ndv_approx": 6,
+      "mean_length": 9.138712583432293,
+      "top_values": [
+        {
+          "value": "Husband",
+          "count": 19716
+        },
+        {
+          "value": "Not-in-family",
+          "count": 12583
+        },
+        {
+          "value": "Own-child",
+          "count": 7581
+        },
+        {
+          "value": "Unmarried",
+          "count": 5125
+        },
+        {
+          "value": "Wife",
+          "count": 2331
+        }
+      ],
+      "dtype": "string"
+    },
+    "race": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 5.529400925433029,
+      "top_values": [
+        {
+          "value": "White",
+          "count": 41762
+        },
+        {
+          "value": "Black",
+          "count": 4685
+        },
+        {
+          "value": "Asian-Pac-Islander",
+          "count": 1519
+        },
+        {
+          "value": "Amer-Indian-Eskimo",
+          "count": 470
+        },
+        {
+          "value": "Other",
+          "count": 406
+        }
+      ],
+      "dtype": "string"
+    },
+    "sex": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.663035911715327,
+      "top_values": [
+        {
+          "value": "Male",
+          "count": 32650
+        },
+        {
+          "value": "Female",
+          "count": 16192
+        }
+      ],
+      "dtype": "string"
+    },
+    "capital_gain": {
+      "null_count": 0,
+      "min": 0,
+      "max": 99999,
+      "mean": 1079.0676262233324,
+      "ndv_approx": 136,
+      "histogram": {
+        "buckets": [
+          0.0,
+          9999.9,
+          19999.8,
+          29999.699999999997,
+          39999.6,
+          49999.5,
+          59999.399999999994,
+          69999.3,
+          79999.2,
+          89999.09999999999,
+          99999.0
+        ],
+        "counts": [
+          47708,
+          753,
+          128,
+          6,
+          3,
+          0,
+          0,
+          0,
+          0,
+          244
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "capital_loss": {
+      "null_count": 0,
+      "min": 0,
+      "max": 4356,
+      "mean": 87.50231358257237,
+      "ndv_approx": 90,
+      "histogram": {
+        "buckets": [
+          0.0,
+          435.6,
+          871.2,
+          1306.8000000000002,
+          1742.4,
+          2178.0,
+          2613.6000000000004,
+          3049.2000000000003,
+          3484.8,
+          3920.4,
+          4356.0
+        ],
+        "counts": [
+          46574,
+          23,
+          29,
+          706,
+          1169,
+          307,
+          21,
+          2,
+          8,
+          3
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "hours_per_week": {
+      "null_count": 0,
+      "min": 1,
+      "max": 99,
+      "mean": 40.422382375824085,
+      "ndv_approx": 92,
+      "histogram": {
+        "buckets": [
+          1.0,
+          10.8,
+          20.6,
+          30.400000000000002,
+          40.2,
+          50.0,
+          59.800000000000004,
+          69.60000000000001,
+          79.4,
+          89.2,
+          99.0
+        ],
+        "counts": [
+          1125,
+          3328,
+          3398,
+          26639,
+          4671,
+          5828,
+          2642,
+          683,
+          315,
+          213
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "native_country": {
+      "null_count": 274,
+      "ndv_approx": 38,
+      "mean_length": 12.370634985999011,
+      "top_values": [
+        {
+          "value": "United-States",
+          "count": 43832
+        },
+        {
+          "value": "Mexico",
+          "count": 951
+        },
+        {
+          "value": "?",
+          "count": 583
+        },
+        {
+          "value": "Philippines",
+          "count": 295
+        },
+        {
+          "value": "Germany",
+          "count": 206
+        }
+      ],
+      "dtype": "string"
+    },
+    "income": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 5.094058392367225,
+      "top_values": [
+        {
+          "value": "<=50K",
+          "count": 24720
+        },
+        {
+          "value": "<=50K.",
+          "count": 12435
+        },
+        {
+          "value": ">50K",
+          "count": 7841
+        },
+        {
+          "value": ">50K.",
+          "count": 3846
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

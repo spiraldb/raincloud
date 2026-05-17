@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "slug": "palmer-archipelago-antarctica-penguin-data",
+  "row_count": 344,
+  "parquet_sha256": "a5f15510268f0a0296e5a0e419de585c9442db34abed182ca6b2bf0d2afb5566",
+  "computed_at": "2026-05-16T10:11:54Z",
+  "sample_rows": null,
+  "columns": {
+    "species": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 6.593023255813954,
+      "top_values": [
+        {
+          "value": "Adelie",
+          "count": 152
+        },
+        {
+          "value": "Gentoo",
+          "count": 124
+        },
+        {
+          "value": "Chinstrap",
+          "count": 68
+        }
+      ],
+      "dtype": "string"
+    },
+    "island": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 6.093023255813954,
+      "top_values": [
+        {
+          "value": "Biscoe",
+          "count": 168
+        },
+        {
+          "value": "Dream",
+          "count": 124
+        },
+        {
+          "value": "Torgersen",
+          "count": 52
+        }
+      ],
+      "dtype": "string"
+    },
+    "bill_length_mm": {
+      "null_count": 2,
+      "min": 32.1,
+      "max": 59.6,
+      "mean": 43.921929824561424,
+      "ndv_approx": 186,
+      "histogram": {
+        "buckets": [
+          32.1,
+          34.85,
+          37.6,
+          40.35,
+          43.1,
+          45.85,
+          48.6,
+          51.35,
+          54.1,
+          56.85,
+          59.6
+        ],
+        "counts": [
+          9,
+          40,
+          57,
+          48,
+          49,
+          55,
+          61,
+          16,
+          5,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "bill_depth_mm": {
+      "null_count": 2,
+      "min": 13.1,
+      "max": 21.5,
+      "mean": 17.15116959064328,
+      "ndv_approx": 80,
+      "histogram": {
+        "buckets": [
+          13.1,
+          13.94,
+          14.78,
+          15.620000000000001,
+          16.46,
+          17.3,
+          18.14,
+          18.98,
+          19.82,
+          20.66,
+          21.5
+        ],
+        "counts": [
+          21,
+          35,
+          32,
+          34,
+          44,
+          55,
+          56,
+          39,
+          16,
+          10
+        ]
+      },
+      "dtype": "float64"
+    },
+    "flipper_length_mm": {
+      "null_count": 2,
+      "min": 172,
+      "max": 231,
+      "mean": 200.91520467836258,
+      "ndv_approx": 54,
+      "histogram": {
+        "buckets": [
+          172.0,
+          177.9,
+          183.8,
+          189.7,
+          195.6,
+          201.5,
+          207.4,
+          213.3,
+          219.2,
+          225.1,
+          231.0
+        ],
+        "counts": [
+          3,
+          22,
+          52,
+          79,
+          44,
+          15,
+          42,
+          42,
+          28,
+          15
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "body_mass_g": {
+      "null_count": 2,
+      "min": 2700,
+      "max": 6300,
+      "mean": 4201.754385964912,
+      "ndv_approx": 92,
+      "histogram": {
+        "buckets": [
+          2700.0,
+          3060.0,
+          3420.0,
+          3780.0,
+          4140.0,
+          4500.0,
+          4860.0,
+          5220.0,
+          5580.0,
+          5940.0,
+          6300.0
+        ],
+        "counts": [
+          15,
+          43,
+          71,
+          53,
+          42,
+          41,
+          28,
+          27,
+          16,
+          6
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "sex": {
+      "null_count": 11,
+      "ndv_approx": 2,
+      "mean_length": 4.990990990990991,
+      "top_values": [
+        {
+          "value": "male",
+          "count": 168
+        },
+        {
+          "value": "female",
+          "count": 165
+        }
+      ],
+      "dtype": "string"
+    },
+    "year": {
+      "null_count": 0,
+      "min": 2007,
+      "max": 2009,
+      "mean": 2008.0290697674418,
+      "ndv_approx": 3,
+      "histogram": {
+        "buckets": [
+          2007.0,
+          2007.2,
+          2007.4,
+          2007.6,
+          2007.8,
+          2008.0,
+          2008.2,
+          2008.4,
+          2008.6,
+          2008.8,
+          2009.0
+        ],
+        "counts": [
+          110,
+          0,
+          0,
+          0,
+          0,
+          114,
+          0,
+          0,
+          0,
+          120
+        ]
+      },
+      "dtype": "uint16"
+    }
+  }
+}

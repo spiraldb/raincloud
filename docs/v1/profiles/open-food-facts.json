@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "slug": "open-food-facts",
+  "row_count": 4488317,
+  "parquet_sha256": "cb7788f338f15ef490622a40893688eb0647e475a78e9c901aadf83bda89df72",
+  "computed_at": "2026-05-16T10:11:33Z",
+  "sample_rows": null,
+  "columns": {
+    "raw_json": {
+      "null_count": 0,
+      "ndv_approx": 4769616,
+      "mean_length": 17128.119810610526,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

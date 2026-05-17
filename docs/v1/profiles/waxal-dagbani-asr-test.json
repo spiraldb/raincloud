@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "slug": "waxal-dagbani-asr-test",
+  "row_count": 1838,
+  "parquet_sha256": "eae8a9cb5a57711580c0e374bd14fe901aaa5c903cd5ce29dbdf078cef32b20f",
+  "computed_at": "2026-05-17T13:43:41Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 1913,
+      "mean_length": 9.411316648531011,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "speaker_id": {
+      "null_count": 0,
+      "ndv_approx": 826,
+      "mean_length": 3.998911860718172,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "transcription": {
+      "null_count": 0,
+      "ndv_approx": 1439,
+      "mean_length": 198.35418933623504,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "language": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "dag",
+          "count": 1838
+        }
+      ],
+      "dtype": "string"
+    },
+    "gender": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 0.0,
+      "top_values": [
+        {
+          "value": "",
+          "count": 1838
+        }
+      ],
+      "dtype": "string"
+    },
+    "audio": null,
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "test",
+          "count": 1838
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

@@ -1,0 +1,497 @@
+{
+  "schema_version": 1,
+  "slug": "bi-corporations",
+  "row_count": 741723,
+  "parquet_sha256": "d49e654a7612cc1904bdced02f685a3492f8da7df6628ac08f7c90cb256a46df",
+  "computed_at": "2026-05-16T05:48:16Z",
+  "sample_rows": null,
+  "columns": {
+    "Id1": {
+      "null_count": 0,
+      "min": 19,
+      "max": 903485,
+      "mean": 499264.67393218225,
+      "ndv_approx": 784345,
+      "histogram": {
+        "buckets": [
+          19.0,
+          90365.6,
+          180712.2,
+          271058.80000000005,
+          361405.4,
+          451752.0,
+          542098.6000000001,
+          632445.2000000001,
+          722791.8,
+          813138.4,
+          903485.0
+        ],
+        "counts": [
+          25693,
+          49036,
+          80954,
+          85591,
+          84794,
+          82642,
+          83499,
+          79865,
+          83739,
+          85910
+        ]
+      },
+      "dtype": "int32"
+    },
+    "Number of Records": {
+      "dtype": "int16",
+      "null_count": 0,
+      "min": 1,
+      "max": 1,
+      "mean": 1.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          1,
+          1
+        ],
+        "counts": [
+          741723
+        ]
+      }
+    },
+    "angelco_account": {
+      "null_count": 733862,
+      "ndv_approx": 4602,
+      "mean_length": 27.993257855234702,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "business_model": {
+      "null_count": 693018,
+      "ndv_approx": 16,
+      "mean_length": 3.3239913766553744,
+      "top_values": [
+        {
+          "value": "B2B",
+          "count": 23393
+        },
+        {
+          "value": "B2C",
+          "count": 22729
+        },
+        {
+          "value": "Consulting",
+          "count": 1521
+        },
+        {
+          "value": "Marketplace",
+          "count": 340
+        },
+        {
+          "value": "SaaS",
+          "count": 236
+        }
+      ],
+      "dtype": "string"
+    },
+    "city": {
+      "null_count": 526615,
+      "ndv_approx": 22315,
+      "mean_length": 7.288185469624561,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "continent": {
+      "null_count": 594998,
+      "ndv_approx": 16,
+      "mean_length": 2.0756653603680353,
+      "top_values": [
+        {
+          "value": "EU",
+          "count": 60757
+        },
+        {
+          "value": "0",
+          "count": 50030
+        },
+        {
+          "value": "AS",
+          "count": 16724
+        },
+        {
+          "value": "SA",
+          "count": 5949
+        },
+        {
+          "value": "OC",
+          "count": 5134
+        }
+      ],
+      "dtype": "string"
+    },
+    "country": {
+      "null_count": 414156,
+      "ndv_approx": 217,
+      "mean_length": 5.069839147411064,
+      "top_values": [
+        {
+          "value": "--",
+          "count": 193791
+        },
+        {
+          "value": "united states",
+          "count": 51525
+        },
+        {
+          "value": "italy",
+          "count": 9717
+        },
+        {
+          "value": "spain",
+          "count": 9595
+        },
+        {
+          "value": "united kingdom",
+          "count": 9501
+        }
+      ],
+      "dtype": "string"
+    },
+    "crunchbase_account": {
+      "null_count": 688918,
+      "ndv_approx": 42830,
+      "mean_length": 54.25037401761197,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "facebook_account": {
+      "null_count": 453360,
+      "ndv_approx": 224277,
+      "mean_length": 45.938435236143334,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "financing_stage": {
+      "null_count": 741721,
+      "ndv_approx": 2,
+      "mean_length": 14.0,
+      "top_values": [
+        {
+          "value": "Pre Series A",
+          "count": 1
+        },
+        {
+          "value": "No Known Funding",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "founding_date": {
+      "null_count": 309633,
+      "ndv_approx": 1052,
+      "mean_length": 9.999981485338703,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "id": {
+      "null_count": 0,
+      "min": 410142,
+      "max": 3724739,
+      "mean": 2447833.5795681137,
+      "ndv_approx": 799836,
+      "histogram": {
+        "buckets": [
+          410142.0,
+          741601.7,
+          1073061.4,
+          1404521.1,
+          1735980.8,
+          2067440.5,
+          2398900.2,
+          2730359.9,
+          3061819.6,
+          3393279.3000000003,
+          3724739.0
+        ],
+        "counts": [
+          22446,
+          12,
+          54797,
+          194206,
+          71297,
+          19,
+          17,
+          42232,
+          303841,
+          52856
+        ]
+      },
+      "dtype": "int32"
+    },
+    "industries": {
+      "null_count": 657607,
+      "ndv_approx": 75,
+      "mean_length": 10.515003090969614,
+      "top_values": [
+        {
+          "value": "Finance",
+          "count": 7167
+        },
+        {
+          "value": "Real Estate",
+          "count": 5709
+        },
+        {
+          "value": "E-Commerce",
+          "count": 5460
+        },
+        {
+          "value": "Education",
+          "count": 5056
+        },
+        {
+          "value": "Healthcare",
+          "count": 4714
+        }
+      ],
+      "dtype": "string"
+    },
+    "keywords": {
+      "null_count": 4,
+      "ndv_approx": 3,
+      "mean_length": 8.000666020420132,
+      "top_values": [
+        {
+          "value": "Startups",
+          "count": 741717
+        },
+        {
+          "value": "\"\"Quantitas is a technology-based company, whose main activity is the development of experimental Energy + ICT projects, for its application in Smart Grids&Cities and sustainable and distributed generation, or independently through the use of ICT technolo",
+          "count": 1
+        },
+        {
+          "value": "\"\"Brand new start-up specialized in performance based Digital Marketing services supported on real time Big Data business intelligence applied to DataBases generated through cross-channel digital campaigns including own property channels (eg.: www.guiadec",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "last_funding_date": {
+      "null_count": 311697,
+      "ndv_approx": 864,
+      "mean_length": 9.999997674559213,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "linkedin_account": {
+      "null_count": 367910,
+      "ndv_approx": 483786,
+      "mean_length": 52.469662638806035,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "location": {
+      "null_count": 481205,
+      "ndv_approx": 20501,
+      "mean_length": 7.500522036865015,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "long_description": {
+      "null_count": 516135,
+      "ndv_approx": 313262,
+      "mean_length": 143.06913488306117,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "name": {
+      "null_count": 3849,
+      "ndv_approx": 798393,
+      "mean_length": 19.071643668160146,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "num_employees": {
+      "null_count": 0,
+      "min": 0,
+      "max": 140060,
+      "mean": 18.43076053998595,
+      "ndv_approx": 2281,
+      "histogram": {
+        "buckets": [
+          0.0,
+          14006.0,
+          28012.0,
+          42018.0,
+          56024.0,
+          70030.0,
+          84036.0,
+          98042.0,
+          112048.0,
+          126054.0,
+          140060.0
+        ],
+        "counts": [
+          741641,
+          52,
+          12,
+          4,
+          4,
+          4,
+          3,
+          1,
+          0,
+          2
+        ]
+      },
+      "dtype": "int32"
+    },
+    "region": {
+      "null_count": 629420,
+      "ndv_approx": 173,
+      "mean_length": 5.098287668183397,
+      "top_values": [
+        {
+          "value": "0",
+          "count": 49760
+        },
+        {
+          "value": "new york",
+          "count": 6804
+        },
+        {
+          "value": "bay area",
+          "count": 5151
+        },
+        {
+          "value": "los angeles",
+          "count": 4382
+        },
+        {
+          "value": "london",
+          "count": 3177
+        }
+      ],
+      "dtype": "string"
+    },
+    "score": {
+      "null_count": 0,
+      "min": 0,
+      "max": 17271,
+      "mean": 519.5328646947715,
+      "ndv_approx": 2854,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1727.1,
+          3454.2,
+          5181.299999999999,
+          6908.4,
+          8635.5,
+          10362.599999999999,
+          12089.699999999999,
+          13816.8,
+          15543.9,
+          17271.0
+        ],
+        "counts": [
+          714949,
+          26736,
+          28,
+          4,
+          1,
+          3,
+          1,
+          0,
+          0,
+          1
+        ]
+      },
+      "dtype": "int32"
+    },
+    "short_descriptiion": {
+      "null_count": 705588,
+      "ndv_approx": 31796,
+      "mean_length": 61.452608274526085,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "stage": {
+      "null_count": 188646,
+      "ndv_approx": 10,
+      "mean_length": 15.723893779708792,
+      "top_values": [
+        {
+          "value": "No Known Funding",
+          "count": 533269
+        },
+        {
+          "value": "Pre Series A",
+          "count": 9808
+        },
+        {
+          "value": "Exited",
+          "count": 6587
+        },
+        {
+          "value": "A",
+          "count": 1286
+        },
+        {
+          "value": "Late",
+          "count": 1189
+        }
+      ],
+      "dtype": "string"
+    },
+    "total_funding": {
+      "null_count": 0,
+      "min": 0,
+      "max": 2147483647,
+      "mean": 176592.42376601507,
+      "ndv_approx": 2575,
+      "histogram": {
+        "buckets": [
+          0.0,
+          214748364.7,
+          429496729.4,
+          644245094.0999999,
+          858993458.8,
+          1073741823.5,
+          1288490188.1999998,
+          1503238552.8999999,
+          1717986917.6,
+          1932735282.3,
+          2147483647.0
+        ],
+        "counts": [
+          741651,
+          38,
+          17,
+          8,
+          2,
+          1,
+          3,
+          1,
+          0,
+          2
+        ]
+      },
+      "dtype": "int32"
+    },
+    "twitter_account": {
+      "null_count": 477277,
+      "ndv_approx": 239573,
+      "mean_length": 30.93204661821317,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "website": {
+      "null_count": 1249,
+      "ndv_approx": 569515,
+      "mean_length": 23.083160246004585,
+      "top_values": null,
+      "dtype": "string"
+    }
+  }
+}

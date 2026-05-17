@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "slug": "no-robots",
+  "row_count": 20000,
+  "parquet_sha256": "75dccdb4ee3b21edb41b14198c56d1b7a172bf16ab22d51f36ac3d2cd32d464e",
+  "computed_at": "2026-05-16T09:00:11Z",
+  "sample_rows": null,
+  "columns": {
+    "prompt": {
+      "null_count": 0,
+      "ndv_approx": 8685,
+      "mean_length": 387.8291,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "prompt_id": {
+      "null_count": 0,
+      "ndv_approx": 9162,
+      "mean_length": 64.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "messages": {
+      "null_count": 0,
+      "length_min": 2,
+      "length_max": 21,
+      "length_mean": 2.4474,
+      "dtype": "list"
+    },
+    "category": {
+      "null_count": 0,
+      "ndv_approx": 10,
+      "mean_length": 8.585,
+      "top_values": [
+        {
+          "value": "Generation",
+          "count": 9120
+        },
+        {
+          "value": "Open QA",
+          "count": 2480
+        },
+        {
+          "value": "Brainstorm",
+          "count": 2240
+        },
+        {
+          "value": "Chat",
+          "count": 1700
+        },
+        {
+          "value": "Rewrite",
+          "count": 1320
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 6.95,
+      "top_values": [
+        {
+          "value": "train_sft",
+          "count": 9500
+        },
+        {
+          "value": "train",
+          "count": 9500
+        },
+        {
+          "value": "test",
+          "count": 500
+        },
+        {
+          "value": "test_sft",
+          "count": 500
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

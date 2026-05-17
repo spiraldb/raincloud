@@ -30,7 +30,7 @@ Modifiers:
 Exit code: `0` on success (warnings allowed), `1` on errors.
 
 When to invoke:
-- After editing `sources.json` (especially handler renames, family changes, slug additions).
+- After editing `sources.json` (especially handler renames, license changes, slug additions).
 - Before `/raincloud-build` on a fresh slug — catches typo'd handler names without paying for a fetch.
 - As the read-only counterpart to `/raincloud-status`: `/raincloud-status` reports filesystem state, `/raincloud-validate-manifest` reports manifest correctness.
 

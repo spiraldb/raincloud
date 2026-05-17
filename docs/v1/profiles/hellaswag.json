@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "slug": "hellaswag",
+  "row_count": 59950,
+  "parquet_sha256": "0ffda78f49d276933af2a13d1b6f63d60b88c5ff28a69a43b6bedc090a77737d",
+  "computed_at": "2026-05-16T08:55:37Z",
+  "sample_rows": null,
+  "columns": {
+    "ind": {
+      "null_count": 0,
+      "min": 1,
+      "max": 50674,
+      "mean": 25284.20343619683,
+      "ndv_approx": 38945,
+      "histogram": {
+        "buckets": [
+          1.0,
+          5068.3,
+          10135.6,
+          15202.900000000001,
+          20270.2,
+          25337.5,
+          30404.800000000003,
+          35472.1,
+          40539.4,
+          45606.700000000004,
+          50674.0
+        ],
+        "counts": [
+          6092,
+          6059,
+          5967,
+          5836,
+          5993,
+          5824,
+          6173,
+          6110,
+          6142,
+          5754
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "activity_label": {
+      "null_count": 0,
+      "ndv_approx": 238,
+      "mean_length": 16.18235195996664,
+      "top_values": [
+        {
+          "value": "Food and Entertaining",
+          "count": 4980
+        },
+        {
+          "value": "Computers and Electronics",
+          "count": 4577
+        },
+        {
+          "value": "Health",
+          "count": 4280
+        },
+        {
+          "value": "Home and Garden",
+          "count": 3556
+        },
+        {
+          "value": "Personal Care and Style",
+          "count": 2627
+        }
+      ],
+      "dtype": "string"
+    },
+    "ctx_a": {
+      "null_count": 0,
+      "ndv_approx": 47879,
+      "mean_length": 215.1740950792327,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ctx_b": {
+      "null_count": 0,
+      "ndv_approx": 4868,
+      "mean_length": 3.1875729774812345,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "ctx": {
+      "null_count": 0,
+      "ndv_approx": 63544,
+      "mean_length": 218.72036697247705,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "endings": {
+      "null_count": 0,
+      "length_min": 4,
+      "length_max": 4,
+      "length_mean": 4.0,
+      "dtype": "list"
+    },
+    "source_id": {
+      "null_count": 0,
+      "ndv_approx": 46269,
+      "mean_length": 17.22,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "source_split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.498131776480401,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 39905
+        },
+        {
+          "value": "val",
+          "count": 10042
+        },
+        {
+          "value": "test",
+          "count": 10003
+        }
+      ],
+      "dtype": "string"
+    },
+    "split_type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 8.0,
+      "top_values": [
+        {
+          "value": "indomain",
+          "count": 49908
+        },
+        {
+          "value": "zeroshot",
+          "count": 10042
+        }
+      ],
+      "dtype": "string"
+    },
+    "label": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 0.8331442869057548,
+      "top_values": [
+        {
+          "value": "1",
+          "count": 12516
+        },
+        {
+          "value": "0",
+          "count": 12501
+        },
+        {
+          "value": "3",
+          "count": 12479
+        },
+        {
+          "value": "2",
+          "count": 12451
+        },
+        {
+          "value": "",
+          "count": 10003
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 5.670675562969141,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 39905
+        },
+        {
+          "value": "validation",
+          "count": 10042
+        },
+        {
+          "value": "test",
+          "count": 10003
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

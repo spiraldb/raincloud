@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "slug": "dbpedia-embeddings",
+  "row_count": 1000000,
+  "parquet_sha256": "9f9c8c455d7589225a00699d02903f9fef22c3ab43211841ebd2753b2fec75b5",
+  "computed_at": "2026-05-16T08:49:01Z",
+  "sample_rows": null,
+  "columns": {
+    "_id": {
+      "null_count": 0,
+      "ndv_approx": 1096113,
+      "mean_length": 28.433309,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "title": {
+      "null_count": 0,
+      "ndv_approx": 998522,
+      "mean_length": 18.433309,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 837901,
+      "mean_length": 326.310825,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "text-embedding-3-large-1536-embedding": {
+      "null_count": 0,
+      "length_min": 1536,
+      "length_max": 1536,
+      "length_mean": 1536.0,
+      "dtype": "list"
+    }
+  }
+}

@@ -1,0 +1,1689 @@
+{
+  "schema_version": 1,
+  "slug": "osmi-mental-health-in-tech-2019",
+  "row_count": 352,
+  "parquet_sha256": "c19dc964744d922fadb86d03b13b04234c6ce847ffbdd310c803aa0f0e84f0a9",
+  "computed_at": "2026-05-16T10:11:49Z",
+  "sample_rows": null,
+  "columns": {
+    "*Are you self-employed?*": {
+      "dtype": "bool",
+      "true_count": 48,
+      "false_count": 304,
+      "null_count": 0
+    },
+    "How many employees does your company or organization have?": {
+      "null_count": 48,
+      "ndv_approx": 6,
+      "mean_length": 9.069078947368421,
+      "top_values": [
+        {
+          "value": "More than 1000",
+          "count": 111
+        },
+        {
+          "value": "100-500",
+          "count": 80
+        },
+        {
+          "value": "26-100",
+          "count": 45
+        },
+        {
+          "value": "6-25",
+          "count": 34
+        },
+        {
+          "value": "500-1000",
+          "count": 27
+        }
+      ],
+      "dtype": "string"
+    },
+    "Is your employer primarily a tech company/organization?": {
+      "dtype": "bool",
+      "true_count": 207,
+      "false_count": 97,
+      "null_count": 48
+    },
+    "Is your primary role within your company related to tech/IT?": {
+      "dtype": "bool",
+      "true_count": 282,
+      "false_count": 22,
+      "null_count": 48
+    },
+    "Does your employer provide mental health benefits as part of healthcare coverage?": {
+      "null_count": 48,
+      "ndv_approx": 4,
+      "mean_length": 7.059210526315789,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 164
+        },
+        {
+          "value": "I don't know",
+          "count": 87
+        },
+        {
+          "value": "No",
+          "count": 35
+        },
+        {
+          "value": "Not eligible for coverage / NA",
+          "count": 18
+        }
+      ],
+      "dtype": "string"
+    },
+    "Do you know the options for mental health care available under your employer-provided health coverage?": {
+      "null_count": 74,
+      "ndv_approx": 2,
+      "mean_length": 2.4676258992805757,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 148
+        },
+        {
+          "value": "Yes",
+          "count": 130
+        }
+      ],
+      "dtype": "string"
+    },
+    "Has your employer ever formally discussed mental health (for example, as part of a wellness campaign or other official communication)?": {
+      "null_count": 48,
+      "ndv_approx": 3,
+      "mean_length": 3.1315789473684212,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 176
+        },
+        {
+          "value": "Yes",
+          "count": 104
+        },
+        {
+          "value": "I don't know",
+          "count": 24
+        }
+      ],
+      "dtype": "string"
+    },
+    "Does your employer offer resources to learn more about mental health disorders and options for seeking help?": {
+      "null_count": 48,
+      "ndv_approx": 3,
+      "mean_length": 4.703947368421052,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 130
+        },
+        {
+          "value": "Yes",
+          "count": 102
+        },
+        {
+          "value": "I don't know",
+          "count": 72
+        }
+      ],
+      "dtype": "string"
+    },
+    "Is your anonymity protected if you choose to take advantage of mental health or substance abuse treatment resources provided by your employer?": {
+      "null_count": 48,
+      "ndv_approx": 3,
+      "mean_length": 8.516447368421053,
+      "top_values": [
+        {
+          "value": "I don't know",
+          "count": 188
+        },
+        {
+          "value": "Yes",
+          "count": 101
+        },
+        {
+          "value": "No",
+          "count": 15
+        }
+      ],
+      "dtype": "string"
+    },
+    "If a mental health issue prompted you to request a medical leave from work, how easy or difficult would it be to ask for that leave?": {
+      "null_count": 48,
+      "ndv_approx": 5,
+      "mean_length": 13.789473684210526,
+      "top_values": [
+        {
+          "value": "Somewhat easy",
+          "count": 83
+        },
+        {
+          "value": "Very easy",
+          "count": 70
+        },
+        {
+          "value": "I don't know",
+          "count": 52
+        },
+        {
+          "value": "Somewhat difficult",
+          "count": 49
+        },
+        {
+          "value": "Neither easy nor difficult",
+          "count": 31
+        }
+      ],
+      "dtype": "string"
+    },
+    "Would you feel more comfortable talking to your coworkers about your physical health or your mental health?": {
+      "null_count": 48,
+      "ndv_approx": 3,
+      "mean_length": 19.575657894736842,
+      "top_values": [
+        {
+          "value": "Physical health",
+          "count": 209
+        },
+        {
+          "value": "Same level of comfort for each",
+          "count": 93
+        },
+        {
+          "value": "Mental health",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "Would you feel comfortable discussing a mental health issue with your direct supervisor(s)?": {
+      "null_count": 48,
+      "ndv_approx": 3,
+      "mean_length": 3.3223684210526314,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 117
+        },
+        {
+          "value": "Maybe",
+          "count": 95
+        },
+        {
+          "value": "No",
+          "count": 92
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have you ever discussed your mental health with your employer?": {
+      "dtype": "bool",
+      "true_count": 100,
+      "false_count": 204,
+      "null_count": 48
+    },
+    "Describe the conversation you had with your employer about your mental health, including their reactions and what actions were taken to address your mental health issue/questions.": {
+      "null_count": 268,
+      "ndv_approx": 83,
+      "mean_length": 200.32142857142858,
+      "top_values": [
+        {
+          "value": "Burnout and latent stress. Agreed to not make a bit deal about it within the department, but could take a step back from particularly stressful projects as-needed; also, to make use of accrued sick time.",
+          "count": 1
+        },
+        {
+          "value": "Delivered a presentation to the whole organisation on mental health first aid and publicly disclosed my own diagnosed condition. Received nothing but support and praise for doing so.",
+          "count": 1
+        },
+        {
+          "value": "I've talked a bit with my manager about my neurodivergence (ADHD) and its impacts, and have offered to be a resource on these issues for my team. I'm also a chapter leader in our employee resource group for folks with mental health issues and disorders",
+          "count": 1
+        },
+        {
+          "value": "I opened up to my new direct report after two years of hiding about my mental health disorders with my previous boss. I told my knew direct report that I am diagnosed with generalized anxiety disorder, social anxiety and depression. I wanted to make him aware because I focus so much on hiding it that impairs me and makes me less engaged at work and instead I am accepting, acknowledging and sharing with him because it is very real. I also asked if we could do a 5 min mental health check in on our 1 on 1 weekly to hold myself accountable. He thought it was a great idea but rather we do it separately from our 1 on 1 to give me 15 min rather than 5. It helped me so much just by breaking the silence.",
+          "count": 1
+        },
+        {
+          "value": "Just talked about anxiety and how it was impacting my work. They were pretty good about it but not really accommodating.",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Would you feel comfortable discussing a mental health issue with your coworkers?": {
+      "null_count": 48,
+      "ndv_approx": 3,
+      "mean_length": 3.5559210526315788,
+      "top_values": [
+        {
+          "value": "Maybe",
+          "count": 128
+        },
+        {
+          "value": "Yes",
+          "count": 89
+        },
+        {
+          "value": "No",
+          "count": 87
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have you ever discussed your mental health with coworkers?": {
+      "dtype": "bool",
+      "true_count": 144,
+      "false_count": 157,
+      "null_count": 51
+    },
+    "Describe the conversation with coworkers you had about your mental health including their reactions.": {
+      "null_count": 233,
+      "ndv_approx": 141,
+      "mean_length": 143.08403361344537,
+      "top_values": [
+        {
+          "value": "Mainly was a general 'maybe I should go see somebody'. They didn't really have a reaction, it was fine to bring up and discuss.",
+          "count": 1
+        },
+        {
+          "value": "It doesn't truly count as a coworker, as he is one of my closest friends as well, but we discuss anxiety and depression somewhat often and are very open about it.",
+          "count": 1
+        },
+        {
+          "value": "It's a lop-sided bag. A few are comfortable with it and understand completely. Several have told me I shouldn't talk/say anything about it. However, most don't know.",
+          "count": 1
+        },
+        {
+          "value": "I discussed having burnout in the past.\nNo special reactions.",
+          "count": 1
+        },
+        {
+          "value": "\n",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have you ever had a coworker discuss their or another coworker's mental health with you?": {
+      "dtype": "bool",
+      "true_count": 142,
+      "false_count": 162,
+      "null_count": 48
+    },
+    "Describe the conversation your coworker had with you about their mental health (please do not use names).": {
+      "null_count": 242,
+      "ndv_approx": 106,
+      "mean_length": 127.08181818181818,
+      "top_values": [
+        {
+          "value": "\n",
+          "count": 2
+        },
+        {
+          "value": "About therapy. Nothing specific ",
+          "count": 1
+        },
+        {
+          "value": "A coworker once confided in me about some struggles he was going through with his depression, and we talked about it together and went over some strategies. I mostly just listened and gave him support.",
+          "count": 1
+        },
+        {
+          "value": "He/She was stressed with work and had to seek help.",
+          "count": 1
+        },
+        {
+          "value": "Expressing their need for slightly different work accommodations so they can perform at their best in relation to their needs. ",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Overall, how much importance does your employer place on physical health?": {
+      "null_count": 48,
+      "min": 0,
+      "max": 10,
+      "mean": 6.328947368421052,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          7,
+          6,
+          6,
+          15,
+          12,
+          64,
+          41,
+          53,
+          52,
+          48
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Overall, how much importance does your employer place on mental health?": {
+      "null_count": 48,
+      "min": 0,
+      "max": 10,
+      "mean": 4.878289473684211,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          21,
+          16,
+          24,
+          35,
+          20,
+          70,
+          28,
+          38,
+          30,
+          22
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Do you have medical coverage (private insurance or state-provided) that includes treatment of mental health disorders?": {
+      "dtype": "bool",
+      "true_count": 32,
+      "false_count": 16,
+      "null_count": 304
+    },
+    "Do you know local or online resources to seek help for a mental health issue?": {
+      "null_count": 304,
+      "ndv_approx": 3,
+      "mean_length": 16.541666666666668,
+      "top_values": [
+        {
+          "value": "No, I don't know any",
+          "count": 18
+        },
+        {
+          "value": "I know some",
+          "count": 17
+        },
+        {
+          "value": "Yes, I know several",
+          "count": 13
+        }
+      ],
+      "dtype": "string"
+    },
+    "If you have been diagnosed or treated for a mental health disorder, do you ever reveal this to clients or business contacts?": {
+      "null_count": 304,
+      "ndv_approx": 5,
+      "mean_length": 26.145833333333332,
+      "top_values": [
+        {
+          "value": "Not applicable to me",
+          "count": 17
+        },
+        {
+          "value": "Sometimes, if it comes up",
+          "count": 14
+        },
+        {
+          "value": "No, because it would impact me negatively",
+          "count": 9
+        },
+        {
+          "value": "No, because it doesn't matter",
+          "count": 6
+        },
+        {
+          "value": "Yes, always",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "If you have revealed a mental health disorder to a client or business contact, how has this affected you or the relationship?": {
+      "null_count": 332,
+      "ndv_approx": 4,
+      "mean_length": 10.9,
+      "top_values": [
+        {
+          "value": "I'm not sure",
+          "count": 11
+        },
+        {
+          "value": "No change",
+          "count": 4
+        },
+        {
+          "value": "Positively",
+          "count": 3
+        },
+        {
+          "value": "Negatively",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "If you have been diagnosed or treated for a mental health disorder, do you ever reveal this to coworkers or employees?": {
+      "null_count": 304,
+      "ndv_approx": 5,
+      "mean_length": 23.645833333333332,
+      "top_values": [
+        {
+          "value": "Not applicable to me",
+          "count": 21
+        },
+        {
+          "value": "Sometimes, if it comes up",
+          "count": 17
+        },
+        {
+          "value": "No, because it doesn't matter",
+          "count": 5
+        },
+        {
+          "value": "No, because it would impact me negatively",
+          "count": 3
+        },
+        {
+          "value": "Yes, always",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "If you have revealed a mental health disorder to a coworker or employee, how has this impacted you or the relationship?": {
+      "null_count": 304,
+      "ndv_approx": 5,
+      "mean_length": 15.604166666666666,
+      "top_values": [
+        {
+          "value": "Not applicable to me",
+          "count": 25
+        },
+        {
+          "value": "I'm not sure",
+          "count": 12
+        },
+        {
+          "value": "No change",
+          "count": 5
+        },
+        {
+          "value": "Positively",
+          "count": 5
+        },
+        {
+          "value": "Negatively",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Do you believe your productivity is ever affected by a mental health issue?": {
+      "null_count": 304,
+      "ndv_approx": 4,
+      "mean_length": 4.770833333333333,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 37
+        },
+        {
+          "value": "Unsure",
+          "count": 6
+        },
+        {
+          "value": "Not applicable to me",
+          "count": 4
+        },
+        {
+          "value": "No",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "If yes, what percentage of your work time (time performing primary or secondary job functions) is affected by a mental health issue?": {
+      "null_count": 315,
+      "ndv_approx": 4,
+      "mean_length": 5.675675675675675,
+      "top_values": [
+        {
+          "value": "1-25%",
+          "count": 16
+        },
+        {
+          "value": "26-50%",
+          "count": 11
+        },
+        {
+          "value": "51-75%",
+          "count": 6
+        },
+        {
+          "value": "76-100%",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "*Do you have previous employers?*": {
+      "dtype": "bool",
+      "true_count": 296,
+      "false_count": 56,
+      "null_count": 0
+    },
+    "Was your employer primarily a tech company/organization?": {
+      "dtype": "bool",
+      "true_count": 188,
+      "false_count": 108,
+      "null_count": 56
+    },
+    "Have your previous employers provided mental health benefits?": {
+      "null_count": 56,
+      "ndv_approx": 4,
+      "mean_length": 11.567567567567568,
+      "top_values": [
+        {
+          "value": "Some did",
+          "count": 92
+        },
+        {
+          "value": "I don't know",
+          "count": 78
+        },
+        {
+          "value": "No, none did",
+          "count": 78
+        },
+        {
+          "value": "Yes, they all did",
+          "count": 48
+        }
+      ],
+      "dtype": "string"
+    },
+    "Were you aware of the options for mental health care provided by your previous employers?": {
+      "null_count": 56,
+      "ndv_approx": 4,
+      "mean_length": 20.993243243243242,
+      "top_values": [
+        {
+          "value": "N/A (was not aware)",
+          "count": 95
+        },
+        {
+          "value": "I was aware of some",
+          "count": 82
+        },
+        {
+          "value": "N/A (none offered)",
+          "count": 60
+        },
+        {
+          "value": "Yes, I was aware of all of them",
+          "count": 30
+        },
+        {
+          "value": "No, I only became aware later",
+          "count": 29
+        }
+      ],
+      "dtype": "string"
+    },
+    "Did your previous employers ever formally discuss mental health (as part of a wellness campaign or other official communication)?": {
+      "null_count": 56,
+      "ndv_approx": 4,
+      "mean_length": 8.45945945945946,
+      "top_values": [
+        {
+          "value": "None did",
+          "count": 194
+        },
+        {
+          "value": "Some did",
+          "count": 73
+        },
+        {
+          "value": "I don't know",
+          "count": 25
+        },
+        {
+          "value": "Yes, they all did",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Did your previous employers provide resources to learn more about mental health disorders and how to seek help?": {
+      "null_count": 56,
+      "ndv_approx": 3,
+      "mean_length": 8.39527027027027,
+      "top_values": [
+        {
+          "value": "None did",
+          "count": 185
+        },
+        {
+          "value": "Some did",
+          "count": 98
+        },
+        {
+          "value": "Yes, they all did",
+          "count": 13
+        }
+      ],
+      "dtype": "string"
+    },
+    "Was your anonymity protected if you chose to take advantage of mental health or substance abuse treatment resources with previous employers?": {
+      "null_count": 56,
+      "ndv_approx": 4,
+      "mean_length": 10.858108108108109,
+      "top_values": [
+        {
+          "value": "I don't know",
+          "count": 204
+        },
+        {
+          "value": "Yes, always",
+          "count": 46
+        },
+        {
+          "value": "Sometimes",
+          "count": 24
+        },
+        {
+          "value": "No",
+          "count": 22
+        }
+      ],
+      "dtype": "string"
+    },
+    "Would you have felt more comfortable talking to your previous employer about your physical health or your mental health?": {
+      "null_count": 56,
+      "ndv_approx": 3,
+      "mean_length": 18.60810810810811,
+      "top_values": [
+        {
+          "value": "Physical health",
+          "count": 218
+        },
+        {
+          "value": "Same level of comfort for each",
+          "count": 72
+        },
+        {
+          "value": "Mental health",
+          "count": 6
+        }
+      ],
+      "dtype": "string"
+    },
+    "Would you have been willing to discuss your mental health with your direct supervisor(s)?": {
+      "null_count": 56,
+      "ndv_approx": 4,
+      "mean_length": 31.5,
+      "top_values": [
+        {
+          "value": "Some of my previous supervisors",
+          "count": 144
+        },
+        {
+          "value": "No, none of my previous supervisors",
+          "count": 114
+        },
+        {
+          "value": "I don't know",
+          "count": 20
+        },
+        {
+          "value": "Yes, all of my previous supervisors",
+          "count": 18
+        }
+      ],
+      "dtype": "string"
+    },
+    "Did you ever discuss your mental health with your previous employer?": {
+      "dtype": "bool",
+      "true_count": 76,
+      "false_count": 220,
+      "null_count": 56
+    },
+    "Describe the conversation you had with your previous employer about your mental health, including their reactions and actions taken to address your mental health issue/questions.": {
+      "null_count": 289,
+      "ndv_approx": 55,
+      "mean_length": 165.0952380952381,
+      "top_values": [
+        {
+          "value": "As simple as it could be I was direct and, at that moment I was ok, if I was fired, and said that I needed therapy and probably treatment for my stress level. He was ok with (as even if it wasn't ok, he didn't have an option) and from the therapist, I was directed to a doctor and got treated. A solid great decision that helped me extremely.",
+          "count": 1
+        },
+        {
+          "value": "Discussed substance abuse relapse and was able to set up treatment",
+          "count": 1
+        },
+        {
+          "value": "I told my advisor I was under going a very bad moment kind of depression. He did not change anything in my contract and told me to take the breaks I need.",
+          "count": 1
+        },
+        {
+          "value": "The only place i felt comfortable to talk, they gave me a 2 month paid leave to recover and made sure that what caused the stress was solved",
+          "count": 1
+        },
+        {
+          "value": "I explained to my supervisor that I have severe depression, and she thanked me for telling her. There was no other action taken regarding the matter. It was not ever discussed with me again.",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Would you have been willing to discuss your mental health with your coworkers at previous employers?": {
+      "null_count": 56,
+      "ndv_approx": 3,
+      "mean_length": 33.86486486486486,
+      "top_values": [
+        {
+          "value": "At some of my previous employers",
+          "count": 158
+        },
+        {
+          "value": "No, at none of my previous employers",
+          "count": 111
+        },
+        {
+          "value": "Yes, at all of my previous employers",
+          "count": 27
+        }
+      ],
+      "dtype": "string"
+    },
+    "Did you ever discuss your mental health with a previous coworker(s)?": {
+      "dtype": "bool",
+      "true_count": 114,
+      "false_count": 180,
+      "null_count": 58
+    },
+    "Describe the conversation you had with your previous coworkers about your mental health including their reactions.": {
+      "null_count": 267,
+      "ndv_approx": 96,
+      "mean_length": 112.27058823529411,
+      "top_values": [
+        {
+          "value": "General discussion about current feelings, about the attitude to work and life-work balance and its influence on my work.",
+          "count": 1
+        },
+        {
+          "value": "Stress and bad sleep; they were sympathetic and understanding.",
+          "count": 1
+        },
+        {
+          "value": "I talked about my substance use disorder, depression, and anxiety.",
+          "count": 1
+        },
+        {
+          "value": "At one job I told a coworker about how the work was negatively affecting my mental health. She was very concerned and encouraged me to reach out to my boss/HR and to seek help. She was very supportive, even if the environment we were in was not.",
+          "count": 1
+        },
+        {
+          "value": "Grieving for lost parent.",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Did you ever have a previous coworker discuss their or another coworker's mental health with you?": {
+      "dtype": "bool",
+      "true_count": 100,
+      "false_count": 195,
+      "null_count": 57
+    },
+    "Overall, how much importance did your previous employer place on physical health?": {
+      "null_count": 56,
+      "min": 0,
+      "max": 10,
+      "mean": 5.587837837837838,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          18,
+          8,
+          12,
+          20,
+          10,
+          80,
+          36,
+          44,
+          35,
+          33
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Overall, how much importance did your previous employer place on mental health?": {
+      "null_count": 56,
+      "min": 0,
+      "max": 10,
+      "mean": 3.527027027027027,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          48,
+          28,
+          32,
+          37,
+          21,
+          74,
+          24,
+          19,
+          9,
+          4
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Do you *currently* have a mental health disorder?": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 4.286931818181818,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 147
+        },
+        {
+          "value": "No",
+          "count": 104
+        },
+        {
+          "value": "Possibly",
+          "count": 75
+        },
+        {
+          "value": "Don't Know",
+          "count": 26
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have you ever been *diagnosed* with a mental health disorder?": {
+      "null_count": 205,
+      "ndv_approx": 2,
+      "mean_length": 2.979591836734694,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 144
+        },
+        {
+          "value": "No",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "*What disorder(s) have you been diagnosed with?*": null,
+    "*If possibly, what disorder(s) do you believe you have?*": {
+      "null_count": 280,
+      "ndv_approx": 39,
+      "mean_length": 106.84722222222223,
+      "top_values": [
+        {
+          "value": "Mood Disorder (Depression, Bipolar Disorder, etc)",
+          "count": 10
+        },
+        {
+          "value": "Anxiety Disorder (Generalized, Social, Phobia, etc)",
+          "count": 10
+        },
+        {
+          "value": "Anxiety Disorder (Generalized, Social, Phobia, etc), Mood Disorder (Depression, Bipolar Disorder, etc)",
+          "count": 9
+        },
+        {
+          "value": "Mood Disorder (Depression, Bipolar Disorder, etc), Anxiety Disorder (Generalized, Social, Phobia, etc)",
+          "count": 9
+        },
+        {
+          "value": "Mood Disorder (Depression, Bipolar Disorder, etc), Post-traumatic Stress Disorder, Anxiety Disorder (Generalized, Social, Phobia, etc)",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "*If so, what disorder(s) were you diagnosed with?*": {
+      "null_count": 208,
+      "ndv_approx": 63,
+      "mean_length": 99.44444444444444,
+      "top_values": [
+        {
+          "value": "Mood Disorder (Depression, Bipolar Disorder, etc)",
+          "count": 19
+        },
+        {
+          "value": "Mood Disorder (Depression, Bipolar Disorder, etc), Anxiety Disorder (Generalized, Social, Phobia, etc)",
+          "count": 17
+        },
+        {
+          "value": "Anxiety Disorder (Generalized, Social, Phobia, etc)",
+          "count": 17
+        },
+        {
+          "value": "Anxiety Disorder (Generalized, Social, Phobia, etc), Mood Disorder (Depression, Bipolar Disorder, etc)",
+          "count": 15
+        },
+        {
+          "value": "Attention Deficit Hyperactivity Disorder",
+          "count": 7
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have you had a mental health disorder in the past?": {
+      "null_count": 3,
+      "ndv_approx": 4,
+      "mean_length": 4.206303724928366,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 146
+        },
+        {
+          "value": "No",
+          "count": 107
+        },
+        {
+          "value": "Possibly",
+          "count": 72
+        },
+        {
+          "value": "Don't Know",
+          "count": 24
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have you ever sought treatment for a mental health disorder from a mental health professional?": {
+      "dtype": "bool",
+      "true_count": 217,
+      "false_count": 135,
+      "null_count": 0
+    },
+    "Do you have a family history of mental illness?": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 4.894886363636363,
+      "top_values": [
+        {
+          "value": "Yes",
+          "count": 159
+        },
+        {
+          "value": "No",
+          "count": 107
+        },
+        {
+          "value": "I don't know",
+          "count": 86
+        }
+      ],
+      "dtype": "string"
+    },
+    "If you have a mental health disorder, how often do you feel that it interferes with your work *when being treated effectively?*": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 12.025568181818182,
+      "top_values": [
+        {
+          "value": "Not applicable to me",
+          "count": 130
+        },
+        {
+          "value": "Sometimes",
+          "count": 112
+        },
+        {
+          "value": "Rarely",
+          "count": 75
+        },
+        {
+          "value": "Often",
+          "count": 26
+        },
+        {
+          "value": "Never",
+          "count": 9
+        }
+      ],
+      "dtype": "string"
+    },
+    "If you have a mental health disorder, how often do you feel that it interferes with your work *when* _*NOT*_* being treated effectively (i.e., when you are experiencing symptoms)?*": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 10.681818181818182,
+      "top_values": [
+        {
+          "value": "Often",
+          "count": 149
+        },
+        {
+          "value": "Not applicable to me",
+          "count": 113
+        },
+        {
+          "value": "Sometimes",
+          "count": 73
+        },
+        {
+          "value": "Rarely",
+          "count": 13
+        },
+        {
+          "value": "Never",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have your observations of how another individual who discussed a mental health issue made you less likely to reveal a mental health issue yourself in your current workplace?": {
+      "null_count": 70,
+      "ndv_approx": 3,
+      "mean_length": 2.698581560283688,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 173
+        },
+        {
+          "value": "Yes",
+          "count": 65
+        },
+        {
+          "value": "Maybe",
+          "count": 44
+        }
+      ],
+      "dtype": "string"
+    },
+    "How willing would you be to share with friends and family that you have a mental illness?": {
+      "null_count": 0,
+      "min": 0,
+      "max": 10,
+      "mean": 6.2727272727272725,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          10,
+          9,
+          18,
+          26,
+          17,
+          49,
+          39,
+          60,
+          47,
+          77
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Would you be willing to bring up a physical health issue with a potential employer in an interview?": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 3.539772727272727,
+      "top_values": [
+        {
+          "value": "Maybe",
+          "count": 152
+        },
+        {
+          "value": "No",
+          "count": 114
+        },
+        {
+          "value": "Yes",
+          "count": 86
+        }
+      ],
+      "dtype": "string"
+    },
+    "Why or why not?": {
+      "null_count": 79,
+      "ndv_approx": 300,
+      "mean_length": 83.83882783882784,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Would you bring up your *mental* health with a potential employer in an interview?": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 2.875,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 238
+        },
+        {
+          "value": "Maybe",
+          "count": 97
+        },
+        {
+          "value": "Yes",
+          "count": 17
+        }
+      ],
+      "dtype": "string"
+    },
+    "Are you openly identified at work as a person with a mental health issue?": {
+      "dtype": "bool",
+      "true_count": 46,
+      "false_count": 306,
+      "null_count": 0
+    },
+    "Has being identified as a person with a mental health issue affected your career?": {
+      "dtype": "bool",
+      "true_count": 19,
+      "false_count": 26,
+      "null_count": 307
+    },
+    "How has it affected your career?": {
+      "null_count": 334,
+      "min": 0,
+      "max": 8,
+      "mean": 3.8333333333333335,
+      "ndv_approx": 9,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.8,
+          1.6,
+          2.4000000000000004,
+          3.2,
+          4.0,
+          4.800000000000001,
+          5.6000000000000005,
+          6.4,
+          7.2,
+          8.0
+        ],
+        "counts": [
+          1,
+          1,
+          2,
+          5,
+          0,
+          5,
+          0,
+          1,
+          1,
+          2
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "If they knew you suffered from a mental health disorder, how do you think that your team members/co-workers would react?": {
+      "null_count": 0,
+      "min": 0,
+      "max": 10,
+      "mean": 5.275568181818182,
+      "ndv_approx": 12,
+      "histogram": {
+        "buckets": [
+          0.0,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          7.0,
+          8.0,
+          9.0,
+          10.0
+        ],
+        "counts": [
+          9,
+          9,
+          16,
+          38,
+          41,
+          90,
+          51,
+          42,
+          31,
+          25
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Have you observed or experienced an *unsupportive or badly handled response* to a mental health issue in your current or previous workplace?": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 10.190340909090908,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 139
+        },
+        {
+          "value": "Maybe/Not sure",
+          "count": 90
+        },
+        {
+          "value": "Yes, I observed",
+          "count": 67
+        },
+        {
+          "value": "Yes, I experienced",
+          "count": 53
+        },
+        {
+          "value": "I've always been self-employed",
+          "count": 3
+        }
+      ],
+      "dtype": "string"
+    },
+    "Describe the circumstances of the badly handled or unsupportive response.": {
+      "null_count": 263,
+      "ndv_approx": 85,
+      "mean_length": 142.86516853932585,
+      "top_values": [
+        {
+          "value": "I've seen people mocked for depression and for taking mental health days when it seemed detrimental to the team.",
+          "count": 1
+        },
+        {
+          "value": "Fired the person with a burnout",
+          "count": 1
+        },
+        {
+          "value": "Terminal illness and subsequent death of my ex husband and son\u2019s father and death of my father. Lost my job, twice ",
+          "count": 1
+        },
+        {
+          "value": "not handling it was the worst part. That the employee reached out that they were struggling, some conversations were had but no additional support was given or accommodations were made. They were frozen by not knowing and just let is fizzle ",
+          "count": 1
+        },
+        {
+          "value": "Lack of awareness means that work place is not predisposed to host a person with mental illness and you have to explaing 200 times same things that are not understood and this makes you feel bad",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Have you observed or experienced a *supportive or well handled response* to a mental health issue in your current or previous workplace?": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 10.761363636363637,
+      "top_values": [
+        {
+          "value": "No",
+          "count": 126
+        },
+        {
+          "value": "Maybe/Not sure",
+          "count": 97
+        },
+        {
+          "value": "Yes, I experienced",
+          "count": 76
+        },
+        {
+          "value": "Yes, I observed",
+          "count": 52
+        },
+        {
+          "value": "I've always been self-employed",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "Describe the circumstances of the supportive or well handled response.": null,
+    "Overall, how well do you think the tech industry supports employees with mental health issues?": {
+      "null_count": 0,
+      "min": 1,
+      "max": 5,
+      "mean": 2.602272727272727,
+      "ndv_approx": 5,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.4,
+          1.8,
+          2.2,
+          2.6,
+          3.0,
+          3.4000000000000004,
+          3.8000000000000003,
+          4.2,
+          4.6,
+          5.0
+        ],
+        "counts": [
+          49,
+          0,
+          106,
+          0,
+          0,
+          141,
+          0,
+          48,
+          0,
+          8
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Briefly describe what you think the industry as a whole and/or employers could do to improve mental health support for employees.": {
+      "null_count": 98,
+      "ndv_approx": 294,
+      "mean_length": 134.3779527559055,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "If there is anything else you would like to tell us that has not been covered by the survey questions, please use this space to do so.": {
+      "null_count": 252,
+      "ndv_approx": 84,
+      "mean_length": 97.78,
+      "top_values": [
+        {
+          "value": "\n",
+          "count": 8
+        },
+        {
+          "value": "No",
+          "count": 4
+        },
+        {
+          "value": "Nothing",
+          "count": 3
+        },
+        {
+          "value": ".",
+          "count": 3
+        },
+        {
+          "value": "Nope",
+          "count": 2
+        }
+      ],
+      "dtype": "string"
+    },
+    "Would you be willing to talk to one of us more extensively about your experiences with mental health issues in the tech industry? (Note that all interview responses would be used _anonymously_ and only with your permission.)": {
+      "dtype": "bool",
+      "true_count": 133,
+      "false_count": 219,
+      "null_count": 0
+    },
+    "What is your age?": {
+      "null_count": 0,
+      "min": 0,
+      "max": 64,
+      "mean": 35.49431818181818,
+      "ndv_approx": 41,
+      "histogram": {
+        "buckets": [
+          0.0,
+          6.4,
+          12.8,
+          19.200000000000003,
+          25.6,
+          32.0,
+          38.400000000000006,
+          44.800000000000004,
+          51.2,
+          57.6,
+          64.0
+        ],
+        "counts": [
+          1,
+          0,
+          4,
+          34,
+          95,
+          102,
+          55,
+          42,
+          12,
+          7
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "What is your gender?": {
+      "null_count": 5,
+      "ndv_approx": 49,
+      "mean_length": 4.801152737752162,
+      "top_values": [
+        {
+          "value": "Male",
+          "count": 143
+        },
+        {
+          "value": "male",
+          "count": 52
+        },
+        {
+          "value": "Female",
+          "count": 49
+        },
+        {
+          "value": "female",
+          "count": 27
+        },
+        {
+          "value": "M",
+          "count": 15
+        }
+      ],
+      "dtype": "string"
+    },
+    "What country do you *live* in?": {
+      "null_count": 0,
+      "ndv_approx": 35,
+      "mean_length": 17.460227272727273,
+      "top_values": [
+        {
+          "value": "United States of America",
+          "count": 204
+        },
+        {
+          "value": "United Kingdom",
+          "count": 32
+        },
+        {
+          "value": "Portugal",
+          "count": 18
+        },
+        {
+          "value": "Brazil",
+          "count": 17
+        },
+        {
+          "value": "Canada",
+          "count": 15
+        }
+      ],
+      "dtype": "string"
+    },
+    "What US state or territory do you *live* in?": {
+      "null_count": 148,
+      "ndv_approx": 44,
+      "mean_length": 8.480392156862745,
+      "top_values": [
+        {
+          "value": "California",
+          "count": 20
+        },
+        {
+          "value": "Nebraska",
+          "count": 18
+        },
+        {
+          "value": "New York",
+          "count": 15
+        },
+        {
+          "value": "Colorado",
+          "count": 14
+        },
+        {
+          "value": "Washington",
+          "count": 13
+        }
+      ],
+      "dtype": "string"
+    },
+    "What is your race?": {
+      "null_count": 148,
+      "ndv_approx": 7,
+      "mean_length": 6.852941176470588,
+      "top_values": [
+        {
+          "value": "White",
+          "count": 173
+        },
+        {
+          "value": "Asian",
+          "count": 9
+        },
+        {
+          "value": "More than one of the above",
+          "count": 8
+        },
+        {
+          "value": "I prefer not to answer",
+          "count": 6
+        },
+        {
+          "value": "Black or African American",
+          "count": 4
+        }
+      ],
+      "dtype": "string"
+    },
+    "What country do you *work* in?": {
+      "null_count": 0,
+      "ndv_approx": 38,
+      "mean_length": 17.44034090909091,
+      "top_values": [
+        {
+          "value": "United States of America",
+          "count": 204
+        },
+        {
+          "value": "United Kingdom",
+          "count": 31
+        },
+        {
+          "value": "Portugal",
+          "count": 18
+        },
+        {
+          "value": "Brazil",
+          "count": 17
+        },
+        {
+          "value": "Canada",
+          "count": 14
+        }
+      ],
+      "dtype": "string"
+    },
+    "What US state or territory do you *work* in?": {
+      "null_count": 148,
+      "ndv_approx": 44,
+      "mean_length": 8.47549019607843,
+      "top_values": [
+        {
+          "value": "California",
+          "count": 20
+        },
+        {
+          "value": "Nebraska",
+          "count": 18
+        },
+        {
+          "value": "Colorado",
+          "count": 16
+        },
+        {
+          "value": "New York",
+          "count": 15
+        },
+        {
+          "value": "Washington",
+          "count": 14
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

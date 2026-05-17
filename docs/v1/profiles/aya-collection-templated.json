@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "slug": "aya-collection-templated",
+  "row_count": 202364,
+  "parquet_sha256": "9b42772dc63b9508f5e63334d9d5253455bf9dc50c89240b50e31cd4fabaa079",
+  "computed_at": "2026-05-13T16:44:19Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "min": 1,
+      "max": 202364,
+      "mean": 101182.5,
+      "ndv_approx": 186412,
+      "histogram": {
+        "buckets": [
+          1.0,
+          20237.3,
+          40473.6,
+          60709.899999999994,
+          80946.2,
+          101182.5,
+          121418.79999999999,
+          141655.1,
+          161891.4,
+          182127.69999999998,
+          202364.0
+        ],
+        "counts": [
+          20237,
+          20236,
+          20236,
+          20237,
+          20236,
+          20236,
+          20237,
+          20236,
+          20236,
+          20237
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "inputs": {
+      "null_count": 0,
+      "ndv_approx": 152702,
+      "mean_length": 177.31859421636258,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "targets": {
+      "null_count": 0,
+      "ndv_approx": 183541,
+      "mean_length": 495.9911298452294,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "dataset_name": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 11.0,
+      "top_values": [
+        {
+          "value": "Aya-Dataset",
+          "count": 202364
+        }
+      ],
+      "dtype": "string"
+    },
+    "sub_dataset_name": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "-",
+          "count": 202364
+        }
+      ],
+      "dtype": "string"
+    },
+    "task_type": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "-",
+          "count": 202364
+        }
+      ],
+      "dtype": "string"
+    },
+    "template_id": {
+      "dtype": "uint8",
+      "null_count": 0,
+      "min": 0,
+      "max": 0,
+      "mean": 0.0,
+      "ndv_approx": 1,
+      "histogram": {
+        "buckets": [
+          0,
+          0
+        ],
+        "counts": [
+          202364
+        ]
+      }
+    },
+    "language": {
+      "null_count": 0,
+      "ndv_approx": 74,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "plt",
+          "count": 14597
+        },
+        {
+          "value": "sin",
+          "count": 14524
+        },
+        {
+          "value": "tam",
+          "count": 14133
+        },
+        {
+          "value": "yor",
+          "count": 11758
+        },
+        {
+          "value": "zsm",
+          "count": 10073
+        }
+      ],
+      "dtype": "string"
+    },
+    "source_split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 202364
+        }
+      ],
+      "dtype": "string"
+    },
+    "script": {
+      "null_count": 0,
+      "ndv_approx": 22,
+      "mean_length": 4.0,
+      "top_values": [
+        {
+          "value": "Latn",
+          "count": 100767
+        },
+        {
+          "value": "Arab",
+          "count": 17534
+        },
+        {
+          "value": "Sinh",
+          "count": 14524
+        },
+        {
+          "value": "Taml",
+          "count": 14133
+        },
+        {
+          "value": "Cyrl",
+          "count": 9719
+        }
+      ],
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 5.0,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 202364
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

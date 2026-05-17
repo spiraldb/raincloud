@@ -22,7 +22,6 @@ This document defines the shape of `sources.json`, the manifest that drives the 
   "short_name": "ClickBench Hits",      // table-friendly label
   "full_name": "ClickBench Hits (Yandex Metrica log)",
   "description": "100M-row web-analytics event log used by the ClickBench OLAP benchmark.",
-  "family": "direct",                   // "direct" | "nyc-tlc" | "public-bi" | "uci" | "kaggle-upstream"
 
   /* License (driven by the license-audit pass — machine-readable) */
   "license": {
@@ -45,7 +44,8 @@ This document defines the shape of `sources.json`, the manifest that drives the 
     "hf_allow_patterns": null,          // huggingface-only: glob patterns forwarded to snapshot_download(allow_patterns=...). Use to fetch a subset of a giant repo (e.g. ["data/sample-10BT/*.parquet"] for fineweb).
     "hf_revision": null,                // huggingface-only: git revision (branch/tag/commit SHA) forwarded to snapshot_download(revision=...).
     "expected_bytes": 14779976446,      // optional; used only to warn on drift
-    "expected_sha256": null             // optional; prefer when upstream publishes it
+    "expected_sha256": null,            // optional; prefer when upstream publishes it
+    "verify_tls": true                  // optional; default true. Set to false only as a documented escape hatch for upstreams whose certs have rotted but whose payload integrity we cover via expected_sha256.
   },
 
   /* Stage 2 — extract (scripts/extract.py) */
@@ -110,9 +110,13 @@ This document defines the shape of `sources.json`, the manifest that drives the 
     "advisory": "Many LAION URLs return 404 (10-30% takedown rate); ..."  // per-slug pitfalls
   },
 
-  /* Optional curatorial labels — list_datasets --tag filters by membership;
-     TUI renders as chips. Kebab-case. Free-form (no enum) but kept short. */
-  "tags": ["nlp", "rlhf", "preference-data"],
+  /* Optional curatorial domain tags — closed vocab from
+     scripts/pipeline/discovery.py:TAG_VOCAB. At most 3 per spec; unique. */
+  "tags": ["nlp-text", "benchmark"],
+
+  /* Optional editorial showcase tiers — closed vocab from
+     scripts/pipeline/discovery.py:SHOWCASE_TIERS. Multi-tier membership allowed. */
+  "showcase": ["encoding"],
 
   /* Optional canonical references beyond license.source_url. kind ∈
      {paper, blog, homepage, github, dataset_card}. */
@@ -122,6 +126,16 @@ This document defines the shape of `sources.json`, the manifest that drives the 
   ]
 }
 ```
+
+### `tags` *(array of string, optional, default `[]`)*
+
+Closed-vocab domain tags drawn from the discovery module's `TAG_VOCAB`. At most 3 per spec; values must be unique. Used by the TUI's "Domain" facet group and `list_datasets --tag`. Current vocab:
+
+`geospatial`, `nlp-text`, `web-analytics`, `e-commerce`, `finance`, `social`, `scientific`, `healthcare`, `sports`, `transportation`, `government`, `benchmark`.
+
+### `showcase` *(array of string, optional, default `[]`)*
+
+Editorial showcase tiers from `SHOWCASE_TIERS`: `encoding`, `stress`. Multi-tier membership allowed. Drives the TUI view presets, the `--view` CLI flag, and the curated-picks block in `docs/v1/datasets.md`.
 
 ## Handlers
 

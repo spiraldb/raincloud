@@ -1,0 +1,474 @@
+{
+  "schema_version": 1,
+  "slug": "uci-estimation-of-obesity-levels",
+  "row_count": 2111,
+  "parquet_sha256": "747bbce87c3d8f3645b38615cee84505f38fe1f13bdb680ecc990b89e0f82933",
+  "computed_at": "2026-05-16T10:22:54Z",
+  "sample_rows": null,
+  "columns": {
+    "gender": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 4.988157271435338,
+      "top_values": [
+        {
+          "value": "Male",
+          "count": 1068
+        },
+        {
+          "value": "Female",
+          "count": 1043
+        }
+      ],
+      "dtype": "string"
+    },
+    "age": {
+      "null_count": 0,
+      "min": 14.0,
+      "max": 61.0,
+      "mean": 24.31259990857412,
+      "ndv_approx": 1503,
+      "histogram": {
+        "buckets": [
+          14.0,
+          18.7,
+          23.4,
+          28.1,
+          32.8,
+          37.5,
+          42.2,
+          46.9,
+          51.6,
+          56.300000000000004,
+          61.0
+        ],
+        "counts": [
+          317,
+          909,
+          457,
+          190,
+          108,
+          101,
+          17,
+          4,
+          7,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "height": {
+      "null_count": 0,
+      "min": 1.45,
+      "max": 1.98,
+      "mean": 1.7016773533870178,
+      "ndv_approx": 1582,
+      "histogram": {
+        "buckets": [
+          1.45,
+          1.503,
+          1.556,
+          1.609,
+          1.662,
+          1.7149999999999999,
+          1.768,
+          1.821,
+          1.874,
+          1.927,
+          1.98
+        ],
+        "counts": [
+          24,
+          112,
+          220,
+          412,
+          387,
+          425,
+          313,
+          167,
+          43,
+          8
+        ]
+      },
+      "dtype": "float64"
+    },
+    "weight": {
+      "null_count": 0,
+      "min": 39.0,
+      "max": 173.0,
+      "mean": 86.58605812648037,
+      "ndv_approx": 1503,
+      "histogram": {
+        "buckets": [
+          39.0,
+          52.4,
+          65.8,
+          79.2,
+          92.6,
+          106.0,
+          119.4,
+          132.8,
+          146.2,
+          159.60000000000002,
+          173.0
+        ],
+        "counts": [
+          243,
+          286,
+          336,
+          427,
+          273,
+          291,
+          156,
+          74,
+          21,
+          4
+        ]
+      },
+      "dtype": "float64"
+    },
+    "family_history_with_overweight": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.817621980104216,
+      "top_values": [
+        {
+          "value": "yes",
+          "count": 1726
+        },
+        {
+          "value": "no",
+          "count": 385
+        }
+      ],
+      "dtype": "string"
+    },
+    "favc": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.8839412600663192,
+      "top_values": [
+        {
+          "value": "yes",
+          "count": 1866
+        },
+        {
+          "value": "no",
+          "count": 245
+        }
+      ],
+      "dtype": "string"
+    },
+    "fcvc": {
+      "null_count": 0,
+      "min": 1.0,
+      "max": 3.0,
+      "mean": 2.4190430615821916,
+      "ndv_approx": 780,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0,
+          2.2,
+          2.4000000000000004,
+          2.6,
+          2.8,
+          3.0
+        ],
+        "counts": [
+          60,
+          28,
+          32,
+          30,
+          52,
+          746,
+          119,
+          99,
+          126,
+          819
+        ]
+      },
+      "dtype": "float64"
+    },
+    "ncp": {
+      "null_count": 0,
+      "min": 1.0,
+      "max": 4.0,
+      "mean": 2.685628049739461,
+      "ndv_approx": 711,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.3,
+          1.6,
+          1.9,
+          2.2,
+          2.5,
+          2.8,
+          3.1,
+          3.4,
+          3.6999999999999997,
+          4.0
+        ],
+        "counts": [
+          282,
+          45,
+          54,
+          58,
+          53,
+          80,
+          1327,
+          52,
+          42,
+          118
+        ]
+      },
+      "dtype": "float64"
+    },
+    "caec": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 8.870203694931313,
+      "top_values": [
+        {
+          "value": "Sometimes",
+          "count": 1765
+        },
+        {
+          "value": "Frequently",
+          "count": 242
+        },
+        {
+          "value": "Always",
+          "count": 53
+        },
+        {
+          "value": "no",
+          "count": 51
+        }
+      ],
+      "dtype": "string"
+    },
+    "smoke": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.020843202273804,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 2067
+        },
+        {
+          "value": "yes",
+          "count": 44
+        }
+      ],
+      "dtype": "string"
+    },
+    "ch2o": {
+      "null_count": 0,
+      "min": 1.0,
+      "max": 3.0,
+      "mean": 2.0080114040739,
+      "ndv_approx": 1021,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.2,
+          1.4,
+          1.6,
+          1.8,
+          2.0,
+          2.2,
+          2.4000000000000004,
+          2.6,
+          2.8,
+          3.0
+        ],
+        "counts": [
+          339,
+          104,
+          90,
+          109,
+          127,
+          646,
+          115,
+          128,
+          164,
+          289
+        ]
+      },
+      "dtype": "float64"
+    },
+    "scc": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 2.045476077688299,
+      "top_values": [
+        {
+          "value": "no",
+          "count": 2015
+        },
+        {
+          "value": "yes",
+          "count": 96
+        }
+      ],
+      "dtype": "string"
+    },
+    "faf": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 3.0,
+      "mean": 1.010297695878732,
+      "ndv_approx": 1095,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.3,
+          0.6,
+          0.8999999999999999,
+          1.2,
+          1.5,
+          1.7999999999999998,
+          2.1,
+          2.4,
+          2.6999999999999997,
+          3.0
+        ],
+        "counts": [
+          636,
+          131,
+          155,
+          424,
+          150,
+          137,
+          311,
+          38,
+          27,
+          102
+        ]
+      },
+      "dtype": "float64"
+    },
+    "tue": {
+      "null_count": 0,
+      "min": 0.0,
+      "max": 2.0,
+      "mean": 0.6578659237328296,
+      "ndv_approx": 1100,
+      "histogram": {
+        "buckets": [
+          0.0,
+          0.2,
+          0.4,
+          0.6000000000000001,
+          0.8,
+          1.0,
+          1.2000000000000002,
+          1.4000000000000001,
+          1.6,
+          1.8,
+          2.0
+        ],
+        "counts": [
+          735,
+          136,
+          165,
+          182,
+          197,
+          351,
+          68,
+          67,
+          55,
+          155
+        ]
+      },
+      "dtype": "float64"
+    },
+    "calc": {
+      "null_count": 0,
+      "ndv_approx": 4,
+      "mean_length": 6.912837517764093,
+      "top_values": [
+        {
+          "value": "Sometimes",
+          "count": 1401
+        },
+        {
+          "value": "no",
+          "count": 639
+        },
+        {
+          "value": "Frequently",
+          "count": 70
+        },
+        {
+          "value": "Always",
+          "count": 1
+        }
+      ],
+      "dtype": "string"
+    },
+    "mtrans": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 18.12837517764093,
+      "top_values": [
+        {
+          "value": "Public_Transportation",
+          "count": 1580
+        },
+        {
+          "value": "Automobile",
+          "count": 457
+        },
+        {
+          "value": "Walking",
+          "count": 56
+        },
+        {
+          "value": "Motorbike",
+          "count": 11
+        },
+        {
+          "value": "Bike",
+          "count": 7
+        }
+      ],
+      "dtype": "string"
+    },
+    "nobeyesdad": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 16.192325911890098,
+      "top_values": [
+        {
+          "value": "Obesity_Type_I",
+          "count": 351
+        },
+        {
+          "value": "Obesity_Type_III",
+          "count": 324
+        },
+        {
+          "value": "Obesity_Type_II",
+          "count": 297
+        },
+        {
+          "value": "Overweight_Level_II",
+          "count": 290
+        },
+        {
+          "value": "Overweight_Level_I",
+          "count": 290
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

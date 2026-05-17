@@ -1,0 +1,722 @@
+{
+  "schema_version": 1,
+  "slug": "sf-salaries",
+  "row_count": 1096102,
+  "parquet_sha256": "7db14cf55edb24cc4fd4befaa07b0f5e767e3bc9d0724d435e83dd928583fd7d",
+  "computed_at": "2026-05-13T15:52:19Z",
+  "sample_rows": null,
+  "columns": {
+    "Organization Group Code": {
+      "null_count": 0,
+      "min": 1,
+      "max": 7,
+      "mean": 2.983302648841075,
+      "ndv_approx": 7,
+      "histogram": {
+        "buckets": [
+          1.0,
+          1.6,
+          2.2,
+          2.8,
+          3.4,
+          4.0,
+          4.6,
+          5.2,
+          5.8,
+          6.3999999999999995,
+          7.0
+        ],
+        "counts": [
+          209546,
+          345518,
+          0,
+          95534,
+          0,
+          247336,
+          95925,
+          0,
+          101850,
+          393
+        ]
+      },
+      "dtype": "uint8"
+    },
+    "Job Family Code": {
+      "null_count": 0,
+      "ndv_approx": 55,
+      "mean_length": 4.00240853497211,
+      "top_values": [
+        {
+          "value": "2300",
+          "count": 116849
+        },
+        {
+          "value": "9100",
+          "count": 92498
+        },
+        {
+          "value": "Q000",
+          "count": 64401
+        },
+        {
+          "value": "7300",
+          "count": 63294
+        },
+        {
+          "value": "2900",
+          "count": 58265
+        }
+      ],
+      "dtype": "string"
+    },
+    "Job Code": {
+      "null_count": 0,
+      "ndv_approx": 1445,
+      "mean_length": 4.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Year Type": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 7.000162393645847,
+      "top_values": [
+        {
+          "value": "Calendar",
+          "count": 548140
+        },
+        {
+          "value": "Fiscal",
+          "count": 547962
+        }
+      ],
+      "dtype": "string"
+    },
+    "Year": {
+      "null_count": 0,
+      "min": 2013,
+      "max": 2025,
+      "mean": 2019.0165340451892,
+      "ndv_approx": 15,
+      "histogram": {
+        "buckets": [
+          2013.0,
+          2014.2,
+          2015.4,
+          2016.6,
+          2017.8,
+          2019.0,
+          2020.2,
+          2021.4,
+          2022.6,
+          2023.8,
+          2025.0
+        ],
+        "counts": [
+          161671,
+          86067,
+          88478,
+          84300,
+          85639,
+          172377,
+          80087,
+          81893,
+          83110,
+          172480
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Organization Group": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 27.37456641808883,
+      "top_values": [
+        {
+          "value": "Public Works, Transportation & Commerce",
+          "count": 345518
+        },
+        {
+          "value": "Community Health",
+          "count": 247336
+        },
+        {
+          "value": "Public Protection",
+          "count": 209546
+        },
+        {
+          "value": "General Administration & Finance",
+          "count": 101850
+        },
+        {
+          "value": "Culture & Recreation",
+          "count": 95925
+        }
+      ],
+      "dtype": "string"
+    },
+    "Department Code": {
+      "null_count": 2,
+      "ndv_approx": 73,
+      "mean_length": 3.0,
+      "top_values": [
+        {
+          "value": "DPH",
+          "count": 247336
+        },
+        {
+          "value": "MTA",
+          "count": 165616
+        },
+        {
+          "value": "POL",
+          "count": 82608
+        },
+        {
+          "value": "REC",
+          "count": 58762
+        },
+        {
+          "value": "PUC",
+          "count": 53598
+        }
+      ],
+      "dtype": "string"
+    },
+    "Department": {
+      "null_count": 2,
+      "ndv_approx": 134,
+      "mean_length": 18.980239941611167,
+      "top_values": [
+        {
+          "value": "Public Health",
+          "count": 174243
+        },
+        {
+          "value": "Municipal Transportation Agcy",
+          "count": 116472
+        },
+        {
+          "value": "DPH Public Health",
+          "count": 73093
+        },
+        {
+          "value": "Police",
+          "count": 55972
+        },
+        {
+          "value": "MTA Municipal Transprtn Agncy",
+          "count": 49144
+        }
+      ],
+      "dtype": "string"
+    },
+    "Union Code": {
+      "null_count": 181,
+      "min": 1,
+      "max": 990,
+      "mean": 489.60918715856343,
+      "ndv_approx": 77,
+      "histogram": {
+        "buckets": [
+          1.0,
+          99.9,
+          198.8,
+          297.70000000000005,
+          396.6,
+          495.5,
+          594.4000000000001,
+          693.3000000000001,
+          792.2,
+          891.1,
+          990.0
+        ],
+        "counts": [
+          228517,
+          23055,
+          188415,
+          57170,
+          1055,
+          72805,
+          3359,
+          399493,
+          53310,
+          68742
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "Union": {
+      "null_count": 179,
+      "ndv_approx": 123,
+      "mean_length": 26.816004409068885,
+      "top_values": [
+        {
+          "value": "SEIU, Local 1021, Misc",
+          "count": 284768
+        },
+        {
+          "value": "Prof & Tech Eng, Local 21",
+          "count": 115145
+        },
+        {
+          "value": "SEIU - Miscellaneous, Local 1021",
+          "count": 95028
+        },
+        {
+          "value": "SEIU, Local 1021, RN",
+          "count": 62735
+        },
+        {
+          "value": "TWU, Local 250-A, TransitOpr",
+          "count": 48743
+        }
+      ],
+      "dtype": "string"
+    },
+    "Job Family": {
+      "null_count": 0,
+      "ndv_approx": 74,
+      "mean_length": 17.201849827844487,
+      "top_values": [
+        {
+          "value": "Nursing",
+          "count": 116849
+        },
+        {
+          "value": "Street Transit",
+          "count": 92498
+        },
+        {
+          "value": "Police Services",
+          "count": 64401
+        },
+        {
+          "value": "Journeyman Trade",
+          "count": 63294
+        },
+        {
+          "value": "Human Services",
+          "count": 58265
+        }
+      ],
+      "dtype": "string"
+    },
+    "Job": {
+      "null_count": 5,
+      "ndv_approx": 1408,
+      "mean_length": 18.91761678026671,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Employee Name": {
+      "null_count": 0,
+      "ndv_approx": 127728,
+      "mean_length": 10.763260171042475,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "Salaries": {
+      "null_count": 0,
+      "min": -68771.78,
+      "max": 651936.71,
+      "mean": 80700.0809129269,
+      "ndv_approx": 910087,
+      "histogram": {
+        "buckets": [
+          -68771.78,
+          3299.069000000003,
+          75369.918,
+          147440.76700000002,
+          219511.616,
+          291582.46499999997,
+          363653.314,
+          435724.16300000006,
+          507795.012,
+          579865.861,
+          651936.71
+        ],
+        "counts": [
+          71861,
+          451700,
+          455908,
+          101060,
+          13238,
+          1845,
+          393,
+          71,
+          20,
+          6
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Overtime": {
+      "null_count": 0,
+      "min": -47113.91,
+      "max": 487287.61,
+      "mean": 7252.288851986348,
+      "ndv_approx": 432433,
+      "histogram": {
+        "buckets": [
+          -47113.91,
+          6326.241999999998,
+          59766.394,
+          113206.546,
+          166646.698,
+          220086.85,
+          273527.002,
+          326967.154,
+          380407.306,
+          433847.458,
+          487287.61
+        ],
+        "counts": [
+          833160,
+          237459,
+          19694,
+          3903,
+          1244,
+          450,
+          124,
+          41,
+          18,
+          9
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Other Salaries": {
+      "null_count": 0,
+      "min": -19131.1,
+      "max": 342802.63,
+      "mean": 4277.2399986866285,
+      "ndv_approx": 459566,
+      "histogram": {
+        "buckets": [
+          -19131.1,
+          17062.273,
+          53255.646,
+          89449.019,
+          125642.39199999999,
+          161835.76499999998,
+          198029.138,
+          234222.511,
+          270415.884,
+          306609.25700000004,
+          342802.63
+        ],
+        "counts": [
+          1022829,
+          69851,
+          2375,
+          708,
+          150,
+          110,
+          44,
+          14,
+          14,
+          7
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Total Salary": {
+      "null_count": 0,
+      "min": -68771.78,
+      "max": 743148.63,
+      "mean": 92229.60976360088,
+      "ndv_approx": 995794,
+      "histogram": {
+        "buckets": [
+          -68771.78,
+          12420.260999999999,
+          93612.302,
+          174804.343,
+          255996.384,
+          337188.42499999993,
+          418380.466,
+          499572.507,
+          580764.548,
+          661956.5889999999,
+          743148.6299999999
+        ],
+        "counts": [
+          140685,
+          462747,
+          378021,
+          94536,
+          15707,
+          3335,
+          826,
+          194,
+          38,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Retirement": {
+      "null_count": 0,
+      "min": -30621.43,
+      "max": 196435.12,
+      "mean": 15461.07721716661,
+      "ndv_approx": 864775,
+      "histogram": {
+        "buckets": [
+          -30621.43,
+          -7915.7750000000015,
+          14789.879999999997,
+          37495.534999999996,
+          60201.189999999995,
+          82906.845,
+          105612.5,
+          128318.155,
+          151023.81,
+          173729.465,
+          196435.12
+        ],
+        "counts": [
+          44,
+          520680,
+          542025,
+          27404,
+          3293,
+          1938,
+          509,
+          154,
+          42,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Health and Dental": {
+      "null_count": 0,
+      "min": -3831.09,
+      "max": 81568.34,
+      "mean": 11493.20177070814,
+      "ndv_approx": 290267,
+      "histogram": {
+        "buckets": [
+          -3831.09,
+          4708.852999999999,
+          13248.795999999998,
+          21788.738999999998,
+          30328.681999999997,
+          38868.625,
+          47408.568,
+          55948.511,
+          64488.454,
+          73028.397,
+          81568.34
+        ],
+        "counts": [
+          253248,
+          305941,
+          507988,
+          27025,
+          1628,
+          246,
+          24,
+          1,
+          0,
+          1
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Other Benefits": {
+      "null_count": 0,
+      "min": -10636.5,
+      "max": 35691.04,
+      "mean": 5727.355113292327,
+      "ndv_approx": 756757,
+      "histogram": {
+        "buckets": [
+          -10636.5,
+          -6003.746,
+          -1370.9920000000002,
+          3261.761999999999,
+          7894.516,
+          12527.27,
+          17160.023999999998,
+          21792.778,
+          26425.532,
+          31058.286,
+          35691.04
+        ],
+        "counts": [
+          16,
+          54,
+          369414,
+          399220,
+          273498,
+          48083,
+          4512,
+          619,
+          471,
+          215
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Total Benefits": {
+      "null_count": 0,
+      "min": -21295.15,
+      "max": 232158.84,
+      "mean": 32681.634101150914,
+      "ndv_approx": 1069716,
+      "histogram": {
+        "buckets": [
+          -21295.15,
+          4050.248999999996,
+          29395.647999999994,
+          54741.046999999984,
+          80086.446,
+          105431.845,
+          130777.24399999998,
+          156122.64299999998,
+          181468.042,
+          206813.441,
+          232158.84
+        ],
+        "counts": [
+          161555,
+          230010,
+          587143,
+          106177,
+          8454,
+          2028,
+          552,
+          137,
+          35,
+          11
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Total Compensation": {
+      "null_count": 0,
+      "min": -74082.61,
+      "max": 870078.42,
+      "mean": 124911.24386476749,
+      "ndv_approx": 1012720,
+      "histogram": {
+        "buckets": [
+          -74082.61,
+          20333.493000000002,
+          114749.596,
+          209165.69900000002,
+          303581.802,
+          397997.905,
+          492414.00800000003,
+          586830.111,
+          681246.214,
+          775662.317,
+          870078.42
+        ],
+        "counts": [
+          160140,
+          339141,
+          435865,
+          132144,
+          23088,
+          4477,
+          964,
+          193,
+          74,
+          16
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Hours": {
+      "null_count": 336216,
+      "min": -536.0,
+      "max": 6828.25,
+      "mean": 1722.5385959999912,
+      "ndv_approx": 119968,
+      "histogram": {
+        "buckets": [
+          -536.0,
+          200.42499999999995,
+          936.8499999999999,
+          1673.2749999999996,
+          2409.7,
+          3146.125,
+          3882.5499999999993,
+          4618.974999999999,
+          5355.4,
+          6091.825,
+          6828.25
+        ],
+        "counts": [
+          68881,
+          91716,
+          76106,
+          436752,
+          73663,
+          10901,
+          1526,
+          281,
+          47,
+          13
+        ]
+      },
+      "dtype": "float64"
+    },
+    "Employment Type": {
+      "null_count": 336216,
+      "ndv_approx": 6,
+      "mean_length": 21.098839825973897,
+      "top_values": [
+        {
+          "value": "Permanent Civil Service",
+          "count": 556921
+        },
+        {
+          "value": "Temporary Exempt",
+          "count": 134994
+        },
+        {
+          "value": "Permanent Exempt",
+          "count": 61425
+        },
+        {
+          "value": "Other",
+          "count": 3547
+        },
+        {
+          "value": "Temporary Provisional",
+          "count": 2943
+        }
+      ],
+      "dtype": "string"
+    },
+    "data_as_of": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 22.0,
+      "top_values": [
+        {
+          "value": "05/10/2026 11:27:58 PM",
+          "count": 1096102
+        }
+      ],
+      "dtype": "string"
+    },
+    "data_loaded_at": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 22.0,
+      "top_values": [
+        {
+          "value": "2026/05/11 02:55:21 AM",
+          "count": 1096102
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

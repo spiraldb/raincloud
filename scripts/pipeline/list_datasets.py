@@ -8,7 +8,6 @@ This is the read-only query layer over it.
 
 Usage:
     python -m scripts.pipeline.list_datasets                        # every slug
-    python -m scripts.pipeline.list_datasets --family uci           # filter
     python -m scripts.pipeline.list_datasets --handler tighten_types
     python -m scripts.pipeline.list_datasets --license CC0-1.0
     python -m scripts.pipeline.list_datasets --fetch-type kaggle
@@ -18,6 +17,11 @@ Usage:
     python -m scripts.pipeline.list_datasets --kaggle-tos          # requires_interactive_accept
     python -m scripts.pipeline.list_datasets --scrape              # license.scrape_advisory non-null
     python -m scripts.pipeline.list_datasets --hydrate             # hydrate config non-null
+    python -m scripts.pipeline.list_datasets --showcase encoding   # editorial tier (repeatable)
+    python -m scripts.pipeline.list_datasets --tag geospatial      # domain tag (repeatable)
+    python -m scripts.pipeline.list_datasets --size s --size m     # size bucket (repeatable)
+    python -m scripts.pipeline.list_datasets --trait has_nested    # shape trait; ! to negate
+    python -m scripts.pipeline.list_datasets --view encoding       # named preset (clears other axes)
     python -m scripts.pipeline.list_datasets --long                # slug + key fields
     python -m scripts.pipeline.list_datasets --json                # one JSON object per row
     python -m scripts.pipeline.list_datasets --count               # just the count
@@ -41,26 +45,98 @@ import re
 import sys
 from typing import Any
 
+from .discovery import (
+    SHOWCASE_TIERS,
+    SIZE_BUCKETS,
+    TAG_VOCAB,
+    VIEW_PRESETS,
+    FilterState,
+    apply_preset,
+    format_column_line,
+)
 from .spec import (
+    REPO_ROOT,
     iter_datasets,
     load_manifest,
+    outputs_root,
     prepared_parquet,
     prepared_vortex,
     spec_field,
 )
 
 
-def _matches(spec: dict, args) -> bool:
-    if args.family and spec.get("family") != args.family: return False
+def _load_snapshot() -> dict:
+    """Load docs/snapshot.json (or v1 fallback) keyed by slug.
+
+    Returns {} when neither file exists or both are malformed.
+    """
+    import json as _json
+    for p in (REPO_ROOT / "docs" / "snapshot.json",
+              REPO_ROOT / "docs" / "v1" / "snapshot.json"):
+        if p.exists():
+            try:
+                blob = _json.loads(p.read_text())
+            except Exception:
+                continue
+            if isinstance(blob, dict) and "slugs" in blob:
+                return blob["slugs"]
+            if isinstance(blob, dict) and "datasets" in blob:
+                return {d["slug"]: d for d in blob["datasets"]}
+            if isinstance(blob, dict):
+                return blob
+    return {}
+
+
+def _filter_state_from_args(args) -> FilterState:
+    """Build FilterState from the parsed argparse Namespace.
+
+    --view replaces ALL other facet selections (preset is the complete spec).
+    Mixing a preset with individual facet flags is incoherent UX, so when
+    --view is set we short-circuit and return the preset state unmodified.
+    Other inline filters (handler, reader, kaggle_tos, scrape, hydrate, grep)
+    still apply since they're outside FilterState's domain.
+    """
+    if getattr(args, "view", None):
+        return apply_preset(args.view)
+    state = FilterState()
+    # Additive: each repeated flag adds to the corresponding axis.
+    for axis_name, src in (
+        ("showcase", args.showcase),
+        ("tag", args.tag),
+        ("size", args.size),
+    ):
+        if src:
+            getattr(state, axis_name).update(src)
+    # The existing --license, --fetch-type flags are single-value.
+    if getattr(args, "license", None):
+        state.license.add(args.license)
+    if getattr(args, "fetch_type", None):
+        state.fetch_type.add(args.fetch_type)
+    # Trait flags: prefix '!' negates.
+    for flag in args.trait or []:
+        if flag.startswith("!"):
+            state.trait_negated.add(flag[1:])
+        else:
+            state.trait.add(flag)
+    if args.vortex:
+        state.vortex = True
+    elif args.no_vortex:
+        state.vortex = False
+    return state
+
+
+def _matches(spec: dict, args, state: FilterState, snapshot: dict) -> bool:
+    """Apply the inline filters not covered by FilterState, then defer the
+    closed-vocab axes (license / fetch_type / vortex / showcase / tag / size /
+    trait) to FilterState.matches().
+    """
     if args.handler and spec_field(spec, "transform.handler") != args.handler: return False
-    if args.license and spec_field(spec, "license.spdx") != args.license: return False
-    if args.fetch_type and spec_field(spec, "fetch.type") != args.fetch_type: return False
     if args.reader and spec_field(spec, "parse.reader") != args.reader: return False
-    if args.vortex and not spec_field(spec, "convert.vortex", False): return False
-    if args.no_vortex and spec_field(spec, "convert.vortex", False): return False
     if args.kaggle_tos and not spec_field(spec, "fetch.requires_interactive_accept", False): return False
     if args.scrape and not spec_field(spec, "license.scrape_advisory"): return False
     if args.hydrate and not spec.get("hydrate"): return False
+    if not state.matches(spec=spec, snapshot=snapshot.get(spec["slug"], {})):
+        return False
     if args.grep:
         haystack = " ".join((
             spec.get("slug", ""),
@@ -75,7 +151,6 @@ def _matches(spec: dict, args) -> bool:
 def _long_row(spec: dict) -> dict[str, Any]:
     return {
         "slug":                spec["slug"],
-        "family":              spec.get("family"),
         "handler":             spec_field(spec, "transform.handler"),
         "fetch_type":          spec_field(spec, "fetch.type"),
         "reader":              spec_field(spec, "parse.reader"),
@@ -93,12 +168,11 @@ def _long_row(spec: dict) -> dict[str, Any]:
 
 def _render_long_table(rows: list[dict]) -> str:
     if not rows: return ""
-    headers = ("slug", "family", "handler", "fetch", "reader", "license", "rows", "vortex", "scrape", "hydrate")
+    headers = ("slug", "handler", "fetch", "reader", "license", "rows", "vortex", "scrape", "hydrate")
     cells = [headers]
     for r in rows:
         cells.append((
             r["slug"],
-            r["family"] or "",
             r["handler"] or "",
             r["fetch_type"] or "",
             r["reader"] or "",
@@ -254,9 +328,89 @@ def _render_coverage_table(rows: list[dict]) -> str:
     return "\n".join(out)
 
 
+def _inspect(slug: str) -> int:
+    """Render the TUI detail-pane equivalent as plain text."""
+    import json as _json
+    manifest = load_manifest()
+    spec = next((s for s in manifest["datasets"] if s["slug"] == slug), None)
+    if spec is None:
+        print(f"unknown slug: {slug}", file=sys.stderr)
+        return 2
+
+    print(f"# {slug} — {spec.get('short_name', '')}")
+    if spec.get("showcase"):
+        print(f"showcase: {', '.join(spec['showcase'])}")
+    if spec.get("tags"):
+        print(f"tags:     {', '.join(spec['tags'])}")
+    lic = (spec.get("license") or {}).get("spdx")
+    if lic:
+        print(f"license:  {lic}")
+    print()
+    desc = (spec.get("description") or "").strip()
+    if desc:
+        print(desc)
+        print()
+
+    # Prefer the locally-built outputs/v{n}/<slug>/profile.json (fresher).
+    # Fall back to the tracked docs/v{n}/profiles/<slug>.json so a fresh
+    # clone can `--inspect` without first running `python -m scripts.pipeline.profile`.
+    v = manifest.get("schema_version", 1)
+    built_path = outputs_root(manifest) / slug / "profile.json"
+    tracked_path = REPO_ROOT / "docs" / f"v{v}" / "profiles" / f"{slug}.json"
+    candidates = (built_path, tracked_path)
+    profile: dict | None = None
+    last_error: Exception | None = None
+    last_error_path = None
+    for path in candidates:
+        if not path.exists():
+            continue
+        try:
+            profile = _json.loads(path.read_text())
+            break
+        except Exception as e:
+            last_error = e
+            last_error_path = path
+            continue
+    if profile is None:
+        if last_error is not None:
+            print(f"profile.json malformed at {last_error_path}: {last_error}", file=sys.stderr)
+            return 2
+        try:
+            tracked_display = tracked_path.relative_to(REPO_ROOT)
+        except ValueError:
+            tracked_display = tracked_path
+        print(
+            f"no profile yet for {slug} — checked {built_path} and {tracked_path}; "
+            f"run `python -m scripts.pipeline.profile {slug}` or check tracked mirror at {tracked_display}"
+        )
+        return 0
+    print(f"rows: {profile['row_count']}   sample_rows: {profile.get('sample_rows')}")
+    print(f"columns ({len(profile['columns'])}):")
+    for name, col in profile["columns"].items():
+        print(format_column_line(name, col))
+    return 0
+
+
+def _print_vocab_help(manifest: dict, *, vocab_name: str) -> int:
+    """Print closed vocab + per-value count from the live manifest."""
+    if vocab_name == "tags":
+        vocab = TAG_VOCAB
+        field = "tags"
+    else:
+        vocab = SHOWCASE_TIERS
+        field = "showcase"
+    counts = {v: 0 for v in vocab}
+    for spec in manifest["datasets"]:
+        for v in spec.get(field) or []:
+            if v in counts:
+                counts[v] += 1
+    for v in vocab:
+        print(f"  {v:<20} ({counts[v]})")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
-    ap.add_argument("--family", help="filter by family (direct, kaggle-upstream, nyc-tlc, public-bi, uci)")
     ap.add_argument("--handler", help="filter by transform.handler name")
     ap.add_argument("--license", help="filter by license.spdx")
     ap.add_argument("--fetch-type", help="filter by fetch.type (http, kaggle, huggingface, custom)")
@@ -271,6 +425,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--hydrate", action="store_true",
                     help="only specs with a non-null hydrate block "
                          "(URL columns marked as candidates for the hydrate stage)")
+    ap.add_argument("--showcase", action="append", choices=list(SHOWCASE_TIERS),
+                    help="filter by editorial showcase tier; repeatable")
+    ap.add_argument("--tag", action="append", choices=list(TAG_VOCAB),
+                    help="filter by domain tag; repeatable")
+    ap.add_argument("--size", action="append", choices=list(SIZE_BUCKETS),
+                    help="filter by size bucket; repeatable")
+    ap.add_argument("--trait", action="append",
+                    help="filter by shape trait (e.g. has_nested); prefix with ! to negate; repeatable")
+    ap.add_argument("--view", choices=list(VIEW_PRESETS),
+                    help="apply a named view preset (replaces other selections)")
     ap.add_argument("--grep", help="regex over slug + short_name + full_name + description (case-insensitive)")
     ap.add_argument("--long", action="store_true", help="emit a wide table with key fields")
     ap.add_argument("--json", action="store_true", help="emit one JSON object per matching dataset")
@@ -285,6 +449,12 @@ def main(argv: list[str] | None = None) -> int:
                     help="when used with --columns, only emit columns whose name matches this regex (case-insensitive)")
     ap.add_argument("--source", choices=("parquet", "vortex"), default="parquet",
                     help="when used with --columns / --coverage, read from parquet (default) or vortex outputs")
+    ap.add_argument("--inspect", metavar="SLUG",
+                    help="render the detail view for one slug (description + per-column profile)")
+    ap.add_argument("--tags-help", action="store_true",
+                    help="list the closed tag vocab + per-tag counts in the manifest")
+    ap.add_argument("--showcase-help", action="store_true",
+                    help="list the showcase tiers + per-tier counts in the manifest")
     args = ap.parse_args(argv)
 
     if args.vortex and args.no_vortex:
@@ -294,8 +464,18 @@ def main(argv: list[str] | None = None) -> int:
         print("--columns and --coverage are mutually exclusive", file=sys.stderr)
         return 2
 
+    if args.inspect:
+        return _inspect(args.inspect)
+    manifest = load_manifest()
+    if args.tags_help:
+        return _print_vocab_help(manifest, vocab_name="tags")
+    if args.showcase_help:
+        return _print_vocab_help(manifest, vocab_name="showcase")
+
     m = load_manifest()
-    matched = [s for s in iter_datasets(m) if _matches(s, args)]
+    state = _filter_state_from_args(args)
+    snapshot = _load_snapshot()
+    matched = [s for s in iter_datasets(m) if _matches(s, args, state, snapshot)]
 
     if args.columns or args.coverage:
         col_rows = _iter_columns(matched, args.source)

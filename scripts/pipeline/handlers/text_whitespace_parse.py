@@ -5,9 +5,11 @@
 Some UCI datasets (e.g. seeds) use a mix of tabs and multi-tab runs as their
 field separator, which pyarrow's CSV reader can't collapse. We read each
 non-blank line, split on `\\s+`, and construct a pyarrow Table with
-auto-generated column names (`col_0`, `col_1`, ...). Downstream consumers
-typically follow up with `uci_default`-style column renaming or manual
-schema wiring.
+auto-generated column names (`col_0`, `col_1`, ...). Per-column type
+inference promotes columns where every non-null token parses as int64 to
+int64, then to float64; otherwise the column stays as string. Downstream
+consumers typically follow up with `uci_default`-style column renaming or
+manual schema wiring.
 """
 from __future__ import annotations
 
@@ -15,6 +17,34 @@ import re
 from pathlib import Path
 
 import pyarrow as pa
+
+
+def _infer_column(values: list[str | None]) -> pa.Array:
+    """Promote a column of string tokens to int64 / float64 when every non-null
+    token parses cleanly. Falls back to string for any ambiguity.
+    """
+    non_null = [v for v in values if v is not None]
+    if non_null:
+        # int64 first — strict: must parse via int() AND have no decimal point.
+        try:
+            if all("." not in v and "e" not in v.lower() for v in non_null):
+                _ = [int(v) for v in non_null]
+                return pa.array(
+                    [int(v) if v is not None else None for v in values],
+                    type=pa.int64(),
+                )
+        except (ValueError, TypeError):
+            pass
+        # float64 fallback for decimals / scientific notation.
+        try:
+            _ = [float(v) for v in non_null]
+            return pa.array(
+                [float(v) if v is not None else None for v in values],
+                type=pa.float64(),
+            )
+        except (ValueError, TypeError):
+            pass
+    return pa.array(values, type=pa.string())
 
 
 def text_whitespace_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]],
@@ -40,7 +70,6 @@ def text_whitespace_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]]
         for i in range(max_cols):
             cols[i].append(r[i] if i < len(r) else None)
 
-    table = pa.table({f"col_{i}": pa.array(cols[i], type=pa.string())
-                      for i in range(max_cols)})
+    table = pa.table({f"col_{i}": _infer_column(cols[i]) for i in range(max_cols)})
     print(f"  {path.name}: {table.num_rows:,} rows × {table.num_columns} cols")
     return [(spec["slug"], table)]

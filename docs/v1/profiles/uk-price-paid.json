@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "slug": "uk-price-paid",
+  "row_count": 31192682,
+  "parquet_sha256": "f77285b2321116b5ec2240c8a2a8761cb942d96fa694e72ed66f8ddc981a2e5c",
+  "computed_at": "2026-05-16T10:36:04Z",
+  "sample_rows": null,
+  "columns": {
+    "{2A289E9F-6BB5-CDC8-E050-A8C063054829}": {
+      "null_count": 0,
+      "ndv_approx": 30740281,
+      "mean_length": 38.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "36995": {
+      "null_count": 0,
+      "min": 1,
+      "max": 900000000,
+      "mean": 235443.80289832084,
+      "ndv_approx": 262467,
+      "histogram": {
+        "buckets": [
+          1.0,
+          90000000.9,
+          180000000.8,
+          270000000.70000005,
+          360000000.6,
+          450000000.5,
+          540000000.4000001,
+          630000000.3000001,
+          720000000.2,
+          810000000.1,
+          900000000.0
+        ],
+        "counts": [
+          31192213,
+          365,
+          54,
+          27,
+          12,
+          6,
+          3,
+          0,
+          1,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "1995-03-24 00:00": {
+      "dtype": "timestamp[ms]",
+      "null_count": 0,
+      "min": "1995-01-01T00:00:00+00:00",
+      "max": "2026-03-31T00:00:00+00:00",
+      "histogram": {
+        "buckets": [
+          "1995-01-01T00:00:00+00:00",
+          "1998-02-15T04:48:00+00:00",
+          "2001-04-01T09:36:00+00:00",
+          "2004-05-16T14:24:00+00:00",
+          "2007-07-01T19:12:00+00:00",
+          "2010-08-16T00:00:00+00:00",
+          "2013-09-30T04:48:00+00:00",
+          "2016-11-14T09:36:00+00:00",
+          "2019-12-30T14:24:00+00:00",
+          "2023-02-13T19:12:00+00:00",
+          "2026-03-31T00:00:00+00:00"
+        ],
+        "counts": [
+          2947386,
+          3522315,
+          4040287,
+          3803215,
+          2315922,
+          2154040,
+          3148891,
+          3266310,
+          3345339,
+          2648977
+        ]
+      }
+    },
+    "SE19 3NF": {
+      "null_count": 50069,
+      "ndv_approx": 1430197,
+      "mean_length": 7.43570875057915,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "F": {
+      "null_count": 0,
+      "ndv_approx": 5,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "T",
+          "count": 9245079
+        },
+        {
+          "value": "S",
+          "count": 8511074
+        },
+        {
+          "value": "D",
+          "count": 7191018
+        },
+        {
+          "value": "F",
+          "count": 5615510
+        },
+        {
+          "value": "O",
+          "count": 630001
+        }
+      ],
+      "dtype": "string"
+    },
+    "N": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "N",
+          "count": 27928310
+        },
+        {
+          "value": "Y",
+          "count": 3264372
+        }
+      ],
+      "dtype": "string"
+    },
+    "L": {
+      "null_count": 0,
+      "ndv_approx": 3,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "F",
+          "count": 23849303
+        },
+        {
+          "value": "L",
+          "count": 7342847
+        },
+        {
+          "value": "U",
+          "count": 532
+        }
+      ],
+      "dtype": "string"
+    },
+    "CROWN POINT": {
+      "null_count": 4182,
+      "ndv_approx": 692168,
+      "mean_length": 3.7016091508087916,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "14": {
+      "null_count": 27462654,
+      "ndv_approx": 69354,
+      "mean_length": 6.517520243815864,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "BEULAH HILL": {
+      "null_count": 496547,
+      "ndv_approx": 322021,
+      "mean_length": 13.12293397849599,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "__unnamed_column__": {
+      "dtype": "string",
+      "skipped": "empty column name"
+    },
+    "LONDON": {
+      "null_count": 0,
+      "ndv_approx": 980,
+      "mean_length": 8.705807855829775,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "CROYDON": {
+      "null_count": 0,
+      "ndv_approx": 462,
+      "mean_length": 10.868552309801382,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "GREATER LONDON": {
+      "null_count": 0,
+      "ndv_approx": 129,
+      "mean_length": 12.028584685343825,
+      "top_values": [
+        {
+          "value": "GREATER LONDON",
+          "count": 3951271
+        },
+        {
+          "value": "GREATER MANCHESTER",
+          "count": 1391284
+        },
+        {
+          "value": "WEST YORKSHIRE",
+          "count": 1187020
+        },
+        {
+          "value": "WEST MIDLANDS",
+          "count": 1184030
+        },
+        {
+          "value": "KENT",
+          "count": 885862
+        }
+      ],
+      "dtype": "string"
+    },
+    "A": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 1.0,
+      "top_values": [
+        {
+          "value": "A",
+          "count": 29429064
+        },
+        {
+          "value": "B",
+          "count": 1763618
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

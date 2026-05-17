@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "slug": "peoples-speech-clean-validation",
+  "row_count": 18622,
+  "parquet_sha256": "19fd17c4ab293450bd635e0a7b14237edf19fb5d4fdf99f68d73b16db3c78429",
+  "computed_at": "2026-05-17T13:43:41Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "ndv_approx": 19666,
+      "mean_length": 120.06674900655139,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "audio": null,
+    "duration_ms": {
+      "null_count": 0,
+      "min": 833,
+      "max": 105970,
+      "mean": 6411.060788314896,
+      "ndv_approx": 6620,
+      "histogram": {
+        "buckets": [
+          833.0,
+          11346.7,
+          21860.4,
+          32374.100000000002,
+          42887.8,
+          53401.5,
+          63915.200000000004,
+          74428.90000000001,
+          84942.6,
+          95456.3,
+          105970.0
+        ],
+        "counts": [
+          15950,
+          2244,
+          345,
+          64,
+          12,
+          5,
+          0,
+          1,
+          0,
+          1
+        ]
+      },
+      "dtype": "uint32"
+    },
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 22431,
+      "mean_length": 94.52872945977876,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 1,
+      "mean_length": 10.0,
+      "top_values": [
+        {
+          "value": "validation",
+          "count": 18622
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

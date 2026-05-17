@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "slug": "tinystories",
+  "row_count": 2141709,
+  "parquet_sha256": "4edd26c9198483aab39e58c14f4f7f86285151c417423bbf6de5dc80c4a6e033",
+  "computed_at": "2026-05-13T15:52:15Z",
+  "sample_rows": null,
+  "columns": {
+    "text": {
+      "null_count": 0,
+      "ndv_approx": 2232911,
+      "mean_length": 896.0897680310444,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "split": {
+      "null_count": 0,
+      "ndv_approx": 2,
+      "mean_length": 5.051337506636056,
+      "top_values": [
+        {
+          "value": "train",
+          "count": 2119719
+        },
+        {
+          "value": "validation",
+          "count": 21990
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

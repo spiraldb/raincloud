@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "slug": "osm-germany-relations",
+  "row_count": 890059,
+  "parquet_sha256": "0203b9678f731279507b2bf06047331081617779c4a496cb98ffe0f166d8842d",
+  "computed_at": "2026-05-17T07:21:48Z",
+  "sample_rows": null,
+  "columns": {
+    "id": {
+      "null_count": 0,
+      "min": 882,
+      "max": 20631777,
+      "mean": 8772127.206045892,
+      "ndv_approx": 962761,
+      "histogram": {
+        "buckets": [
+          882.0,
+          2063971.5,
+          4127061.0,
+          6190150.5,
+          8253240.0,
+          10316329.5,
+          12379419.0,
+          14442508.5,
+          16505598.0,
+          18568687.5,
+          20631777.0
+        ],
+        "counts": [
+          138084,
+          142736,
+          94162,
+          88151,
+          72200,
+          72303,
+          91210,
+          57286,
+          65433,
+          68494
+        ]
+      },
+      "dtype": "int64"
+    },
+    "version": {
+      "null_count": 0,
+      "min": 1,
+      "max": 3154,
+      "mean": 8.242714247033062,
+      "ndv_approx": 1085,
+      "histogram": {
+        "buckets": [
+          1.0,
+          316.3,
+          631.6,
+          946.9000000000001,
+          1262.2,
+          1577.5,
+          1892.8000000000002,
+          2208.1,
+          2523.4,
+          2838.7000000000003,
+          3154.0
+        ],
+        "counts": [
+          888466,
+          1187,
+          268,
+          66,
+          40,
+          18,
+          9,
+          2,
+          1,
+          2
+        ]
+      },
+      "dtype": "int32"
+    },
+    "timestamp": {
+      "null_count": 0,
+      "ndv_approx": 530917,
+      "mean_length": 25.0,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "members": {
+      "null_count": 0,
+      "length_min": 1,
+      "length_max": 9071,
+      "length_mean": 23.69063286815818,
+      "dtype": "list<struct>"
+    },
+    "tags": {
+      "null_count": 0,
+      "length_min": 0,
+      "length_max": 495,
+      "length_mean": 5.463893966579744,
+      "dtype": "list<struct>"
+    }
+  }
+}

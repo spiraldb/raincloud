@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "slug": "databricks-dolly-15k",
+  "row_count": 15011,
+  "parquet_sha256": "da5a45e8ed50c34f1dd7f70b91ec54ee1ac4b300dfaae991eccf8e7b2a227439",
+  "computed_at": "2026-05-16T08:45:32Z",
+  "sample_rows": null,
+  "columns": {
+    "instruction": {
+      "null_count": 0,
+      "ndv_approx": 13054,
+      "mean_length": 71.83938445140231,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "context": {
+      "null_count": 0,
+      "ndv_approx": 4785,
+      "mean_length": 352.8988075411365,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "response": {
+      "null_count": 0,
+      "ndv_approx": 16716,
+      "mean_length": 358.10419026047566,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "category": {
+      "null_count": 0,
+      "ndv_approx": 7,
+      "mean_length": 11.780894011058557,
+      "top_values": [
+        {
+          "value": "open_qa",
+          "count": 3742
+        },
+        {
+          "value": "general_qa",
+          "count": 2191
+        },
+        {
+          "value": "classification",
+          "count": 2136
+        },
+        {
+          "value": "closed_qa",
+          "count": 1773
+        },
+        {
+          "value": "brainstorming",
+          "count": 1766
+        }
+      ],
+      "dtype": "string"
+    }
+  }
+}

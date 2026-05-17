@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "slug": "movies",
+  "row_count": 7668,
+  "parquet_sha256": "634ccb5f9b7d677273119247a4cb715e1f1ad1c800f49658d105dc09b5e83dab",
+  "computed_at": "2026-05-16T08:59:56Z",
+  "sample_rows": null,
+  "columns": {
+    "name": {
+      "null_count": 0,
+      "ndv_approx": 8123,
+      "mean_length": 14.806468440271257,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "rating": {
+      "null_count": 77,
+      "ndv_approx": 12,
+      "mean_length": 2.6381240943222237,
+      "top_values": [
+        {
+          "value": "R",
+          "count": 3697
+        },
+        {
+          "value": "PG-13",
+          "count": 2112
+        },
+        {
+          "value": "PG",
+          "count": 1252
+        },
+        {
+          "value": "Not Rated",
+          "count": 283
+        },
+        {
+          "value": "G",
+          "count": 153
+        }
+      ],
+      "dtype": "string"
+    },
+    "genre": {
+      "null_count": 0,
+      "ndv_approx": 21,
+      "mean_length": 6.217136150234742,
+      "top_values": [
+        {
+          "value": "Comedy",
+          "count": 2245
+        },
+        {
+          "value": "Action",
+          "count": 1705
+        },
+        {
+          "value": "Drama",
+          "count": 1518
+        },
+        {
+          "value": "Crime",
+          "count": 551
+        },
+        {
+          "value": "Biography",
+          "count": 443
+        }
+      ],
+      "dtype": "string"
+    },
+    "year": {
+      "null_count": 0,
+      "min": 1980,
+      "max": 2020,
+      "mean": 2000.4054512258738,
+      "ndv_approx": 38,
+      "histogram": {
+        "buckets": [
+          1980.0,
+          1984.0,
+          1988.0,
+          1992.0,
+          1996.0,
+          2000.0,
+          2004.0,
+          2008.0,
+          2012.0,
+          2016.0,
+          2020.0
+        ],
+        "counts": [
+          475,
+          768,
+          800,
+          800,
+          800,
+          800,
+          800,
+          800,
+          800,
+          825
+        ]
+      },
+      "dtype": "uint16"
+    },
+    "released": {
+      "null_count": 2,
+      "ndv_approx": 3700,
+      "mean_length": 30.345682233237675,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "score": {
+      "null_count": 3,
+      "min": 1.9,
+      "max": 9.3,
+      "mean": 6.390410958904098,
+      "ndv_approx": 64,
+      "histogram": {
+        "buckets": [
+          1.9,
+          2.6399999999999997,
+          3.38,
+          4.119999999999999,
+          4.859999999999999,
+          5.6,
+          6.34,
+          7.08,
+          7.82,
+          8.56,
+          9.3
+        ],
+        "counts": [
+          17,
+          32,
+          116,
+          322,
+          1071,
+          1895,
+          2236,
+          1622,
+          332,
+          22
+        ]
+      },
+      "dtype": "float64"
+    },
+    "votes": {
+      "null_count": 3,
+      "min": 7.0,
+      "max": 2400000.0,
+      "mean": 88108.50476190477,
+      "ndv_approx": 1011,
+      "histogram": {
+        "buckets": [
+          7.0,
+          240006.3,
+          480005.6,
+          720004.8999999999,
+          960004.2,
+          1200003.5,
+          1440002.7999999998,
+          1680002.0999999999,
+          1920001.4,
+          2160000.6999999997,
+          2400000.0
+        ],
+        "counts": [
+          6974,
+          452,
+          139,
+          50,
+          30,
+          7,
+          4,
+          6,
+          1,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "director": {
+      "null_count": 0,
+      "ndv_approx": 2515,
+      "mean_length": 13.062206572769954,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "writer": {
+      "null_count": 3,
+      "ndv_approx": 4492,
+      "mean_length": 13.145988258317026,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "star": {
+      "null_count": 1,
+      "ndv_approx": 3422,
+      "mean_length": 13.070431720359984,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "country": {
+      "null_count": 3,
+      "ndv_approx": 58,
+      "mean_length": 11.994520547945205,
+      "top_values": [
+        {
+          "value": "United States",
+          "count": 5475
+        },
+        {
+          "value": "United Kingdom",
+          "count": 816
+        },
+        {
+          "value": "France",
+          "count": 279
+        },
+        {
+          "value": "Canada",
+          "count": 190
+        },
+        {
+          "value": "Germany",
+          "count": 117
+        }
+      ],
+      "dtype": "string"
+    },
+    "budget": {
+      "null_count": 2171,
+      "min": 3000.0,
+      "max": 356000000.0,
+      "mean": 35589876.192650534,
+      "ndv_approx": 520,
+      "histogram": {
+        "buckets": [
+          3000.0,
+          35602700.0,
+          71202400.0,
+          106802100.0,
+          142401800.0,
+          178001500.0,
+          213601200.0,
+          249200900.0,
+          284800600.0,
+          320400300.0,
+          356000000.0
+        ],
+        "counts": [
+          3808,
+          958,
+          366,
+          152,
+          121,
+          58,
+          14,
+          15,
+          3,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "gross": {
+      "null_count": 189,
+      "min": 309.0,
+      "max": 2847246203.0,
+      "mean": 78500541.01778312,
+      "ndv_approx": 7358,
+      "histogram": {
+        "buckets": [
+          309.0,
+          284724898.4,
+          569449487.8,
+          854174077.1999999,
+          1138898666.6,
+          1423623256.0,
+          1708347845.3999999,
+          1993072434.7999997,
+          2277797024.2,
+          2562521613.6,
+          2847246203.0
+        ],
+        "counts": [
+          6961,
+          347,
+          95,
+          52,
+          14,
+          5,
+          0,
+          3,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    },
+    "company": {
+      "null_count": 17,
+      "ndv_approx": 2549,
+      "mean_length": 18.024179845771794,
+      "top_values": null,
+      "dtype": "string"
+    },
+    "runtime": {
+      "null_count": 4,
+      "min": 55.0,
+      "max": 366.0,
+      "mean": 107.2616127348643,
+      "ndv_approx": 166,
+      "histogram": {
+        "buckets": [
+          55.0,
+          86.1,
+          117.2,
+          148.3,
+          179.4,
+          210.5,
+          241.60000000000002,
+          272.70000000000005,
+          303.8,
+          334.90000000000003,
+          366.0
+        ],
+        "counts": [
+          507,
+          5410,
+          1519,
+          176,
+          43,
+          5,
+          2,
+          0,
+          0,
+          2
+        ]
+      },
+      "dtype": "float64"
+    }
+  }
+}
