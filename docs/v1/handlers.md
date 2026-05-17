@@ -1,4 +1,4 @@
-<!-- AUTO-GENERATED handlers by scripts/pipeline/docs.py at 2026-05-16T21:46:20Z. Regenerate with: python -m scripts.pipeline.docs handlers. DO NOT EDIT. -->
+<!-- AUTO-GENERATED handlers by scripts/pipeline/docs.py at 2026-05-17T01:07:13Z. Regenerate with: python -m scripts.pipeline.docs handlers. DO NOT EDIT. -->
 | Handler | Purpose | Streaming | Extra Deps | # Manifest Specs | Example Slugs |
 |---------|---------|-----------|------------|------------------|---------------|
 | `beijing_pm25_parse` | Parse UCI Beijing Multi-Site Air Quality (dataset 501). | no | — | 1 | `uci-beijing-multi-site-air-quality` |

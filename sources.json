@@ -150,9 +150,10 @@
           "https://databank.worldbank.org/data/download/WDI_CSV.zip"
         ],
         "auth": null,
-        "expected_bytes": null,
-        "expected_sha256": null,
-        "notes": "ROTTED 2026-05-16: redirect target databankfiles.worldbank.org serves an expired TLS certificate (verified via curl). The original URL still 301s to the broken host, so Python urllib refuses the connection. Need to find an alternate WDI export source or wait for World Bank to renew. (Also: they renamed WDIData.csv to WDICSV.csv sometime before May 2026.)"
+        "expected_bytes": 280478558,
+        "expected_sha256": "1c8ccf64ccb9d502668aa8aa66fdae786d0994c3278b7ed377180021a5fc3bec",
+        "verify_tls": false,
+        "notes": "Upstream redirects to databankfiles.worldbank.org which has served an expired TLS cert since at least May 2026. We bypass verification via fetch.verify_tls=false; integrity is gated by expected_sha256 below. Re-verify sha256 if the upstream renews its cert and changes the asset. (WDIData.csv was renamed to WDICSV.csv sometime before May 2026.)"
       },
       "extract": {
         "type": "zip",
