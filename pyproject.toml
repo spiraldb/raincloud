@@ -1,6 +1,6 @@
 [project]
 name = "raincloud"
-version = "0.1.4"
+version = "0.1.5"
 description = "Client-reproducible pipeline for building a curated catalog of public datasets as Parquet + Vortex files."
 readme = "README.md"
 requires-python = ">=3.11"

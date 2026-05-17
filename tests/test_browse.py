@@ -335,6 +335,37 @@ def test_columns_modal_renders_built_state():
     assert m.profile_columns == {}
 
 
+def test_columns_modal_dedupes_duplicate_column_names():
+    """Survey slugs (osmi-* series) and a few others ship parquet schemas
+    with repeated top-level column names. The modal must suffix repeats
+    so the DataTable row key is unique and stats_by_name doesn't silently
+    collapse duplicate-named entries onto the last one."""
+    pytest.importorskip("textual")
+    from scripts.pipeline.browse import ColumnsModal
+
+    stats = [
+        {"name": "Q1", "type": "string", "length": 100,
+         "null_count": 0, "min": None, "max": None},
+        {"name": "Why or why not?", "type": "string", "length": 80,
+         "null_count": 0, "min": None, "max": None},
+        {"name": "Q2", "type": "string", "length": 90,
+         "null_count": 0, "min": None, "max": None},
+        {"name": "Why or why not?", "type": "string", "length": 75,
+         "null_count": 0, "min": None, "max": None},
+        {"name": "Why or why not?", "type": "string", "length": 60,
+         "null_count": 0, "min": None, "max": None},
+    ]
+    m = ColumnsModal("x", {"slug": "x"}, stats)
+    assert [s["name"] for s in m.stats] == [
+        "Q1", "Why or why not?", "Q2",
+        "Why or why not? (2)", "Why or why not? (3)",
+    ]
+    # stats_by_name keeps a distinct entry for each occurrence.
+    assert m.stats_by_name["Why or why not?"]["length"] == 80
+    assert m.stats_by_name["Why or why not? (2)"]["length"] == 75
+    assert m.stats_by_name["Why or why not? (3)"]["length"] == 60
+
+
 def test_render_column_detail_dtype_shapes():
     """`_render_column_detail` produces shape-appropriate multi-line markup."""
     pytest.importorskip("textual")
