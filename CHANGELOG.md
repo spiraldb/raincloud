@@ -9,8 +9,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
-- **Catalog discoverability** — newcomers can now find "interesting"
-  datasets without scrolling the 158 KB `datasets.md`.
+- **Catalog discoverability** — new ways to navigate the 249-spec
+  catalog without scrolling the full `docs/v1/datasets.md`.
 - **TUI faceted side panel** (`browse.py`) — filter groups for showcase,
   domain tags, size, shape traits, license, fetch type. View-preset bar
   (`encoding`, `stress`) on top, selectable from the `View` row. Counts
@@ -39,12 +39,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   `python -m scripts.pipeline.promote_profiles` mirrors built
   profiles into the tracked `docs/v1/profiles/` directory. Idempotent
   (byte-identical destinations are skipped); `--check` for CI audits.
-- **List-element dtypes in profiles** — `profile.py` now renders list,
-  large_list, and fixed_size_list element types recursively
-  (`list<float>`, `fixed_size_list<float>[100]`, `list<struct>`).
-  Previously `fixed_size_list` was silently skipped to null, hiding
-  embedding-shaped columns entirely (e.g. `glove-6b-100d`'s `vector:
-  fixed_size_list<float>[100]`).
+- **List-element dtypes in profiles.** `profile.py` now renders list,
+  large_list, and fixed_size_list element types recursively in the
+  dtype label (`list<float>`, `fixed_size_list<float>[100]`,
+  `list<struct>`). Downstream consumers (e.g. `autotag`) can
+  distinguish embedding-shaped columns from lists-of-structs without
+  re-opening the parquet.
 - **Editorial metadata** in `sources.json` — optional `tags` (closed
   vocab, 13 data-kind entries grouped by content axis:
   string — urls / prose / enums / identifiers / code-strings;
@@ -54,15 +54,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   `DatasetSpec`. `scripts.pipeline.autotag` proposes tags from each
   slug's profile + handler/slug-name fallbacks; hand-edit in
   `sources.json` after that like any other manifest field.
-- **Public BI workload descriptions rewritten** — all 46 `bi-*` slugs
-  (including `bi-commongovernment`) now carry per-workload descriptions
-  grounded in actual column names rather than the workbook genre, with
-  data-shape leads (`N rows × M cols`, dtype-family mix, notable
-  columns) and `Background:` notes. Many workbook names mislead about
-  contents — e.g. `bi-romance` is Instagram social posts; `bi-physicians`
-  is CMS Medicare payment records; `bi-iglocations1` is US Census
-  geographic codes. Skipped: `bi-arade` / `bi-wins` (anonymised
-  columns). Driven by `scripts/pipeline/_enrich_public_bi.py`.
+- **Public BI workload descriptions.** All 46 `bi-*` slugs in the
+  Public BI Benchmark now carry per-workload descriptions grounded in
+  actual column names rather than the workbook label, with a
+  data-shape lead (`N rows × M cols`, dtype-family mix, notable
+  columns) and a `Background:` note. Many workbook names mislead about
+  contents — e.g. `bi-romance` is Instagram social posts;
+  `bi-physicians` is CMS Medicare payment records; `bi-iglocations1`
+  is US Census geographic codes; `bi-eixo` and `bi-uberlandia` share a
+  schema with `bi-mulheresmil` (a Brazilian education program). Two
+  slugs (`bi-arade`, `bi-wins`) retain a generic description because
+  their columns are anonymised beyond recognition.
 - **Derived signals** in `docs/snapshot.json` — per-slug `shape_traits`
   (has_nested, has_timestamp, has_variant, string_heavy, wide_row,
   high_cardinality_present) and `size_bucket` (xs/s/m/l/xl), derived by
@@ -70,46 +72,44 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **CLI parity** — `list_datasets` gains `--tag`, `--showcase`, `--size`,
   `--trait` (with `!` negation), `--view`, `--inspect`, `--tags-help`,
   `--showcase-help`. `--inspect` falls back from the built-parquet
-  profile to the tracked `docs/v1/profiles/<slug>.json` mirror so a
-  fresh clone can inspect any of the 239 tracked slugs without
-  rebuilding.
+  profile to the tracked `docs/v1/profiles/<slug>.json` mirror, so a
+  fresh clone can inspect any slug in the catalog without rebuilding.
 - **Curated-picks header** in `docs/v1/datasets.md` — one block per
   showcase tier, regenerated from `sources.json`.
 - **README "Discover" subsection** — directs newcomers at the TUI first.
 - **Skills**: new `raincloud-profile`, new `raincloud-discover`; updated
   `raincloud-list-datasets`, `raincloud-build`.
-- **Tracked profiles** — `docs/v1/profiles/` now ships 239/249 profiles
-  (was 49 before this release window). The blocklist trio of headline
-  benchmark datasets (`clickbench-hits`, `fineweb-sample-10bt`,
-  `beir-msmarco`) plus `ghcn-daily`, `laion-400m`, `nypd-complaints`,
-  `openlibrary-authors`, `bi-commongovernment`, `bi-cmsprovider`,
-  `bi-trainsuk1`, and `wdi` are all included. 10 multi-hour giants
-  remain queued for a follow-up overnight pass.
+- **Tracked profiles for all 249 specs.** `docs/v1/profiles/` ships a
+  per-slug profile for every entry in the manifest, including the
+  multi-hour heavyweights (`clickbench-hits`, `fineweb-sample-10bt`,
+  `wikipedia-structured-contents`, `jsonbench-bluesky-100m`,
+  `osm-germany-nodes`, the OpenLibrary dumps, etc.). A fresh clone can
+  render the TUI Columns pane and use `list_datasets --inspect <slug>`
+  on any slug without building anything locally.
 
 ### Changed
 
-- **`autotag` enums heuristic tightened.** Column-level criterion went
-  from `ndv ≤ 64 OR ratio ≤ 0.01` to `(ndv ≤ 32 AND mean_len ≤ 24) OR
-  (ndv ≤ 256 AND ratio ≤ 0.001 AND mean_len ≤ 24)`, plus a slug-level
-  floor (`enums` only included when ≥2 columns qualify). Result: 181 →
-  128 slug-level enum tags, no longer single-class-label false
-  positives.
-- **`autotag` embeddings detection.** Reads the new list-element dtype
-  to classify `list<float>` / `list<double>` / `fixed_size_list<float>`
-  as embeddings, supplemented by a word-bounded regex on slug name +
-  description. The previous bare `" embed"` substring trigger was
-  rewritten as `\b(embeddings?|word vectors?|dense vector|glove|word2vec|
-  fasttext|encoder output)\b` so `uci-air-quality` ("sensors embedded
-  in") no longer false-positives.
+- **`autotag` enums classifier tightened.** A string column counts as
+  enum-shaped only when `ndv ≤ 32 AND mean_len ≤ 24`, or when
+  `ndv ≤ 256 AND ndv/rows ≤ 0.001 AND mean_len ≤ 24` for very wide
+  datasets. The slug-level `enums` tag additionally requires ≥2
+  qualifying columns, so a single class-label column no longer
+  promotes the whole dataset to enum-shaped.
+- **`autotag` embeddings detection** now reads the list-element dtype
+  written by `profile.py` and recognises `list<float>` / `list<double>`
+  / `fixed_size_list<float>` columns as embeddings without relying on
+  slug-name heuristics. The remaining slug-name fallback uses
+  word-boundary matching (`\b(embeddings?|word vectors?|dense vector|
+  glove|word2vec|fasttext|encoder output)\b`) so unrelated copy like
+  "sensors embedded in …" no longer matches.
 
 ### Removed
 
-- **`DatasetSpec.family` field and `--family` CLI flag.** The field
-  was used to invoke batched builds (`python -m scripts.pipeline.build
-  --family uci`); each slug is now invoked by name. Affects
-  `build.py`, `convert.py`, `spec.iter_datasets`, `status.py`,
-  `docs.py:_KIND_BY_FAMILY`. Doc examples updated across README,
-  AGENTS, SKILLS, and all skill cards.
+- **`DatasetSpec.family` field and `--family` CLI flag.** The field was
+  used to invoke batched builds (`python -m scripts.pipeline.build
+  --family uci`); each slug is now invoked by name, and `--all` remains
+  available for whole-catalog passes. Pass multiple slugs space-separated
+  to `build` / `convert` for ad-hoc batches.
 - **Subject-matter `TAG_VOCAB`** (12 entries: geospatial / nlp-text /
   web-analytics / e-commerce / finance / social / scientific /
   healthcare / sports / transportation / government / benchmark)
@@ -132,21 +132,29 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - **`profile.py` TIME-of-day column cast.** DuckDB doesn't implement
   `CAST(time AS TIMESTAMP)`; standalone TIME columns now route through
   the string profile (null_count + NDV + top-K of rendered HH:MM:SS).
-- **WDI re-enabled.** Upstream `databankfiles.worldbank.org` has served
-  an expired TLS cert since at least May 2026; `python urllib` refused
-  the connection. New `fetch.verify_tls` opt-in (boolean, default
-  `true`) bypasses verification for this slug; integrity preserved via
-  the newly-locked `expected_sha256`. WDI now ships at 395k rows × 70
-  columns (70 MB parquet).
+- **`profile.py` `fixed_size_list` columns** were silently profiled as
+  `null` because the dispatcher only checked `is_list` / `is_large_list`.
+  They now route through the list profile and pick up the new
+  element-type rendering, so e.g. `glove-6b-100d`'s
+  `vector: fixed_size_list<float>[100]` is fully described.
+- **WDI re-enabled.** The upstream redirect target
+  `databankfiles.worldbank.org` serves an expired TLS cert, so Python's
+  default `urllib` refused the connection. The new `fetch.verify_tls`
+  field (boolean, default `true`) lets a slug bypass verification when
+  its `expected_sha256` provides independent integrity. WDI ships at
+  395,276 rows × 70 columns (70 MB parquet).
 
 ### Schema
 
-- `sources.schema.json` adds optional `tags` and `showcase` to
-  `DatasetSpec` (defaults to `[]`; backwards-compatible read).
-- `sources.schema.json` adds optional `fetch.verify_tls` (boolean,
-  default `true`) — escape hatch for upstreams whose TLS certs have
-  rotted but whose payload integrity is gated by `expected_sha256`.
-- New `profile.schema.json` (Draft 2020-12) for per-slug profile output.
+- `sources.schema.json` adds three optional fields, all additive
+  (existing manifests are accepted unchanged):
+  - `DatasetSpec.tags` (array of TAG_VOCAB strings, default `[]`).
+  - `DatasetSpec.showcase` (array of SHOWCASE_TIERS strings, default `[]`).
+  - `DatasetSpec.fetch.verify_tls` (boolean, default `true`) — escape
+    hatch for upstreams whose TLS certs have rotted but whose payload
+    integrity is gated by `expected_sha256`.
+- New `profile.schema.json` (Draft 2020-12) for the per-slug profile
+  output format.
 
 ## [0.1.3] - 2026-05-10
 
