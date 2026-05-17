@@ -16,8 +16,10 @@ from __future__ import annotations
 
 import hashlib
 import os
+import ssl
 import sys
 import urllib.request
+import warnings
 from pathlib import Path
 
 from .spec import REPO_ROOT, load_manifest, spec_field
@@ -97,12 +99,25 @@ def _find_sibling_cache(target_dir: Path, url: str, name: str,
     return None
 
 
+def _unverified_ssl_context() -> ssl.SSLContext:
+    """Build an SSL context that skips cert verification.
+
+    Per-slug escape hatch used only when fetch.verify_tls is False — upstream
+    cert has rotted but payload integrity is gated by expected_sha256.
+    """
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    return ctx
+
+
 def fetch_http(spec: dict) -> list[Path]:
     out = []
     urls = spec_field(spec, "fetch.urls", [])
     target_dir = slug_dir(spec["slug"])
     ex_bytes = spec_field(spec, "fetch.expected_bytes")
     ex_sha = spec_field(spec, "fetch.expected_sha256")
+    verify_tls = spec_field(spec, "fetch.verify_tls", True)
     for url in urls:
         name = url.rsplit("/", 1)[-1].split("?", 1)[0] or "download.bin"
         dest = target_dir / name
@@ -122,16 +137,32 @@ def fetch_http(spec: dict) -> list[Path]:
                 shutil.copyfile(sibling, dest)
             out.append(dest)
             continue
+        # Per-slug escape hatch: when fetch.verify_tls is False, skip cert
+        # verification for this URL. Used for upstreams whose cert has expired
+        # but whose payload integrity is gated by expected_sha256.
+        urlopen_kwargs: dict = {"timeout": 300}
+        if not verify_tls:
+            print(f"  [warn] verify_tls=false — TLS verification disabled (integrity gated by expected_sha256)")
+            urlopen_kwargs["context"] = _unverified_ssl_context()
         print(f"  fetching {url} -> {dest.relative_to(REPO_ROOT)}")
         req = urllib.request.Request(url, headers={"User-Agent": "raincloud-pipeline/0.1"})
         # Per-URL retry (transient network failures common on S3 with 100-file fetches)
         for attempt in range(3):
             try:
-                with urllib.request.urlopen(req, timeout=300) as r, open(dest, "wb") as w:
-                    while True:
-                        chunk = r.read(1 << 20)
-                        if not chunk: break
-                        w.write(chunk)
+                with warnings.catch_warnings():
+                    if not verify_tls:
+                        # urllib3 surfaces InsecureRequestWarning when verification is
+                        # disabled; silence it for this one fetch so output stays clean.
+                        try:
+                            from urllib3.exceptions import InsecureRequestWarning
+                            warnings.simplefilter("ignore", InsecureRequestWarning)
+                        except ImportError:
+                            pass
+                    with urllib.request.urlopen(req, **urlopen_kwargs) as r, open(dest, "wb") as w:
+                        while True:
+                            chunk = r.read(1 << 20)
+                            if not chunk: break
+                            w.write(chunk)
                 break
             except Exception as e:
                 # Drop any partial file so a future run restarts cleanly rather

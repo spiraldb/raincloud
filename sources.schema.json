@@ -141,6 +141,11 @@
         },
         "expected_bytes": { "type": ["integer", "null"], "minimum": 0 },
         "expected_sha256": { "type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$" },
+        "verify_tls": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to verify TLS certs when fetching from HTTPS URLs. Default true. Set to false only as a documented escape hatch for upstreams whose certs have rotted but whose payload integrity we cover via expected_sha256."
+        },
         "notes": { "type": ["string", "null"] }
       }
     },

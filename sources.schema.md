@@ -44,7 +44,8 @@ This document defines the shape of `sources.json`, the manifest that drives the 
     "hf_allow_patterns": null,          // huggingface-only: glob patterns forwarded to snapshot_download(allow_patterns=...). Use to fetch a subset of a giant repo (e.g. ["data/sample-10BT/*.parquet"] for fineweb).
     "hf_revision": null,                // huggingface-only: git revision (branch/tag/commit SHA) forwarded to snapshot_download(revision=...).
     "expected_bytes": 14779976446,      // optional; used only to warn on drift
-    "expected_sha256": null             // optional; prefer when upstream publishes it
+    "expected_sha256": null,            // optional; prefer when upstream publishes it
+    "verify_tls": true                  // optional; default true. Set to false only as a documented escape hatch for upstreams whose certs have rotted but whose payload integrity we cover via expected_sha256.
   },
 
   /* Stage 2 — extract (scripts/extract.py) */
