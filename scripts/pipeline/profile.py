@@ -7,10 +7,16 @@ Off the default build path. Run explicitly:
     python -m scripts.pipeline.profile <slug>...
     python -m scripts.pipeline.profile --all
     python -m scripts.pipeline.profile --sample-rows 1000000 <slug>
+    python -m scripts.pipeline.profile <slug> --no-promote
 
 Reads outputs/v1/<slug>/parquet/<slug>.parquet via spec.duckdb_connect,
 writes outputs/v1/<slug>/profile.json. Idempotent against the parquet's
 SHA-256: a matching profile.json is reused without recomputation.
+
+After a successful per-slug loop, the stage auto-runs
+`scripts.pipeline.promote_profiles.promote(...)` so the tracked mirror at
+`docs/v{n}/profiles/<slug>.json` stays in sync without a manual second step.
+Pass `--no-promote` to suppress that step while iterating.
 """
 from __future__ import annotations
 
@@ -501,6 +507,9 @@ def main(argv: list[str] | None = None) -> int:
                     help="profile every slug whose parquet exists locally")
     ap.add_argument("--sample-rows", type=int, default=None,
                     help="cap row count via reservoir sampling (default: full pass)")
+    ap.add_argument("--no-promote", action="store_true",
+                    help="skip the auto-promote step that mirrors built profiles "
+                         "into docs/v{n}/profiles/ (default: promote)")
     args = ap.parse_args(argv)
 
     manifest = load_manifest()
@@ -541,6 +550,19 @@ def main(argv: list[str] | None = None) -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(result, indent=2, default=str) + "\n")
         print(f"wrote: {out}")
+
+    if not args.no_promote:
+        # Auto-mirror built profiles into docs/v{n}/profiles/ so the tracked
+        # snapshot stays in sync without humans remembering a second command.
+        # Pass None for --all (idempotent: byte-identical destinations are
+        # skipped); otherwise restrict to the slugs we just processed.
+        promote_slugs: list[str] | None = None if args.all else list(targets)
+        try:
+            from . import promote_profiles
+            copied, skipped, _missing = promote_profiles.promote(slugs=promote_slugs)
+            print(f"mirrored {copied} profile(s) to docs/v1/profiles/ ({skipped} unchanged)")
+        except Exception as e:   # noqa: BLE001 — don't undo profile success on a mirror glitch
+            print(f"mirror skipped: {e}", file=sys.stderr)
 
     return 1 if failures else 0
 

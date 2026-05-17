@@ -284,3 +284,43 @@ def test_uci_seeds_profile_matches_golden(uci_seeds_parquet, profile_schema):
     fresh.pop("computed_at"); golden.pop("computed_at")
     # parquet_sha256 should match because uci-seeds is row_stability: static
     assert fresh == golden, "uci-seeds profile drifted — see test docstring"
+
+
+def test_profile_main_auto_promotes_by_default(uci_seeds_parquet, monkeypatch, capsys):
+    """`profile <slug>` calls promote_profiles.promote(slugs=[<slug>]) at the end."""
+    from scripts.pipeline import profile as profile_mod
+    from scripts.pipeline import promote_profiles
+
+    calls: list[dict] = []
+
+    def fake_promote(slugs=None, *, check_only=False):
+        calls.append({"slugs": slugs, "check_only": check_only})
+        return (1, 0, [])
+
+    monkeypatch.setattr(promote_profiles, "promote", fake_promote)
+
+    rc = profile_mod.main(["uci-seeds"])
+    assert rc == 0
+    assert calls == [{"slugs": ["uci-seeds"], "check_only": False}]
+    out = capsys.readouterr().out
+    assert "mirrored 1 profile(s) to docs/v1/profiles/ (0 unchanged)" in out
+
+
+def test_profile_main_no_promote_flag_suppresses(uci_seeds_parquet, monkeypatch, capsys):
+    """`--no-promote` skips the auto-mirror step entirely."""
+    from scripts.pipeline import profile as profile_mod
+    from scripts.pipeline import promote_profiles
+
+    calls: list[dict] = []
+
+    def fake_promote(slugs=None, *, check_only=False):
+        calls.append({"slugs": slugs, "check_only": check_only})
+        return (0, 0, [])
+
+    monkeypatch.setattr(promote_profiles, "promote", fake_promote)
+
+    rc = profile_mod.main(["uci-seeds", "--no-promote"])
+    assert rc == 0
+    assert calls == []
+    out = capsys.readouterr().out
+    assert "mirrored" not in out

@@ -34,3 +34,13 @@ Profiles live at `outputs/v1/<slug>/profile.json` and are read by:
 - The TUI's right-pane Columns section (`python -m scripts.pipeline.browse`)
 - The CLI's `--inspect <slug>` rendering
 - `docs.py` for backfilling `shape_traits.high_cardinality_present` into `snapshot.json`
+
+The tracked mirror at `docs/v1/profiles/<slug>.json` is the fallback path that
+fresh clones ship — both `list_datasets --inspect` and the TUI's Columns pane
+read it when no built `outputs/v1/<slug>/profile.json` exists locally. The
+`profile` stage auto-runs `python -m scripts.pipeline.promote_profiles` at the
+end of a successful run (copies built profile.json into the tracked mirror,
+byte-identical mirror skipped), so the tracked snapshot stays in sync without
+a manual step. Pass `--no-promote` to suppress that auto-step while iterating;
+invoke `promote_profiles` explicitly (or with `--check`) to re-sync or audit
+the mirror after manual edits.
