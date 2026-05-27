@@ -12,7 +12,6 @@ import ssl
 from pathlib import Path
 
 from scripts.pipeline import fetch as fetch_mod
-from scripts.pipeline.spec import REPO_ROOT
 
 
 class _FakeResponse:
@@ -43,16 +42,9 @@ def _patch_urlopen(monkeypatch, payload: bytes, captured: dict) -> None:
 
 
 def _patch_originals_dir(monkeypatch, tmp_path: Path) -> None:
-    # fetch.py prints dest.relative_to(REPO_ROOT), so the scratch dir must live
-    # under REPO_ROOT. Use a unique pytest-tmp subdir inside the repo's gitignored
-    # _workdir/ area so we stay hermetic without breaking the relative_to call.
-    # Fresh dir per test invocation — fetch.py treats a present file as cached.
-    import shutil
-    scratch = REPO_ROOT / "_workdir" / "test_fetch_scratch" / tmp_path.name
-    if scratch.exists():
-        shutil.rmtree(scratch)
+    scratch = tmp_path / "raw_downloads"
     scratch.mkdir(parents=True, exist_ok=True)
-    monkeypatch.setattr(fetch_mod, "ORIGINALS_DIR", scratch)
+    monkeypatch.setenv("RAINCLOUD_RAW_DOWNLOADS", str(scratch))
     # Disable the sibling-cache lookup so the test stays hermetic.
     monkeypatch.setattr(fetch_mod, "_find_sibling_cache", lambda *a, **kw: None)
 

@@ -28,20 +28,20 @@ from typing import Any
 
 import pyarrow.parquet as pq
 
-from .fetch import ORIGINALS_DIR
 from .spec import (
-    REPO_ROOT,
     iter_datasets,
     load_manifest,
     prepared_parquet,
     prepared_vortex,
+    raw_downloads_root,
     spec_field,
+    workdir_root,
 )
 from .tighten_variant import _json_columns
 
 
 def _raw_status(spec: dict) -> dict:
-    d = ORIGINALS_DIR / spec["slug"]
+    d = raw_downloads_root() / spec["slug"]
     if not d.exists() or not any(d.iterdir()):
         return {"present": False}
     files = [p for p in d.rglob("*") if p.is_file()]
@@ -57,7 +57,7 @@ def _raw_status(spec: dict) -> dict:
 
 
 def _workdir_status(slug: str) -> dict:
-    d = REPO_ROOT / "_workdir" / slug
+    d = workdir_root() / slug
     if not d.exists() or not any(d.iterdir()):
         return {"present": False}
     return {"present": True}

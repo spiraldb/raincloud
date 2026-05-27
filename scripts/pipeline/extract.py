@@ -18,13 +18,12 @@ import tarfile
 import zipfile
 from pathlib import Path
 
-from .spec import REPO_ROOT, spec_field
-
-WORKDIR = REPO_ROOT / "_workdir"
+from . import spec
+from .spec import display_path, spec_field
 
 
 def slug_workdir(slug: str) -> Path:
-    d = WORKDIR / slug
+    d = spec.workdir_root() / slug
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -54,7 +53,7 @@ def extract_zip(spec: dict, inputs: list[Path]) -> list[Path]:
     out = []
     for src in inputs:
         if not src.name.endswith(".zip"): continue
-        print(f"  unzip {src.name} -> {wd.relative_to(REPO_ROOT)}")
+        print(f"  unzip {src.name} -> {display_path(wd)}")
         with zipfile.ZipFile(src) as z:
             for name in z.namelist():
                 # Strip trailing whitespace for glob matching / disk write
@@ -84,7 +83,7 @@ def extract_tar(spec: dict, inputs: list[Path]) -> list[Path]:
     for src in inputs:
         if not (src.name.endswith(".tar") or src.name.endswith(".tar.gz") or src.name.endswith(".tgz")):
             continue
-        print(f"  untar {src.name} -> {wd.relative_to(REPO_ROOT)}")
+        print(f"  untar {src.name} -> {display_path(wd)}")
         with tarfile.open(src) as t:
             for member in t.getmembers():
                 if include and not any(fnmatch.fnmatch(member.name, pat) for pat in include): continue
@@ -115,7 +114,7 @@ def extract_7z(spec: dict, inputs: list[Path]) -> list[Path]:
     out = []
     for src in inputs:
         if not src.name.endswith(".7z"): continue
-        print(f"  un-7z {src.name} -> {wd.relative_to(REPO_ROOT)}")
+        print(f"  un-7z {src.name} -> {display_path(wd)}")
         with py7zr.SevenZipFile(src, mode="r") as z:
             names = z.getnames()
             keep = []

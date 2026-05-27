@@ -26,7 +26,7 @@ from .convert import convert
 from .extract import extract
 from .fetch import fetch
 from .parse import parse
-from .spec import REPO_ROOT, iter_datasets, load_manifest
+from .spec import display_path, iter_datasets, load_manifest, workdir_root
 from .transform import transform
 from .validate import validate
 from .write import write
@@ -45,10 +45,10 @@ def run_one(spec: dict, *, strict: bool, clean_workdir: bool = False) -> bool:
         validate(spec, written, strict=strict)
         convert(spec)  # no-op unless spec sets convert.vortex = true
         if clean_workdir:
-            wd = REPO_ROOT / "_workdir" / spec["slug"]
+            wd = workdir_root() / spec["slug"]
             if wd.exists():
                 shutil.rmtree(wd, ignore_errors=True)
-                print(f"  [clean] removed {wd.relative_to(REPO_ROOT)}")
+                print(f"  [clean] removed {display_path(wd)}")
         return True
     except NotImplementedError as e:
         print(f"  SKIP (not yet implemented): {e}")

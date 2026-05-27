@@ -22,16 +22,12 @@ import urllib.request
 import warnings
 from pathlib import Path
 
-from .spec import REPO_ROOT, load_manifest, spec_field
-
-# Raw downloads are NOT version-scoped — the same upstream bytes are fetched
-# regardless of pipeline schema_version. Only the `prepared/` outputs are
-# versioned, because their layout / column conventions can change.
-ORIGINALS_DIR = REPO_ROOT / "outputs" / "raw_downloads"
+from . import spec
+from .spec import display_path, load_manifest, spec_field
 
 
 def slug_dir(slug: str) -> Path:
-    d = ORIGINALS_DIR / slug
+    d = spec.raw_downloads_root() / slug
     d.mkdir(parents=True, exist_ok=True)
     return d
 
@@ -75,7 +71,8 @@ def _find_sibling_cache(target_dir: Path, url: str, name: str,
     the manifest, and (when declared) still verify size + sha as defense in
     depth.
     """
-    if not ORIGINALS_DIR.exists():
+    raw_root = spec.raw_downloads_root()
+    if not raw_root.exists():
         return None
     target_slug = target_dir.name
     for ds in _cached_manifest()["datasets"]:
@@ -83,7 +80,7 @@ def _find_sibling_cache(target_dir: Path, url: str, name: str,
             continue
         if url not in spec_field(ds, "fetch.urls", []):
             continue
-        candidate = ORIGINALS_DIR / ds["slug"] / name
+        candidate = raw_root / ds["slug"] / name
         if not candidate.exists():
             continue
         if ex_bytes is not None and candidate.stat().st_size != ex_bytes:
@@ -124,12 +121,12 @@ def fetch_http(spec: dict) -> list[Path]:
         size_hint = ex_bytes if len(urls) == 1 else None
         sha_hint = ex_sha if len(urls) == 1 else None
         if _already_ok(dest, size_hint, sha_hint):
-            print(f"  [cached] {dest.relative_to(REPO_ROOT)}")
+            print(f"  [cached] {display_path(dest)}")
             out.append(dest)
             continue
         sibling = _find_sibling_cache(target_dir, url, name, size_hint, sha_hint)
         if sibling is not None:
-            print(f"  [reuse] hardlink from {sibling.relative_to(REPO_ROOT)} -> {dest.relative_to(REPO_ROOT)}")
+            print(f"  [reuse] hardlink from {display_path(sibling)} -> {display_path(dest)}")
             try:
                 os.link(sibling, dest)
             except OSError:
@@ -144,7 +141,7 @@ def fetch_http(spec: dict) -> list[Path]:
         if not verify_tls:
             print("  [warn] verify_tls=false — TLS verification disabled (integrity gated by expected_sha256)")
             urlopen_kwargs["context"] = _unverified_ssl_context()
-        print(f"  fetching {url} -> {dest.relative_to(REPO_ROOT)}")
+        print(f"  fetching {url} -> {display_path(dest)}")
         req = urllib.request.Request(url, headers={"User-Agent": "raincloud-pipeline/0.1"})
         # Per-URL retry (transient network failures common on S3 with 100-file fetches)
         for attempt in range(3):
@@ -192,12 +189,12 @@ def fetch_kaggle(spec: dict) -> list[Path]:
         ref = f"{m.group(1)}/{m.group(2)}"
         # Skip if anything already present for this slug
         if any(target_dir.iterdir()):
-            print(f"  [cached] {target_dir.relative_to(REPO_ROOT)} (non-empty)")
+            print(f"  [cached] {display_path(target_dir)} (non-empty)")
         else:
             if needs_accept:
-                print(f"  kaggle (ToS-gated): {ref} -> {target_dir.relative_to(REPO_ROOT)}")
+                print(f"  kaggle (ToS-gated): {ref} -> {display_path(target_dir)}")
             else:
-                print(f"  kaggle: {ref} -> {target_dir.relative_to(REPO_ROOT)}")
+                print(f"  kaggle: {ref} -> {display_path(target_dir)}")
             try:
                 api.dataset_download_files(ref, path=str(target_dir), quiet=False, unzip=False)
             except Exception as e:
@@ -243,7 +240,7 @@ def fetch_huggingface(spec: dict) -> list[Path]:
         if revision:
             scope += f" revision={revision}"
         gate = " (gated)" if needs_accept else ""
-        print(f"  huggingface{gate}: {repo_id} -> {target_dir.relative_to(REPO_ROOT)}{scope}")
+        print(f"  huggingface{gate}: {repo_id} -> {display_path(target_dir)}{scope}")
         try:
             snapshot_download(
                 repo_id,

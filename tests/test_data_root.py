@@ -53,6 +53,14 @@ def test_display_path_relative_under_root_else_absolute(monkeypatch, tmp_path):
     assert spec.display_path(outside) == "/var/somewhere/else.bin"
 
 
+def test_fetch_and_extract_honor_redirected_roots(monkeypatch, tmp_path):
+    monkeypatch.setenv("RAINCLOUD_RAW_DOWNLOADS", str(tmp_path / "raw"))
+    monkeypatch.setenv("RAINCLOUD_WORKDIR", str(tmp_path / "wd"))
+    from scripts.pipeline import extract, fetch
+    assert fetch.slug_dir("demo") == tmp_path / "raw" / "demo"
+    assert extract.slug_workdir("demo") == tmp_path / "wd" / "demo"
+
+
 def test_load_manifest_packaged_fallback(monkeypatch, tmp_path):
     # No env override and no checkout manifest -> _default_manifest() consults
     # the packaged copy via _packaged_data(). Patch it to a tmp fixture so the
