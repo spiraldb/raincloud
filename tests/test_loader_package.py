@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
 def test_import_and_version():
     import raincloud
     assert isinstance(raincloud.__version__, str)

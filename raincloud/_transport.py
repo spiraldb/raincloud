@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
 """fsspec transport-only: copy a remote URL to a local temp file."""
 from __future__ import annotations
 

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
 """Resolution order: local cache -> mirror -> local build."""
 from __future__ import annotations
 

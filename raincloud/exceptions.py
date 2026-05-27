@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
 """Typed error hierarchy for the raincloud loader."""
 from __future__ import annotations
 

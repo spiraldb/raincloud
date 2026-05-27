@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
 """Catalog: per-slug metadata + checksums from the shipped snapshot + manifest."""
 from __future__ import annotations
 

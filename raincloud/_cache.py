@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
 """Local artifact cache: paths, sha256 verification, atomic adoption."""
 from __future__ import annotations
 
