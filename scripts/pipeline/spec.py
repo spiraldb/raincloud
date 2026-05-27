@@ -14,11 +14,57 @@ from pathlib import Path
 from typing import Any, Iterator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MANIFEST = REPO_ROOT / "sources.json"
+
+
+def _env_path(name: str) -> Path | None:
+    v = os.environ.get(name)
+    return Path(v).expanduser() if v else None
+
+
+def _xdg_cache() -> Path:
+    return _env_path("XDG_CACHE_HOME") or (Path.home() / ".cache")
+
+
+def data_root() -> Path:
+    """Writable root for build artifacts.
+
+    `$RAINCLOUD_HOME` if set; else the checkout (`REPO_ROOT` when it carries
+    `sources.json`) so clone builds are unchanged; else the XDG cache dir
+    (`~/.cache/raincloud`) for wheel installs. Created lazily by callers.
+    """
+    home = _env_path("RAINCLOUD_HOME")
+    if home:
+        return home
+    if (REPO_ROOT / "sources.json").exists():
+        return REPO_ROOT
+    return _xdg_cache() / "raincloud"
+
+
+def _packaged_data(name: str) -> Path | None:
+    """Path to a file shipped in the wheel under raincloud/_data/, or None."""
+    try:
+        from importlib import resources
+        p = resources.files("raincloud").joinpath("_data", name)
+        return Path(str(p)) if p.is_file() else None
+    except (ModuleNotFoundError, FileNotFoundError):
+        return None
+
+
+def _default_manifest() -> Path:
+    override = _env_path("RAINCLOUD_MANIFEST")
+    if override:
+        return override
+    repo = REPO_ROOT / "sources.json"
+    if repo.exists():
+        return repo
+    packaged = _packaged_data("sources.json")
+    if packaged is not None:
+        return packaged
+    return repo  # let open() error point at the expected checkout path
 
 
 def load_manifest(path: Path | None = None) -> dict:
-    p = Path(path) if path else DEFAULT_MANIFEST
+    p = Path(path) if path else _default_manifest()
     with open(p) as f:
         m = json.load(f)
     if m.get("schema_version") != 1:
@@ -26,15 +72,38 @@ def load_manifest(path: Path | None = None) -> dict:
     return m
 
 
-def outputs_root(manifest: dict | None = None) -> Path:
-    """Version-scoped output root: outputs/v{schema_version}/.
+def outputs_base() -> Path:
+    return _env_path("RAINCLOUD_OUTPUTS") or (data_root() / "outputs")
 
-    All pipeline stages (fetch, write, docs) read the `schema_version` field
-    of `sources.json` to resolve the layout. A manifest bump to v2 would
-    land new builds under `outputs/v2/` while v1 artefacts remain intact.
+
+def outputs_root(manifest: dict | None = None) -> Path:
+    """Version-scoped output root: <outputs_base>/v{schema_version}/.
+
+    `outputs_base()` is `$RAINCLOUD_OUTPUTS` or `data_root()/outputs`. In a
+    checkout `data_root()==REPO_ROOT`, so this stays `<repo>/outputs/v{n}/`.
     """
     m = manifest if manifest is not None else load_manifest()
-    return REPO_ROOT / "outputs" / f"v{m['schema_version']}"
+    return outputs_base() / f"v{m['schema_version']}"
+
+
+def raw_downloads_root() -> Path:
+    """Unversioned raw-download cache: $RAINCLOUD_RAW_DOWNLOADS or
+    <outputs_base>/raw_downloads."""
+    return _env_path("RAINCLOUD_RAW_DOWNLOADS") or (outputs_base() / "raw_downloads")
+
+
+def workdir_root() -> Path:
+    """Extract/scratch root: $RAINCLOUD_WORKDIR or data_root()/_workdir."""
+    return _env_path("RAINCLOUD_WORKDIR") or (data_root() / "_workdir")
+
+
+def display_path(p) -> str:
+    """Render `p` relative to data_root() for logs; absolute if outside it."""
+    p = Path(p)
+    try:
+        return str(p.relative_to(data_root()))
+    except ValueError:
+        return str(p)
 
 
 def output_format_dir(slug: str, fmt: str = "parquet",
