@@ -35,12 +35,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Changed
 
 - **Packaging: the project is now a hatchling-built, installable
-  package** (`pip install raincloud`). The wheel force-includes
+  package** (installed from GitHub: `pip install "raincloud @ git+https://github.com/spiraldb/raincloud"`, not PyPI). The wheel force-includes
   `docs/v1/snapshot.json` and `sources.json` as packaged data under
   `raincloud/_data/`, so the catalog resolves with no repo checkout.
 - **BREAKING (install): the heavy build toolchain moved out of the base
   dependency set into the `[build]` extra.** A bare `uv sync --inexact`
-  (or `pip install raincloud`) now installs only the lightweight loader
+  (or a `pip install` from the GitHub repo) now installs only the lightweight loader
   (`pyarrow`, `numpy`, `vortex-data`, `fsspec`); **building datasets
   requires `uv sync --extra build --inexact`** (duckdb, pandas, osmium,
   pyreadstat, openpyxl, py7zr, unlzw3, zstandard, jsonschema). Transport

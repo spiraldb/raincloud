@@ -29,7 +29,7 @@ Templates referenced by the playbooks: [`examples/minimal_spec.json`](examples/m
 
 ## Loading prepared datasets
 
-Use the importable `raincloud` loader to pull an *already-prepared* artefact instead of rebuilding it. The base install (`pip install raincloud` or a bare `uv sync --inexact`) is the lightweight loader only — add `[s3]` / `[http]` for a remote mirror, `[duckdb]` / `[pandas]` for `.scan()` / `.to_pandas()`.
+Use the importable `raincloud` loader to pull an *already-prepared* artefact instead of rebuilding it. The base install (a `pip install` from the GitHub repo, or a bare `uv sync --inexact`) is the lightweight loader only — add `[s3]` / `[http]` for a remote mirror, `[duckdb]` / `[pandas]` for `.scan()` / `.to_pandas()`.
 
 ```python
 import raincloud

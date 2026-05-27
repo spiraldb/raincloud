@@ -50,7 +50,9 @@ The command runs every pipeline stage — fetch, extract, parse, transform, writ
 Install just the loader (no build toolchain):
 
 ```bash
-pip install raincloud           # add [s3] or [http] for a remote mirror
+# from GitHub (not published to PyPI); pin a tag like @v0.2.0 for reproducible CI
+pip install "raincloud @ git+https://github.com/spiraldb/raincloud"
+# remote-mirror backends: "raincloud[s3] @ git+https://github.com/spiraldb/raincloud"
 ```
 
 ```python
@@ -94,7 +96,7 @@ python -m scripts.pipeline.build clickbench-hits            # 100 M rows, ~10 GB
 
 ### Upstream-specific extras
 
-A bare `uv sync --inexact` (or `pip install raincloud`) installs only the lightweight loader — `pyarrow`, `numpy`, `vortex-data`, `fsspec`. **Building datasets requires the heavy toolchain behind the `build` extra:**
+A bare `uv sync --inexact` (or a `pip install` from the GitHub URL above) installs only the lightweight loader — `pyarrow`, `numpy`, `vortex-data`, `fsspec`. **Building datasets requires the heavy toolchain behind the `build` extra:**
 
 ```bash
 uv sync --extra build --inexact   # duckdb, pandas, osmium, pyreadstat, openpyxl, …
