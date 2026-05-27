@@ -57,6 +57,19 @@ from .spec import (
 )
 
 
+def _sha256_for_path(path) -> str | None:
+    """Stream a file's sha256, or None if it doesn't exist."""
+    import hashlib
+    p = Path(path)
+    if not p.exists():
+        return None
+    h = hashlib.sha256()
+    with open(p, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def _generation_header(kind: str) -> str:
     ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     return (f"<!-- AUTO-GENERATED {kind} by scripts/pipeline/docs.py at {ts}. "
@@ -544,12 +557,15 @@ def generate_snapshot(*, overwrite_missing: bool = False):
         vortex = prepared_vortex(slug)
         expected_rows = spec_field(spec, "expect.rows")
         prior_for_slug = existing_slugs.get(slug)
+        prior = prior_for_slug or {}
         fresh: dict = {
             "expected_rows": expected_rows,
             "last_built_rows": None,        # populated below from parquet metadata
             "last_built_row_groups": None,  # populated below from parquet metadata
             "parquet_bytes": parquet.stat().st_size if parquet.exists() else None,
             "vortex_bytes": vortex.stat().st_size if vortex.exists() else None,
+            "parquet_sha256": _sha256_for_path(parquet) or prior.get("parquet_sha256"),
+            "vortex_sha256": _sha256_for_path(vortex) or prior.get("vortex_sha256"),
             "columns": None,  # populated below when schema is readable
         }
         if parquet.exists():
