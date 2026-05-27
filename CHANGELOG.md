@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-05-27
+
+### Added
+
+- **`raincloud` loader package.** A new importable package
+  (separate from the `scripts/` build pipeline) for loading
+  *already-prepared* artefacts. `raincloud.load("<slug>")` (alias
+  `load_dataset`) returns a lazy `Dataset` handle — nothing is fetched
+  until you call `.path()` / `.to_arrow()` / `.scan()` / `.to_pandas()`.
+  Resolution order is **local cache → mirror → local build**: a cache
+  hit short-circuits, otherwise it pulls from the configured mirror,
+  and only on a cache+mirror miss does it shell out to
+  `scripts.pipeline.build`. Configured via env vars: `RAINCLOUD_MIRROR`
+  (an `fsspec` base such as `s3://bucket/prefix` or `file:///path` —
+  a private/internal artefact store, not a public Raincloud endpoint),
+  `RAINCLOUD_CACHE` (cache dir override), `RAINCLOUD_OFFLINE`
+  (cache-only; mirror/build misses raise). Artefacts are
+  sha256-verified against the version-pinned snapshot.
+- **`scripts.pipeline.publish` mirror-sync CLI.**
+  `python -m scripts.pipeline.publish <slugs|--all> --mirror <url>`
+  uploads built `outputs/v1/...` artefacts to a mirror, gated on each
+  artefact's on-disk sha256 matching `docs/v1/snapshot.json`
+  (`--dry-run` to preview the upload plan).
+- **`parquet_sha256` / `vortex_sha256` in `docs/v1/snapshot.json`** —
+  per-slug artefact checksums, used by both the loader (download
+  integrity) and `publish` (the snapshot-match gate).
+
+### Changed
+
+- **Packaging: the project is now a hatchling-built, installable
+  package** (`pip install raincloud`). The wheel force-includes
+  `docs/v1/snapshot.json` and `sources.json` as packaged data under
+  `raincloud/_data/`, so the catalog resolves with no repo checkout.
+- **BREAKING (install): the heavy build toolchain moved out of the base
+  dependency set into the `[build]` extra.** A bare `uv sync --inexact`
+  (or `pip install raincloud`) now installs only the lightweight loader
+  (`pyarrow`, `numpy`, `vortex-data`, `fsspec`); **building datasets
+  requires `uv sync --extra build --inexact`** (duckdb, pandas, osmium,
+  pyreadstat, openpyxl, py7zr, unlzw3, zstandard, jsonschema). Transport
+  backends are per-scheme extras (`[s3]` → s3fs, `[http]` → aiohttp;
+  `file://` needs neither); `[duckdb]` / `[pandas]` back
+  `Dataset.scan()` / `.to_pandas()`. This does not change the
+  no-redistribution posture in [`DISCLAIMER.md`](DISCLAIMER.md).
+
 ## [0.1.5] - 2026-05-17
 
 ### Fixed
@@ -303,6 +347,8 @@ This release bundles:
   this repository" button in the repo sidebar with BibTeX / APA / Chicago
   exports.
 
+[0.2.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.2.0
+[0.1.5]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.5
 [0.1.4]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.4
 [0.1.3]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.3
 [0.1.2]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.2

@@ -2,10 +2,12 @@
 
 Playbooks for common operations in this repo. Each section is a self-contained recipe — copy and adapt.
 
-Prereqs: Python 3.11+ and [uv](https://docs.astral.sh/uv/). Run `uv sync --inexact` in the repo root to install the pinned core deps (`pyarrow`, `duckdb`, `vortex-data`, `zstandard`, `py7zr`, `unlzw3`, `pandas`, `openpyxl`, `pyreadstat`, `osmium`, `jsonschema`). Add `--extra kaggle` for Kaggle-hosted datasets, `--extra huggingface` for Hugging Face ones, or `--extra dev` for `pytest` — see [`README.md`](README.md#upstream-specific-extras). Always pass `--inexact` so subsequent extras accumulate instead of overwriting prior ones (uv's default is "exact" sync, which removes anything not requested by the current invocation). Invoke Python as `.venv/bin/python` (or activate the venv).
+Prereqs: Python 3.11+ and [uv](https://docs.astral.sh/uv/). A bare `uv sync --inexact` installs only the lightweight loader (`pyarrow`, `numpy`, `vortex-data`, `fsspec`); **running the build pipeline needs the heavy toolchain behind the `build` extra** — `uv sync --extra build --inexact` (pulls `duckdb`, `zstandard`, `py7zr`, `unlzw3`, `pandas`, `openpyxl`, `pyreadstat`, `osmium`, `jsonschema`). Add `--extra kaggle` for Kaggle-hosted datasets, `--extra huggingface` for Hugging Face ones, or `--extra dev` for `pytest` — see [`README.md`](README.md#upstream-specific-extras). Always pass `--inexact` so subsequent extras accumulate instead of overwriting prior ones (uv's default is "exact" sync, which removes anything not requested by the current invocation). Invoke Python as `.venv/bin/python` (or activate the venv).
 
 ## Index
 
+- [Loading prepared datasets](#loading-prepared-datasets) — `raincloud.load` from cache / mirror
+- [Publishing artefacts to a mirror](#publishing-artefacts-to-a-mirror) — `scripts.pipeline.publish`
 - [Opening a DuckDB connection](#opening-a-duckdb-connection)
 - [Running the test suite](#running-the-test-suite) — pytest smoke regression net
 - [Querying the catalog](#querying-the-catalog) — `list_datasets` filters
@@ -24,6 +26,36 @@ Prereqs: Python 3.11+ and [uv](https://docs.astral.sh/uv/). Run `uv sync --inexa
 - [Removing a dataset](#removing-a-dataset)
 
 Templates referenced by the playbooks: [`examples/minimal_spec.json`](examples/minimal_spec.json) (new manifest entry), [`examples/streaming_handler.py.tmpl`](examples/streaming_handler.py.tmpl) (memory-constrained handler).
+
+## Loading prepared datasets
+
+Use the importable `raincloud` loader to pull an *already-prepared* artefact instead of rebuilding it. The base install (`pip install raincloud` or a bare `uv sync --inexact`) is the lightweight loader only — add `[s3]` / `[http]` for a remote mirror, `[duckdb]` / `[pandas]` for `.scan()` / `.to_pandas()`.
+
+```python
+import raincloud
+ds = raincloud.load("countries-of-the-world")  # lazy handle, default Vortex
+table = ds.to_arrow()                           # materialize when you want it
+path  = ds.path()                               # or just the cached file path
+```
+
+Resolution is **cache → mirror → local build**: a local cache hit short-circuits; otherwise it pulls from `RAINCLOUD_MIRROR` (a private/internal artefact store — `s3://bucket/prefix`, `file:///path`); only on a cache+mirror miss does it shell out to `scripts.pipeline.build` (which needs the `[build]` extra). Downloads are sha256-verified against `docs/v1/snapshot.json`.
+
+```bash
+export RAINCLOUD_MIRROR=s3://your-bucket/raincloud   # point CI at a prepared-artefact bucket
+export RAINCLOUD_CACHE=/var/cache/raincloud          # optional cache-dir override
+export RAINCLOUD_OFFLINE=1                            # cache-only; mirror/build misses raise OfflineMiss
+```
+
+## Publishing artefacts to a mirror
+
+Maintainers sync built `outputs/v1/...` artefacts up to a mirror bucket with the `publish` CLI. Each artefact's on-disk sha256 must match `docs/v1/snapshot.json` (regenerate the snapshot via `python -m scripts.pipeline.docs` after a build first), otherwise the upload is gated off with a `PublishMismatch`.
+
+```bash
+python -m scripts.pipeline.publish countries-of-the-world --mirror s3://your-bucket/raincloud
+python -m scripts.pipeline.publish --all --mirror file:///tmp/mirror --dry-run   # preview the plan
+```
+
+The mirror is a private/internal store you control — there is no public Raincloud-hosted endpoint, and publishing here does not change the no-redistribution posture in [`DISCLAIMER.md`](DISCLAIMER.md). The `--mirror` base is an `fsspec` URL; `s3://` needs `[s3]`, `http(s)://` needs `[http]`, `file://` needs neither.
 
 ## Opening a DuckDB connection
 

@@ -30,10 +30,10 @@ python -m scripts.pipeline.browse
 
 A read-only Textual TUI over `sources.json`. Click any column header to sort; right pane shows description, license, fetch URL, and on-disk state for the highlighted slug. Press `q` to quit.
 
-**Tell Raincloud which dataset you want; get back a Parquet + Vortex file on disk.**
+**Tell Raincloud which dataset you want; get back a Parquet + Vortex file on disk.** Building needs the heavy toolchain behind the `build` extra (a bare `uv sync --inexact` installs only the lightweight loader — see [Upstream-specific extras](#upstream-specific-extras)):
 
 ```bash
-uv sync --inexact
+uv sync --extra build --inexact
 python -m scripts.pipeline.status --fast --missing-only   # read-only env check
 python -m scripts.pipeline.build countries-of-the-world
 ```
@@ -94,6 +94,14 @@ python -m scripts.pipeline.build clickbench-hits            # 100 M rows, ~10 GB
 
 ### Upstream-specific extras
 
+A bare `uv sync --inexact` (or `pip install raincloud`) installs only the lightweight loader — `pyarrow`, `numpy`, `vortex-data`, `fsspec`. **Building datasets requires the heavy toolchain behind the `build` extra:**
+
+```bash
+uv sync --extra build --inexact   # duckdb, pandas, osmium, pyreadstat, openpyxl, …
+```
+
+Add `--extra build` before running `python -m scripts.pipeline.build` (or working on a handler); without it the build stages fail on a missing import.
+
 157 of 249 manifest entries fetch from direct HTTPS endpoints and need no additional setup. The rest:
 
 ```bash
@@ -131,6 +139,7 @@ AGENTS.md                       # invariants + first-contact guide for AI coding
 SKILLS.md                       # narrative playbooks
 HYDRATING.md                    # hand-maintained hydration policy / philosophy
 DISCLAIMER.md                   # AS IS posture, content/license disclaimers, dataset-removal reporting
+raincloud/                      # importable loader package — raincloud.load("<slug>") → lazy Dataset (cache → mirror → build)
 scripts/
   pipeline/
     build.py                    # orchestrator — ties the 7 stages together
@@ -144,6 +153,7 @@ scripts/
     convert.py                  # stage 7 (optional): emit sibling .vortex per spec's convert.vortex flag
     hydrate.py                  # stage 8 (optional, opt-in): dereference URL columns into parquet-hydrated/
     docs.py                     # regenerate docs/datasets.md + handlers.md (other catalog views live in list_datasets / TUI)
+    publish.py                  # sync built outputs/v1/ artifacts to a mirror (snapshot-sha256-gated)
     tighten_variant.py          # in-place JSON → VARIANT pass
     validate_manifest.py        # static checks on sources.json (schema + cross-checks)
     list_datasets.py            # filter/list slugs by handler / license / tag / size / etc.

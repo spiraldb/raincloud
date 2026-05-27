@@ -13,11 +13,15 @@ cd raincloud
 uv sync --extra dev --inexact
 ```
 
-`--extra dev` pulls in `pytest`. Add `--extra kaggle` or `--extra huggingface`
-if your work touches those upstream types, or `--extra all` for everything.
-Always pass `--inexact` — without it, each `uv sync --extra X` removes the
-extras from the previous one (e.g. syncing `--extra dev` after `--extra
-huggingface` uninstalls `huggingface_hub`).
+`--extra dev` pulls in `pytest`. The base install is the lightweight loader
+(`pyarrow`, `numpy`, `vortex-data`, `fsspec`); the heavy build toolchain
+(duckdb, pandas, osmium, pyreadstat, openpyxl, …) now lives behind the `build`
+extra, so **add `--extra build` when working on the pipeline or handlers** —
+otherwise the build stages fail on a missing import. Add `--extra kaggle` or
+`--extra huggingface` if your work touches those upstream types, or `--extra
+all` for everything. Always pass `--inexact` — without it, each `uv sync
+--extra X` removes the extras from the previous one (e.g. syncing `--extra dev`
+after `--extra huggingface` uninstalls `huggingface_hub`).
 
 ## Before you open a PR
 
@@ -26,13 +30,17 @@ Three sub-second checks are the minimum gate (CI runs all three):
 ```bash
 ruff check                                     # lint (pyflakes + pycodestyle + isort)
 python -m scripts.pipeline.validate_manifest   # JSON Schema + cross-checks on sources.json
-pytest                                         # smoke regression net (manifest, schema, registry, examples)
+pytest                                         # smoke regression net (manifest, schema, registry, examples, loader)
 ```
 
-If you touched the build pipeline, also run a small end-to-end build to make
-sure it still produces the expected output:
+`pytest` now also covers the `raincloud` loader package (catalog resolution,
+cache/mirror/build dispatch, sha256 integrity) alongside the manifest checks.
+
+If you touched the build pipeline, install the build extra and run a small
+end-to-end build to make sure it still produces the expected output:
 
 ```bash
+uv sync --extra build --inexact
 python -m scripts.pipeline.build countries-of-the-world   # ~200 ms, 227 rows
 ```
 

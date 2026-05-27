@@ -12,7 +12,7 @@ On a fresh clone `outputs/` is empty — that's expected. The `outputs/v1/<slug>
 python -m scripts.pipeline.status --fast --missing-only
 ```
 
-It loads `sources.json`, walks the manifest, and prints per-slug filesystem state in seconds with no side effects. If it errors, fix the env (`uv sync --inexact`) before running any build. Always pass `--inexact` to `uv sync`: without it, syncing one extra (e.g. `--extra dev`) silently uninstalls the others (kaggle, huggingface, tui), so a subsequent build of an HF/Kaggle slug will fail.
+It loads `sources.json`, walks the manifest, and prints per-slug filesystem state in seconds with no side effects. A bare `uv sync --inexact` installs only the lightweight loader; running any **build** needs the heavy toolchain, so fix the env with `uv sync --extra build --inexact` before invoking `scripts.pipeline.build`. Always pass `--inexact` to `uv sync`: without it, syncing one extra (e.g. `--extra dev`) silently uninstalls the others (build, kaggle, huggingface, tui), so a subsequent build of an HF/Kaggle slug will fail.
 
 For a manifest sanity check that doesn't touch the filesystem at all:
 
@@ -66,6 +66,17 @@ Hydration policy / philosophy lives in the hand-maintained [`HYDRATING.md`](HYDR
 Raincloud is a **client-reproducible pipeline** for building a curated catalog of public datasets as Parquet + optional Vortex files. The single source of truth is `sources.json`. Everything under `outputs/`, the two derived docs (`docs/datasets.md`, `docs/handlers.md`), and the JSON catalog snapshot (`docs/snapshot.json` — read by the TUI as a fallback for unbuilt-locally slugs, AND used by `docs.py` itself as the row-count / file-size fallback when regenerating `datasets.md` on a partial build) is **derived** — regenerate, never hand-edit. Column-level / coverage / vortex-skip / hydrate-candidate views are queryable via `list_datasets` flags rather than markdown.
 
 The pipeline flow is: **fetch → extract → parse → transform → write → validate → convert** (stage 7 opt-in per-spec), orchestrated by `scripts.pipeline.build`.
+
+## The loader package (`raincloud`)
+
+Separate from the build pipeline under `scripts/`, the repo also ships an importable **`raincloud`** package — a lightweight loader for *already-prepared* artefacts. `raincloud.load("<slug>")` (alias `load_dataset`) returns a lazy `Dataset` handle; nothing is fetched until you call `.path()` / `.to_arrow()` / `.scan()` / `.to_pandas()`. Resolution order is **local cache → mirror → local build** (`raincloud/_resolve.py`): a cache hit short-circuits, otherwise it pulls from the configured mirror, and only on a cache+mirror miss does it shell out to `scripts.pipeline.build` as a last resort.
+
+The install is **layered** — this is a behaviour change from earlier releases:
+
+- A bare `uv sync --inexact` (or `pip install raincloud`) installs only the lightweight loader: base deps are `pyarrow`, `numpy`, `vortex-data`, `fsspec`. Transport backends are per-scheme extras (`[s3]` → s3fs, `[http]` → aiohttp; `file://` needs neither); `[duckdb]` / `[pandas]` back `Dataset.scan()` / `.to_pandas()`.
+- **Building datasets now requires `uv sync --extra build --inexact`** — the heavy toolchain (duckdb, osmium, pyreadstat, pandas, openpyxl, py7zr, unlzw3, zstandard, jsonschema) moved behind the `[build]` extra. A bare sync no longer pulls these, so any `scripts.pipeline.build` / handler work needs `--extra build` first.
+
+The mirror is a **private/internal artefact store** — a bucket a team points its own CI at, configured via the `RAINCLOUD_MIRROR` env var (`s3://bucket/prefix`, `file:///path`, etc.); there is no public Raincloud-hosted endpoint, and this does not change the no-redistribution posture in [`DISCLAIMER.md`](DISCLAIMER.md). `RAINCLOUD_CACHE` overrides the cache dir and `RAINCLOUD_OFFLINE` forces cache-only (mirror/build misses raise). Maintainers publish built `outputs/v1/...` to a mirror with `python -m scripts.pipeline.publish <slugs|--all> --mirror <url>`, gated on a snapshot sha256 match. Integrity: `docs/v1/snapshot.json` now carries per-slug `parquet_sha256` / `vortex_sha256`, and both loader and publish verify artefacts against those version-pinned checksums.
 
 ## Invariants (don't break these)
 
