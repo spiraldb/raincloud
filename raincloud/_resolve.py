@@ -3,7 +3,7 @@
 """Resolution order: local cache -> mirror -> local build."""
 from __future__ import annotations
 
-import importlib.util
+import importlib
 import os
 import shutil
 import subprocess
@@ -21,6 +21,7 @@ from .exceptions import (
 
 
 def artifact_key(slug: str, fmt: str) -> str:
+    # v1 is hardcoded across the loader; revisit at a schema_version bump
     return f"v1/{slug}/{fmt}/{slug}.{_cache.EXT[fmt]}"
 
 
@@ -30,7 +31,19 @@ def _mirror_base(mirror: str | None) -> str | None:
 
 
 def _build_available() -> bool:
-    return importlib.util.find_spec("scripts.pipeline.build") is not None
+    """True only if the build pipeline's heavy deps are importable.
+
+    `scripts.pipeline.build` is packaged into the wheel even in a loader-only
+    install, so `find_spec` is insufficient (it only checks the file exists).
+    The module must be actually importable, which requires the `[build]` extra
+    — a bare loader install fails the import (e.g. missing zstandard) and
+    correctly falls through to the BuildToolingMissing message.
+    """
+    try:
+        importlib.import_module("scripts.pipeline.build")
+        return True
+    except ImportError:
+        return False
 
 
 def resolve(

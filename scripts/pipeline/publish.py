@@ -47,6 +47,7 @@ def plan_uploads(slugs, snapshot, *, outputs_root: Path):
     for slug in slugs:
         snap = slug_snaps.get(slug, {})
         for fmt in ("parquet", "vortex"):
+            # v1 matches the loader's artifact_key; revisit at a schema_version bump
             local = outputs_root / "v1" / slug / fmt / f"{slug}.{EXT[fmt]}"
             if not local.exists():
                 continue

@@ -38,7 +38,7 @@ table = ds.to_arrow()                           # materialize when you want it
 path  = ds.path()                               # or just the cached file path
 ```
 
-Resolution is **cache → mirror → local build**: a local cache hit short-circuits; otherwise it pulls from `RAINCLOUD_MIRROR` (a private/internal artefact store — `s3://bucket/prefix`, `file:///path`); only on a cache+mirror miss does it shell out to `scripts.pipeline.build` (which needs the `[build]` extra). Downloads are sha256-verified against `docs/v1/snapshot.json`.
+Resolution is **cache → mirror → local build**: a local cache hit short-circuits; otherwise it pulls from `RAINCLOUD_MIRROR` (a private/internal artefact store — `s3://bucket/prefix`, `file:///path`); only on a cache+mirror miss does it shell out to `scripts.pipeline.build` (which needs the `[build]` extra). Downloads are sha256-verified against `docs/v1/snapshot.json` when a checksum is recorded for them.
 
 ```bash
 export RAINCLOUD_MIRROR=s3://your-bucket/raincloud   # point CI at a prepared-artefact bucket

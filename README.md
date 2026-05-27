@@ -67,7 +67,7 @@ bucket and loads become downloads, not multi-hour rebuilds:
 export RAINCLOUD_MIRROR=s3://your-bucket/raincloud   # or file:///path
 ```
 
-Artifacts are sha256-verified against the version-pinned catalog. The
+Artifacts are sha256-verified against the version-pinned catalog when a checksum is recorded for them. The
 `raincloud[build]` extra adds the full pipeline for the local-build fallback on
 a cache + mirror miss.
 

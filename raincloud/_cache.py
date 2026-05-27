@@ -27,6 +27,7 @@ def cache_root() -> Path:
 
 
 def cache_path(slug: str, fmt: str) -> Path:
+    # schema_version is 1 today; hardcoded to match the loader's artifact_key + the pipeline's outputs/v1 layout
     return cache_root() / "v1" / slug / fmt / f"{slug}.{EXT[fmt]}"
 
 

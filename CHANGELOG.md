@@ -22,7 +22,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   a private/internal artefact store, not a public Raincloud endpoint),
   `RAINCLOUD_CACHE` (cache dir override), `RAINCLOUD_OFFLINE`
   (cache-only; mirror/build misses raise). Artefacts are
-  sha256-verified against the version-pinned snapshot.
+  sha256-verified against the version-pinned snapshot when a checksum is recorded.
 - **`scripts.pipeline.publish` mirror-sync CLI.**
   `python -m scripts.pipeline.publish <slugs|--all> --mirror <url>`
   uploads built `outputs/v1/...` artefacts to a mirror, gated on each

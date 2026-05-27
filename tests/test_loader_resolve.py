@@ -100,6 +100,21 @@ def test_resolve_mirror_miss_no_build(env, monkeypatch):
         _resolve.resolve("tiny", "parquet", allow_build=True)
 
 
+def test_build_available_false_when_build_import_fails(monkeypatch):
+    import importlib
+
+    from raincloud import _resolve
+    real_import = importlib.import_module
+
+    def fake_import(name, *args, **kwargs):
+        if name == "scripts.pipeline.build":
+            raise ModuleNotFoundError("No module named 'zstandard'")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(importlib, "import_module", fake_import)
+    assert _resolve._build_available() is False
+
+
 def test_resolve_propagates_non_notfound_transport_error(env, monkeypatch):
     from raincloud import _resolve, _transport
 
