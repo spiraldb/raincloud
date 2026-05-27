@@ -45,6 +45,32 @@ outputs/v1/countries-of-the-world/vortex/countries-of-the-world.vortex
 
 The command runs every pipeline stage — fetch, extract, parse, transform, write, validate, convert — and leaves both a Parquet file and its converted Vortex sibling under per-format subdirectories of `outputs/v1/<slug>/`.
 
+### Load prepared files in your own scripts / CI
+
+Install just the loader (no build toolchain):
+
+```bash
+pip install raincloud           # add [s3] or [http] for a remote mirror
+```
+
+```python
+import raincloud
+ds = raincloud.load("countries-of-the-world")  # lazy handle, default Vortex
+table = ds.to_arrow()                      # materialize when you want it
+path  = ds.path()                          # or just the cached file path
+```
+
+Resolution is **cache → mirror → local build**. Point CI at a prepared-artifact
+bucket and loads become downloads, not multi-hour rebuilds:
+
+```bash
+export RAINCLOUD_MIRROR=s3://your-bucket/raincloud   # or file:///path
+```
+
+Artifacts are sha256-verified against the version-pinned catalog. The
+`raincloud[build]` extra adds the full pipeline for the local-build fallback on
+a cache + mirror miss.
+
 ### Discover
 
 Run `python -m scripts.pipeline.browse` and click the **Encoding** preset. The left panel filters by domain, size, shape traits, license, or fetch type; click a slug to see its description, on-disk state, and per-column profile (run `python -m scripts.pipeline.profile <slug>` first to populate it).
