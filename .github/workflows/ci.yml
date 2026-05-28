@@ -43,3 +43,34 @@ jobs:
 
       - name: Test (pytest)
         run: uv run pytest -q
+
+  wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Pin Python
+        run: uv python install 3.11
+      - name: Install dev deps (for pytest + vortex base dep used by fixtures)
+        run: uv sync --extra dev
+      - name: Run wheel tests
+        run: uv run pytest --run-wheel -m wheel -v
+
+  realbuild:
+    runs-on: ubuntu-latest
+    continue-on-error: true   # non-blocking: upstream flakiness never reds the build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Pin Python
+        run: uv python install 3.11
+      - name: Install dev + build deps
+        run: uv sync --extra dev --extra build
+      - name: Run real-build network tests
+        run: uv run pytest --run-network -m network -v
