@@ -78,6 +78,20 @@ The install is **layered** — this is a behaviour change from earlier releases:
 
 The mirror is a **private/internal artefact store** — a bucket a team points its own CI at, configured via the `RAINCLOUD_MIRROR` env var (`s3://bucket/prefix`, `file:///path`, etc.); there is no public Raincloud-hosted endpoint, and this does not change the no-redistribution posture in [`DISCLAIMER.md`](DISCLAIMER.md). `RAINCLOUD_CACHE` overrides the cache dir and `RAINCLOUD_OFFLINE` forces cache-only (mirror/build misses raise). Maintainers publish built `outputs/v1/...` to a mirror with `python -m scripts.pipeline.publish <slugs|--all> --mirror <url>`, gated on a snapshot sha256 match. Integrity: `docs/v1/snapshot.json` now carries per-slug `parquet_sha256` / `vortex_sha256`, and both loader and publish verify artefacts against those version-pinned checksums.
 
+**Build data-area env vars** (separate from the loader's cache vars above): the build pipeline writes artefacts under a configurable root. In a checkout, that root is the repo directory; in a `pip install raincloud[build]` wheel install, it defaults to `~/.cache/raincloud` (XDG-aware, no init step). The resolution logic lives in `scripts/pipeline/spec.py:data_root()`.
+
+| Env var | Controls | Default |
+|---|---|---|
+| `RAINCLOUD_HOME` | build data-area root | checkout root (if `sources.json` present), else `~/.cache/raincloud` |
+| `RAINCLOUD_OUTPUTS` | built-artifact base (`/v{n}` under it) | `$RAINCLOUD_HOME/outputs` |
+| `RAINCLOUD_RAW_DOWNLOADS` | cached raw upstream bytes | `$RAINCLOUD_OUTPUTS/raw_downloads` |
+| `RAINCLOUD_WORKDIR` | extract/scratch space | `$RAINCLOUD_HOME/_workdir` |
+| `RAINCLOUD_MANIFEST` | `sources.json` path | checkout copy, else the wheel-packaged copy |
+
+In the defaults above, `$RAINCLOUD_HOME` / `$RAINCLOUD_OUTPUTS` mean the *resolved* roots — when those vars are unset they fall back to the checkout (or `~/.cache/raincloud`) and `<root>/outputs` respectively.
+
+From an agent context: on a fresh clone all five default to the repo tree (existing behaviour). On a wheel install with no checkout present, builds silently use `~/.cache/raincloud` (honoring `XDG_CACHE_HOME`) — same root `RAINCLOUD_CACHE` defaults to — so the loader's cache-hit path fires after the first build without any extra config.
+
 ## Invariants (don't break these)
 
 1. **`sources.json` is authoritative.** Every row of every derived artefact maps back to a `DatasetSpec` here. If you're tempted to hand-edit `docs/*.md` or drop a parquet into `outputs/v1/<slug>/` by hand — stop, fix the manifest, re-run the build, re-run `docs.py`.

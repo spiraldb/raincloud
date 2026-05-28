@@ -252,6 +252,24 @@ RAINCLOUD_DUCKDB_TEMP_DIRECTORY=/mnt/scratch/duckdb-tmp \
 
 Persistent DuckDB databases are opened with `storage_compatibility_version=v1.5.0` automatically (required for VARIANT columns).
 
+### Data locations
+
+By default, builds write under the repo root (if `sources.json` is present — the checkout case) or under `~/.cache/raincloud` (wheel-install case). All five paths are overridable:
+
+| Env var | Controls | Default |
+|---|---|---|
+| `RAINCLOUD_HOME` | build data-area root | checkout root (if `sources.json` is present), else `~/.cache/raincloud` |
+| `RAINCLOUD_OUTPUTS` | built-artifact base (`/v{n}` under it) | `$RAINCLOUD_HOME/outputs` |
+| `RAINCLOUD_RAW_DOWNLOADS` | cached raw upstream bytes | `$RAINCLOUD_OUTPUTS/raw_downloads` |
+| `RAINCLOUD_WORKDIR` | extract/scratch space | `$RAINCLOUD_HOME/_workdir` |
+| `RAINCLOUD_MANIFEST` | `sources.json` path | checkout copy, else the wheel-packaged copy |
+
+In the defaults above, `$RAINCLOUD_HOME` / `$RAINCLOUD_OUTPUTS` mean the *resolved* roots — when those vars are unset they fall back to the checkout (or `~/.cache/raincloud`) and `<root>/outputs` respectively.
+
+In a **checkout** (`uv sync --extra build --inexact`), builds write to `<repo>/outputs/` as before — unchanged. In a **wheel install** (`pip install raincloud[build]`), builds default to `~/.cache/raincloud` (same cache tier as Hugging Face `datasets`, honoring `XDG_CACHE_HOME`) — no init step required.
+
+`RAINCLOUD_CACHE` (the loader's *download* cache for already-built artefacts fetched via mirror) is independent of the above and always defaults to `~/.cache/raincloud` (honoring `XDG_CACHE_HOME`).
+
 ## The manifest (`sources.json`)
 
 See [`sources.schema.md`](sources.schema.md) for the human-friendly reference and [`sources.schema.json`](sources.schema.json) for the machine-readable JSON Schema (Draft 2020-12). After editing the manifest, run

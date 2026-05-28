@@ -83,7 +83,9 @@ def resolve(
         except ArtifactNotFound:
             pass  # fall through to build
 
-    # 3) local build
+    # 3) local build. Works from a wheel install too: scripts.pipeline reads the
+    #    packaged manifest and writes under data_root() (~/.cache/raincloud) when
+    #    there's no checkout. Requires the [build] extra (see _build_available).
     if allow_build and _build_available():
         subprocess.run(
             [sys.executable, "-m", "scripts.pipeline.build", slug], check=True
