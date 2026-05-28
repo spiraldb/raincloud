@@ -102,7 +102,7 @@ def ghcn_daily_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]], *,
     """
     import pyarrow.parquet as pq
 
-    from ..spec import REPO_ROOT, output_format_dir, spec_field
+    from ..spec import display_path, output_format_dir, spec_field
 
     if not parsed:
         raise ValueError("ghcn_daily_parse: no input files")
@@ -164,5 +164,5 @@ def ghcn_daily_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]], *,
     finally:
         writer.close()
 
-    print(f"  wrote {out_path.relative_to(REPO_ROOT)}  rows={total:,} stations≈{file_count}")
+    print(f"  wrote {display_path(out_path)}  rows={total:,} stations≈{file_count}")
     return []

@@ -112,7 +112,7 @@ def stack_exchange_split(spec: dict, parsed: list[tuple[Path, pa.Table | None]],
     path = xml_files[0]
     print(f"  streaming {path.name} ({path.stat().st_size / 1e9:.2f} GB on disk, table={table})")
 
-    from ..spec import REPO_ROOT, output_format_dir, spec_field
+    from ..spec import display_path, output_format_dir, spec_field
     out_path = output_format_dir(spec["slug"], "parquet") / spec_field(spec, "write.output", f"{spec['slug']}.parquet")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     compression = spec_field(spec, "write.compression", "zstd")
@@ -152,5 +152,5 @@ def stack_exchange_split(spec: dict, parsed: list[tuple[Path, pa.Table | None]],
                 if count % (batch_size * 10) == 0:
                     print(f"    {count:,} rows flushed")
         flush(writer)
-    print(f"    total: {count:,} rows written to {out_path.relative_to(REPO_ROOT)}")
+    print(f"    total: {count:,} rows written to {display_path(out_path)}")
     return []

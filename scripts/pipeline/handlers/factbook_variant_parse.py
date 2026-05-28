@@ -44,7 +44,7 @@ def factbook_variant_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]
     print(f"  {len(records)} country records across "
           f"{len({r for r, _, _ in records})} regions")
 
-    from ..spec import REPO_ROOT, output_format_dir, spec_field
+    from ..spec import display_path, output_format_dir, spec_field
     out_path = output_format_dir(spec["slug"], "parquet") / spec_field(spec, "write.output", f"{spec['slug']}.parquet")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     compression = spec_field(spec, "write.compression", "zstd")
@@ -65,5 +65,5 @@ def factbook_variant_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]
         f"COPY facts TO '{out_path}' (FORMAT PARQUET, COMPRESSION '{compression}')"
     )
     con.close()
-    print(f"  wrote {out_path.relative_to(REPO_ROOT)}")
+    print(f"  wrote {display_path(out_path)}")
     return []
