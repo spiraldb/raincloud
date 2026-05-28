@@ -90,3 +90,83 @@ def test_wheel_builds_and_base_install_imports(built_wheel, tmp_path):
     assert out[0] and out[0][0].isdigit(), f"version string looks wrong: {out[0]!r}"
     assert out[0] == out[1], f"__version__ {out[0]!r} != dist metadata {out[1]!r}"
     assert int(out[2]) > 200
+
+
+def test_base_install_excludes_heavy_deps(built_wheel, tmp_path):
+    """Base install MUST NOT pull osmium/pyreadstat/zstandard (those moved to [build])."""
+    venv = _make_venv(tmp_path, built_wheel)
+    cp = _run_py(
+        venv,
+        (
+            "import importlib.util\n"
+            "names = ['osmium', 'pyreadstat', 'zstandard', 'py7zr', 'unlzw3', 'openpyxl']\n"
+            "present = [n for n in names if importlib.util.find_spec(n) is not None]\n"
+            "print(','.join(present))\n"
+        ),
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert cp.stdout.strip() == "", (
+        f"base install unexpectedly pulled heavy deps: {cp.stdout.strip()!r}"
+    )
+
+
+def test_base_install_scan_and_to_pandas_raise_missing_dependency(built_wheel, tmp_path):
+    """`.scan()` and `.to_pandas()` in a base install raise MissingDependency
+    (duckdb/pandas absent), without needing any I/O — the lazy guard fires
+    before resolution."""
+    venv = _make_venv(tmp_path, built_wheel)
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "from raincloud._catalog import load_catalog\n"
+            "# pick any slug whose entry exists in the packaged catalog\n"
+            "slug = next(iter(load_catalog().slugs()))\n"
+            "ds = raincloud.load(slug)\n"
+            "errors = []\n"
+            "try:\n"
+            "    ds.scan()\n"
+            "except raincloud.MissingDependency as e:\n"
+            "    errors.append(('scan', 'duckdb' in str(e).lower()))\n"
+            "try:\n"
+            "    ds.to_pandas()\n"
+            "except raincloud.MissingDependency as e:\n"
+            "    errors.append(('to_pandas', 'pandas' in str(e).lower()))\n"
+            "print(errors)\n"
+        ),
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert "('scan', True)" in cp.stdout and "('to_pandas', True)" in cp.stdout
+
+
+def test_build_extra_installs_heavy_deps_and_build_is_available(built_wheel, tmp_path):
+    """`[build]` install pulls the heavy toolchain AND _build_available() is True
+    (the real import-probe succeeds when [build] is installed)."""
+    venv = _make_venv(tmp_path, built_wheel, extras="[build]")
+    cp = _run_py(
+        venv,
+        (
+            "import osmium, pyreadstat, zstandard\n"
+            "from raincloud import _resolve\n"
+            "print(_resolve._build_available())\n"
+        ),
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert cp.stdout.strip() == "True"
+
+
+@pytest.mark.parametrize(
+    "extra,backend",
+    [
+        ("[s3]", "s3fs"),
+        ("[http]", "aiohttp"),
+        ("[duckdb]", "duckdb"),
+        ("[pandas]", "pandas"),
+    ],
+)
+def test_extra_installs_its_backend(built_wheel, tmp_path, extra, backend):
+    """Each per-scheme/convenience extra wires its named backend module."""
+    venv = _make_venv(tmp_path, built_wheel, extras=extra)
+    cp = _run_py(venv, f"import {backend}; print('ok')")
+    assert cp.returncode == 0, cp.stderr
+    assert cp.stdout.strip() == "ok"
