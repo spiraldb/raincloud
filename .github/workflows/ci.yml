@@ -26,11 +26,14 @@ jobs:
         run: uv python install 3.11
 
       # `--extra dev` brings in pytest + ruff. `--extra tui` brings in
-      # textual so the test_browse suite runs instead of skipping. Skip
-      # kaggle/huggingface — those deps are only needed at fetch time and
-      # neither test path imports them.
+      # textual so the test_browse suite runs instead of skipping. `--extra
+      # build` brings in the heavy pipeline deps (duckdb, osmium, pyreadstat,
+      # zstandard, jsonschema, …) — required because validate_manifest +
+      # pytest collection import the handler registry, which transitively
+      # pulls those. Skip kaggle/huggingface — those deps are only needed at
+      # fetch time and neither test path imports them.
       - name: Install dependencies
-        run: uv sync --extra dev --extra tui
+        run: uv sync --extra dev --extra tui --extra build
 
       - name: Lint (ruff)
         run: uv run ruff check

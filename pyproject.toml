@@ -51,6 +51,12 @@ select = ["E", "F", "W", "I"]
 # better as one-liners than split across multiple lines.
 ignore = ["E501", "E701", "E702"]
 
+[tool.pytest.ini_options]
+markers = [
+    "wheel: builds the wheel + spins venvs (slow; gated by --run-wheel)",
+    "network: hits real upstream sources (flaky; gated by --run-network)",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
