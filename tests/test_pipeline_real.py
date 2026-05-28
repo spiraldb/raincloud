@@ -34,5 +34,16 @@ def test_real_build_via_load(tmp_path, monkeypatch, slug, expected_rows):
         assert tbl.num_rows == expected_rows, (
             f"{slug}: expected {expected_rows} rows, got {tbl.num_rows}"
         )
+        # Pin the RAINCLOUD_HOME hermeticity invariant: the build subprocess
+        # must have written its outputs under tmp, NOT the repo's outputs/v1.
+        # Without this, a regression that ignored RAINCLOUD_HOME would silently
+        # corrupt the repo's tracked outputs while the row-count assertion
+        # above still passed (the loader cache would adopt the wrong-location
+        # artifact).
+        built = tmp_path / "home" / "outputs" / "v1" / slug / "parquet" / f"{slug}.parquet"
+        assert built.exists(), (
+            f"{slug}: build did not write under RAINCLOUD_HOME; "
+            f"expected {built}, repo's outputs/v1/ may have been written instead"
+        )
     finally:
         _catalog.load_catalog.cache_clear()
