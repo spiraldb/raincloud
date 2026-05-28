@@ -73,13 +73,15 @@ def test_load_dataset_alias(loaded):
 
 
 def test_format_unavailable_raises(tmp_path, monkeypatch):
+    # Snapshot-only slug (not in manifest): only vortex bytes recorded, no
+    # parquet bytes. Catalog falls back to legacy snapshot-only behaviour, so
+    # requesting parquet (which is absent from the snapshot) must raise.
     snapshot = {"schema_version": 1, "slugs": {"vx": {
         "expected_rows": 1, "last_built_rows": 1,
         "parquet_bytes": None, "vortex_bytes": 10,
         "parquet_sha256": None, "vortex_sha256": "aa",
         "columns": [{"name": "x", "type": "int64"}]}}}
-    manifest = {"schema_version": 1, "datasets": [{"slug": "vx",
-        "short_name": "VX", "license": {}, "fetch": {"urls": []}}]}
+    manifest = {"schema_version": 1, "datasets": []}  # vx not in manifest
     (tmp_path / "s.json").write_text(json.dumps(snapshot))
     (tmp_path / "m.json").write_text(json.dumps(manifest))
     monkeypatch.setenv("RAINCLOUD_SNAPSHOT", str(tmp_path / "s.json"))
@@ -89,7 +91,7 @@ def test_format_unavailable_raises(tmp_path, monkeypatch):
     from raincloud.exceptions import FormatUnavailable
     _catalog.load_catalog.cache_clear()
     try:
-        # only vortex exists; requesting parquet has no fallback
+        # snapshot-only slug with only vortex bytes; parquet not available
         with pytest.raises(FormatUnavailable):
             raincloud.load("vx", format="parquet")
     finally:

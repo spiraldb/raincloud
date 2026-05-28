@@ -74,11 +74,21 @@ class Catalog:
         snap = self._slugs.get(slug, {})
         spec = self._specs.get(slug, {})
         formats: dict[str, FormatInfo] = {}
-        for fmt in ("parquet", "vortex"):
-            nbytes = snap.get(f"{fmt}_bytes")
-            if nbytes is None:
-                continue
-            formats[fmt] = FormatInfo(sha256=snap.get(f"{fmt}_sha256"), nbytes=nbytes)
+        # Parquet is the always-produced format for any manifest slug;
+        # snapshot bytes are absent for never-built slugs (build-fallback path).
+        if slug in self._specs:
+            formats["parquet"] = FormatInfo(
+                sha256=snap.get("parquet_sha256"),
+                nbytes=snap.get("parquet_bytes"),
+            )
+        # Vortex: produced when convert.vortex is true in the manifest, OR when
+        # already present in the snapshot (covers snapshot-only / legacy entries).
+        wants_vortex = bool((spec.get("convert") or {}).get("vortex"))
+        if wants_vortex or snap.get("vortex_bytes") is not None:
+            formats["vortex"] = FormatInfo(
+                sha256=snap.get("vortex_sha256"),
+                nbytes=snap.get("vortex_bytes"),
+            )
         lic = spec.get("license", {}) or {}
         urls = (spec.get("fetch", {}) or {}).get("urls") or []
         info = {

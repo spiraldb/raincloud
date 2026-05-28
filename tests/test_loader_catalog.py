@@ -70,3 +70,55 @@ def test_unknown_slug(fake_catalog):
     assert "nope" not in fake_catalog
     with pytest.raises(UnknownSlug):
         fake_catalog.entry("nope")
+
+
+def test_entry_formats_from_manifest_only(tmp_path, monkeypatch):
+    """A manifest slug never written to the snapshot should still be loadable.
+
+    Manifest declares the slug + convert.vortex=true; snapshot has no bytes/sha
+    for it. Both parquet and vortex must be exposed with None checksums.
+    """
+    import json
+    snapshot = {"schema_version": 1, "slugs": {"new_slug": {"expected_rows": 100}}}
+    manifest = {"schema_version": 1, "datasets": [{
+        "slug": "new_slug", "short_name": "New", "license": {},
+        "fetch": {"urls": []}, "convert": {"vortex": True},
+    }]}
+    sp = tmp_path / "snapshot.json"; sp.write_text(json.dumps(snapshot))
+    mp = tmp_path / "sources.json"; mp.write_text(json.dumps(manifest))
+    monkeypatch.setenv("RAINCLOUD_SNAPSHOT", str(sp))
+    monkeypatch.setenv("RAINCLOUD_MANIFEST", str(mp))
+    from raincloud import _catalog
+    _catalog.load_catalog.cache_clear()
+    try:
+        e = _catalog.load_catalog().entry("new_slug")
+        assert set(e.formats) == {"parquet", "vortex"}
+        assert e.formats["parquet"].sha256 is None
+        assert e.formats["parquet"].nbytes is None
+        assert e.formats["vortex"].sha256 is None
+        assert e.formats["vortex"].nbytes is None
+        # rows still resolves from expected_rows in snapshot
+        assert e.rows == 100
+    finally:
+        _catalog.load_catalog.cache_clear()
+
+
+def test_entry_no_vortex_when_convert_vortex_false(tmp_path, monkeypatch):
+    """A manifest slug with convert.vortex=false (or absent) exposes parquet only."""
+    import json
+    snapshot = {"schema_version": 1, "slugs": {"pq_slug": {"expected_rows": 50}}}
+    manifest = {"schema_version": 1, "datasets": [{
+        "slug": "pq_slug", "short_name": "PQ", "license": {},
+        "fetch": {"urls": []}, "convert": {"vortex": False},
+    }]}
+    sp = tmp_path / "snapshot.json"; sp.write_text(json.dumps(snapshot))
+    mp = tmp_path / "sources.json"; mp.write_text(json.dumps(manifest))
+    monkeypatch.setenv("RAINCLOUD_SNAPSHOT", str(sp))
+    monkeypatch.setenv("RAINCLOUD_MANIFEST", str(mp))
+    from raincloud import _catalog
+    _catalog.load_catalog.cache_clear()
+    try:
+        e = _catalog.load_catalog().entry("pq_slug")
+        assert set(e.formats) == {"parquet"}
+    finally:
+        _catalog.load_catalog.cache_clear()
