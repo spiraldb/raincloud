@@ -381,3 +381,74 @@ def test_to_pandas_works_with_pandas_extra(built_wheel, tmp_path):
     )
     assert cp.returncode == 0, cp.stderr
     assert "ok" in cp.stdout
+
+
+def _write_synth_manifest(tmp_path: Path) -> tuple[Path, Path, int]:
+    """Write a tmp CSV + a synthetic sources.json describing one slug fetched
+    via file://. Returns (manifest_path, csv_path, expected_rows).
+    """
+    import json
+
+    csv = tmp_path / "tiny.csv"
+    csv.write_text("a,b\n1,x\n2,y\n3,z\n")
+    expected_rows = 3
+    manifest = {
+        "schema_version": 1,
+        "datasets": [
+            {
+                "slug": "synth",
+                "short_name": "Synth",
+                "full_name": "Synthetic build proof",
+                "description": "tmp CSV via file://",
+                "license": {"spdx": "CC0-1.0"},
+                "fetch": {"type": "http", "urls": [csv.as_uri()]},
+                "extract": {"type": "passthrough"},
+                "parse": {"reader": "csv"},
+                "transform": {"handler": "tighten_types"},
+                "write": {"output": "synth.parquet", "compression": "zstd"},
+                "expect": {"rows": expected_rows},
+                "convert": {"vortex": True},
+            }
+        ],
+    }
+    mp = tmp_path / "sources.json"
+    mp.write_text(json.dumps(manifest))
+    return mp, csv, expected_rows
+
+
+def test_wheel_build_proof_via_load(built_wheel, tmp_path):
+    """The capstone: `raincloud.load('synth')` in a [build] venv drives load →
+    cache miss → mirror absent → build-fallback subprocess (file:// fetch +
+    fetch→…→convert) → adopt → vortex materialization. End-to-end, hermetic."""
+    import os
+
+    manifest, _csv, expected_rows = _write_synth_manifest(tmp_path)
+    venv = _make_venv(tmp_path, built_wheel, extras="[build]")
+    env = os.environ.copy()
+    env.update(
+        {
+            "RAINCLOUD_MANIFEST": str(manifest),
+            "RAINCLOUD_HOME": str(tmp_path / "home"),
+            "RAINCLOUD_CACHE": str(tmp_path / "cache"),
+        }
+    )
+    env.pop("RAINCLOUD_MIRROR", None)
+    env.pop("RAINCLOUD_OFFLINE", None)
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "ds = raincloud.load('synth')        # default vortex; convert.vortex=True\n"
+            "tbl = ds.to_arrow()\n"
+            f"assert tbl.num_rows == {expected_rows}, tbl.num_rows\n"
+            "assert tbl.column_names == ['a', 'b']\n"
+            "print('ok')\n"
+        ),
+        env=env,
+    )
+    assert cp.returncode == 0, f"stdout:\n{cp.stdout}\nstderr:\n{cp.stderr}"
+    assert "ok" in cp.stdout
+    # The build wrote real artifacts under $RAINCLOUD_HOME/outputs/v1/synth/
+    outputs = tmp_path / "home" / "outputs" / "v1" / "synth"
+    assert (outputs / "parquet" / "synth.parquet").exists()
+    assert (outputs / "vortex" / "synth.vortex").exists()
