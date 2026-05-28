@@ -61,3 +61,4 @@ packages = ["raincloud", "scripts"]
 [tool.hatch.build.targets.wheel.force-include]
 "docs/v1/snapshot.json" = "raincloud/_data/snapshot.json"
 "sources.json" = "raincloud/_data/sources.json"
+"sources.schema.json" = "raincloud/_data/sources.schema.json"

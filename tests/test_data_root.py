@@ -74,3 +74,14 @@ def test_load_manifest_packaged_fallback(monkeypatch, tmp_path):
     m = spec.load_manifest()
     assert m["schema_version"] == 1
     assert m["datasets"][0]["slug"] == "x"
+
+
+def test_validate_manifest_schema_packaged_fallback(monkeypatch, tmp_path):
+    from scripts.pipeline import validate_manifest as vm
+    # No checkout schema present -> _schema_path() consults the packaged copy.
+    fake = tmp_path / "packaged_sources.schema.json"
+    fake.write_text("{}")
+    monkeypatch.setattr(vm, "REPO_ROOT", tmp_path / "no-checkout")
+    monkeypatch.setattr(vm, "_packaged_data",
+                        lambda name: fake if name == "sources.schema.json" else None)
+    assert vm._schema_path() == fake
