@@ -170,3 +170,214 @@ def test_extra_installs_its_backend(built_wheel, tmp_path, extra, backend):
     cp = _run_py(venv, f"import {backend}; print('ok')")
     assert cp.returncode == 0, cp.stderr
     assert cp.stdout.strip() == "ok"
+
+
+def _write_loader_fixture(tmp_path: Path):
+    """Build a tmp file:// mirror with a real parquet + vortex artifact for slug 'tiny'.
+
+    Creates the artifacts in the outer test env (vortex-data is a base dep,
+    so vortex.io.write is available here), writes a fixture snapshot + manifest
+    pinning their real sha256, and returns (env_dict, mirror_dir) where env_dict
+    is ready to pass as `env=` to subprocess. The venv then reads the fixture
+    via RAINCLOUD_* env overrides — hermetic.
+    """
+    import hashlib
+    import json
+    import os
+
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    import vortex
+
+    table = pa.table({"x": [1, 2, 3], "y": ["a", "b", "c"]})
+    mirror = tmp_path / "mirror"
+    pq_key = mirror / "v1" / "tiny" / "parquet" / "tiny.parquet"
+    vx_key = mirror / "v1" / "tiny" / "vortex" / "tiny.vortex"
+    pq_key.parent.mkdir(parents=True)
+    vx_key.parent.mkdir(parents=True)
+    pq.write_table(table, pq_key)
+    vortex.io.write(table, str(vx_key))
+
+    def sha(p):
+        return hashlib.sha256(p.read_bytes()).hexdigest()
+
+    snapshot = {
+        "schema_version": 1,
+        "slugs": {
+            "tiny": {
+                "expected_rows": 3,
+                "last_built_rows": 3,
+                "parquet_bytes": pq_key.stat().st_size,
+                "vortex_bytes": vx_key.stat().st_size,
+                "parquet_sha256": sha(pq_key),
+                "vortex_sha256": sha(vx_key),
+                "columns": [
+                    {"name": "x", "type": "int64"},
+                    {"name": "y", "type": "string"},
+                ],
+            }
+        },
+    }
+    manifest = {
+        "schema_version": 1,
+        "datasets": [
+            {
+                "slug": "tiny",
+                "short_name": "Tiny",
+                "full_name": "Tiny",
+                "description": "d",
+                "license": {"spdx": "CC0-1.0"},
+                "fetch": {"urls": ["http://s"]},
+                "convert": {"vortex": True},
+            }
+        ],
+    }
+    (tmp_path / "snapshot.json").write_text(json.dumps(snapshot))
+    (tmp_path / "sources.json").write_text(json.dumps(manifest))
+
+    env = os.environ.copy()
+    env.update(
+        {
+            "RAINCLOUD_SNAPSHOT": str(tmp_path / "snapshot.json"),
+            "RAINCLOUD_MANIFEST": str(tmp_path / "sources.json"),
+            "RAINCLOUD_CACHE": str(tmp_path / "cache"),
+            "RAINCLOUD_MIRROR": f"file://{mirror}",
+        }
+    )
+    env.pop("RAINCLOUD_OFFLINE", None)
+    return env, mirror
+
+
+def test_loader_happy_paths_against_wheel(built_wheel, tmp_path):
+    """`load(); to_arrow/to_vortex/schema/path/num_rows/column_names/info`
+    + vortex->parquet format fallback, against the installed wheel."""
+    env, _mirror = _write_loader_fixture(tmp_path)
+    venv = _make_venv(tmp_path, built_wheel)
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "ds = raincloud.load('tiny')\n"
+            "assert ds.format == 'vortex'\n"
+            "assert ds.num_rows == 3\n"
+            "assert ds.column_names == ['x', 'y']\n"
+            "assert ds.info['license']['spdx'] == 'CC0-1.0'\n"
+            "tbl = ds.to_arrow()\n"
+            "assert tbl.num_rows == 3 and tbl.column_names == ['x', 'y']\n"
+            "assert tbl['x'].to_pylist() == [1, 2, 3]\n"
+            "vf = ds.to_vortex()\n"
+            "assert vf is not None\n"
+            "schema = ds.schema\n"
+            "assert [f.name for f in schema] == ['x', 'y']\n"
+            "p = ds.path()\n"
+            "assert p.exists()\n"
+            "ds_pq = raincloud.load('tiny', format='parquet')\n"
+            "assert ds_pq.to_arrow().num_rows == 3\n"
+            "print('ok')\n"
+        ),
+        env=env,
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert "ok" in cp.stdout
+
+
+def test_loader_error_paths_against_wheel(built_wheel, tmp_path):
+    """OfflineMiss, ChecksumMismatch, UnknownSlug against the installed wheel."""
+    env, mirror = _write_loader_fixture(tmp_path)
+    venv = _make_venv(tmp_path, built_wheel)
+
+    # 1) OfflineMiss: cache empty, RAINCLOUD_OFFLINE=1 -> can't fetch.
+    # Use a dedicated cache subdir so this call cannot prime the cache for later calls.
+    env_off = {**env, "RAINCLOUD_OFFLINE": "1", "RAINCLOUD_CACHE": str(tmp_path / "cache_offline")}
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "try:\n"
+            "    raincloud.load('tiny').path()\n"
+            "except raincloud.OfflineMiss:\n"
+            "    print('offline_ok')\n"
+        ),
+        env=env_off,
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert "offline_ok" in cp.stdout, (
+        f"OfflineMiss not raised; stdout={cp.stdout!r} stderr={cp.stderr!r}"
+    )
+
+    # 2) ChecksumMismatch: corrupt the mirror artifact (fresh cache subdir) -> mismatch.
+    # Use a dedicated cache subdir: if any earlier call had primed the same dir
+    # with a clean copy, the cache hit would bypass checksum verification entirely.
+    (mirror / "v1" / "tiny" / "vortex" / "tiny.vortex").write_bytes(b"CORRUPT")
+    env_corrupt = {**env, "RAINCLOUD_CACHE": str(tmp_path / "cache_corrupt")}
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "try:\n"
+            "    raincloud.load('tiny').path()\n"
+            "except raincloud.ChecksumMismatch:\n"
+            "    print('mismatch_ok')\n"
+        ),
+        env=env_corrupt,
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert "mismatch_ok" in cp.stdout, (
+        f"ChecksumMismatch not raised; stdout={cp.stdout!r} stderr={cp.stderr!r}"
+    )
+
+    # 3) UnknownSlug: a slug nowhere in the catalog.
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "try:\n"
+            "    raincloud.load('does-not-exist')\n"
+            "except raincloud.UnknownSlug:\n"
+            "    print('unknown_ok')\n"
+        ),
+        env=env,
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert "unknown_ok" in cp.stdout, (
+        f"UnknownSlug not raised; stdout={cp.stdout!r} stderr={cp.stderr!r}"
+    )
+
+
+def test_scan_works_with_duckdb_extra(built_wheel, tmp_path):
+    """`[duckdb]` venv: `.scan()` returns a queryable relation against a file:// parquet."""
+    env, _mirror = _write_loader_fixture(tmp_path)
+    venv = _make_venv(tmp_path, built_wheel, extras="[duckdb]")
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "ds = raincloud.load('tiny', format='parquet')\n"
+            "rel = ds.scan()\n"
+            "rows = rel.fetchall()\n"
+            "assert len(rows) == 3, rows\n"
+            "print('ok')\n"
+        ),
+        env=env,
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert "ok" in cp.stdout
+
+
+def test_to_pandas_works_with_pandas_extra(built_wheel, tmp_path):
+    """`[pandas]` venv: `.to_pandas()` returns a DataFrame with the expected rows/cols."""
+    env, _mirror = _write_loader_fixture(tmp_path)
+    venv = _make_venv(tmp_path, built_wheel, extras="[pandas]")
+    cp = _run_py(
+        venv,
+        (
+            "import raincloud\n"
+            "df = raincloud.load('tiny').to_pandas()\n"
+            "assert list(df.columns) == ['x', 'y']\n"
+            "assert len(df) == 3 and df['x'].tolist() == [1, 2, 3]\n"
+            "print('ok')\n"
+        ),
+        env=env,
+    )
+    assert cp.returncode == 0, cp.stderr
+    assert "ok" in cp.stdout
