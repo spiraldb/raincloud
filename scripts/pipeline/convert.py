@@ -54,7 +54,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from .spec import (
-    REPO_ROOT,
+    display_path,
     iter_datasets,
     load_manifest,
     prepared_parquet,
@@ -140,10 +140,7 @@ def _convert_one(parquet: Path, vortex_path: Path, label: str) -> Path:
 
     sz_p = parquet.stat().st_size
     sz_v = vortex_path.stat().st_size
-    try:
-        log_path = vortex_path.relative_to(REPO_ROOT)
-    except ValueError:
-        log_path = vortex_path
+    log_path = display_path(vortex_path)
     print(
         f"  wrote {log_path}  "
         f"{sz_v / 1e6:.1f} MB (ratio {sz_v / sz_p:.3f}) in {elapsed:.1f}s"
@@ -163,7 +160,7 @@ def convert(spec: dict) -> Path | None:
     out_slug = spec["slug"]
     parquet = prepared_parquet(out_slug)
     if not parquet.exists():
-        raise FileNotFoundError(f"no parquet at {parquet.relative_to(REPO_ROOT)}")
+        raise FileNotFoundError(f"no parquet at {display_path(parquet)}")
 
     return _convert_one(parquet, prepared_vortex(out_slug), out_slug)
 

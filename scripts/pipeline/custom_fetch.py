@@ -15,7 +15,7 @@ import urllib.request
 from pathlib import Path
 
 from .fetch import slug_dir
-from .spec import REPO_ROOT, spec_field
+from .spec import display_path, spec_field
 
 
 def _http_download(url: str, dest: Path, timeout: int = 300) -> None:
@@ -68,11 +68,11 @@ def public_bi_fetch(spec: dict) -> list[Path]:
         name = url.rsplit("/", 1)[-1]
         dest = target_dir / name
         if dest.exists():
-            print(f"    [cached] {dest.relative_to(REPO_ROOT)} ({dest.stat().st_size:,} B)")
+            print(f"    [cached] {display_path(dest)} ({dest.stat().st_size:,} B)")
         else:
             print(f"    fetching {url}")
             _http_download(url, dest)
-            print(f"      -> {dest.relative_to(REPO_ROOT)} ({dest.stat().st_size:,} B)")
+            print(f"      -> {display_path(dest)} ({dest.stat().st_size:,} B)")
         out.append(dest)
 
     # 3. Download each partition's `<W>_N.table.sql`. The handler needs them
@@ -86,7 +86,7 @@ def public_bi_fetch(spec: dict) -> list[Path]:
         )
         schema_dest = target_dir / f"{workload}_{n}.table.sql"
         if schema_dest.exists():
-            print(f"    [cached] {schema_dest.relative_to(REPO_ROOT)}")
+            print(f"    [cached] {display_path(schema_dest)}")
         else:
             print(f"    fetching {schema_url}")
             try:

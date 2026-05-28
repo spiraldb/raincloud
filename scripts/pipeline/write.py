@@ -8,7 +8,7 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from .spec import REPO_ROOT, output_format_dir, spec_field
+from .spec import display_path, output_format_dir, spec_field
 
 
 def write(spec: dict, tables: list[tuple[str, pa.Table]]) -> list[Path]:
@@ -21,7 +21,7 @@ def write(spec: dict, tables: list[tuple[str, pa.Table]]) -> list[Path]:
         format_dir = output_format_dir(out_slug, "parquet")
         format_dir.mkdir(parents=True, exist_ok=True)
         dest = format_dir / f"{out_slug}.parquet"
-        print(f"[write] {dest.relative_to(REPO_ROOT)}  rows={table.num_rows:,}")
+        print(f"[write] {display_path(dest)}  rows={table.num_rows:,}")
         pq.write_table(
             table, dest,
             compression=compression,
