@@ -19,7 +19,6 @@ def fake_repo(tmp_path, monkeypatch):
     """Redirect REPO_ROOT to tmp_path in both modules that read it."""
     from scripts.pipeline import promote_profiles, spec
     monkeypatch.setattr(spec, "REPO_ROOT", tmp_path)
-    monkeypatch.setattr(spec, "DEFAULT_MANIFEST", tmp_path / "sources.json")
     monkeypatch.setattr(promote_profiles, "REPO_ROOT", tmp_path)
     (tmp_path / "sources.json").write_text(
         json.dumps({"schema_version": 1, "datasets": [{"slug": "alpha"}, {"slug": "beta"}]})

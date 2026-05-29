@@ -5,6 +5,194 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-05-29
+
+### Added
+
+- **`raincloud` loader package.** A new importable package
+  (separate from the `scripts/` build pipeline) for loading
+  *already-prepared* artefacts. `raincloud.load("<slug>")` (alias
+  `load_dataset`) returns a lazy `Dataset` handle — nothing is fetched
+  until you call `.path()` / `.to_arrow()` / `.scan()` / `.to_pandas()`.
+  Resolution order is **local cache → mirror → local build**: a cache
+  hit short-circuits, otherwise it pulls from the configured mirror,
+  and only on a cache+mirror miss does it shell out to
+  `scripts.pipeline.build`. Configured via env vars: `RAINCLOUD_MIRROR`
+  (an `fsspec` base such as `s3://bucket/prefix` or `file:///path` —
+  a private/internal artefact store, not a public Raincloud endpoint),
+  `RAINCLOUD_CACHE` (cache dir override), `RAINCLOUD_OFFLINE`
+  (cache-only; mirror/build misses raise), `RAINCLOUD_STRICT_CHECKSUM`
+  (opt-in hard integrity gate; see below). When the snapshot records a
+  checksum, a drift from it warns-and-adopts by default (see "Drift is an
+  alert"); where no checksum is recorded yet — most of the catalog today —
+  the pinned byte size is used as a cheap corruption check instead.
+- **`scripts.pipeline.publish` mirror-sync CLI.**
+  `python -m scripts.pipeline.publish <slugs|--all> --mirror <url>`
+  uploads built `outputs/v1/...` artefacts to a mirror, gated on each
+  artefact's on-disk sha256 matching `docs/v1/snapshot.json` (slugs with
+  no recorded sha are uploaded ungated). Each upload streams to a
+  `<key>.<uuid>.part` temp key and renames into place, so a mid-stream
+  crash never leaves a truncated object at the canonical key. The
+  snapshot is resolved via the same `RAINCLOUD_SNAPSHOT` → checkout →
+  wheel precedence the loader uses, not a hardcoded checkout path.
+  `--dry-run` previews the upload plan.
+- **`parquet_sha256` / `vortex_sha256` in `docs/v1/snapshot.json`** —
+  per-slug artefact checksums, used by both the loader (download
+  integrity) and `publish` (the snapshot-match gate).
+- **`examples/use_loader.py`** — runnable walkthrough of the loader API
+  (metadata access, `.to_arrow` / `.scan` / `.to_pandas` materialization,
+  format override, env-var configuration, the full
+  `RaincloudError` hierarchy). Runs against the packaged catalog with
+  no network; `--materialize` exercises the full resolution path.
+- **Code-path example scripts in `examples/`.** Single-file demos that
+  `load()` a real catalog dataset and run a query: `nyc_taxi_tip_rate.py`
+  (DuckDB over `.scan()` on 48.7M yellow-cab trips — what share left no
+  recorded tip, by `payment_type`), `kepler_exoplanets.py` (pandas
+  disposition counts + smallest confirmed planet), `wine_quality_correlations.py`
+  (feature↔quality correlations), and `olympic_medals.py` (medals by NOC /
+  decade). `tests/test_examples.py` byte-compiles every example and (under
+  `--run-network`) runs the kepler one end-to-end.
+- **New agent skills: `raincloud-load` and `raincloud-publish`.** Wrap
+  the loader API and the publish CLI respectively, matching the
+  existing `raincloud-*` skill conventions (name-only,
+  `disable-model-invocation: true`).
+
+### Changed
+
+- **`examples/` is now runnable demos; authoring templates moved to
+  `templates/`.** `minimal_spec.json` and `streaming_handler.py.tmpl` (config
+  templates for adding a source) live under the new top-level `templates/`;
+  `examples/` is reserved for code-path scripts that use the `raincloud.load`
+  API. Doc and skill references updated accordingly.
+- **Packaging: the project is now a hatchling-built, installable
+  package** (installed from GitHub: `pip install "raincloud @ git+https://github.com/spiraldb/raincloud"`, not PyPI). The wheel force-includes
+  `docs/v1/snapshot.json` and `sources.json` as packaged data under
+  `raincloud/_data/`, so the catalog resolves with no repo checkout.
+- **BREAKING (install): the heavy build toolchain moved out of the base
+  dependency set into the `[build]` extra.** A bare `uv sync --inexact`
+  (or a `pip install` from the GitHub repo) now installs only the lightweight loader
+  (`pyarrow`, `numpy`, `vortex-data`, `fsspec`); **building datasets
+  requires `uv sync --extra build --inexact`** (duckdb, pandas, osmium,
+  pyreadstat, openpyxl, py7zr, unlzw3, zstandard, jsonschema). Transport
+  backends are per-scheme extras (`[s3]` → s3fs, `[http]` → aiohttp;
+  `file://` needs neither); `[duckdb]` / `[pandas]` back
+  `Dataset.scan()` / `.to_pandas()`. This does not change the
+  no-redistribution posture in [`DISCLAIMER.md`](DISCLAIMER.md).
+- **Drift is an alert, not a blocker.** When a slug's sha256 is pinned
+  in the snapshot and the mirror or local build produces different
+  bytes, the loader now prints `[raincloud] WARN: <slug> from <origin>
+  sha256 drifted ...` to stderr and adopts the new bytes anyway.
+  Upstream content changes are common and benign; the build should
+  still work, with the user informed. The loader's mirror-fetch path is
+  the strict-capable caller — under `RAINCLOUD_STRICT_CHECKSUM` it passes
+  `_cache.adopt(..., strict=True)` so a mirror mismatch raises
+  `ChecksumMismatch`. (`scripts.pipeline.publish` is a *separate* gate: it
+  refuses to upload via its own `PublishMismatch`, not through `adopt`.)
+  Adopted bytes are recorded in a `.<name>.pin` sidecar — the snapshot sha
+  reconciled against, the on-disk size, and the origin (`mirror`/`build`)
+  — so later loads serve them straight from cache; a genuine snapshot
+  revision (the pinned sha changed) still re-fetches, and a post-adoption
+  size change still falls through to a fresh fetch. In the default
+  (non-strict) mode a sha-present cache hit is served on a byte-size match
+  without rehashing (the multi-GB rehash-avoidance fast path), so a
+  same-size on-disk content swap isn't caught until strict mode forces a
+  rehash.
+
+  Set `RAINCLOUD_STRICT_CHECKSUM=1` to opt the loader into a hard gate:
+  for a sha-pinned slug from the mirror, a mismatch on download AND on a
+  cache hit raises `ChecksumMismatch` (the cached file is rehashed each
+  load, catching even same-size tampering). Sha-less slugs have nothing to
+  rehash against, so strict leaves their size/pin corruption check
+  unchanged. The **local build path is never strict-gated against the
+  maintainer's sha**: a client's rebuild legitimately differs (columnar
+  output is rarely bit-reproducible), so the built artefact is tagged
+  `origin=build` in its pin and served from cache by that provenance —
+  even under strict — instead of being rebuilt every load. It is rebuilt
+  only when the snapshot pin it was built against changes (the source of
+  truth moved) or the cached file is corrupted. For full cryptographic
+  integrity, point strict deployments at a mirror.
+
+### Fixed
+
+- **Wheel-install path crashes after long-running work.**
+  `scripts/pipeline/hydrate.py` (success-log + the FileNotFoundError
+  message),
+  `scripts/pipeline/tighten_variant.py` (workdir +
+  three log lines),
+  `scripts/pipeline/overnight_profile.py`
+  (`LOG_PATH`, `STATE_PATH`, `_slug_already_built`, `_wipe_slug`,
+  manifest loader),
+  `scripts/pipeline/list_datasets.py`, and
+  `scripts/pipeline/browse.py` all routed through
+  `REPO_ROOT / "outputs/..."` or `.relative_to(REPO_ROOT)` — fragile
+  under wheel installs and any `RAINCLOUD_HOME` / `RAINCLOUD_OUTPUTS` /
+  `RAINCLOUD_WORKDIR` redirect, where it raised `ValueError` at the
+  tail of a multi-hour build. All call sites now use the env-aware
+  `display_path()` / `outputs_root()` / `raw_downloads_root()` /
+  `workdir_root()` helpers. New
+  `tests/test_pipeline_path_hermeticity.py` greps the pipeline package
+  on every test run and fails on regressions.
+- **Build-availability now distinguishes a missing extra from a broken
+  install.** `_resolve` captures *why* `scripts.pipeline.build` can't be
+  imported: a plain `ImportError`/`ModuleNotFoundError` (the `[build]`
+  extra isn't installed) still yields the "install `raincloud[build]`"
+  hint, but any other module-init failure (a handler raising at top
+  level, a malformed packaged manifest) now surfaces the real exception
+  in the `BuildToolingMissing` message instead of misdirecting the user
+  to a `pip install` they've already done.
+- **Local build failures are typed.** A non-zero
+  `scripts.pipeline.build` subprocess now raises `BuildFailed`
+  (a `RaincloudError`) instead of leaking a raw
+  `subprocess.CalledProcessError` past the loader's typed-error contract.
+- **`read_pin` rejects non-object JSON.** A torn/partial or tampered
+  `.pin` sidecar containing valid-but-non-dict JSON (`42`, `[...]`) now
+  returns `None` rather than a value whose later `.get(...)` would raise
+  `AttributeError` inside `resolve()`.
+- **Sha-less cache files are size-checked, not trusted on existence.**
+  For a slug with no pinned sha (most of the catalog), a cache hit serves
+  via the adoption pin or a snapshot-byte-size match; a cached file whose
+  size diverges from the snapshot with no pin vouching for it is treated
+  as corruption and re-fetched, rather than served on mere existence.
+- **Catalog parquet visibility for snapshot-only slugs.** When a slug
+  is in `docs/v1/snapshot.json` but absent from `sources.json`
+  (legacy / deprecated entry still on a mirror), `Catalog.entry()` now
+  exposes the parquet format via the same
+  `snap.get('parquet_bytes') is not None` clause that already covered
+  vortex. Loadable now; previously raised `FormatUnavailable`.
+- **`Dataset.scan()` stderr note.** When a slug was loaded as vortex
+  but `scan()` needs the parquet sibling (DuckDB has no Vortex
+  reader), the loader prints `[raincloud] scan() needs parquet but
+  <slug> was loaded as 'vortex'; resolving parquet sibling ...` before
+  the resolve, so an implicit mirror fetch isn't a surprise.
+- **`.part` tmp race fixed.** `_resolve.resolve` now writes to
+  `f".<name>.<pid>-<uuid8>.part"` (per-process unique) and sweeps
+  stale `.part` siblings older than six hours on each resolve, so
+  concurrent loaders no longer clobber each other's in-flight writes
+  and SIGKILL leftovers don't accumulate.
+
+### Performance
+
+- **Cache-hit skips sha256 rehash when artifact size matches the
+  snapshot.** `_resolve.resolve` uses
+  `dest.stat().st_size == FormatInfo.nbytes` as the fast path — a full
+  sha256 over multi-GB artifacts on every load defeated the cache.
+  Cuts repeat-load cost on the 34 GB Wikipedia parquet from minutes
+  to milliseconds. The full rehash only runs when size disagrees *and*
+  the pin sidecar doesn't already vouch for the file; a same-size,
+  different-content snapshot revision is the one case the size fast-path
+  can't distinguish (an accepted blind spot, same as before).
+- **Snapshot regen reuses prior sha when size unchanged.** `docs.py`
+  snapshot regen (`_sha256_or_reuse`) skips re-streaming an artifact
+  when its bytes-on-disk match the prior snapshot's recorded size and
+  the prior sha is known. A full-catalog regen on 250 slugs
+  (including the multi-GB heavyweights) drops from hours to seconds
+  when nothing's changed. Pass `--rehash` (`python -m
+  scripts.pipeline.docs snapshot --rehash`) to force a full recompute —
+  needed only in the rare case a rebuild changed an artifact's content
+  without changing its byte length, which would otherwise wedge
+  `publish`'s checksum gate; unlike `--overwrite-missing` it preserves
+  prior data for slugs not built this run.
+
 ## [0.1.5] - 2026-05-17
 
 ### Fixed
@@ -303,6 +491,8 @@ This release bundles:
   this repository" button in the repo sidebar with BibTeX / APA / Chicago
   exports.
 
+[0.2.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.2.0
+[0.1.5]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.5
 [0.1.4]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.4
 [0.1.3]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.3
 [0.1.2]: https://github.com/spiraldb/raincloud/releases/tag/v0.1.2

@@ -34,7 +34,7 @@ def jsonl_as_string_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]]
     if not paths:
         raise ValueError("jsonl_as_string_parse: no input files")
 
-    from ..spec import REPO_ROOT, output_format_dir, spec_field
+    from ..spec import display_path, output_format_dir, spec_field
     out_path = output_format_dir(spec["slug"], "parquet") / spec_field(
         spec, "write.output", f"{spec['slug']}.parquet"
     )
@@ -64,5 +64,5 @@ def jsonl_as_string_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]]
     finally:
         writer.close()
 
-    print(f"  wrote {out_path.relative_to(REPO_ROOT)}  rows={total:,}")
+    print(f"  wrote {display_path(out_path)}  rows={total:,}")
     return []

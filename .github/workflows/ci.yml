@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [develop]
 
+# Minimal token scope: every job is read-only (checkout + deps + lint/tests);
+# none posts comments, uploads artifacts, or writes to the repo. Without this,
+# the GITHUB_TOKEN defaults to broad write scope (flagged by CodeQL).
+permissions:
+  contents: read
+
 # Cancel in-progress runs when a new commit lands on the same branch.
 concurrency:
   group: ci-${{ github.ref }}
@@ -26,11 +32,14 @@ jobs:
         run: uv python install 3.11
 
       # `--extra dev` brings in pytest + ruff. `--extra tui` brings in
-      # textual so the test_browse suite runs instead of skipping. Skip
-      # kaggle/huggingface — those deps are only needed at fetch time and
-      # neither test path imports them.
+      # textual so the test_browse suite runs instead of skipping. `--extra
+      # build` brings in the heavy pipeline deps (duckdb, osmium, pyreadstat,
+      # zstandard, jsonschema, …) — required because validate_manifest +
+      # pytest collection import the handler registry, which transitively
+      # pulls those. Skip kaggle/huggingface — those deps are only needed at
+      # fetch time and neither test path imports them.
       - name: Install dependencies
-        run: uv sync --extra dev --extra tui
+        run: uv sync --extra dev --extra tui --extra build
 
       - name: Lint (ruff)
         run: uv run ruff check
@@ -40,3 +49,38 @@ jobs:
 
       - name: Test (pytest)
         run: uv run pytest -q
+
+  wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Pin Python
+        run: uv python install 3.11
+      - name: Install dev deps (for pytest + vortex base dep used by fixtures)
+        run: uv sync --extra dev
+      # Scope collection to test_wheel.py: this env intentionally omits the
+      # [build] extra, but pytest imports every collected module before -m
+      # filtering, and test_manifest/test_profile import jsonschema (a [build]
+      # dep) at module top. All wheel-marked tests live in test_wheel.py.
+      - name: Run wheel tests
+        run: uv run pytest --run-wheel -m wheel -v tests/test_wheel.py
+
+  realbuild:
+    runs-on: ubuntu-latest
+    continue-on-error: true   # non-blocking: upstream flakiness never reds the build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Pin Python
+        run: uv python install 3.11
+      - name: Install dev + build deps
+        run: uv sync --extra dev --extra build
+      - name: Run real-build network tests
+        run: uv run pytest --run-network -m network -v

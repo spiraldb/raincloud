@@ -28,7 +28,7 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.csv as pac
 
-from ..spec import REPO_ROOT
+from ..spec import workdir_root
 from .tighten_types import tighten_types
 
 
@@ -43,7 +43,7 @@ def beijing_pm25_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]],
         )
     inner_zip_path = inner_zips[0]
 
-    work = REPO_ROOT / "_workdir" / spec["slug"] / "inner"
+    work = workdir_root() / spec["slug"] / "inner"
     work.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(inner_zip_path) as z:
         z.extractall(work)

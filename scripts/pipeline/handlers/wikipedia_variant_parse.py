@@ -65,12 +65,12 @@ def wikipedia_variant_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None
     print(f"  reading {len(jsonl_files)} JSONL files under {common_root.name}/ "
           f"({sum(p.stat().st_size for p in jsonl_files) / 1e9:.1f} GB raw)")
 
-    from ..spec import REPO_ROOT, output_format_dir, spec_field
+    from ..spec import display_path, output_format_dir, spec_field, workdir_root
     out_path = output_format_dir(spec["slug"], "parquet") / spec_field(spec, "write.output", f"{spec['slug']}.parquet")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     compression = spec_field(spec, "write.compression", "zstd")
 
-    workdir = REPO_ROOT / "_workdir" / spec["slug"]
+    workdir = workdir_root() / spec["slug"]
     workdir.mkdir(parents=True, exist_ok=True)
     db_path = workdir / "variant.db"
     if db_path.exists(): db_path.unlink()
@@ -112,5 +112,5 @@ def wikipedia_variant_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None
             if d.is_dir() and d.name.endswith(".tmp"):
                 shutil.rmtree(d, ignore_errors=True)
 
-    print(f"  wrote {out_path.relative_to(REPO_ROOT)}")
+    print(f"  wrote {display_path(out_path)}")
     return []

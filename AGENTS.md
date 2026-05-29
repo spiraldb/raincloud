@@ -12,7 +12,7 @@ On a fresh clone `outputs/` is empty — that's expected. The `outputs/v1/<slug>
 python -m scripts.pipeline.status --fast --missing-only
 ```
 
-It loads `sources.json`, walks the manifest, and prints per-slug filesystem state in seconds with no side effects. If it errors, fix the env (`uv sync --inexact`) before running any build. Always pass `--inexact` to `uv sync`: without it, syncing one extra (e.g. `--extra dev`) silently uninstalls the others (kaggle, huggingface, tui), so a subsequent build of an HF/Kaggle slug will fail.
+It loads `sources.json`, walks the manifest, and prints per-slug filesystem state in seconds with no side effects. A bare `uv sync --inexact` (or `pip install "raincloud @ git+https://github.com/spiraldb/raincloud"` from GitHub — not PyPI) installs only the lightweight loader; running any **build** needs the heavy toolchain, so fix the env with `uv sync --extra build --inexact` before invoking `scripts.pipeline.build`. Always pass `--inexact` to `uv sync`: without it, syncing one extra (e.g. `--extra dev`) silently uninstalls the others (build, kaggle, huggingface, tui), so a subsequent build of an HF/Kaggle slug will fail.
 
 For a manifest sanity check that doesn't touch the filesystem at all:
 
@@ -42,9 +42,9 @@ uv sync --extra dev --inexact   # one-time — installs pytest, preserves other 
 pytest
 ```
 
-Copy-pasteable templates for the two most common edits live under [`examples/`](examples/) — `minimal_spec.json` for new manifest entries, `streaming_handler.py.tmpl` for memory-constrained transform handlers.
+Copy-pasteable templates for the two most common edits live under [`templates/`](templates/) — `minimal_spec.json` for new manifest entries, `streaming_handler.py.tmpl` for memory-constrained transform handlers. (Runnable demos of the `raincloud.load` API live under [`examples/`](examples/).)
 
-If your agent harness supports the [Agent Skills](https://agentskills.io) standard (Claude Code, Codex, etc.), the `.agents/skills/` directory carries 16 invokable skills wrapping every pipeline entry point and procedural playbook — see [`.agents/skills/README.md`](.agents/skills/README.md). `.claude → .agents` is a symlink so both naming conventions resolve. The `.agents/settings.json` at the same level is a tracked allow-list of safe, read-only commands so a fresh-clone agent doesn't burn turns on permission prompts; per-machine overrides go in the gitignored `.agents/settings.local.json`.
+If your agent harness supports the [Agent Skills](https://agentskills.io) standard (Claude Code, Codex, etc.), the `.agents/skills/` directory carries 21 invokable skills wrapping every pipeline entry point and procedural playbook — see [`.agents/skills/README.md`](.agents/skills/README.md). `.claude → .agents` is a symlink so both naming conventions resolve. The `.agents/settings.json` at the same level is a tracked allow-list of safe, read-only commands so a fresh-clone agent doesn't burn turns on permission prompts; per-machine overrides go in the gitignored `.agents/settings.local.json`.
 
 ## Don't read the giant derived docs cover-to-cover
 
@@ -66,6 +66,31 @@ Hydration policy / philosophy lives in the hand-maintained [`HYDRATING.md`](HYDR
 Raincloud is a **client-reproducible pipeline** for building a curated catalog of public datasets as Parquet + optional Vortex files. The single source of truth is `sources.json`. Everything under `outputs/`, the two derived docs (`docs/datasets.md`, `docs/handlers.md`), and the JSON catalog snapshot (`docs/snapshot.json` — read by the TUI as a fallback for unbuilt-locally slugs, AND used by `docs.py` itself as the row-count / file-size fallback when regenerating `datasets.md` on a partial build) is **derived** — regenerate, never hand-edit. Column-level / coverage / vortex-skip / hydrate-candidate views are queryable via `list_datasets` flags rather than markdown.
 
 The pipeline flow is: **fetch → extract → parse → transform → write → validate → convert** (stage 7 opt-in per-spec), orchestrated by `scripts.pipeline.build`.
+
+## The loader package (`raincloud`)
+
+Separate from the build pipeline under `scripts/`, the repo also ships an importable **`raincloud`** package — a lightweight loader for *already-prepared* artefacts. `raincloud.load("<slug>")` (alias `load_dataset`) returns a lazy `Dataset` handle; nothing is fetched until you call `.path()` / `.to_arrow()` / `.scan()` / `.to_pandas()`. Resolution order is **local cache → mirror → local build** (`raincloud/_resolve.py`): a cache hit short-circuits, otherwise it pulls from the configured mirror, and only on a cache+mirror miss does it shell out to `scripts.pipeline.build` as a last resort.
+
+The install is **layered** — this is a behaviour change from earlier releases:
+
+- A bare `uv sync --inexact` (or a `pip install` from the GitHub repo) installs only the lightweight loader: base deps are `pyarrow`, `numpy`, `vortex-data`, `fsspec`. Transport backends are per-scheme extras (`[s3]` → s3fs, `[http]` → aiohttp; `file://` needs neither); `[duckdb]` / `[pandas]` back `Dataset.scan()` / `.to_pandas()`.
+- **Building datasets now requires `uv sync --extra build --inexact`** — the heavy toolchain (duckdb, osmium, pyreadstat, pandas, openpyxl, py7zr, unlzw3, zstandard, jsonschema) moved behind the `[build]` extra. A bare sync no longer pulls these, so any `scripts.pipeline.build` / handler work needs `--extra build` first.
+
+The mirror is a **private/internal artefact store** — a bucket a team points its own CI at, configured via the `RAINCLOUD_MIRROR` env var (`s3://bucket/prefix`, `file:///path`, etc.); there is no public Raincloud-hosted endpoint, and this does not change the no-redistribution posture in [`DISCLAIMER.md`](DISCLAIMER.md). `RAINCLOUD_CACHE` overrides the cache dir and `RAINCLOUD_OFFLINE` forces cache-only (mirror/build misses raise). Maintainers publish built `outputs/v1/...` to a mirror with `python -m scripts.pipeline.publish <slugs|--all> --mirror <url>`, gated on a snapshot sha256 match. Integrity: `docs/v1/snapshot.json` carries per-slug `parquet_sha256` / `vortex_sha256` (recorded only for slugs already built + hashed locally — today a minority of the catalog) plus a byte size for *every* slug. `publish` refuses to upload an artifact whose on-disk sha disagrees with the snapshot (slugs with no recorded sha are uploaded ungated). The loader, by default, **warns-and-adopts** on a checksum mismatch (drift is an alert, not a blocker — upstream data shifts) and falls back to the byte size as a cheap corruption check when no sha is pinned; set `RAINCLOUD_STRICT_CHECKSUM=1` to turn a mismatch on mirror bytes into a hard `ChecksumMismatch`. Locally-built artefacts are never strict-gated against the maintainer's sha (a client build legitimately differs); instead they're trusted via a provenance pin (`origin=build` + the snapshot pin they were built against) and served from cache until that snapshot pin changes — so a strict, mirror-less deployment rebuilds a slug once when the source of truth moves, not on every load. To backfill checksums for the rest of the catalog, build the slugs and run `python -m scripts.pipeline.docs snapshot --rehash`.
+
+**Build data-area env vars** (separate from the loader's cache vars above): the build pipeline writes artefacts under a configurable root. In a checkout, that root is the repo directory; in a `pip install raincloud[build]` wheel install, it defaults to `~/.cache/raincloud` (XDG-aware, no init step). The resolution logic lives in `scripts/pipeline/spec.py:data_root()`.
+
+| Env var | Controls | Default |
+|---|---|---|
+| `RAINCLOUD_HOME` | build data-area root | checkout root (if `sources.json` present), else `~/.cache/raincloud` |
+| `RAINCLOUD_OUTPUTS` | built-artifact base (`/v{n}` under it) | `$RAINCLOUD_HOME/outputs` |
+| `RAINCLOUD_RAW_DOWNLOADS` | cached raw upstream bytes | `$RAINCLOUD_OUTPUTS/raw_downloads` |
+| `RAINCLOUD_WORKDIR` | extract/scratch space | `$RAINCLOUD_HOME/_workdir` |
+| `RAINCLOUD_MANIFEST` | `sources.json` path | checkout copy, else the wheel-packaged copy |
+
+In the defaults above, `$RAINCLOUD_HOME` / `$RAINCLOUD_OUTPUTS` mean the *resolved* roots — when those vars are unset they fall back to the checkout (or `~/.cache/raincloud`) and `<root>/outputs` respectively.
+
+From an agent context: on a fresh clone all five default to the repo tree (existing behaviour). On a wheel install with no checkout present, builds silently use `~/.cache/raincloud` (honoring `XDG_CACHE_HOME`) — same root `RAINCLOUD_CACHE` defaults to — so the loader's cache-hit path fires after the first build without any extra config.
 
 ## Invariants (don't break these)
 

@@ -38,7 +38,7 @@ from pathlib import Path
 
 import pyarrow as pa
 
-from ..spec import REPO_ROOT
+from ..spec import workdir_root
 
 
 def _read_whitespace(text: str) -> list[list[str]]:
@@ -59,7 +59,7 @@ def har_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None]],
     inner_zip_path = outer_inputs[0]
 
     # Unpack the inner zip to a scratch dir for file-by-file reads.
-    work = REPO_ROOT / "_workdir" / spec["slug"] / "inner"
+    work = workdir_root() / spec["slug"] / "inner"
     work.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(inner_zip_path) as z:
         z.extractall(work)

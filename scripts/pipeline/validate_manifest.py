@@ -35,9 +35,15 @@ import sys
 from collections import Counter, defaultdict
 
 from .discovery import SHOWCASE_TIERS, TAG_VOCAB
-from .spec import REPO_ROOT, load_manifest
+from .spec import REPO_ROOT, _packaged_data, load_manifest
 
-SCHEMA_PATH = REPO_ROOT / "sources.schema.json"
+
+def _schema_path():
+    repo = REPO_ROOT / "sources.schema.json"
+    if repo.exists():
+        return repo
+    packaged = _packaged_data("sources.schema.json")
+    return packaged if packaged is not None else repo
 
 
 def _schema_errors(manifest: dict) -> tuple[list[str], str | None]:
@@ -50,9 +56,10 @@ def _schema_errors(manifest: dict) -> tuple[list[str], str | None]:
         import jsonschema
     except ImportError:
         return [], "jsonschema not installed (uv pip install jsonschema for full schema checks)"
-    if not SCHEMA_PATH.exists():
-        return [f"sources.schema.json missing at {SCHEMA_PATH}"], None
-    schema = json.loads(SCHEMA_PATH.read_text())
+    schema_path = _schema_path()
+    if not schema_path.exists():
+        return [f"sources.schema.json missing at {schema_path}"], None
+    schema = json.loads(schema_path.read_text())
     v = jsonschema.Draft202012Validator(schema)
     errs = []
     for e in v.iter_errors(manifest):

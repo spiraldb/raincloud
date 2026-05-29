@@ -48,7 +48,7 @@ def jsonbench_variant_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None
         gz_files = gz_files[:files_limit]
     print(f"  processing {len(gz_files)} .json.gz files")
 
-    from ..spec import REPO_ROOT, output_format_dir, spec_field
+    from ..spec import display_path, output_format_dir, spec_field
     out_path = output_format_dir(spec["slug"], "parquet") / spec_field(spec, "write.output", f"{spec['slug']}.parquet")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     compression = spec_field(spec, "write.compression", "zstd")
@@ -86,7 +86,7 @@ def jsonbench_variant_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None
             print(f"    {i}/{len(gz_files)} {gz_path.name}: {n:,} rows  (running total: {total:,})")
 
         glob_pattern = str(gz_files[0].parent / "*.json.gz")
-        print(f"  writing {total:,} rows to {out_path.relative_to(REPO_ROOT) if out_path.is_relative_to(REPO_ROOT) else out_path}")
+        print(f"  writing {total:,} rows to {display_path(out_path)}")
         con.execute(f"""
             COPY (
                 SELECT CAST(line AS VARIANT) AS data
@@ -111,5 +111,5 @@ def jsonbench_variant_parse(spec: dict, parsed: list[tuple[Path, pa.Table | None
             p.unlink()
         tmpdir.rmdir()
 
-    print(f"  wrote {out_path.relative_to(REPO_ROOT)}")
+    print(f"  wrote {display_path(out_path)}")
     return []

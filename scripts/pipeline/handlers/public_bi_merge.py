@@ -150,7 +150,7 @@ def public_bi_merge(spec: dict, parsed: list[tuple[Path, pa.Table | None]], *,
     print(f"  unified schema: {len(unified_order)} cols "
           f"(partition widths: {sorted(len(v) for v in per_partition_schema.values())})")
 
-    from ..spec import REPO_ROOT, output_format_dir, spec_field
+    from ..spec import display_path, output_format_dir, spec_field
     out_path = output_format_dir(spec["slug"], "parquet") / spec_field(
         spec, "write.output", f"{spec['slug']}.parquet")
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -208,6 +208,6 @@ def public_bi_merge(spec: dict, parsed: list[tuple[Path, pa.Table | None]], *,
             print(f"    [{i}/{len(sorted_parts)}] {p.name} ({len(part_cols)} cols): "
                   f"{part_rows:,} rows (total {total_rows:,})", flush=True)
 
-    print(f"  wrote {out_path.relative_to(REPO_ROOT)}  "
+    print(f"  wrote {display_path(out_path)}  "
           f"({total_rows:,} rows across {len(sorted_parts)} partitions)")
     return []

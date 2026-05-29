@@ -106,12 +106,13 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from .spec import (
-    REPO_ROOT,
+    display_path,
     iter_datasets,
     load_manifest,
     prepared_parquet,
     prepared_parquet_hydrated,
     spec_field,
+    workdir_root,
 )
 
 # ---------- Provenance schema ----------
@@ -209,13 +210,14 @@ def load_blocklist(paths: list[Path]) -> set[str]:
 
 
 _URLHAUS_URL = "https://urlhaus.abuse.ch/downloads/hostfile/"
-_URLHAUS_CACHE = REPO_ROOT / "_workdir" / ".urlhaus.hostfile"
 _URLHAUS_TTL_S = 24 * 3600
 
 
 def fetch_urlhaus_hostlist(*, force: bool = False) -> set[str]:
     """Download (or cache) the abuse.ch URLhaus hostfile. 24h TTL."""
-    cache = _URLHAUS_CACHE
+    # Resolved lazily so $RAINCLOUD_WORKDIR / $RAINCLOUD_HOME are honored and
+    # a wheel install doesn't try to write under site-packages at import time.
+    cache = workdir_root() / ".urlhaus.hostfile"
     cache.parent.mkdir(parents=True, exist_ok=True)
     if cache.exists() and not force:
         age = time.time() - cache.stat().st_mtime
@@ -370,7 +372,7 @@ def hydrate(
 
     base = prepared_parquet(spec["slug"])
     if not base.exists():
-        raise FileNotFoundError(f"base parquet missing: {base.relative_to(REPO_ROOT)}")
+        raise FileNotFoundError(f"base parquet missing: {display_path(base)}")
 
     table = pq.read_table(base)
     if url_col not in table.column_names:
@@ -448,7 +450,7 @@ def hydrate(
     n_blocked = (counts[FilterDecision.BLOCKED_SCHEME]
                  + counts[FilterDecision.BLOCKED_BY_HOST]
                  + counts[FilterDecision.BLOCKED_BY_URLHAUS])
-    print(f"  wrote {out.relative_to(REPO_ROOT)}  "
+    print(f"  wrote {display_path(out)}  "
           f"({n_present:,} hydrated / {n_blocked:,} blocked / "
           f"{counts[FilterDecision.FETCH_ERROR]:,} errored / {n_total:,} total)")
 
