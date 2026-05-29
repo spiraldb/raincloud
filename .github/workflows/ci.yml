@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [develop]
 
+# Minimal token scope: every job is read-only (checkout + deps + lint/tests);
+# none posts comments, uploads artifacts, or writes to the repo. Without this,
+# the GITHUB_TOKEN defaults to broad write scope (flagged by CodeQL).
+permissions:
+  contents: read
+
 # Cancel in-progress runs when a new commit lands on the same branch.
 concurrency:
   group: ci-${{ github.ref }}
@@ -56,8 +62,12 @@ jobs:
         run: uv python install 3.11
       - name: Install dev deps (for pytest + vortex base dep used by fixtures)
         run: uv sync --extra dev
+      # Scope collection to test_wheel.py: this env intentionally omits the
+      # [build] extra, but pytest imports every collected module before -m
+      # filtering, and test_manifest/test_profile import jsonschema (a [build]
+      # dep) at module top. All wheel-marked tests live in test_wheel.py.
       - name: Run wheel tests
-        run: uv run pytest --run-wheel -m wheel -v
+        run: uv run pytest --run-wheel -m wheel -v tests/test_wheel.py
 
   realbuild:
     runs-on: ubuntu-latest
