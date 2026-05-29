@@ -56,6 +56,7 @@ from .discovery import (
 )
 from .spec import (
     REPO_ROOT,
+    display_path,
     iter_datasets,
     load_manifest,
     outputs_root,
@@ -375,13 +376,9 @@ def _inspect(slug: str) -> int:
         if last_error is not None:
             print(f"profile.json malformed at {last_error_path}: {last_error}", file=sys.stderr)
             return 2
-        try:
-            tracked_display = tracked_path.relative_to(REPO_ROOT)
-        except ValueError:
-            tracked_display = tracked_path
         print(
             f"no profile yet for {slug} — checked {built_path} and {tracked_path}; "
-            f"run `python -m scripts.pipeline.profile {slug}` or check tracked mirror at {tracked_display}"
+            f"run `python -m scripts.pipeline.profile {slug}` or check tracked mirror at {display_path(tracked_path)}"
         )
         return 0
     print(f"rows: {profile['row_count']}   sample_rows: {profile.get('sample_rows')}")

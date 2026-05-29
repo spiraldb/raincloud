@@ -25,7 +25,12 @@ class ChecksumMismatch(RaincloudError):
 
 
 class BuildToolingMissing(RaincloudError):
-    """Local build was needed but `raincloud[build]` is not installed."""
+    """Local build was needed but `raincloud[build]` is not installed (or the
+    build subtree failed to import for another reason — the message says which)."""
+
+
+class BuildFailed(RaincloudError):
+    """The local build subprocess ran but exited non-zero."""
 
 
 class OfflineMiss(RaincloudError):

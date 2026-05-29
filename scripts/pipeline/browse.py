@@ -65,6 +65,7 @@ from .spec import (
     REPO_ROOT,
     iter_datasets,
     load_manifest,
+    outputs_base,
     outputs_root,
     prepared_parquet,
     prepared_parquet_hydrated,
@@ -1571,9 +1572,9 @@ class DatasetBrowser(App):
             import traceback
             tb = traceback.format_exc()
             try:
-                (REPO_ROOT / "outputs" / "_browse_search_error.log").parent.mkdir(
-                    parents=True, exist_ok=True)
-                (REPO_ROOT / "outputs" / "_browse_search_error.log").write_text(tb)
+                err_log = outputs_base() / "_browse_search_error.log"
+                err_log.parent.mkdir(parents=True, exist_ok=True)
+                err_log.write_text(tb)
             except Exception:
                 pass
             try:

@@ -35,3 +35,27 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(skip_wheel)
         if "network" in item.keywords and not run_network:
             item.add_marker(skip_network)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_loader_cache(tmp_path, monkeypatch):
+    """Belt-and-suspenders hermeticity for every test.
+
+    Points the loader cache at a per-test tmp dir so no test can read or write
+    the developer's real ~/.cache/raincloud (the loader's cache_root() default),
+    and clears the catalog lru_cache around each test so a snapshot/manifest set
+    by one test never leaks into the next. Tests that need a specific cache
+    location just set RAINCLOUD_CACHE again — a later monkeypatch.setenv wins.
+    """
+    monkeypatch.setenv("RAINCLOUD_CACHE", str(tmp_path / "_loader_cache"))
+
+    def _clear():
+        try:
+            from raincloud._catalog import load_catalog
+            load_catalog.cache_clear()
+        except Exception:
+            pass
+
+    _clear()
+    yield
+    _clear()

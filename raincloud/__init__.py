@@ -9,6 +9,7 @@ from . import _resolve
 from ._catalog import load_catalog
 from .exceptions import (  # noqa: F401
     ArtifactNotFound,
+    BuildFailed,
     BuildToolingMissing,
     ChecksumMismatch,
     FormatUnavailable,
@@ -27,12 +28,14 @@ class Dataset:
     """Lazy handle to a prepared artifact. Nothing is fetched until you ask."""
 
     def __init__(self, slug: str, fmt: str, *, mirror: str | None,
-                 offline: bool | None):
+                 offline: bool | None, entry=None):
         self.slug = slug
         self.format = fmt
         self._mirror = mirror
         self._offline = offline
-        self._entry = load_catalog().entry(slug)
+        # `entry` is passed in by load() (which already resolved it) to avoid
+        # rebuilding the Entry; direct construction falls back to a lookup.
+        self._entry = entry if entry is not None else load_catalog().entry(slug)
 
     def __repr__(self) -> str:
         return f"Dataset(slug={self.slug!r}, format={self.format!r})"
@@ -55,8 +58,10 @@ class Dataset:
         return self.path_for(self.format)
 
     def path_for(self, fmt: str) -> Path:
+        # Reuse the already-resolved Entry (covers every format of this slug)
+        # so resolve() doesn't rebuild it a third time.
         return _resolve.resolve(self.slug, fmt, mirror=self._mirror,
-                                offline=self._offline)
+                                offline=self._offline, entry=self._entry)
 
     # --- materialization ---
     def to_arrow(self):
@@ -92,6 +97,17 @@ class Dataset:
             raise MissingDependency(
                 "scan() needs DuckDB — install `raincloud[duckdb]`"
             ) from e
+        # Only warn about resolving the sibling when one actually exists; for a
+        # vortex-only slug, path_for("parquet") raises FormatUnavailable and the
+        # note would be misleading.
+        if self.format != "parquet" and "parquet" in self._entry.formats:
+            import sys
+            print(
+                f"[raincloud] scan() needs parquet but {self.slug} was loaded as "
+                f"{self.format!r}; resolving parquet sibling (may trigger a "
+                f"cache/mirror fetch).",
+                file=sys.stderr,
+            )
         pq_path = self.path_for("parquet")
         return duckdb.connect().read_parquet(str(pq_path))
 
@@ -122,7 +138,7 @@ def load(slug: str, *, format: str = _DEFAULT_FORMAT,
             raise FormatUnavailable(
                 f"{slug}: format {format!r} unavailable; have {sorted(entry.formats)}"
             )
-    return Dataset(slug, fmt, mirror=mirror, offline=offline)
+    return Dataset(slug, fmt, mirror=mirror, offline=offline, entry=entry)
 
 
 load_dataset = load  # datasets-muscle-memory alias
@@ -130,5 +146,6 @@ load_dataset = load  # datasets-muscle-memory alias
 __all__ = [
     "load", "load_dataset", "Dataset", "__version__",
     "RaincloudError", "UnknownSlug", "FormatUnavailable", "ArtifactNotFound",
-    "ChecksumMismatch", "BuildToolingMissing", "OfflineMiss", "MissingDependency",
+    "ChecksumMismatch", "BuildToolingMissing", "BuildFailed", "OfflineMiss",
+    "MissingDependency",
 ]

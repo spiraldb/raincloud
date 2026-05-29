@@ -9,6 +9,7 @@ and install the wheel (± extras) via `uv pip install`.
 """
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -17,6 +18,21 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 pytestmark = pytest.mark.wheel
+
+
+def _clean_env(**overrides: str) -> dict:
+    """A subprocess env with the developer's ambient RAINCLOUD_* scrubbed.
+
+    `os.environ.copy()` would otherwise leak the maintainer's exported
+    RAINCLOUD_OUTPUTS / RAINCLOUD_WORKDIR / RAINCLOUD_STRICT_CHECKSUM / etc. into
+    the venv subprocess, breaking hermeticity (artifacts written outside
+    tmp_path; strict mode flipping warn-and-adopt into a hard failure). We start
+    from a copy, drop every RAINCLOUD_* key, then layer on only the overrides
+    the test sets explicitly.
+    """
+    env = {k: v for k, v in os.environ.items() if not k.startswith("RAINCLOUD_")}
+    env.update(overrides)
+    return env
 
 
 @pytest.fixture(scope="session")
@@ -183,7 +199,6 @@ def _write_loader_fixture(tmp_path: Path):
     """
     import hashlib
     import json
-    import os
 
     import pyarrow as pa
     import pyarrow.parquet as pq
@@ -235,16 +250,12 @@ def _write_loader_fixture(tmp_path: Path):
     (tmp_path / "snapshot.json").write_text(json.dumps(snapshot))
     (tmp_path / "sources.json").write_text(json.dumps(manifest))
 
-    env = os.environ.copy()
-    env.update(
-        {
-            "RAINCLOUD_SNAPSHOT": str(tmp_path / "snapshot.json"),
-            "RAINCLOUD_MANIFEST": str(tmp_path / "sources.json"),
-            "RAINCLOUD_CACHE": str(tmp_path / "cache"),
-            "RAINCLOUD_MIRROR": f"file://{mirror}",
-        }
+    env = _clean_env(
+        RAINCLOUD_SNAPSHOT=str(tmp_path / "snapshot.json"),
+        RAINCLOUD_MANIFEST=str(tmp_path / "sources.json"),
+        RAINCLOUD_CACHE=str(tmp_path / "cache"),
+        RAINCLOUD_MIRROR=f"file://{mirror}",
     )
-    env.pop("RAINCLOUD_OFFLINE", None)
     return env, mirror
 
 
@@ -282,7 +293,7 @@ def test_loader_happy_paths_against_wheel(built_wheel, tmp_path):
 
 
 def test_loader_error_paths_against_wheel(built_wheel, tmp_path):
-    """OfflineMiss, ChecksumMismatch, UnknownSlug against the installed wheel."""
+    """OfflineMiss + drift warn-and-adopt against the installed wheel."""
     env, mirror = _write_loader_fixture(tmp_path)
     venv = _make_venv(tmp_path, built_wheel)
 
@@ -305,25 +316,32 @@ def test_loader_error_paths_against_wheel(built_wheel, tmp_path):
         f"OfflineMiss not raised; stdout={cp.stdout!r} stderr={cp.stderr!r}"
     )
 
-    # 2) ChecksumMismatch: corrupt the mirror artifact (fresh cache subdir) -> mismatch.
-    # Use a dedicated cache subdir: if any earlier call had primed the same dir
-    # with a clean copy, the cache hit would bypass checksum verification entirely.
-    (mirror / "v1" / "tiny" / "vortex" / "tiny.vortex").write_bytes(b"CORRUPT")
-    env_corrupt = {**env, "RAINCLOUD_CACHE": str(tmp_path / "cache_corrupt")}
+    # 2) Drift warn-and-adopt: the mirror serves bytes whose sha disagrees with
+    #    the snapshot pin. Policy is alert-not-block — the loader warns on
+    #    stderr and adopts anyway (a fresh cache subdir so no prior clean copy
+    #    short-circuits). A second load must then be a pure cache hit (the pin
+    #    sidecar vouches for the adopted bytes), not a re-fetch.
+    (mirror / "v1" / "tiny" / "vortex" / "tiny.vortex").write_bytes(b"DRIFTED-UPSTREAM")
+    env_drift = {**env, "RAINCLOUD_CACHE": str(tmp_path / "cache_drift")}
     cp = _run_py(
         venv,
         (
             "import raincloud\n"
-            "try:\n"
-            "    raincloud.load('tiny').path()\n"
-            "except raincloud.ChecksumMismatch:\n"
-            "    print('mismatch_ok')\n"
+            "p1 = raincloud.load('tiny').path()\n"
+            "assert p1.read_bytes() == b'DRIFTED-UPSTREAM', p1.read_bytes()\n"
+            "# second load: served from cache, bytes unchanged\n"
+            "p2 = raincloud.load('tiny').path()\n"
+            "assert p2.read_bytes() == b'DRIFTED-UPSTREAM'\n"
+            "print('drift_adopt_ok')\n"
         ),
-        env=env_corrupt,
+        env=env_drift,
     )
     assert cp.returncode == 0, cp.stderr
-    assert "mismatch_ok" in cp.stdout, (
-        f"ChecksumMismatch not raised; stdout={cp.stdout!r} stderr={cp.stderr!r}"
+    assert "drift_adopt_ok" in cp.stdout, (
+        f"drift not adopted; stdout={cp.stdout!r} stderr={cp.stderr!r}"
+    )
+    assert "WARN" in cp.stderr and "drifted" in cp.stderr, (
+        f"expected a drift warning on stderr; stderr={cp.stderr!r}"
     )
 
     # 3) UnknownSlug: a slug nowhere in the catalog.
@@ -420,20 +438,13 @@ def test_wheel_build_proof_via_load(built_wheel, tmp_path):
     """The capstone: `raincloud.load('synth')` in a [build] venv drives load →
     cache miss → mirror absent → build-fallback subprocess (file:// fetch +
     fetch→…→convert) → adopt → vortex materialization. End-to-end, hermetic."""
-    import os
-
     manifest, _csv, expected_rows = _write_synth_manifest(tmp_path)
     venv = _make_venv(tmp_path, built_wheel, extras="[build]")
-    env = os.environ.copy()
-    env.update(
-        {
-            "RAINCLOUD_MANIFEST": str(manifest),
-            "RAINCLOUD_HOME": str(tmp_path / "home"),
-            "RAINCLOUD_CACHE": str(tmp_path / "cache"),
-        }
+    env = _clean_env(
+        RAINCLOUD_MANIFEST=str(manifest),
+        RAINCLOUD_HOME=str(tmp_path / "home"),
+        RAINCLOUD_CACHE=str(tmp_path / "cache"),
     )
-    env.pop("RAINCLOUD_MIRROR", None)
-    env.pop("RAINCLOUD_OFFLINE", None)
     cp = _run_py(
         venv,
         (

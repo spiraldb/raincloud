@@ -25,7 +25,7 @@ Prereqs: Python 3.11+ and [uv](https://docs.astral.sh/uv/). A bare `uv sync --in
 - [Regenerating specific docs](#regenerating-specific-docs)
 - [Removing a dataset](#removing-a-dataset)
 
-Templates referenced by the playbooks: [`examples/minimal_spec.json`](examples/minimal_spec.json) (new manifest entry), [`examples/streaming_handler.py.tmpl`](examples/streaming_handler.py.tmpl) (memory-constrained handler).
+Templates referenced by the playbooks: [`templates/minimal_spec.json`](templates/minimal_spec.json) (new manifest entry), [`templates/streaming_handler.py.tmpl`](templates/streaming_handler.py.tmpl) (memory-constrained handler).
 
 ## Loading prepared datasets
 
@@ -38,7 +38,7 @@ table = ds.to_arrow()                           # materialize when you want it
 path  = ds.path()                               # or just the cached file path
 ```
 
-Resolution is **cache → mirror → local build**: a local cache hit short-circuits; otherwise it pulls from `RAINCLOUD_MIRROR` (a private/internal artefact store — `s3://bucket/prefix`, `file:///path`); only on a cache+mirror miss does it shell out to `scripts.pipeline.build` (which needs the `[build]` extra). Downloads are sha256-verified against `docs/v1/snapshot.json` when a checksum is recorded for them.
+Resolution is **cache → mirror → local build**: a local cache hit short-circuits; otherwise it pulls from `RAINCLOUD_MIRROR` (a private/internal artefact store — `s3://bucket/prefix`, `file:///path`); only on a cache+mirror miss does it shell out to `scripts.pipeline.build` (which needs the `[build]` extra). When `docs/v1/snapshot.json` records a checksum, a drift warns-and-adopts by default (`RAINCLOUD_STRICT_CHECKSUM=1` for a hard gate); otherwise the pinned byte size is the corruption check.
 
 ```bash
 export RAINCLOUD_MIRROR=s3://your-bucket/raincloud   # point CI at a prepared-artefact bucket
@@ -87,7 +87,7 @@ uv sync --extra dev --inexact   # one-time — installs pytest, preserves other 
 pytest                          # ~0.5 s on the full suite
 ```
 
-`tests/` carries a sub-second smoke suite for the manifest, the schema, the handler registry, and the example templates. No fetch, no build, no filesystem writes. Run after any change to `sources.json`, `sources.schema.json`, `scripts/pipeline/handlers/__init__.py`, or `examples/`. Tests exercise the same `validate_manifest` codepath the `/raincloud-validate-manifest` skill runs.
+`tests/` carries a sub-second smoke suite for the manifest, the schema, the handler registry, and the example templates. No fetch, no build, no filesystem writes. Run after any change to `sources.json`, `sources.schema.json`, `scripts/pipeline/handlers/__init__.py`, `templates/`, or `examples/`. Tests exercise the same `validate_manifest` codepath the `/raincloud-validate-manifest` skill runs.
 
 ## Querying the catalog
 

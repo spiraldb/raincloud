@@ -63,6 +63,23 @@ def _default_manifest() -> Path:
     return repo  # let open() error point at the expected checkout path
 
 
+def default_snapshot() -> Path:
+    """Locate `snapshot.json` the same way `_default_manifest` locates the
+    manifest: `$RAINCLOUD_SNAPSHOT` -> checkout `docs/v1/snapshot.json` -> the
+    wheel-packaged copy. Keeps `publish` reading the same snapshot the loader
+    (`raincloud._catalog`) trusts, instead of a hardcoded `REPO_ROOT` path."""
+    override = _env_path("RAINCLOUD_SNAPSHOT")
+    if override:
+        return override
+    repo = REPO_ROOT / "docs" / "v1" / "snapshot.json"
+    if repo.exists():
+        return repo
+    packaged = _packaged_data("snapshot.json")
+    if packaged is not None:
+        return packaged
+    return repo  # let open() error point at the expected checkout path
+
+
 def load_manifest(path: Path | None = None) -> dict:
     p = Path(path) if path else _default_manifest()
     with open(p) as f:

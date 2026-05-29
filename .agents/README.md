@@ -8,7 +8,7 @@ Everything an AI coding agent needs to operate inside this repo. The `.claude �
 |---|---|
 | [`settings.json`](settings.json) | **Tracked** allow-list of safe, read-only Bash / git / WebFetch / pipeline commands. A fresh-clone agent gets these pre-approved so it doesn't burn turns on permission prompts. Side-effecting stages (build / fetch / extract / convert / tighten_variant) are intentionally *not* pre-approved here. |
 | `settings.local.json` | **Gitignored** per-machine override — additional permissions specific to the local agent's session. Don't commit. |
-| [`skills/`](skills/) | 16 invokable skills following the [Agent Skills](https://agentskills.io) standard — wrappers around pipeline entrypoints (`/raincloud-build`, `/raincloud-fetch`, `/raincloud-status`, `/raincloud-validate-manifest`, `/raincloud-list-datasets`, …) and procedural playbooks (`/raincloud-add-dataset`, `/raincloud-add-handler`, `/raincloud-debug-build`, …). See [`skills/README.md`](skills/README.md). |
+| [`skills/`](skills/) | 21 invokable skills following the [Agent Skills](https://agentskills.io) standard — wrappers around pipeline entrypoints (`/raincloud-build`, `/raincloud-fetch`, `/raincloud-status`, `/raincloud-validate-manifest`, `/raincloud-list-datasets`, `/raincloud-load`, `/raincloud-publish`, …) and procedural playbooks (`/raincloud-add-dataset`, `/raincloud-add-handler`, `/raincloud-debug-build`, …). See [`skills/README.md`](skills/README.md). |
 | [`context/`](context/) | Symlinks back to the repo-root canonical docs (`AGENTS.md`, `SKILLS.md`, `README.md`, `sources.schema.md`) so each `SKILL.md` can pull authoritative guidance via a stable relative path without copying. |
 | `scheduled_tasks.lock` | Gitignored — agent-runtime state. |
 

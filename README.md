@@ -69,9 +69,11 @@ bucket and loads become downloads, not multi-hour rebuilds:
 export RAINCLOUD_MIRROR=s3://your-bucket/raincloud   # or file:///path
 ```
 
-Artifacts are sha256-verified against the version-pinned catalog when a checksum is recorded for them. The
-`raincloud[build]` extra adds the full pipeline for the local-build fallback on
-a cache + mirror miss.
+When the catalog records a checksum for an artifact, a drift from it warns and
+adopts by default (`RAINCLOUD_STRICT_CHECKSUM=1` makes it a hard failure); where
+no checksum is recorded yet, the pinned byte size is used as a cheap corruption
+check. The `raincloud[build]` extra adds the full pipeline for the local-build
+fallback on a cache + mirror miss.
 
 ### Discover
 
@@ -128,8 +130,8 @@ If you're an AI coding agent landing in this repo:
 2. Run `python -m scripts.pipeline.status --fast --missing-only` to verify the env, then `python -m scripts.pipeline.validate_manifest` to confirm `sources.json` is well-formed. Both are sub-second and side-effect-free.
 3. Run `pytest` (after `uv sync --extra dev --inexact`) for a regression net before any non-trivial change to the manifest, schema, or handler registry.
 4. For catalog questions ("which slugs use handler X", "what's CC0-licensed"), use `python -m scripts.pipeline.list_datasets` rather than greping `sources.json` or scrolling [`docs/v1/datasets.md`](docs/v1/datasets.md).
-5. Copy-pasteable templates for new manifest entries and streaming handlers live in [`examples/`](examples/).
-6. Harnesses that follow the [Agent Skills](https://agentskills.io) standard get 16 invokable skills under [`.agents/skills/`](.agents/skills/) (the `.claude → .agents` symlink means Claude Code sees the same files). Tracked safe-default permissions in [`.agents/settings.json`](.agents/settings.json) — see [`.agents/README.md`](.agents/README.md) for the full layout.
+5. Copy-pasteable templates for new manifest entries and streaming handlers live in [`templates/`](templates/); runnable demos of the `raincloud.load` API are in [`examples/`](examples/).
+6. Harnesses that follow the [Agent Skills](https://agentskills.io) standard get 21 invokable skills under [`.agents/skills/`](.agents/skills/) (the `.claude → .agents` symlink means Claude Code sees the same files). Tracked safe-default permissions in [`.agents/settings.json`](.agents/settings.json) — see [`.agents/README.md`](.agents/README.md) for the full layout.
 
 ## Repository layout
 
@@ -164,8 +166,9 @@ scripts/
     spec.py                     # manifest loader, path helpers, duckdb_connect
     handlers/                   # named transform handlers
 tests/                          # pytest smoke suite (manifest, schema, handler registry, examples)
-examples/                       # copy-pasteable templates (minimal_spec.json, streaming_handler.py.tmpl)
-.agents/                        # tracked agent allow-list (settings.json) + 16 invokable skills (.claude → .agents)
+templates/                      # copy-pasteable authoring templates (minimal_spec.json, streaming_handler.py.tmpl)
+examples/                       # runnable code-path demos of raincloud.load (use_loader.py, nyc_taxi_tip_rate.py, …)
+.agents/                        # tracked agent allow-list (settings.json) + 21 invokable skills (.claude → .agents)
 outputs/
   raw_downloads/<slug>/         # stage 1 output — unversioned, cached
   v{schema_version}/<slug>/     # stage 5 output — version-scoped

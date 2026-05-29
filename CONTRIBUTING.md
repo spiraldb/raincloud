@@ -49,7 +49,7 @@ For larger builds, see [`SKILLS.md`](SKILLS.md#running-a-large-build-safely).
 ## What to send a PR for
 
 - **New datasets** — see [`SKILLS.md`](SKILLS.md#adding-a-new-dataset). Most
-  entries copy [`examples/minimal_spec.json`](examples/minimal_spec.json) and
+  entries copy [`templates/minimal_spec.json`](templates/minimal_spec.json) and
   pick an existing handler from [`docs/v1/handlers.md`](docs/v1/handlers.md).
 - **New transform handlers** — see
   [`SKILLS.md`](SKILLS.md#adding-a-new-transform-handler). One handler per

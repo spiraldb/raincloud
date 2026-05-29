@@ -1,12 +1,27 @@
 # examples
 
-Copy-pasteable templates for the two most common tasks against this repo.
+Runnable, single-file demos of the `raincloud.load(slug)` datasets-like API —
+load a real catalog dataset and run an actual query. (For *authoring* templates —
+new manifest entries and streaming handlers — see [`../templates/`](../templates/).)
 
-| File | Purpose |
-|---|---|
-| [`minimal_spec.json`](minimal_spec.json) | Full `DatasetSpec` with every field present and placeholder values. Validates against [`../sources.schema.json`](../sources.schema.json). Use as the starting point for a new entry in `sources.json`. |
-| [`streaming_handler.py.tmpl`](streaming_handler.py.tmpl) | Template for a streaming transform handler — the pattern for datasets that don't fit in RAM. Copy into `scripts/pipeline/handlers/`, fill in the ingest loop, register in `scripts/pipeline/handlers/__init__.py`. |
+| File | What it does | Engine | Cost on first run |
+|---|---|---|---|
+| [`use_loader.py`](use_loader.py) | API basics: metadata, format override, `.to_arrow` / `.scan` / `.to_pandas`, env vars, the typed exception hierarchy. | — | none (metadata is network-free; `--materialize` resolves one artifact) |
+| [`nyc_taxi_tip_rate.py`](nyc_taxi_tip_rate.py) | Of "probably-valid" 2025 yellow-cab trips, what % left no recorded tip? Broken down by `payment_type` to expose that the TLC only records *card* tips. | DuckDB over `.scan()` | ~900 MB (48.7M rows, 12 monthly parquets) |
+| [`kepler_exoplanets.py`](kepler_exoplanets.py) | How many Kepler candidates are CONFIRMED vs FALSE POSITIVE, and what's the smallest confirmed planet? | pandas | ~3 MB, seconds |
+| [`wine_quality_correlations.py`](wine_quality_correlations.py) | Which physicochemical features correlate with a wine's quality score? | pandas `.corr()` | ~80 KB, instant |
+| [`olympic_medals.py`](olympic_medals.py) | Top medal-winning nations and medals per decade across 120 years of the Games. | DuckDB over `.scan()` | ~5 MB, seconds |
 
-These mirror the inline templates in [`../SKILLS.md`](../SKILLS.md) but live as real files so `git grep`, IDE schema validation, and copy-paste-without-markdown-quirks all work.
+## Running them
 
-After dropping a new entry into `sources.json`, run [`/raincloud-validate-manifest`](../.agents/skills/raincloud-validate-manifest/SKILL.md) to confirm the shape is correct before paying for a fetch.
+```bash
+pip install "raincloud[build,duckdb,pandas] @ git+https://github.com/spiraldb/raincloud"
+python examples/kepler_exoplanets.py
+```
+
+There is **no public Raincloud mirror**, so the first run of an example
+fetches the upstream data and builds the artifact locally (this is what the
+`[build]` extra is for); subsequent runs hit the local cache and are fast. If
+your team runs a private mirror, set `RAINCLOUD_MIRROR=s3://bucket/prefix` (or
+`file:///path`) and the examples pull from it instead of building. `[duckdb]`
+backs `.scan()`, `[pandas]` backs `.to_pandas()`.

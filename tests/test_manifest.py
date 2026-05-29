@@ -279,11 +279,11 @@ def test_spec_field_walks_dotted_path(manifest):
 # ---------- examples ----------
 
 def test_minimal_spec_example_validates(schema):
-    """examples/minimal_spec.json is a valid DatasetSpec.
+    """templates/minimal_spec.json is a valid DatasetSpec.
 
     Catches drift between the example template and the schema.
     """
-    raw = json.loads((REPO_ROOT / "examples" / "minimal_spec.json").read_text())
+    raw = json.loads((REPO_ROOT / "templates" / "minimal_spec.json").read_text())
     raw.pop("_comment", None)
     fake_manifest = {"schema_version": 1, "datasets": [raw]}
     v = jsonschema.Draft202012Validator(schema)

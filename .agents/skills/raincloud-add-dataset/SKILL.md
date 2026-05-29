@@ -13,7 +13,7 @@ Steps:
    - The license — must permit redistribution-of-derivatives. Check SPDX ID and `source_url`.
    - Approximate row count (used for `expect.rows`; can be `null` on first build).
 
-2. **Append a `DatasetSpec` to `sources.json`** using the Python load-edit-dump pattern from [AGENTS.md](../../context/AGENTS.md#safe-ways-to-edit-sourcesjson) — never `sed`. Start from [`examples/minimal_spec.json`](../../../examples/minimal_spec.json) (every field present with placeholder values) rather than typing one from scratch. Minimal direct-HTTP shape:
+2. **Append a `DatasetSpec` to `sources.json`** using the Python load-edit-dump pattern from [AGENTS.md](../../context/AGENTS.md#safe-ways-to-edit-sourcesjson) — never `sed`. Start from [`templates/minimal_spec.json`](../../../templates/minimal_spec.json) (every field present with placeholder values) rather than typing one from scratch. Minimal direct-HTTP shape:
 
    ```jsonc
    {

@@ -20,6 +20,10 @@ Wrappers around `python -m scripts.pipeline.<module>`. Side-effecting ones set `
 | `/raincloud-status` | `scripts.pipeline.status` | Per-slug filesystem state (raw / workdir / parquet / vortex / variant-pending). *(read-only, model-invocable.)* |
 | `/raincloud-validate-manifest` | `scripts.pipeline.validate_manifest` | Static checks for `sources.json` — JSON Schema + handler-registry / slug-uniqueness / fetch-auth cross-checks. *(read-only, model-invocable.)* |
 | `/raincloud-list-datasets` | `scripts.pipeline.list_datasets` | Filter/list slugs by handler / license / fetch-type / reader / vortex / tag / showcase / size / regex. *(read-only, model-invocable.)* |
+| `/raincloud-discover` | `scripts.pipeline.list_datasets` | Find "interesting" datasets via the discoverability flags — tag / showcase / size / trait / view. *(read-only, model-invocable.)* |
+| `/raincloud-profile` | `scripts.pipeline.profile` | Compute per-column statistics → `outputs/v1/<slug>/profile.json` (opt-in; feeds the TUI detail pane + `list_datasets --inspect`). *(writes `profile.json`; model-invocable.)* |
+| `/raincloud-load` | `raincloud.load` (loader API) | Load a prepared dataset (cache → mirror → local build) as a lazy `Dataset`; inspect metadata or materialize. *(`disable-model-invocation: true`.)* |
+| `/raincloud-publish` | `scripts.pipeline.publish` | Sync built `outputs/v1/...` artefacts to a mirror, gated on the snapshot sha256. *(side-effecting — `disable-model-invocation: true`.)* |
 
 ## Procedural playbooks (model-invocable)
 

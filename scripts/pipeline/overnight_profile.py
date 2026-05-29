@@ -36,15 +36,35 @@ import sys
 import time
 from pathlib import Path
 
+from .spec import (
+    load_manifest,
+    outputs_base,
+    outputs_root,
+    prepared_parquet,
+    raw_downloads_root,
+    workdir_root,
+)
+
+# Maintainer-only tool: promotes into `docs/v1/profiles/` which only exists
+# in a checkout. REPO_ROOT is intentional here. Other paths route through the
+# env-aware *_root() helpers so a build redirected via $RAINCLOUD_OUTPUTS /
+# $RAINCLOUD_WORKDIR still gets cleaned up in the right tree.
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LOG_PATH = REPO_ROOT / "outputs" / "_overnight.log"
-STATE_PATH = REPO_ROOT / "outputs" / "_overnight.state"
+
+
+def _log_path() -> Path:
+    return outputs_base() / "_overnight.log"
+
+
+def _state_path() -> Path:
+    return outputs_base() / "_overnight.state"
 
 
 def _log(event: dict) -> None:
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    log_path = _log_path()
+    log_path.parent.mkdir(parents=True, exist_ok=True)
     event["ts"] = time.strftime("%Y-%m-%dT%H:%M:%S")
-    with open(LOG_PATH, "a") as f:
+    with open(log_path, "a") as f:
         f.write(json.dumps(event) + "\n")
     # Also echo to stdout for tailing.
     print(json.dumps(event), flush=True)
@@ -55,7 +75,7 @@ def _profiled_slugs() -> set[str]:
 
 
 def _slug_already_built(slug: str) -> bool:
-    return (REPO_ROOT / "outputs" / "v1" / slug / "parquet" / f"{slug}.parquet").exists()
+    return prepared_parquet(slug).exists()
 
 
 def _wipe_slug(slug: str) -> None:
@@ -64,9 +84,9 @@ def _wipe_slug(slug: str) -> None:
     Doesn't touch outputs/v1/<slug>/profile.json — that's a build product
     too, but the promote step has already copied it to docs/v1/profiles/."""
     for p in [
-        REPO_ROOT / "outputs" / "raw_downloads" / slug,
-        REPO_ROOT / "outputs" / "v1" / slug,
-        REPO_ROOT / "_workdir" / slug,
+        raw_downloads_root() / slug,
+        outputs_root() / slug,
+        workdir_root() / slug,
     ]:
         if p.exists():
             try:
@@ -144,7 +164,7 @@ def main(argv: list[str] | None = None) -> int:
 
     budget = args.budget_mins * 60 if args.budget_mins else None
 
-    m = json.loads((REPO_ROOT / "sources.json").read_text())
+    m = load_manifest()
     profiled = _profiled_slugs()
     LARGE_BLOCKLIST = {
         # Known multi-hour builds — opt-in only.
@@ -183,8 +203,9 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as e:
             result = {"slug": slug, "status": "driver-error", "error": str(e)}
         _log(result)
-        STATE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        STATE_PATH.write_text(json.dumps({
+        state_path = _state_path()
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(json.dumps({
             "last_slug": slug, "last_result": result, "processed": processed + 1,
         }, indent=2) + "\n")
         processed += 1

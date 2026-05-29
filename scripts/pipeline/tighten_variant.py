@@ -39,7 +39,7 @@ from pathlib import Path
 
 import pyarrow.parquet as pq
 
-from .spec import REPO_ROOT, duckdb_connect, outputs_root, prepared_parquet
+from .spec import display_path, duckdb_connect, outputs_root, prepared_parquet, workdir_root
 
 
 def _json_columns(parquet: Path) -> list[str]:
@@ -95,12 +95,12 @@ def _tighten_chunked(parquet: Path, tmp: Path, replace_clause: str,
     pf = pq.ParquetFile(parquet)
     n_rg = pf.metadata.num_row_groups
 
-    workdir = REPO_ROOT / "_workdir" / parquet.parent.name
+    workdir = workdir_root() / parquet.parent.name
     workdir.mkdir(parents=True, exist_ok=True)
     db_path = workdir / "tighten_variant.db"
     if db_path.exists():
         raise RuntimeError(
-            f"{db_path.relative_to(REPO_ROOT)} already exists from a prior run. "
+            f"{display_path(db_path)} already exists from a prior run. "
             f"Move or remove it manually before retrying — this function does "
             f"not auto-delete intermediates."
         )
@@ -145,7 +145,7 @@ def tighten_one(parquet: Path, *, dry_run: bool = False, chunked: bool = False) 
     json_cols = _json_columns(parquet)
     if not json_cols:
         return False
-    rel = parquet.relative_to(REPO_ROOT)
+    rel = display_path(parquet)
     mode = "chunked" if chunked else "single-shot"
     print(f"  {rel}: promote {json_cols} -> VARIANT ({mode})", flush=True)
     if dry_run:
@@ -194,7 +194,7 @@ def main(argv):
         for s in args.slugs:
             p = prepared_parquet(s)
             if not p.exists():
-                print(f"  skip {s}: no parquet at {p.relative_to(REPO_ROOT)}", file=sys.stderr)
+                print(f"  skip {s}: no parquet at {display_path(p)}", file=sys.stderr)
                 continue
             candidates.append(p)
     else:

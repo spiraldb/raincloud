@@ -21,12 +21,21 @@ def _repo_root() -> Path:
 def _data_file(kind: str) -> Path:
     """Locate a data file. kind in {"snapshot", "manifest"}.
 
-    Precedence: env override -> wheel-packaged copy -> repo source fallback.
+    Precedence: env override -> repo source copy -> wheel-packaged copy. This
+    matches `scripts.pipeline.spec._default_manifest` and the documented
+    intent ("checkout copy, else the wheel-packaged copy") so the loader and
+    the build pipeline never read different copies in an editable install.
     """
     env = {"snapshot": "RAINCLOUD_SNAPSHOT", "manifest": "RAINCLOUD_MANIFEST"}[kind]
     override = os.environ.get(env)
     if override:
-        return Path(override)
+        # `.expanduser()` matches scripts.pipeline.spec._env_path so a
+        # `RAINCLOUD_MANIFEST=~/x` resolves identically for loader and build.
+        return Path(override).expanduser()
+    repo_name = {"snapshot": "docs/v1/snapshot.json", "manifest": "sources.json"}[kind]
+    repo = _repo_root() / repo_name
+    if repo.is_file():
+        return repo
     packaged_name = {"snapshot": "snapshot.json", "manifest": "sources.json"}[kind]
     try:
         p = resources.files("raincloud").joinpath("_data", packaged_name)
@@ -34,8 +43,7 @@ def _data_file(kind: str) -> Path:
             return Path(str(p))
     except FileNotFoundError:
         pass
-    repo_name = {"snapshot": "docs/v1/snapshot.json", "manifest": "sources.json"}[kind]
-    return _repo_root() / repo_name
+    return repo  # let open() error point at the expected checkout path
 
 
 @dataclass(frozen=True)
@@ -74,15 +82,16 @@ class Catalog:
         snap = self._slugs.get(slug, {})
         spec = self._specs.get(slug, {})
         formats: dict[str, FormatInfo] = {}
-        # Parquet is the always-produced format for any manifest slug;
-        # snapshot bytes are absent for never-built slugs (build-fallback path).
-        if slug in self._specs:
+        # Parquet: produced for every manifest slug, OR already recorded in the
+        # snapshot (covers slugs the maintainer dropped from sources.json but
+        # still publishes — e.g. legacy/deprecated mirror entries).
+        if slug in self._specs or snap.get("parquet_bytes") is not None:
             formats["parquet"] = FormatInfo(
                 sha256=snap.get("parquet_sha256"),
                 nbytes=snap.get("parquet_bytes"),
             )
         # Vortex: produced when convert.vortex is true in the manifest, OR when
-        # already present in the snapshot (covers snapshot-only / legacy entries).
+        # already present in the snapshot (same legacy-slug rationale).
         wants_vortex = bool((spec.get("convert") or {}).get("vortex"))
         if wants_vortex or snap.get("vortex_bytes") is not None:
             formats["vortex"] = FormatInfo(

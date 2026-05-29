@@ -20,7 +20,7 @@ Steps:
 
    - `parsed` contains one `(path, table)` tuple per parsed file; `table` is `None` when `parse.reader = "custom"`.
    - Return `[(output_slug, table), ...]` — one tuple per output parquet. Multi-output handlers emit several slugs from one source (see `glove_split`, `osm_pbf_split`, `stack_exchange_split`).
-   - **Streaming handlers** (write direct to parquet, bypass the write stage) return `[]`. Copy [`examples/streaming_handler.py.tmpl`](../../../examples/streaming_handler.py.tmpl) as the starting point — it has the `outputs_root()` / `duckdb_connect()` / cleanup wiring already shaped — and study `factbook_variant_parse`, `wikipedia_variant_parse`, `lichess_pgn_parse` for upstream-shape variations.
+   - **Streaming handlers** (write direct to parquet, bypass the write stage) return `[]`. Copy [`templates/streaming_handler.py.tmpl`](../../../templates/streaming_handler.py.tmpl) as the starting point — it has the `outputs_root()` / `duckdb_connect()` / cleanup wiring already shaped — and study `factbook_variant_parse`, `wikipedia_variant_parse`, `lichess_pgn_parse` for upstream-shape variations.
 
 2. **Register** in `scripts/pipeline/handlers/__init__.py`:
 

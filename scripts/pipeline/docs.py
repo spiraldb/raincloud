@@ -57,17 +57,47 @@ from .spec import (
 )
 
 
+def _sha256_or_reuse(
+    path,
+    current_size: int | None,
+    prior_size: int | None,
+    prior_sha: str | None,
+    *,
+    force: bool = False,
+) -> str | None:
+    """Reuse `prior_sha` when size is unchanged + prior sha is known; else hash.
+
+    Bytes-on-disk are content-addressed in the snapshot, so a matching size
+    is a near-perfect indicator the content is unchanged. Avoids re-streaming
+    multi-GB artifacts on every snapshot regen.
+
+    The size-only reuse has one blind spot: a rebuild that produces
+    *different content at the same byte length* keeps the stale sha, which then
+    permanently fails `publish`'s integrity gate (re-running plain `docs
+    snapshot` reuses the same stale sha). `force=True` (the `--rehash` flag)
+    recomputes every present file's sha to break out of that, while still
+    preserving the prior sha for files that are missing this run.
+    """
+    if current_size is None:
+        # File missing; preserve the prior sha so partial regens don't dash
+        # out tracked ground truth (existing fallback semantics).
+        return prior_sha
+    if not force and prior_sha is not None and prior_size == current_size:
+        return prior_sha
+    return _sha256_for_path(path)
+
+
 def _sha256_for_path(path) -> str | None:
-    """Stream a file's sha256, or None if it doesn't exist."""
-    import hashlib
+    """Stream a file's sha256, or None if it doesn't exist.
+
+    Delegates to the loader's single sha256 implementation so the pipeline and
+    the loader can't drift on chunk size / semantics.
+    """
+    from raincloud._cache import sha256_file
     p = Path(path)
     if not p.exists():
         return None
-    h = hashlib.sha256()
-    with open(p, "rb") as f:
-        for chunk in iter(lambda: f.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
+    return sha256_file(p)
 
 
 def _generation_header(kind: str) -> str:
@@ -512,7 +542,7 @@ def _snapshot_for_slug(*, slug: str, parquet_path: Path, prior_snapshot: dict | 
     return record
 
 
-def generate_snapshot(*, overwrite_missing: bool = False):
+def generate_snapshot(*, overwrite_missing: bool = False, rehash: bool = False):
     """Per-slug record of canonical-build state for the TUI / agents.
 
     Walks the manifest; for each slug, captures:
@@ -530,6 +560,13 @@ def generate_snapshot(*, overwrite_missing: bool = False):
     Pass overwrite_missing=True to emit null entries for slugs without
     fresh build data, regardless of any prior snapshot — use this for a
     full from-scratch regeneration.
+
+    Pass rehash=True to recompute every present file's sha256 instead of
+    reusing the prior sha on a size match. Use this (the `--rehash` flag) when
+    a rebuild changed an artifact's content without changing its byte length —
+    the only case the size-based reuse misses, which otherwise wedges
+    `publish`'s checksum gate. Unlike overwrite_missing, it preserves prior
+    data for slugs not built this run, so it's safe on a partial checkout.
     """
     import json
     manifest = load_manifest()
@@ -558,14 +595,29 @@ def generate_snapshot(*, overwrite_missing: bool = False):
         expected_rows = spec_field(spec, "expect.rows")
         prior_for_slug = existing_slugs.get(slug)
         prior = prior_for_slug or {}
+        parquet_bytes = parquet.stat().st_size if parquet.exists() else None
+        vortex_bytes = vortex.stat().st_size if vortex.exists() else None
         fresh: dict = {
             "expected_rows": expected_rows,
             "last_built_rows": None,        # populated below from parquet metadata
             "last_built_row_groups": None,  # populated below from parquet metadata
-            "parquet_bytes": parquet.stat().st_size if parquet.exists() else None,
-            "vortex_bytes": vortex.stat().st_size if vortex.exists() else None,
-            "parquet_sha256": _sha256_for_path(parquet) or prior.get("parquet_sha256"),
-            "vortex_sha256": _sha256_for_path(vortex) or prior.get("vortex_sha256"),
+            "parquet_bytes": parquet_bytes,
+            "vortex_bytes": vortex_bytes,
+            # Skip the multi-GB rehash when size + prior sha both unchanged —
+            # a full-catalog regen used to re-stream every artifact on every
+            # invocation (hours on Wikipedia 34 GB + JSONBench 10 GB). Falls
+            # back to full sha256 only when size disagrees with the prior
+            # snapshot or the prior had no sha recorded.
+            "parquet_sha256": _sha256_or_reuse(
+                parquet, parquet_bytes,
+                prior.get("parquet_bytes"), prior.get("parquet_sha256"),
+                force=rehash,
+            ),
+            "vortex_sha256": _sha256_or_reuse(
+                vortex, vortex_bytes,
+                prior.get("vortex_bytes"), prior.get("vortex_sha256"),
+                force=rehash,
+            ),
             "columns": None,  # populated below when schema is readable
         }
         if parquet.exists():
@@ -616,13 +668,14 @@ def generate_snapshot(*, overwrite_missing: bool = False):
 
 def main(argv):
     overwrite_missing = "--overwrite-missing" in argv
+    rehash = "--rehash" in argv
     targets = [a for a in argv if not a.startswith("-")] or ["datasets", "handlers", "snapshot"]
     if "datasets" in targets:
         generate_datasets_md()
     if "handlers" in targets:
         generate_handlers_md()
     if "snapshot" in targets:
-        generate_snapshot(overwrite_missing=overwrite_missing)
+        generate_snapshot(overwrite_missing=overwrite_missing, rehash=rehash)
     return 0
 
 
