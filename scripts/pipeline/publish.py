@@ -26,6 +26,37 @@ class PublishMismatch(Exception):
     """On-disk artifact sha256 disagrees with the snapshot."""
 
 
+def scrape_advisory_slugs(manifest, slugs):
+    """Subset of `slugs` whose license carries a non-null `scrape_advisory`.
+
+    These aggregate or reference content whose underlying licenses have not been
+    cleared for redistribution (public-web scrapes, Common Crawl derivatives,
+    Amazon-Conditions-of-Use-governed review corpora). `publish` refuses them by
+    default: building and using such artifacts locally is the customary research
+    posture, but uploading them to a shared mirror is the one act those terms
+    actually forbid. Tolerant of specs with no `license` block (test fixtures).
+    """
+    by_slug = {d["slug"]: d for d in manifest.get("datasets", [])}
+    return [s for s in slugs
+            if (by_slug.get(s, {}).get("license") or {}).get("scrape_advisory")]
+
+
+def no_redistribution_slugs(manifest, slugs):
+    """Subset of `slugs` whose license sets `redistribution_permitted` to False.
+
+    An independent gate from `scrape_advisory_slugs`: the advisory flags a *gap*
+    between an aggregator's declared license and uncleared underlying content,
+    while this is the spec stating outright that the license does not grant
+    redistribution. A slug can trip either or both (the Amazon Reviews corpus
+    trips both); each gate has its own override, so clearing one never silently
+    clears the other. Tolerant of specs with no `license` block (test fixtures).
+    """
+    by_slug = {d["slug"]: d for d in manifest.get("datasets", [])}
+    return [s for s in slugs
+            if (by_slug.get(s, {}).get("license") or {}).get("redistribution_permitted")
+            is False]
+
+
 def plan_uploads(slugs, snapshot, *, outputs_root: Path):
     """Return [(local_path, remote_key)] for present artifacts.
 
@@ -95,6 +126,14 @@ def main(argv=None) -> int:
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--mirror", required=True, help="fsspec base, e.g. s3://b/p")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument(
+        "--allow-scrape-advisory", action="store_true",
+        help="publish slugs whose license carries a scrape_advisory (refused by "
+             "default — their underlying content is not cleared for redistribution)")
+    ap.add_argument(
+        "--allow-no-redistribution", action="store_true",
+        help="publish slugs whose license sets redistribution_permitted=false "
+             "(refused by default — the license does not grant redistribution)")
     args = ap.parse_args(argv)
 
     if args.all and args.slugs:
@@ -104,6 +143,33 @@ def main(argv=None) -> int:
     slugs = ([d["slug"] for d in manifest["datasets"]] if args.all else args.slugs)
     if not slugs:
         ap.error("pass slugs or --all")
+
+    # Default-block on two independent license gates: a mirror upload IS
+    # redistribution, and neither a scrape_advisory nor redistribution_permitted=
+    # false clears it. Each gate has its own --allow-* override, so clearing one
+    # never silently clears the other (a slug tripping both needs both flags).
+    # --all skips blocked slugs and keeps going; an explicit publish that leaves
+    # nothing to upload fails loudly so it doesn't read as a no-op success.
+    gates = (
+        (scrape_advisory_slugs(manifest, slugs), args.allow_scrape_advisory,
+         "license carries a scrape_advisory — underlying content not cleared for "
+         "redistribution", "--allow-scrape-advisory"),
+        (no_redistribution_slugs(manifest, slugs), args.allow_no_redistribution,
+         "license sets redistribution_permitted=false", "--allow-no-redistribution"),
+    )
+    blocked: set[str] = set()
+    for hit, allowed, reason, flag in gates:
+        if allowed:
+            continue
+        for s in sorted(hit):
+            print(f"refusing {s}: {reason} (pass {flag} to override)", file=sys.stderr)
+        blocked.update(hit)
+    if blocked:
+        slugs = [s for s in slugs if s not in blocked]
+        if not slugs:
+            print(f"refused all {len(blocked)} requested slug(s); nothing to publish",
+                  file=sys.stderr)
+            return 1
 
     # Resolve the snapshot the same way the loader does (RAINCLOUD_SNAPSHOT ->
     # checkout -> wheel-packaged), so publish gates against the file the loader
