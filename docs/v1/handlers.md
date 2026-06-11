@@ -1,4 +1,4 @@
-<!-- AUTO-GENERATED handlers by scripts/pipeline/docs.py at 2026-05-17T01:07:13Z. Regenerate with: python -m scripts.pipeline.docs handlers. DO NOT EDIT. -->
+<!-- AUTO-GENERATED handlers by scripts/pipeline/docs.py at 2026-06-10T15:47:46Z. Regenerate with: python -m scripts.pipeline.docs handlers. DO NOT EDIT. -->
 | Handler | Purpose | Streaming | Extra Deps | # Manifest Specs | Example Slugs |
 |---------|---------|-----------|------------|------------------|---------------|
 | `beijing_pm25_parse` | Parse UCI Beijing Multi-Site Air Quality (dataset 501). | no | — | 1 | `uci-beijing-multi-site-air-quality` |
@@ -7,7 +7,7 @@
 | `ghcn_daily_parse` | Parse NOAA GHCN-Daily .dly fixed-width records into a long-format parquet. | yes | — | 1 | `ghcn-daily` |
 | `glove_split` | Read a single-dimension GloVe text file and emit a | no | — | 3 | `glove-6b-100d`, `glove-6b-200d` (+1 more) |
 | `har_parse` | Parse UCI Human Activity Recognition Using Smartphones (dataset 240). | no | — | 1 | `uci-human-activity-recognition-using-smartphones` |
-| `hf_concat_splits` | Concat HF parquet shards into one parquet, optionally injecting a | no | — | 52 | `ai2-arc`, `anthropic-hh-rlhf-helpful-base` (+50 more) |
+| `hf_concat_splits` | Concat HF parquet shards into one parquet, optionally injecting a | no | — | 53 | `ai2-arc`, `amazon-reviews-2023-subscription-boxes` (+51 more) |
 | `identity` | Passthrough handler — single parsed table becomes the output. | no | — | 3 | `clickbench-hits`, `emotions-dataset-for-nlp` (+1 more) |
 | `jsonbench_variant_parse` | Parse ClickHouse JSONBench's Bluesky JSONL.gz dumps into a single parquet | yes | — | 1 | `jsonbench-bluesky-100m` |
 | `jsonl_as_string_parse` | Stream a JSONL[.gz] file into a parquet with a single `raw_json: string` | yes | — | 1 | `open-food-facts` |

@@ -16531,6 +16531,68 @@
         "nested-json",
         "prose"
       ]
+    },
+    {
+      "slug": "amazon-reviews-2023-subscription-boxes",
+      "short_name": "Amazon Reviews 2023 (Subscription Boxes)",
+      "full_name": "Amazon Reviews 2023 \u2014 Subscription_Boxes user reviews (McAuley Lab, UCSD; Hou et al. 2024)",
+      "description": "User reviews for the Subscription_Boxes category from the Amazon Reviews 2023 corpus \u2014 rating, title, text, asin, parent_asin, user_id, millisecond timestamp, helpful_vote, verified_purchase, and a nested images list. Smallest of 33 categories; the catalog's smoke-test slice of the 571M-review corpus.",
+      "license": {
+        "spdx": "NoAssertion",
+        "source_url": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023",
+        "redistribution_permitted": false,
+        "attribution_required": true,
+        "notes": "No upstream license of any kind. McAuley Lab requests citation of Hou et al. 2024 (arXiv:2403.03952). Research use only.",
+        "scrape_advisory": "Amazon-derived: built by crawling raw HTML from Amazon.com through September 2023 and parsing it to JSON. Amazon's Conditions of Use prohibit the data-mining that produced it and forbid derivative use / redistribution of product listings, descriptions, and prices; review text copyright sits with individual reviewers, not Amazon or the aggregator. No layer in the chain grants third-party redistribution rights. Build and use locally as a research convenience only \u2014 these artifacts must NEVER be uploaded to a shared mirror (publish refuses them by default on this advisory)."
+      },
+      "fetch": {
+        "type": "huggingface",
+        "urls": [
+          "hf://McAuley-Lab/Amazon-Reviews-2023"
+        ],
+        "auth": "huggingface",
+        "hf_allow_patterns": [
+          "raw/review_categories/Subscription_Boxes.jsonl"
+        ],
+        "expected_bytes": null,
+        "expected_sha256": null,
+        "notes": "Fetches one category file (~9 MB raw JSONL). Sibling categories are added by swapping the allow-pattern + slug."
+      },
+      "extract": {
+        "type": "passthrough",
+        "include": [
+          "*.jsonl"
+        ],
+        "exclude": [],
+        "post": null
+      },
+      "parse": {
+        "reader": "jsonl",
+        "options": {}
+      },
+      "transform": {
+        "handler": "hf_concat_splits",
+        "params": {
+          "add_split_column": false
+        }
+      },
+      "write": {
+        "output": "amazon-reviews-2023-subscription-boxes.parquet",
+        "compression": "zstd",
+        "row_group_size_rows": 1048576,
+        "statistics": true,
+        "page_index": false
+      },
+      "expect": {
+        "rows": 16216,
+        "schema_hash": null,
+        "notes": "16,216 reviews; confirmed on first build.",
+        "row_stability": "static"
+      },
+      "convert": {
+        "vortex": true,
+        "vortex_skip_reason": null
+      }
     }
   ]
 }
