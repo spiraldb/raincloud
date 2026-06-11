@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-06-11
+
+### Added
+
+- **Amazon Reviews 2023 (Subscription Boxes) dataset**
+  (`amazon-reviews-2023-subscription-boxes`) — the catalog's first
+  redistribution-restricted entry. The McAuley-Lab Amazon-Reviews-2023
+  corpus is an academic HTML crawl of Amazon with no upstream license,
+  and Amazon's Conditions of Use forbid both the data-mining that
+  produced it and any redistribution of the derivatives, so it's
+  recorded as `NoAssertion` / `redistribution_permitted=false` with a
+  `scrape_advisory` documenting the provenance. Ships the smallest of
+  the 33 categories (16,216 reviews); fetch → parse → write → vortex all
+  green and `raincloud.load(...)` round-trips it. Buildable and loadable
+  locally as a research convenience — never published to a mirror.
+
+### Changed
+
+- **`scripts.pipeline.publish` default-blocks slugs that can't be
+  redistributed.** Two independent license gates, each with its own
+  opt-in bypass: a non-null `license.scrape_advisory`
+  (`--allow-scrape-advisory`) and `license.redistribution_permitted=false`
+  (`--allow-no-redistribution`). A slug tripping both — like the Amazon
+  corpus — needs both flags; clearing one never silently clears the
+  other. An explicit `publish <slug>` that ends up fully blocked exits
+  non-zero rather than reading as a no-op success, while `--all` skips
+  blocked slugs and continues. This retroactively guards the existing
+  scrape-flagged slugs (C4, FineWeb, SlimPajama, …), not just the new
+  dataset.
+- **`docs/v1` snapshot resynced to current truth** — picks up
+  BI-CommonGovernment's authoritative `sources.json` description, the
+  fresher Open Food Facts (4,466,927 → 4,517,492 rows) and OSM Germany
+  Relations (889,712 → 890,059) builds with their sizes and row-group
+  counts, and row-group / vortex metadata for Spambase and uci-iris that
+  the tracked snapshot was missing.
+
 ## [0.2.0] - 2026-05-29
 
 ### Added
