@@ -1777,19 +1777,31 @@
     },
     "open-food-facts": {
       "expected_rows": null,
-      "last_built_rows": 4466927,
-      "parquet_bytes": 13537973388,
-      "vortex_bytes": 38200971468,
+      "last_built_rows": 4517492,
+      "last_built_row_groups": 46,
+      "parquet_bytes": 13679279833,
+      "vortex_bytes": 38529751820,
+      "parquet_sha256": "1e7a61b7bebab4a2e68007d468377aa793b37e17c2482deff7487a66967931d7",
+      "vortex_sha256": "cec166ea889d97baf9172ea0dc694134182901133255c9c2204fefd931c0a090",
       "columns": [
         {
           "name": "raw_json",
           "type": "string",
-          "length": 13537965664,
+          "length": 13679271988,
           "null_count": 0,
           "min": null,
           "max": null
         }
-      ]
+      ],
+      "size_bucket": "xl",
+      "shape_traits": {
+        "has_nested": false,
+        "has_timestamp": false,
+        "has_variant": false,
+        "string_heavy": true,
+        "wide_row": false,
+        "high_cardinality_present": null
+      }
     },
     "nyc-311": {
       "expected_rows": null,
@@ -30080,9 +30092,9 @@
       "last_built_rows": 150,
       "last_built_row_groups": 1,
       "parquet_bytes": 2732,
-      "vortex_bytes": 10056,
+      "vortex_bytes": 10024,
       "parquet_sha256": "72ed0dd70848acef0c2c94ad58385144a50f21484fa012c18b15dfa53ed25538",
-      "vortex_sha256": "4d3e683f6d911a2d3876e28cda03e22d029b051427ef3cfd65e3e367de4d5300",
+      "vortex_sha256": "e5e82d2e4672917a61fea0a686ed57c6026008c0cddaa54d546acc50bc7e7076",
       "columns": [
         {
           "name": "sepal_length",
