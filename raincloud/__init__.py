@@ -19,7 +19,7 @@ from .exceptions import (  # noqa: F401
     UnknownSlug,
 )
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 _DEFAULT_FORMAT = "vortex"
 
