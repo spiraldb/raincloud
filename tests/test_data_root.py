@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from scripts.pipeline import spec
+from raincloud.pipeline import spec
 
 
 def test_data_root_honors_raincloud_home(monkeypatch, tmp_path):
@@ -18,10 +18,10 @@ def test_data_root_detects_checkout(monkeypatch, tmp_path):
     assert spec.data_root() == tmp_path
 
 
-def test_data_root_falls_back_to_xdg_cache(monkeypatch, tmp_path):
+def test_data_root_falls_back_to_native_data(monkeypatch, tmp_path):
     monkeypatch.delenv("RAINCLOUD_HOME", raising=False)
     monkeypatch.setattr(spec, "REPO_ROOT", tmp_path / "no-manifest-here")
-    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "xdg"))
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "xdg"))
     assert spec.data_root() == tmp_path / "xdg" / "raincloud"
 
 
@@ -56,7 +56,7 @@ def test_display_path_relative_under_root_else_absolute(monkeypatch, tmp_path):
 def test_fetch_and_extract_honor_redirected_roots(monkeypatch, tmp_path):
     monkeypatch.setenv("RAINCLOUD_RAW_DOWNLOADS", str(tmp_path / "raw"))
     monkeypatch.setenv("RAINCLOUD_WORKDIR", str(tmp_path / "wd"))
-    from scripts.pipeline import extract, fetch
+    from raincloud.pipeline import extract, fetch
     assert fetch.slug_dir("demo") == tmp_path / "raw" / "demo"
     assert extract.slug_workdir("demo") == tmp_path / "wd" / "demo"
 
@@ -77,7 +77,7 @@ def test_load_manifest_packaged_fallback(monkeypatch, tmp_path):
 
 
 def test_validate_manifest_schema_packaged_fallback(monkeypatch, tmp_path):
-    from scripts.pipeline import validate_manifest as vm
+    from raincloud.pipeline import validate_manifest as vm
     # No checkout schema present -> _schema_path() consults the packaged copy.
     fake = tmp_path / "packaged_sources.schema.json"
     fake.write_text("{}")

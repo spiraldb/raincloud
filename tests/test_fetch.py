@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
-"""Unit tests for scripts/pipeline/fetch.py.
+"""Unit tests for raincloud/pipeline/fetch.py.
 
 Side-effect-free — no network. The HTTP client is monkeypatched so we can
 inspect the SSL context that fetch.fetch_http would have passed to urllib.
@@ -8,10 +8,11 @@ inspect the SSL context that fetch.fetch_http would have passed to urllib.
 from __future__ import annotations
 
 import io
-import ssl
 from pathlib import Path
 
-from scripts.pipeline import fetch as fetch_mod
+import pytest
+
+from raincloud.pipeline import fetch as fetch_mod
 
 
 class _FakeResponse:
@@ -62,47 +63,44 @@ def _base_spec(url: str) -> dict:
     }
 
 
-def test_fetch_http_default_uses_verified_context(monkeypatch, tmp_path):
-    """When verify_tls is unset, urlopen receives no context kwarg (default verification)."""
+def test_fetch_http_always_uses_the_verifying_context(monkeypatch, tmp_path):
+    """urlopen never receives a `context` kwarg, so urllib verifies certificates.
+
+    There is no longer a way for a recipe to ask for anything else.
+    """
     _patch_originals_dir(monkeypatch, tmp_path)
     captured: dict = {}
     _patch_urlopen(monkeypatch, b"payload-bytes", captured)
 
-    spec = _base_spec("https://example.com/file.bin")
-
-    out = fetch_mod.fetch_http(spec)
+    out = fetch_mod.fetch_http(_base_spec("https://example.com/file.bin"))
     assert len(out) == 1 and out[0].read_bytes() == b"payload-bytes"
-
-    # No `context=` kwarg means urllib uses its default verifying SSL context.
     assert "context" not in captured["kwargs"]
 
 
-def test_fetch_http_verify_tls_false_passes_unverified_context(monkeypatch, tmp_path):
-    """When verify_tls=False, urlopen receives an SSL context with verification disabled."""
+def test_fetch_http_refuses_a_recipe_asking_to_skip_verification(monkeypatch, tmp_path):
+    """`fetch.verify_tls` is refused rather than ignored.
+
+    Honouring it would give the recipe less protection than TLS promises;
+    ignoring it silently would give more than it asked for without saying so.
+    A catalog is shareable, so the recipe carrying it may not be the operator's.
+    """
     _patch_originals_dir(monkeypatch, tmp_path)
-    captured: dict = {}
-    _patch_urlopen(monkeypatch, b"insecure-payload", captured)
+    _patch_urlopen(monkeypatch, b"insecure-payload", {})
 
     spec = _base_spec("https://expired.example.com/file.bin")
     spec["fetch"]["verify_tls"] = False
 
-    out = fetch_mod.fetch_http(spec)
-    assert len(out) == 1 and out[0].read_bytes() == b"insecure-payload"
-
-    ctx = captured["kwargs"].get("context")
-    assert isinstance(ctx, ssl.SSLContext), f"expected an SSLContext, got {type(ctx).__name__}"
-    assert ctx.check_hostname is False
-    assert ctx.verify_mode == ssl.CERT_NONE
+    with pytest.raises(ValueError, match="no longer supported"):
+        fetch_mod.fetch_http(spec)
 
 
-def test_fetch_http_verify_tls_true_explicit_uses_verified_context(monkeypatch, tmp_path):
-    """Explicitly setting verify_tls=True must match the default path (no context kwarg)."""
+def test_fetch_http_refuses_verify_tls_true_as_well(monkeypatch, tmp_path):
+    """Even the harmless spelling is refused — the field is gone, not defaulted."""
     _patch_originals_dir(monkeypatch, tmp_path)
-    captured: dict = {}
-    _patch_urlopen(monkeypatch, b"verified", captured)
+    _patch_urlopen(monkeypatch, b"verified", {})
 
     spec = _base_spec("https://example.com/file2.bin")
     spec["fetch"]["verify_tls"] = True
 
-    fetch_mod.fetch_http(spec)
-    assert "context" not in captured["kwargs"]
+    with pytest.raises(ValueError, match="no longer supported"):
+        fetch_mod.fetch_http(spec)

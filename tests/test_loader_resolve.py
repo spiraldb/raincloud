@@ -57,7 +57,7 @@ def env(tmp_path, monkeypatch):
 def test_artifact_key():
     from raincloud import _resolve
 
-    assert _resolve.artifact_key("tiny", "parquet") == "v1/tiny/parquet/tiny.parquet"
+    assert _resolve.artifact_key("tiny", "parquet", 1) == "v1/tiny/parquet/tiny.parquet"
 
 
 def test_resolve_from_mirror_then_cache(env):
@@ -96,72 +96,6 @@ def test_cache_hit_size_match_skips_full_rehash(env, monkeypatch):
     )
 
 
-def test_resolve_mirror_drift_warns_and_returns_artifact(env, capsys):
-    """Mirror bytes that diverge from the snapshot sha are not a panic case.
-
-    The user gets a warning naming the slug + origin; the artifact is still
-    adopted into the cache so downstream work proceeds. Refusing to load
-    would defeat the build over what is usually a benign upstream content
-    refresh — exactly the kind of drift the loader is supposed to absorb.
-    """
-    from raincloud import _cache, _resolve
-
-    (env["mirror"] / "v1" / "tiny" / "parquet" / "tiny.parquet").write_bytes(b"drifted")
-    p = _resolve.resolve("tiny", "parquet")
-    assert p == _cache.cache_path("tiny", "parquet")
-    assert p.read_bytes() == b"drifted"
-    err = capsys.readouterr().err
-    assert "[raincloud] WARN" in err
-    assert "tiny" in err and "mirror" in err and "drifted" in err
-
-
-def test_resolve_adopted_drift_served_from_cache_no_refetch(env, monkeypatch):
-    """Once drifted bytes are adopted, later loads must serve them from cache.
-
-    Regression: the cache-hit check only accepted a cached file whose size or
-    sha matched the (stale) snapshot pin. Adopted drift matches neither, so
-    every subsequent resolve re-fetched the mirror (or, with no mirror, re-ran
-    the multi-hour build) — forever. A different-size drift (7 != 12 bytes) is
-    the worst case because it can't ride the size fast-path.
-    """
-    from raincloud import _resolve, _transport
-
-    (env["mirror"] / "v1" / "tiny" / "parquet" / "tiny.parquet").write_bytes(b"drifted")
-
-    calls = []
-    real_fetch = _transport.fetch
-    monkeypatch.setattr(
-        _transport, "fetch",
-        lambda url, dest: (calls.append(url), real_fetch(url, dest))[1],
-    )
-    for _ in range(3):
-        p = _resolve.resolve("tiny", "parquet")
-    assert p.read_bytes() == b"drifted"
-    assert len(calls) == 1, (
-        f"adopted drift re-fetched {len(calls)}x across 3 resolves "
-        f"(expected 1 — the drift loop is back)"
-    )
-
-
-def test_resolve_adopted_drift_refetches_if_cache_truncated(env):
-    """The pin records the adopted size, so post-adoption corruption (a torn
-    write / truncation that changes the size) is NOT served blindly — it falls
-    through to a fresh fetch instead of trusting the pin."""
-    from raincloud import _cache, _resolve
-
-    (env["mirror"] / "v1" / "tiny" / "parquet" / "tiny.parquet").write_bytes(b"drifted")
-    cached = _resolve.resolve("tiny", "parquet")
-    assert cached.read_bytes() == b"drifted"
-
-    # Corrupt the cached file (different size than the pin recorded), and have
-    # the mirror now serve good drifted bytes again.
-    cached.write_bytes(b"trunc")
-    (env["mirror"] / "v1" / "tiny" / "parquet" / "tiny.parquet").write_bytes(b"drifted")
-    assert _resolve.resolve("tiny", "parquet").read_bytes() == b"drifted"
-    # And the freshly re-adopted file is once again a clean cache hit.
-    assert _cache.read_pin(cached)["size"] == len(b"drifted")
-
-
 def test_resolve_snapshot_revision_refetches_over_stale_cache(env, monkeypatch):
     """A genuine snapshot revision must still pull the new artifact.
 
@@ -186,43 +120,22 @@ def test_resolve_snapshot_revision_refetches_over_stale_cache(env, monkeypatch):
     assert _resolve.resolve("tiny", "parquet").read_bytes() == new
 
 
-def test_resolve_strict_checksum_hard_fails_on_mirror_drift(env, monkeypatch):
-    """RAINCLOUD_STRICT_CHECKSUM flips drift from warn-and-adopt to a hard
-    ChecksumMismatch — the opt-in integrity gate for security-sensitive use."""
-    from raincloud import _resolve
-    from raincloud.exceptions import ChecksumMismatch
-
-    monkeypatch.setenv("RAINCLOUD_STRICT_CHECKSUM", "1")
-    (env["mirror"] / "v1" / "tiny" / "parquet" / "tiny.parquet").write_bytes(b"drifted")
-    with pytest.raises(ChecksumMismatch):
-        _resolve.resolve("tiny", "parquet")
-
-
-def test_resolve_strict_ignores_prior_drift_pin(env, monkeypatch):
-    """Drift adopted by an earlier non-strict run must NOT be served once strict
-    mode is on: the pin sidecar vouches for it, but strict rehashes and refuses."""
+def test_resolve_refuses_mirror_bytes_the_catalog_does_not_name(env):
+    """The catalog is the authority: drifted mirror bytes are not its artifact."""
     from raincloud import _cache, _resolve
     from raincloud.exceptions import ChecksumMismatch
 
-    # Non-strict: adopt drifted bytes (writes a drift pin that vouches for them).
     (env["mirror"] / "v1" / "tiny" / "parquet" / "tiny.parquet").write_bytes(b"drifted")
-    assert _resolve.resolve("tiny", "parquet").read_bytes() == b"drifted"
-    assert _cache.read_pin(_cache.cache_path("tiny", "parquet")) is not None
-
-    # Strict: the pin is ignored, the cached bytes are rehashed, and since the
-    # mirror still serves the same drift, the strict re-fetch hard-fails.
-    monkeypatch.setenv("RAINCLOUD_STRICT_CHECKSUM", "1")
     with pytest.raises(ChecksumMismatch):
         _resolve.resolve("tiny", "parquet")
+    assert not _cache.cache_path("tiny", "parquet").exists()
 
 
-def test_resolve_strict_serves_matching_cache(env, monkeypatch):
-    """Strict mode still serves a cache file whose sha matches the snapshot."""
+def test_resolve_serves_matching_cache_without_refetch(env):
     from raincloud import _resolve
 
     _resolve.resolve("tiny", "parquet")  # prime cache with blessed bytes
-    monkeypatch.setenv("RAINCLOUD_STRICT_CHECKSUM", "1")
-    # corrupt the mirror to prove strict served from cache, not a re-fetch
+    # corrupt the mirror to prove the cache served, not a re-fetch
     (env["mirror"] / "v1" / "tiny" / "parquet" / "tiny.parquet").write_bytes(b"X")
     assert _resolve.resolve("tiny", "parquet").read_bytes() == env["payload"]
 
@@ -257,10 +170,12 @@ def test_sweep_stale_parts_removes_only_old(tmp_path):
     assert unrelated.exists(), "non-.part siblings must be untouched"
 
 
-def test_resolve_build_fallback_adopts_built_artifact(env, monkeypatch):
+def test_resolve_build_fallback_serves_data_dir_build(env, monkeypatch):
     """Cache miss + mirror miss + build available: resolve() shells out to the
-    build, then adopts the produced artifact into the cache. Exercised
-    hermetically (the real path is otherwise only under --run-network).
+    build and serves the artifact it wrote under the data dir, in place -- it
+    is not copied into the cache. The build log goes to stderr, never the
+    caller's stdout. Exercised hermetically (the real path is otherwise only
+    under --run-network).
     """
     from raincloud import _cache, _resolve
 
@@ -270,18 +185,20 @@ def test_resolve_build_fallback_adopts_built_artifact(env, monkeypatch):
 
     built_calls = []
 
-    def fake_build(cmd, check):
-        built_calls.append(cmd)
-        from scripts.pipeline.spec import output_format_dir
+    def fake_build(cmd, check, **kwargs):
+        built_calls.append((cmd, kwargs))
+        from raincloud.pipeline.spec import output_format_dir
         d = output_format_dir("tiny", "parquet")
         d.mkdir(parents=True, exist_ok=True)
-        (d / "tiny.parquet").write_bytes(env["payload"])  # bytes match snapshot sha
+        (d / "tiny.parquet").write_bytes(env["payload"])
 
     monkeypatch.setattr(_resolve.subprocess, "run", fake_build)
 
-    p = _resolve.resolve("tiny", "parquet")
+    p = _resolve.resolve("tiny", "parquet", allow_build=True)
     assert built_calls, "build subprocess was never invoked"
-    assert p == _cache.cache_path("tiny", "parquet")
+    assert built_calls[0][1].get("stdout") is not None, "build log must not reach stdout"
+    assert p == env["tmp"] / "out/v1/tiny/parquet/tiny.parquet"
+    assert not _cache.cache_path("tiny", "parquet").exists()
     assert p.read_bytes() == env["payload"]
 
 
@@ -294,10 +211,10 @@ def test_resolve_build_produces_nothing_raises(env, monkeypatch):
     monkeypatch.setenv("RAINCLOUD_MIRROR", f"file://{env['tmp']}/empty")
     monkeypatch.setenv("RAINCLOUD_OUTPUTS", str(env["tmp"] / "out"))
     monkeypatch.setattr(_resolve, "_build_import_error", lambda: None)  # build available
-    monkeypatch.setattr(_resolve.subprocess, "run", lambda cmd, check: None)  # writes nothing
+    monkeypatch.setattr(_resolve.subprocess, "run", lambda cmd, check, **kwargs: None)  # writes nothing
 
     with pytest.raises(ArtifactNotFound):
-        _resolve.resolve("tiny", "parquet")
+        _resolve.resolve("tiny", "parquet", allow_build=True)
 
 
 def test_resolve_offline_miss(env, monkeypatch):
@@ -330,7 +247,7 @@ def test_build_available_false_when_build_import_fails(monkeypatch):
     real_import = importlib.import_module
 
     def fake_import(name, *args, **kwargs):
-        if name == "scripts.pipeline.build":
+        if name == "raincloud.pipeline.build":
             raise ModuleNotFoundError("No module named 'zstandard'")
         return real_import(name, *args, **kwargs)
 
@@ -351,7 +268,7 @@ def test_build_available_false_when_handler_module_init_raises(monkeypatch):
     real_import = importlib.import_module
 
     def fake_import(name, *args, **kwargs):
-        if name == "scripts.pipeline.build":
+        if name == "raincloud.pipeline.build":
             raise RuntimeError("top-of-module assertion in some handler")
         return real_import(name, *args, **kwargs)
 
@@ -383,12 +300,12 @@ def test_resolve_build_failure_raises_buildfailed(env, monkeypatch):
     monkeypatch.setenv("RAINCLOUD_MIRROR", f"file://{env['tmp']}/empty")  # mirror miss
     monkeypatch.setattr(_resolve, "_build_import_error", lambda: None)    # build available
 
-    def boom(cmd, check):
+    def boom(cmd, check, **kwargs):
         raise sp.CalledProcessError(2, cmd)
 
     monkeypatch.setattr(_resolve.subprocess, "run", boom)
     with pytest.raises(BuildFailed) as ei:
-        _resolve.resolve("tiny", "parquet")
+        _resolve.resolve("tiny", "parquet", allow_build=True)
     assert isinstance(ei.value, RaincloudError)  # typed, catchable as the base
 
 
@@ -402,77 +319,10 @@ def test_resolve_build_import_broken_says_so(env, monkeypatch):
     monkeypatch.setattr(_resolve, "_build_import_error",
                         lambda: RuntimeError("a handler exploded at import"))
     with pytest.raises(BuildToolingMissing) as ei:
-        _resolve.resolve("tiny", "parquet")
+        _resolve.resolve("tiny", "parquet", allow_build=True)
     msg = str(ei.value)
     assert "failed to import" in msg and "RuntimeError" in msg
     assert "pip install" not in msg  # not the wrong-remediation message
-
-
-def _strict_build_env(env, monkeypatch):
-    """Wire strict mode + a mirror miss + a fake build that writes bytes which
-    deliberately differ from the snapshot sha; return the build-invocation log."""
-    from raincloud import _resolve
-
-    monkeypatch.setenv("RAINCLOUD_STRICT_CHECKSUM", "1")
-    monkeypatch.setenv("RAINCLOUD_MIRROR", f"file://{env['tmp']}/empty")  # mirror miss
-    monkeypatch.setenv("RAINCLOUD_OUTPUTS", str(env["tmp"] / "out"))
-    monkeypatch.setattr(_resolve, "_build_import_error", lambda: None)
-    builds = []
-
-    def fake_build(cmd, check):
-        builds.append(cmd)
-        from scripts.pipeline.spec import output_format_dir
-        d = output_format_dir("tiny", "parquet")
-        d.mkdir(parents=True, exist_ok=True)
-        (d / "tiny.parquet").write_bytes(b"locally-built-different-bytes")
-
-    monkeypatch.setattr(_resolve.subprocess, "run", fake_build)
-    return builds
-
-
-def test_resolve_strict_build_serves_from_cache_not_rebuild(env, monkeypatch):
-    """A client's local build legitimately differs from the maintainer's
-    snapshot bytes. Under strict mode the build path must NOT hard-fail with
-    ChecksumMismatch, AND a SECOND load must serve the built artifact from
-    cache via its origin=build provenance pin — not rebuild every load. (The
-    earlier single-resolve version of this test hid a rebuild-every-load cliff.)
-    """
-    from raincloud import _cache, _resolve
-
-    builds = _strict_build_env(env, monkeypatch)
-    p1 = _resolve.resolve("tiny", "parquet")
-    assert p1 == _cache.cache_path("tiny", "parquet")
-    assert p1.read_bytes() == b"locally-built-different-bytes"
-    # Second strict load: served from cache via the origin=build pin, no rebuild.
-    p2 = _resolve.resolve("tiny", "parquet")
-    assert p2.read_bytes() == b"locally-built-different-bytes"
-    assert len(builds) == 1, (
-        f"strict mode rebuilt instead of serving the cached local build "
-        f"({len(builds)} builds across 2 loads — the rebuild-every-load cliff)"
-    )
-
-
-def test_resolve_strict_build_rebuilds_when_snapshot_pin_changes(env, monkeypatch):
-    """The origin=build pin is honored under strict only while the snapshot pin
-    is unchanged. A genuine snapshot revision (the maintainer republished new
-    bytes) makes the cached local build stale, so it is rebuilt against the new
-    source of truth rather than served forever."""
-    from raincloud import _catalog, _resolve
-
-    builds = _strict_build_env(env, monkeypatch)
-    _resolve.resolve("tiny", "parquet")
-    assert len(builds) == 1
-
-    # Maintainer revises the snapshot pin (new published sha) -> the cached
-    # local build is now stale against the source of truth.
-    snap_path = env["tmp"] / "snapshot.json"
-    snap = json.loads(snap_path.read_text())
-    snap["slugs"]["tiny"]["parquet_sha256"] = _sha(b"REVISED-PUBLISHED-BYTES")
-    snap_path.write_text(json.dumps(snap))
-    _catalog.load_catalog.cache_clear()
-
-    _resolve.resolve("tiny", "parquet")
-    assert len(builds) == 2, "stale local build (snapshot pin changed) not rebuilt under strict"
 
 
 # ---- sha-less slugs: the snapshot byte size is the integrity check ----
@@ -507,7 +357,7 @@ def shaless_env(tmp_path, monkeypatch):
     _catalog.load_catalog.cache_clear()
 
 
-def test_shaless_cache_served_via_pin_no_refetch(shaless_env, monkeypatch):
+def test_shaless_cache_served_by_size_no_refetch(shaless_env, monkeypatch):
     """A sha-less slug, once adopted, serves from cache via its size pin without
     re-fetching — even though there's no sha to match."""
     from raincloud import _resolve, _transport
@@ -523,25 +373,30 @@ def test_shaless_cache_served_via_pin_no_refetch(shaless_env, monkeypatch):
     assert calls == []
 
 
-def test_shaless_size_mismatch_without_pin_refetches(shaless_env, capsys):
+def test_shaless_size_mismatch_refetches(shaless_env):
     """A sha-less cache file whose size != the snapshot byte size and has NO pin
     vouching for it is treated as corruption: warn + re-fetch, rather than
     serving possibly-truncated bytes on mere existence (the old behavior)."""
-    from raincloud import _cache, _resolve
+    from dataclasses import replace
 
+    from raincloud import _cache, _resolve
+    from raincloud._catalog import load_catalog
+    legacy_entry = replace(load_catalog().entry("ns"), legacy=True)
     dest = _cache.cache_path("ns", "parquet")
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(b"TRUNC")  # 5 bytes != 12; no pin written
-    p = _resolve.resolve("ns", "parquet")
+    p = _resolve.resolve("ns", "parquet", entry=legacy_entry)
     assert p.read_bytes() == shaless_env["payload"]  # re-fetched the good bytes
-    assert "size" in capsys.readouterr().err
 
 
-def test_shaless_size_match_without_pin_served(shaless_env, monkeypatch):
+def test_shaless_size_match_served(shaless_env, monkeypatch):
     """A legacy sha-less cache file (no pin) whose size matches the snapshot byte
     size is trusted and served without a re-fetch."""
-    from raincloud import _cache, _resolve, _transport
+    from dataclasses import replace
 
+    from raincloud import _cache, _resolve, _transport
+    from raincloud._catalog import load_catalog
+    legacy_entry = replace(load_catalog().entry("ns"), legacy=True)
     dest = _cache.cache_path("ns", "parquet")
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(shaless_env["payload"])  # right size, no pin
@@ -549,7 +404,7 @@ def test_shaless_size_match_without_pin_served(shaless_env, monkeypatch):
     real = _transport.fetch
     monkeypatch.setattr(_transport, "fetch",
                         lambda u, d: (calls.append(u), real(u, d))[1])
-    assert _resolve.resolve("ns", "parquet").read_bytes() == shaless_env["payload"]
+    assert _resolve.resolve("ns", "parquet", entry=legacy_entry).read_bytes() == shaless_env["payload"]
     assert calls == []
 
 
@@ -593,8 +448,12 @@ def test_shaless_sizeless_serves_on_existence(tmp_path, monkeypatch):
     monkeypatch.setenv("RAINCLOUD_CACHE", str(tmp_path / "cache"))
     monkeypatch.setenv("RAINCLOUD_OFFLINE", "1")
     _catalog.load_catalog.cache_clear()
+    from dataclasses import replace
+
+    from raincloud._catalog import load_catalog
+    legacy_entry = replace(load_catalog().entry("nn"), legacy=True)
     dest = _cache.cache_path("nn", "parquet")
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_bytes(b"whatever-bytes")
-    assert _resolve.resolve("nn", "parquet").read_bytes() == b"whatever-bytes"
+    assert _resolve.resolve("nn", "parquet", entry=legacy_entry).read_bytes() == b"whatever-bytes"
     _catalog.load_catalog.cache_clear()

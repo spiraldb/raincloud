@@ -10,22 +10,28 @@ reveals the catch: the TLC only records tips paid by **card**, so cash trips
 always show a $0 tip. The headline "no tip" rate is really a "paid cash" rate.
 
 This is the OLAP-on-a-big-dataset showcase: the query runs in DuckDB directly
-over the parquet via `Dataset.scan()`, so nothing materializes 48M rows into
+over `Dataset.dataset()`, so nothing materializes 48M rows into
 memory — only the small grouped result comes back as a DataFrame.
 
 Run it:
 
-    python examples/nyc_taxi_tip_rate.py
+    python examples/nyc_taxi_tip_rate.py [--build]
 
 Install (raincloud is not on PyPI — install from GitHub):
 
-    pip install "raincloud[build,duckdb] @ git+https://github.com/spiraldb/raincloud"   # build: first-run fetch; duckdb: .scan()
+    pip install "raincloud[build,pandas] @ git+https://github.com/spiraldb/raincloud"   # build: prepare the data, and DuckDB; pandas: DuckDB's .df()
 
-First run downloads ~900 MB (12 monthly parquet files, merged) unless a mirror
-is configured via RAINCLOUD_MIRROR; subsequent runs hit the local cache.
+The dataset must be prepared first; there is no public mirror. Either build it
+once (needs the [build] extra; fetches ~900 MB, 12 monthly parquet files merged from upstream):
+
+    raincloud build yellow_tripdata_2025
+
+or pass --build to let this script build it on a miss, or set RAINCLOUD_MIRROR
+to a mirror your team runs. Later runs read the prepared file directly.
 """
 from __future__ import annotations
 
+import argparse
 import sys
 
 import raincloud
@@ -54,21 +60,31 @@ QUERY = f"""
 
 
 def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
+    ap.add_argument("--build", action="store_true",
+                    help="build the dataset locally if it is not prepared (needs raincloud[build])")
+    args = ap.parse_args(argv)
     try:
-        # Load as parquet (not the vortex default): DuckDB reads parquet, and a
-        # vortex handle's .scan() would resolve the parquet sibling anyway.
-        rel = raincloud.load(SLUG, format="parquet").scan()
+        connection = raincloud.duckdb_connect()
     except raincloud.MissingDependency as e:
-        print(f"this example needs DuckDB: {e}\n"
-              '  pip install "raincloud[duckdb] @ git+https://github.com/spiraldb/raincloud"')
+        print(f"this example needs DuckDB: {e}", file=sys.stderr)
         return 1
+    try:
+        taxi = raincloud.load(SLUG, build=args.build).dataset()
     except raincloud.RaincloudError as e:
-        print(f"could not load {SLUG}: {type(e).__name__}: {e}")
-        print('  hint: pip install "raincloud[build] @ git+https://github.com/spiraldb/raincloud" '
-              "(first run fetches ~900 MB) or set RAINCLOUD_MIRROR=<url>")
+        print(f"could not load {SLUG}: {type(e).__name__}: {e}", file=sys.stderr)
+        if isinstance(e, raincloud.BuildToolingMissing):
+            hint = 'install the builder: pip install "raincloud[build] @ git+https://github.com/spiraldb/raincloud"'
+        elif isinstance(e, raincloud.BuildFailed):
+            hint = "the build failed; its output above says why"
+        else:
+            hint = (f"prepare it with `raincloud build {SLUG}` (needs raincloud[build]; fetches ~900 MB)"
+                    + ("" if args.build else ", rerun with --build,") + " or set RAINCLOUD_MIRROR")
+        print(f"  hint: {hint}", file=sys.stderr)
         return 1
 
-    df = rel.query("taxi", QUERY).df()
+    connection.register("taxi", taxi)
+    df = connection.sql(QUERY).df()
     total = int(df["trips"].sum())
     no_tip = int(df["no_tip"].sum())
 

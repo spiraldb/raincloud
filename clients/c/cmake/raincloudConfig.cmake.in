@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+if(NOT TARGET raincloud::reader)
+  add_library(raincloud::reader SHARED IMPORTED)
+  set_target_properties(raincloud::reader PROPERTIES
+    IMPORTED_LOCATION "@PACKAGE_RAINCLOUD_RUNTIME_DIR@/@RAINCLOUD_LIBRARY_NAME@"
+    INTERFACE_INCLUDE_DIRECTORIES "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+  if(WIN32)
+    set_target_properties(raincloud::reader PROPERTIES
+      IMPORTED_IMPLIB "@PACKAGE_CMAKE_INSTALL_LIBDIR@/@RAINCLOUD_IMPORT_NAME@")
+  endif()
+endif()
+check_required_components(raincloud)

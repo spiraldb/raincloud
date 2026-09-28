@@ -10,17 +10,23 @@ no SQL engine needed.
 
 Run it:
 
-    python examples/kepler_exoplanets.py
+    python examples/kepler_exoplanets.py [--build]
 
 Install (raincloud is not on PyPI — install from GitHub):
 
-    pip install "raincloud[build,pandas] @ git+https://github.com/spiraldb/raincloud"   # build: first-run fetch; pandas: .to_pandas()
+    pip install "raincloud[build,pandas] @ git+https://github.com/spiraldb/raincloud"   # build: prepare the data; pandas: .to_pandas()
 
-First run fetches ~3 MB from upstream (or a configured RAINCLOUD_MIRROR) and is
-cached; it runs in seconds thereafter.
+The dataset must be prepared first; there is no public mirror. Either build it
+once (needs the [build] extra; fetches ~3 MB from upstream):
+
+    raincloud build kepler-exoplanet-search-results
+
+or pass --build to let this script build it on a miss, or set RAINCLOUD_MIRROR
+to a mirror your team runs. Later runs read the prepared file directly.
 """
 from __future__ import annotations
 
+import argparse
 import sys
 
 import raincloud
@@ -29,16 +35,26 @@ SLUG = "kepler-exoplanet-search-results"
 
 
 def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
+    ap.add_argument("--build", action="store_true",
+                    help="build the dataset locally if it is not prepared (needs raincloud[build])")
+    args = ap.parse_args(argv)
     try:
-        df = raincloud.load(SLUG).to_pandas()
+        df = raincloud.load(SLUG, build=args.build).to_pandas()
     except raincloud.MissingDependency as e:
         print(f"this example needs pandas: {e}\n"
-              '  pip install "raincloud[pandas] @ git+https://github.com/spiraldb/raincloud"')
+              '  pip install "raincloud[pandas] @ git+https://github.com/spiraldb/raincloud"', file=sys.stderr)
         return 1
     except raincloud.RaincloudError as e:
-        print(f"could not load {SLUG}: {type(e).__name__}: {e}")
-        print('  hint: pip install "raincloud[build] @ git+https://github.com/spiraldb/raincloud" '
-              "(first run fetches ~3 MB) or set RAINCLOUD_MIRROR=<url>")
+        print(f"could not load {SLUG}: {type(e).__name__}: {e}", file=sys.stderr)
+        if isinstance(e, raincloud.BuildToolingMissing):
+            hint = 'install the builder: pip install "raincloud[build] @ git+https://github.com/spiraldb/raincloud"'
+        elif isinstance(e, raincloud.BuildFailed):
+            hint = "the build failed; its output above says why"
+        else:
+            hint = (f"prepare it with `raincloud build {SLUG}` (needs raincloud[build]; fetches ~3 MB)"
+                    + ("" if args.build else ", rerun with --build,") + " or set RAINCLOUD_MIRROR")
+        print(f"  hint: {hint}", file=sys.stderr)
         return 1
 
     import pandas as pd

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from scripts.pipeline.discovery import (
+from raincloud.pipeline.discovery import (
     SHOWCASE_TIERS,
     SIZE_BUCKET_BOUNDS,
     SIZE_BUCKETS,
@@ -67,68 +67,70 @@ def test_size_bucket_bounds_cover_all_buckets():
 def test_filter_state_empty_matches_everything():
     state = FilterState()
     spec = {"license": {"spdx": "MIT"}, "tags": [], "showcase": []}
-    assert state.matches(spec=spec, snapshot={})
+    assert state.matches(spec=spec, snapshot={}, schema_version=2)
 
 
 def test_filter_state_showcase_or_within_axis():
     state = FilterState(showcase={"encoding", "stress"})
-    assert state.matches(spec={"showcase": ["encoding"]}, snapshot={})
-    assert state.matches(spec={"showcase": ["stress", "other"]}, snapshot={})
-    assert not state.matches(spec={"showcase": ["other"]}, snapshot={})
-    assert not state.matches(spec={"showcase": []}, snapshot={})
+    assert state.matches(spec={"showcase": ["encoding"]}, snapshot={}, schema_version=2)
+    assert state.matches(spec={"showcase": ["stress", "other"]}, snapshot={}, schema_version=2)
+    assert not state.matches(spec={"showcase": ["other"]}, snapshot={}, schema_version=2)
+    assert not state.matches(spec={"showcase": []}, snapshot={}, schema_version=2)
 
 
 def test_filter_state_tag_and_license_and_combine():
     state = FilterState(tag={"coordinates"}, license={"MIT"})
     assert state.matches(
-        spec={"license": {"spdx": "MIT"}, "tags": ["coordinates"]}, snapshot={}
+        spec={"license": {"spdx": "MIT"}, "tags": ["coordinates"]}, snapshot={}, schema_version=2
     )
     assert not state.matches(
-        spec={"license": {"spdx": "Apache-2.0"}, "tags": ["coordinates"]}, snapshot={}
+        spec={"license": {"spdx": "Apache-2.0"}, "tags": ["coordinates"]}, snapshot={}, schema_version=2
     )
     assert not state.matches(
-        spec={"license": {"spdx": "MIT"}, "tags": ["finance"]}, snapshot={}
+        spec={"license": {"spdx": "MIT"}, "tags": ["finance"]}, snapshot={}, schema_version=2
     )
 
 
 def test_filter_state_size_uses_snapshot_bucket():
     state = FilterState(size={"l", "xl"})
-    assert state.matches(spec={}, snapshot={"size_bucket": "l"})
-    assert state.matches(spec={}, snapshot={"size_bucket": "xl"})
-    assert not state.matches(spec={}, snapshot={"size_bucket": "s"})
-    assert not state.matches(spec={}, snapshot={})   # missing => fails size filter
+    assert state.matches(spec={}, snapshot={"size_bucket": "l"}, schema_version=2)
+    assert state.matches(spec={}, snapshot={"size_bucket": "xl"}, schema_version=2)
+    assert not state.matches(spec={}, snapshot={"size_bucket": "s"}, schema_version=2)
+    assert not state.matches(spec={}, snapshot={}, schema_version=2)   # missing => fails size filter
 
 
 def test_filter_state_trait_positive():
     state = FilterState(trait={"has_nested"})
-    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": True}})
-    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": False}})
-    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": None}})
+    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": True}}, schema_version=2)
+    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": False}}, schema_version=2)
+    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": None}}, schema_version=2)
     # Truthy non-True must NOT satisfy a positive trait filter (is True semantics).
-    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": 1}})
-    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": "yes"}})
+    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": 1}}, schema_version=2)
+    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": "yes"}}, schema_version=2)
 
 
 def test_filter_state_trait_negated():
     state = FilterState(trait_negated={"has_nested"})
-    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": False}})
-    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": True}})
+    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": False}}, schema_version=2)
+    assert not state.matches(spec={}, snapshot={"shape_traits": {"has_nested": True}}, schema_version=2)
     # null is "unknown" → does not match a positive negation
-    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": None}})
+    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": None}}, schema_version=2)
     # Truthy non-True is NOT identical to True under is-True semantics — must match a negation.
-    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": 1}})
+    assert state.matches(spec={}, snapshot={"shape_traits": {"has_nested": 1}}, schema_version=2)
 
 
 def test_filter_state_vortex_two_state():
+    # `convert.vortex` is the pre-spine (schema_version 1) opt-in; v2 reads
+    # export cells instead, so this case is stated against v1 explicitly.
     available = FilterState(vortex=True)
     skipped = FilterState(vortex=False)
     spec_yes = {"convert": {"vortex": True}}
     spec_no = {"convert": {"vortex": False}}
     spec_unset = {}
-    assert available.matches(spec=spec_yes, snapshot={})
-    assert not available.matches(spec=spec_no, snapshot={})
-    assert skipped.matches(spec=spec_no, snapshot={})
-    assert skipped.matches(spec=spec_unset, snapshot={})
+    assert available.matches(spec=spec_yes, snapshot={}, schema_version=1)
+    assert not available.matches(spec=spec_no, snapshot={}, schema_version=1)
+    assert skipped.matches(spec=spec_no, snapshot={}, schema_version=1)
+    assert skipped.matches(spec=spec_unset, snapshot={}, schema_version=1)
 
 
 def test_apply_preset_stress():

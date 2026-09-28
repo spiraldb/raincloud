@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "raincloud-reader"
+version = "0.3.0"
+edition = "2021"
+rust-version = "1.95"
+publish = false
+include = ["src/**", "tests/**", "build.rs", "Cargo.toml", "Cargo.lock"]
+license = "Apache-2.0"
+description = "Datasets-style Raincloud reads over the Arrow C stream API; resolution runs in the raincloud CLI"
+
+[workspace]
+
+[lib]
+name = "raincloud_reader"
+crate-type = ["rlib", "cdylib"]
+
+[features]
+default = ["vortex"]
+vortex = ["dep:vortex", "dep:tokio"]
+
+[dependencies]
+arrow-array = { version = "=59.2", features = ["ffi"] }
+arrow-schema = "=59.2"
+arrow-ipc = { version = "=59.2", features = ["zstd"] }
+parquet = "=59.2"
+vortex = { version = "=0.86.1", features = ["files", "tokio", "zstd"], optional = true }
+tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
+# The describe reply is re-serialized for C and Java callers; arbitrary_precision
+# passes its numbers through verbatim (2**64 seeds, u64 row counts, -0) instead
+# of rounding them through f64.
+serde_json = { version = "1", features = ["arbitrary_precision"] }

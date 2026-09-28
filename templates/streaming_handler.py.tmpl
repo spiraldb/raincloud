@@ -1,80 +1,52 @@
-"""Template for a streaming transform handler.
+"""Streaming handler example for newline-delimited JSON input.
 
-Copy to scripts/pipeline/handlers/<your_handler>.py, replace placeholders,
-and register in scripts/pipeline/handlers/__init__.py:
+Copy to raincloud/pipeline/handlers/<name>.py, rename the function, and declare
+it in HANDLERS in raincloud/_registry.py ("<name>": "<name>:<name>"), the only
+registration. Set parse.reader="custom" in the manifest so parsed contains
+paths. Adapt the ingestion query for the upstream shape.
 
-    from .<your_handler> import <your_handler>
-    _REGISTRY = {
-        ...
-        "<your_handler>": <your_handler>,
-    }
-
-Streaming handlers spill to disk during ingestion (rather than holding the
-full Arrow table in memory) and write the parquet themselves. They return
-[] so the write stage becomes a no-op.
-
-Use this pattern when:
-  - the dataset can't fit in RAM (e.g. JSONBench 100M, Wikipedia structured
-    contents, Lichess monthly PGN dumps)
-  - you need DuckDB-mediated VARIANT shredding via
-    `CAST(to_json(col) AS VARIANT)` inside a `COPY ... TO PARQUET`
-  - you want to split a single source into multiple parquets without
-    holding both in memory simultaneously
-
-Reference handlers: factbook_variant_parse (1-column VARIANT),
-wikipedia_variant_parse (multi-column with typed siblings),
-lichess_pgn_parse (zstd-streamed PGN), jsonbench_variant_parse.
-
-See SKILLS.md "Writing a streaming handler" for narrative context.
+The handler writes canonical IPC in batches and returns []; the builder then
+validates and exports that canonical artifact. Run it only through
+build.run_one: workdir_root() is recipe-scoped only inside spec.recipe_scratch(),
+and open_canonical_writer registers its output with lifecycle.build_outputs,
+which publishes it atomically when the build succeeds. run_one sets up both,
+holds the operation lock, and writes the build record.
+For VARIANT columns use duckdb_variant.stream_canonical_arrow instead of the
+plain Arrow reader below; it preserves the shredded representation and marker.
 """
 from __future__ import annotations
 
 from pathlib import Path
+from uuid import uuid4
 
-from ..spec import REPO_ROOT, duckdb_connect, output_format_dir, spec_field
+from raincloud import duckdb_connect
+
+from ..canonical import open_canonical_writer
+from ..spec import workdir_root
 
 
 def my_streaming_handler(spec: dict, parsed: list[tuple[Path, object | None]]):
-    # 1. Resolve output path (always under outputs/v{n}/<slug>/parquet/).
-    out_path = output_format_dir(spec["slug"], "parquet") / spec_field(
-        spec, "write.output", f"{spec['slug']}.parquet"
-    )
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    compression = spec_field(spec, "write.compression", "zstd")
+    paths = [str(path) for path, _ in parsed if path.is_file()]
+    if not paths:
+        raise ValueError("streaming handler needs at least one input file")
 
-    # 2. Set up scratch DuckDB under _workdir/<slug>/. Always go through
-    #    duckdb_connect() — it applies storage_compatibility_version=v1.5.0
-    #    (required for VARIANT) and the env-var-driven resource limits.
-    workdir = REPO_ROOT / "_workdir" / spec["slug"]
+    # Uses the configured scratch disk and recipe-scoped directory. Unique
+    # scratch files let this handler clean up only resources it owns.
+    workdir = workdir_root() / spec["slug"]
     workdir.mkdir(parents=True, exist_ok=True)
-    db_path = workdir / "build.duckdb"
-    if db_path.exists():
-        db_path.unlink()
+    db_path = workdir / f"ingest-{uuid4().hex}.duckdb"
     con = duckdb_connect(db_path)
-
     try:
-        # 3. Stream input(s) into a DuckDB table, then COPY TO PARQUET.
-        #    The exact ingest depends on the upstream — see reference
-        #    handlers cited above for shape-specific patterns.
-        #
-        # Example: ingest each parsed input file by path, then write.
-        #
-        # for path, _table in parsed:
-        #     con.execute(
-        #         "INSERT INTO records "
-        #         "SELECT * FROM read_json_auto(?, format='newline_delimited')",
-        #         [str(path)],
-        #     )
-        # con.execute(
-        #     f"COPY records TO '{out_path}' "
-        #     f"(FORMAT PARQUET, COMPRESSION '{compression}', "
-        #     f" ROW_GROUP_SIZE 1048576)"
-        # )
-        ...
+        con.execute(
+            "CREATE TABLE records AS SELECT * FROM read_json_auto(?, format='newline_delimited')",
+            [paths],
+        )
+        reader = con.execute("SELECT * FROM records").to_arrow_reader(65536)
+        with reader, open_canonical_writer(spec["slug"], reader.schema) as writer:
+            for batch in reader:
+                writer.write_batch(batch)
     finally:
         con.close()
-        if db_path.exists():
-            db_path.unlink()
-
-    print(f"  wrote {out_path.relative_to(REPO_ROOT)}")
-    return []  # streaming contract: write stage is a no-op
+        db_path.unlink(missing_ok=True)
+        Path(str(db_path) + ".wal").unlink(missing_ok=True)
+    return []

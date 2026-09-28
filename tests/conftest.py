@@ -11,7 +11,36 @@ The flags are independent: passing one does not enable the other.
 """
 from __future__ import annotations
 
+import os
+import tempfile
+
 import pytest
+
+
+def pytest_configure(config):
+    # Module- and session-scoped fixtures run before the per-test isolation
+    # below, so without this they read the machine's /etc/xdg config and
+    # whatever catalog it names. Tests that want config files opt back in.
+    os.environ["RAINCLOUD_NO_CONFIG"] = "1"
+    os.environ["RAINCLOUD_CATALOG_DIR"] = tempfile.mkdtemp(prefix="raincloud-test-catalogs-")
+    # The tracked catalog changes only when a maintainer commits it; no test
+    # may leave docs/v{n}/snapshot.json changed (checked at session end).
+    config._tracked_snapshots = _tracked_snapshots()
+
+
+def _tracked_snapshots():
+    import hashlib
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    return {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((root / "docs").glob("v*/snapshot.json"))}
+
+
+def pytest_sessionfinish(session, exitstatus):
+    before = getattr(session.config, "_tracked_snapshots", {})
+    changed = [str(p) for p, digest in _tracked_snapshots().items() if before.get(p) != digest]
+    if changed:
+        session.exitstatus = 1
+        print(f"\nERROR: the test run modified tracked snapshot(s): {changed}; restore with git checkout")
 
 
 def pytest_addoption(parser):
@@ -47,6 +76,8 @@ def _isolate_loader_cache(tmp_path, monkeypatch):
     by one test never leaks into the next. Tests that need a specific cache
     location just set RAINCLOUD_CACHE again — a later monkeypatch.setenv wins.
     """
+    monkeypatch.setenv("RAINCLOUD_CATALOG_DIR", str(tmp_path / "_catalogs"))
+    monkeypatch.setenv("RAINCLOUD_NO_CONFIG", "1")
     monkeypatch.setenv("RAINCLOUD_CACHE", str(tmp_path / "_loader_cache"))
 
     def _clear():

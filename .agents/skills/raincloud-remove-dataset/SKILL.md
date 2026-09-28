@@ -11,32 +11,42 @@ Walk through removing dataset `$ARGUMENTS`. Reference: [SKILLS.md "Removing a da
 
 Steps:
 
-1. **Remove the `DatasetSpec` entry from `sources.json`** using the [Python load-edit-dump pattern](../../context/AGENTS.md#safe-ways-to-edit-sourcesjson) — never `sed`. Look up by `slug` and remove from `m["datasets"]`.
+1. **Check for dependents.** Run `python -m raincloud.pipeline.list_datasets --hydrate --long`. A `<slug>-hydrated` entry whose `derive.from` names this dataset must be removed with it, or re-parented; otherwise `validate_manifest` fails on its dangling `derive.from`.
 
-2. **Delete the output parquet** (and sibling `.vortex` if present):
+2. **Resolve the paths before changing the manifest.** Run this from the checkout, with the slug filled in. `operation_lock(resources=True)` takes the store, raw and scratch locks, so a build or export cannot move anything while the paths are resolved; the locks are released when the block ends:
 
-   ```bash
-   rm -rf outputs/v1/<slug>/
+   ```python
+   from raincloud.pipeline.lifecycle import operation_lock
+   from raincloud.pipeline.spec import outputs_root, raw_slug_dir, recipe_workdir_root
+
+   slug = "SLUG"
+   with operation_lock(resources=True) as ctx:
+       manifest = ctx.manifest
+       spec = next(s for s in manifest["datasets"] if s["slug"] == slug)
+       print(outputs_root() / slug)                       # built files, current schema_version
+       print(raw_slug_dir(slug))                          # raw payloads, shared across versions
+       print(recipe_workdir_root(spec, manifest) / slug)  # this recipe's scratch
    ```
 
-3. **Optionally delete the raw cache:**
+   Show the user the three paths and what each holds.
+
+3. **Delete only what the user approved, while no build or export is running** (the lookup's locks are no longer held). The output directory; the recipe scratch; the raw payloads only if asked. Keep:
+   - every older `outputs/v{n}/<slug>/` — a frozen version, which nothing regenerates;
+   - any `.recipes/` generation other than the ones printed, which belong to other catalogs or recipes (when the raw path printed is `<raw_dir>/<slug>` itself, delete its payload files and leave its `.recipes/` subdirectory);
+   - symlink targets: remove a symlink itself, never recurse through it.
+
+4. **Remove the `DatasetSpec` entry from `sources.json`** using the [Python load-edit-dump pattern](../../context/AGENTS.md#editing-sourcesjson). Immutable installed bundles require a newly packaged catalog; never edit a cached revision in place.
+
+5. **If a handler became unused** (only this slug referenced it), delete the handler file from `raincloud/pipeline/handlers/` and its entry from `HANDLERS` in `raincloud/_registry.py`. That entry is the only registration, and the catalog capability list derives from it. No stub or deprecation shim — fully delete.
+
+6. **Regenerate and promote the docs**, or invoke `/raincloud-docs`. The regeneration writes gitignored scratch; the tracked `docs/v2/` keeps the removed slug until it is promoted:
 
    ```bash
-   rm -rf outputs/raw_downloads/<slug>/
+   python -m raincloud.pipeline.docs
+   cp docs/snapshot.json docs/datasets.md docs/handlers.md docs/v2/
+   git diff docs/v2/
    ```
 
-   Only do this if you're confident the dataset won't be re-added. The raw cache is unversioned and could feed a future schema_version bump.
-
-   **Watch for sibling slugs sharing the same upstream URL** (GloVe sizes, OSM Germany kinds) — those are deduped via hardlink. Removing `outputs/raw_downloads/<slug>/` is fine because each slug gets its own subdir, but verify there isn't a multi-output handler producing the parquet from a shared raw dir before deleting either.
-
-4. **Regenerate docs:**
-
-   ```bash
-   python -m scripts.pipeline.docs
-   ```
-
-   (Or invoke `/raincloud-docs`.)
-
-5. **If a handler became unused** (only this slug referenced it), remove the handler file from `scripts/pipeline/handlers/` and unregister it from `__init__.py`. No stub or deprecation shim — fully delete.
+Entries for the slug in this install's build record (`<data_dir>/builds.json`) are left alone: the loader consults them only for a dataset the catalog names, and only for a file present at the recorded size, so they are inert once the files are gone.
 
 Removed means removed.

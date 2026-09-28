@@ -3,8 +3,9 @@
 """Unit tests for the hydrate stage.
 
 Covers the pieces that don't require real HTTP: the URL filter, the
-two-flag bypass guard, the blocklist loader, and the end-to-end stage
-with a dependency-injected fetcher.
+two-flag bypass guard, the blocklist loader, and deriving a hydrated
+dataset's table with a dependency-injected fetcher. The full build of a
+hydrated dataset from its parent is in test_artifact_lifecycle.py.
 
 The fetcher is mocked — these tests never make outbound network calls.
 """
@@ -15,20 +16,18 @@ import hashlib
 from datetime import datetime, timezone
 
 import pyarrow as pa
-import pyarrow.parquet as pq
 import pytest
 
-from scripts.pipeline.hydrate import (
+from raincloud.pipeline.hydrate import (
     PROVENANCE_TYPE,
     FilterDecision,
     HydrateConfig,
     _empty_provenance,
     confirm_bypass,
+    derive_tables,
     filter_url,
-    hydrate,
     load_blocklist,
 )
-from scripts.pipeline.spec import prepared_parquet, prepared_parquet_hydrated
 
 # ---------- Filter ----------
 
@@ -71,7 +70,7 @@ def test_filter_handles_garbage_inputs():
 
 
 def test_filter_bypass_lets_anything_through():
-    cfg = HydrateConfig(bypass_safety=True)
+    cfg = HydrateConfig(bypass_safety=True, risk_accepted=True)
     assert filter_url("javascript:alert(1)", cfg) == (True, FilterDecision.ALLOWED_BYPASS)
     assert filter_url("http://evil.example.com/x", cfg) == (True, FilterDecision.ALLOWED_BYPASS)
 
@@ -90,9 +89,7 @@ def test_load_blocklist_handles_hosts_file_format(tmp_path):
         "                  \n"  # whitespace-only
     )
     out = load_blocklist([f])
-    assert "evil.example.com" in out
-    assert "ads.example.com" in out
-    assert "anothereviladnetwork.com" in out
+    assert {"evil.example.com", "ads.example.com", "anothereviladnetwork.com"} <= out
     # `localhost` is filtered out by the loader's "host must contain a dot"
     # rule, which avoids accidentally banning bare-name typos.
     assert "localhost" not in out
@@ -137,94 +134,64 @@ def _fake_fetch(success_urls: dict[str, bytes]):
     return fetcher
 
 
-def test_hydrate_writes_parquet_with_provenance(tmp_path, monkeypatch):
-    """End-to-end stage with a fixture parquet + injected fetcher.
+def _hydrated_spec(columns, **hydrate):
+    return {"slug": "tiny-hydrated", "advisory": "test fixture",
+            "derive": {"from": "tiny", "hydrate": {"columns": columns, **hydrate}}}
 
-    Builds outputs in the real outputs/ tree under a test-only slug,
-    then cleans up.
-    """
-    slug = "test-hydrate-pytest"
-    base = prepared_parquet(slug)
-    hydrated = prepared_parquet_hydrated(slug)
-    base.parent.mkdir(parents=True, exist_ok=True)
+
+def test_derive_appends_fetched_column_and_provenance(monkeypatch):
+    """Parent rows kept; each hydrated column plus its provenance appended."""
+    from raincloud.pipeline import hydrate
     table = pa.table({
         "id": pa.array([1, 2, 3, 4], type=pa.int32()),
         "url": pa.array([
             "https://ok.example.com/a",
             "javascript:bad",                     # blocked_scheme
-            "http://blocked.example.com/x",       # per-slug blocked
+            "http://blocked.example.com/x",       # per-dataset blocked
             "https://errors.example.com/y",       # fake fetch error
         ], type=pa.string()),
     })
-    pq.write_table(table, base, compression="zstd")
-    spec = {
-        "slug": slug,
-        "hydrate": {
-            "url_column": "url",
-            "output_column": "content",
-            "output_type": "binary",
-            "advisory": "test fixture",
-            "blocked_hosts_extra": ["blocked.example.com"],
-        },
-    }
-    fetcher = _fake_fetch({"https://ok.example.com/a": b"hello"})
-    try:
-        out = hydrate(spec, HydrateConfig(concurrency=2), fetcher=fetcher)
-        assert out == hydrated
-        result = pq.read_table(out)
-        assert result.column_names == ["id", "url", "content", "_hydrate_provenance"]
-
-        contents = result["content"].to_pylist()
-        provs = result["_hydrate_provenance"].to_pylist()
-        assert contents[0] == b"hello"
-        assert contents[1] is None and provs[1]["filter_decision"] == FilterDecision.BLOCKED_SCHEME
-        assert contents[2] is None and provs[2]["filter_decision"] == FilterDecision.BLOCKED_BY_HOST
-        assert contents[3] is None and provs[3]["filter_decision"] == FilterDecision.FETCH_ERROR
-        assert provs[3]["http_status"] == 500
-    finally:
-        if hydrated.exists():
-            hydrated.unlink()
-        if hydrated.parent.exists() and not any(hydrated.parent.iterdir()):
-            hydrated.parent.rmdir()
-        if base.exists():
-            base.unlink()
-        if base.parent.exists() and not any(base.parent.iterdir()):
-            base.parent.rmdir()
-        if base.parent.parent.exists() and not any(base.parent.parent.iterdir()):
-            base.parent.parent.rmdir()
+    monkeypatch.setattr(hydrate, "_parent_table", lambda parent: table)
+    spec = _hydrated_spec({"url": {"into": "content", "type": "binary"}},
+                          blocked_hosts_extra=["blocked.example.com"])
+    with hydrate.using(HydrateConfig(concurrency=2)):
+        [(slug, result)] = derive_tables(spec, fetcher=_fake_fetch({"https://ok.example.com/a": b"hello"}))
+    assert slug == "tiny-hydrated"
+    assert result.column_names == ["id", "url", "content", "_content_provenance"]
+    contents = result["content"].to_pylist()
+    provs = result["_content_provenance"].to_pylist()
+    assert contents[0] == b"hello"
+    assert contents[1] is None and provs[1]["filter_decision"] == FilterDecision.BLOCKED_SCHEME
+    assert contents[2] is None and provs[2]["filter_decision"] == FilterDecision.BLOCKED_BY_HOST
+    assert contents[3] is None and provs[3]["filter_decision"] == FilterDecision.FETCH_ERROR
+    assert provs[3]["http_status"] == 500
 
 
-def test_hydrate_returns_none_when_no_hydrate_config():
-    assert hydrate({"slug": "x"}) is None
+def test_derive_hydrates_several_columns_as_text(monkeypatch):
+    from raincloud.pipeline import hydrate
+    table = pa.table({"page": ["https://a.example.com/"], "cover": ["https://b.example.com/"]})
+    monkeypatch.setattr(hydrate, "_parent_table", lambda parent: table)
+    spec = _hydrated_spec({"page": {"into": "html", "type": "string"},
+                           "cover": {"into": "image", "type": "binary"}})
+    [(_, result)] = derive_tables(spec, fetcher=_fake_fetch({"https://a.example.com/": b"<p>",
+                                                           "https://b.example.com/": b"\x89PNG"}))
+    assert result["html"].to_pylist() == ["<p>"] and result.schema.field("html").type == pa.string()
+    assert result["image"].to_pylist() == [b"\x89PNG"]
+    assert {"_html_provenance", "_image_provenance"} <= set(result.column_names)
 
 
-def test_hydrate_raises_on_missing_url_column(tmp_path):
-    """If hydrate.url_column references a column that doesn't exist in the
-    base parquet, raise — don't silently produce an all-null hydrated copy."""
-    slug = "test-hydrate-bad-col"
-    base = prepared_parquet(slug)
-    base.parent.mkdir(parents=True, exist_ok=True)
-    table = pa.table({"id": pa.array([1, 2], type=pa.int32())})
-    pq.write_table(table, base)
-    spec = {
-        "slug": slug,
-        "hydrate": {
-            "url_column": "nonexistent",
-            "output_column": "content",
-            "output_type": "binary",
-            "advisory": "test",
-        },
-    }
-    try:
-        with pytest.raises(ValueError, match="not in parquet"):
-            hydrate(spec)
-    finally:
-        if base.exists():
-            base.unlink()
-        if base.parent.exists() and not any(base.parent.iterdir()):
-            base.parent.rmdir()
-        if base.parent.parent.exists() and not any(base.parent.parent.iterdir()):
-            base.parent.parent.rmdir()
+def test_derive_rejects_a_column_the_parent_does_not_have(monkeypatch):
+    """Raise rather than silently produce an all-null hydrated copy."""
+    from raincloud.pipeline import hydrate
+    monkeypatch.setattr(hydrate, "_parent_table", lambda parent: pa.table({"id": [1, 2]}))
+    with pytest.raises(ValueError, match="not a column of tiny"):
+        derive_tables(_hydrated_spec({"nonexistent": {"into": "content", "type": "binary"}}),
+                      fetcher=lambda *a: pytest.fail("no fetch for a bad recipe"))
+
+
+def test_derive_refuses_a_dataset_that_is_not_hydrated():
+    with pytest.raises(NotImplementedError):
+        derive_tables({"slug": "x"})
 
 
 def test_provenance_struct_shape():

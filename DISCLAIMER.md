@@ -14,8 +14,10 @@ those resources without notice:
 
 - **Link rot** — the URL stops resolving or moves.
 - **Content drift** — the bytes behind a URL change, sometimes silently.
-  `expect.rows` and `expect.sha256` catch many cases at validate time, but
-  not all (and `--loose` explicitly relaxes them).
+  `fetch.expected_sha256` (where a spec pins it) catches a changed payload at
+  fetch time, and `expect.rows` catches many other cases at validate time, but
+  not all — and by default a row-count drift is a warning, not a build failure
+  (pass `--strict` to make it fatal).
 - **Supply-chain compromise** — an upstream could be attacked and serve
   swapped-in content. We have no way to detect this in advance.
 
@@ -34,7 +36,7 @@ maintained by the upstream parties, not by us.
 Some entries are broad-web crawls (FineWeb, Common-Crawl-derived
 corpora, and similar). We mark such entries with a
 `license.scrape_advisory` field and surface them with a ⚠ glyph in
-[`docs/v1/datasets.md`](docs/v1/datasets.md) because we view them as
+[`docs/v2/datasets.md`](docs/v2/datasets.md) because we view them as
 elevated-risk for unaudited or low-provenance content. The honest
 reality is broader: **any** fetched file may contain questionable or
 offensive material — upstream providers do their own quality and
@@ -72,19 +74,23 @@ For security vulnerabilities specifically, use the channel in
 
 ## User responsibility
 
-Running `python -m scripts.pipeline.fetch <slug>` (or `build`, which calls
+Running `python -m raincloud.pipeline.fetch <slug>` (or `build`, which calls
 fetch) makes HTTP requests against the URLs in `sources.json` and writes
 the returned bytes to local disk. That decision rests with the user.
 
 We have mitigated what we reasonably can:
 
-- HTTPS-only delivery for HTTP fetches.
-- Optional content-hash verification (`expect.sha256`) and row-count
-  validation (`expect.rows`), enforced unless the user passes `--loose`.
+- TLS certificate verification on every HTTPS fetch; no recipe can turn it
+  off. Some upstreams are served over plain `http://`, and those fetches have
+  no transport security at all; the catalog names each URL as its publisher
+  serves it.
+- Optional content-hash verification (`fetch.expected_sha256`) and row-count
+  validation (`expect.rows`). Row-count drift is reported as a warning by
+  default and becomes a hard failure under `--strict`.
 - A two-flag bypass on the optional hydrate stage so a single
   accidentally-typed flag can't open the safety filter — see
   [`HYDRATING.md`](HYDRATING.md).
-- Static manifest validation (`scripts.pipeline.validate_manifest`) that
+- Static manifest validation (`raincloud.pipeline.validate_manifest`) that
   runs in CI on every change to `sources.json`.
 
 We cannot guarantee against a future supply-chain attack on any of the

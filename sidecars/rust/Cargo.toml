@@ -1,0 +1,69 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "raincloud-sidecars"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Raincloud cross-implementation sidecar binaries: parquet via arrow-rs, vortex via the Vortex Rust core."
+
+# Standalone crate — NOT a member of the Vortex workspace: it lives in the
+# raincloud repo and depends on the PUBLISHED Vortex crate. An empty
+# [workspace] table makes this its own workspace root so no parent Cargo.toml
+# can absorb it and so it never edits a local vortex checkout.
+[workspace]
+
+[lib]
+name = "raincloud_sidecars"
+path = "src/lib.rs"
+
+[[bin]]
+name = "parquet-write"
+path = "src/bin/parquet_write.rs"
+
+[[bin]]
+name = "parquet-read"
+path = "src/bin/parquet_read.rs"
+
+[[bin]]
+name = "vortex-write"
+path = "src/bin/vortex_write.rs"
+
+[[bin]]
+name = "vortex-read"
+path = "src/bin/vortex_read.rs"
+
+[dependencies]
+# Vortex Rust core, from crates.io. PINNED EXACTLY, and held in LOCKSTEP with
+# the other two Vortex lanes so a differing conformance verdict is an
+# implementation difference and never a version difference:
+#   vortex-data (PyPI)      -> pyproject.toml          [vortex@py]
+#   vortex (crates.io)      -> here                    [vortex@rs]
+#   dev.vortex:vortex-jni   -> sidecars/java/gradle.properties (vortexJniVersion) [vortex@jni]
+# Bump all three together, with clients/rust/Cargo.toml
+# (tests/test_native_protocol.py::test_vortex_pins_agree_across_python_rust_and_jvm
+# checks they agree). Features: files (open/write), tokio (async runtime
+# integration), zstd.
+vortex = { version = "=0.86.1", features = ["files", "tokio", "zstd"] }
+
+# arrow / parquet PINNED to =59.2 to unify with the arrow Vortex links (the
+# Vortex workspace pins `59.2`, so an exact `=59.2` here intersects to 59.2.x).
+# arrow-ipc needs the `zstd` feature: the canonical is an Arrow IPC
+# *file* whose record-batch bodies are zstd-compressed *inside* the IPC stream
+# (NOT an outer zstd wrapper). parquet's `variant_experimental` feature is how
+# arrow-rs 59.2 maps the `arrow.parquet.variant` extension to Parquet's VARIANT
+# logical type, on write and on read; without it a VARIANT column is written as
+# a plain group.
+arrow-array = "=59.2"
+arrow-schema = "=59.2"
+arrow-cast = "=59.2"
+arrow-select = "=59.2"
+arrow-ipc = { version = "=59.2", features = ["zstd"] }
+parquet = { version = "=59.2", features = ["variant_experimental"] }
+
+# CLI + JSON report + async runtime + stream adapter + error plumbing.
+clap = { version = "4.5", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "fs"] }
+futures = "0.3"
+anyhow = "1"

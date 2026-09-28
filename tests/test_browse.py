@@ -15,7 +15,7 @@ import pytest
 def test_row_helper_handles_missing_fields():
     """_row should never raise on a sparse spec — empty strings are fine."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _row
+    from raincloud.pipeline.browse import _row
 
     minimal = {"slug": "x"}
     cells = _row(minimal, "·", "—", "—")
@@ -23,64 +23,75 @@ def test_row_helper_handles_missing_fields():
     assert cells[1] == ""    # handler (empty on minimal spec)
     assert cells[3] == "·"   # parquet
     assert cells[4] == "—"   # vortex
-    assert cells[5] == "·"   # scrape (no advisory on minimal spec)
-    assert cells[6] == "—"   # hydrate (passed through as cell arg)
+    assert cells[5] == "·"   # lanes (conform_cell default — not measured)
+    assert cells[6] == "·"   # scrape (no advisory on minimal spec)
+    assert cells[7] == "—"   # hydrate (passed through as cell arg)
 
 
 def test_row_renders_scrape_advisory_marker():
     """A non-null license.scrape_advisory yields ⚠ in the scrape column."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _row
+    from raincloud.pipeline.browse import _row
 
     spec = {"slug": "x", "license": {"scrape_advisory": "do not redistribute"}}
     cells = _row(spec, "·", "—", "—")
-    assert cells[5] == "⚠"
+    assert cells[6] == "⚠"
 
 
-def test_hydrate_cell_states(tmp_path):
-    """Three-state hydrate cell: not configured / configured & missing / present."""
+def test_conformance_cell_lane_usability():
+    """The lanes column summarizes per-slug parquet@java + vortex@py usability."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _hydrate_cell
+    from raincloud.pipeline.browse import _conformance_cell
 
-    hydrated = tmp_path / "x.parquet"
-    # Not configured
-    assert _hydrate_cell({"slug": "x"}, hydrated) == "—"
-    # Configured, file missing
-    spec = {"slug": "x", "hydrate": {"url_column": "url", "output_column": "content",
-                                     "output_type": "binary", "advisory": "..."}}
-    assert _hydrate_cell(spec, hydrated) == "·"
-    # Configured, file present
-    hydrated.write_bytes(b"")
-    assert _hydrate_cell(spec, hydrated) == "✓"
+    optin = {"slug": "x", "convert": {"vortex": True}}
+    optout = {"slug": "y", "convert": {"vortex": False}}
+    # not in the oracle -> not measured
+    assert _conformance_cell(optin, None, 1) == "·"
+    # both lanes round-trip
+    assert _conformance_cell(optin, {"parquet@java": True, "vortex@py": True}, 1) == "P✓ V✓"
+    # parquet can't (e.g. unsupported type), vortex fine
+    assert _conformance_cell(optin, {"parquet@java": False, "vortex@py": True}, 1) == "P✗ V✓"
+    # vortex opted out -> em dash regardless of any vortex verdict
+    assert _conformance_cell(optout, {"parquet@java": True}, 1) == "P✓ V—"
+    # a lane not present in the (non-empty) verdicts -> not measured for that lane
+    assert _conformance_cell(optin, {"parquet@java": True}, 1) == "P✓ V·"
+
+
+def test_hydrate_cell_marks_hydrated_datasets():
+    pytest.importorskip("textual")
+    from raincloud.pipeline.browse import _hydrate_cell
+    assert _hydrate_cell({"slug": "x"}) == "·"
+    assert _hydrate_cell({"slug": "x-hydrated", "derive": {"from": "x", "hydrate": {"columns": {
+        "url": {"into": "content", "type": "binary"}}}}}) == "⚠"
 
 
 def test_vortex_cell_states(tmp_path):
     """Four-state cell logic: opt-in × file presence × staleness."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _vortex_cell
+    from raincloud.pipeline.browse import _vortex_cell
 
     parquet = tmp_path / "x.parquet"
     vortex = tmp_path / "x.vortex"
 
     # Not opted in.
-    assert _vortex_cell({"convert": {"vortex": False}}, parquet, vortex) == "—"
+    assert _vortex_cell({"convert": {"vortex": False}}, parquet, vortex, 1) == "—"
     # Opted in, vortex missing.
-    assert _vortex_cell({"convert": {"vortex": True}}, parquet, vortex) == "·"
+    assert _vortex_cell({"convert": {"vortex": True}}, parquet, vortex, 1) == "·"
     # Opted in, vortex present, no parquet (treated as fresh).
     vortex.write_bytes(b"")
-    assert _vortex_cell({"convert": {"vortex": True}}, parquet, vortex) == "✓"
+    assert _vortex_cell({"convert": {"vortex": True}}, parquet, vortex, 1) == "✓"
     # Opted in, parquet newer than vortex → stale.
     parquet.write_bytes(b"")
     import os
     import time
     os.utime(parquet, (time.time() + 10, time.time() + 10))
-    assert _vortex_cell({"convert": {"vortex": True}}, parquet, vortex) == "⚠"
+    assert _vortex_cell({"convert": {"vortex": True}}, parquet, vortex, 1) == "⚠"
 
 
 def test_read_columns_returns_none_for_missing_file(tmp_path):
     """Unbuilt parquet path → None, never raises."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _read_columns
+    from raincloud.pipeline.browse import _read_columns
 
     assert _read_columns(tmp_path / "missing.parquet") is None
 
@@ -91,7 +102,7 @@ def test_read_columns_extracts_schema_from_real_parquet(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as pq
 
-    from scripts.pipeline.browse import _read_columns
+    from raincloud.pipeline.browse import _read_columns
 
     p = tmp_path / "x.parquet"
     pq.write_table(
@@ -105,7 +116,7 @@ def test_read_columns_extracts_schema_from_real_parquet(tmp_path):
 
 def test_resolve_rows_prefers_expect():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _resolve_rows
+    from raincloud.pipeline.browse import _resolve_rows
     spec = {"slug": "x", "expect": {"rows": 12345}}
     out, src = _resolve_rows(spec, snapshot=None)
     assert out == "12,345"
@@ -114,7 +125,7 @@ def test_resolve_rows_prefers_expect():
 
 def test_resolve_rows_falls_back_to_last_built():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _resolve_rows
+    from raincloud.pipeline.browse import _resolve_rows
     spec = {"slug": "x", "expect": {"rows": None}}
     snap = {"slugs": {"x": {"last_built_rows": 4567}}}
     out, src = _resolve_rows(spec, snap)
@@ -125,7 +136,7 @@ def test_resolve_rows_falls_back_to_last_built():
 
 def test_resolve_rows_em_dash_when_neither():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _resolve_rows
+    from raincloud.pipeline.browse import _resolve_rows
     out, src = _resolve_rows({"slug": "x", "expect": {"rows": None}}, snapshot=None)
     assert out == "—"
     assert src == "—"
@@ -133,14 +144,14 @@ def test_resolve_rows_em_dash_when_neither():
 
 def test_references_block_empty_when_no_refs():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _references_block
+    from raincloud.pipeline.browse import _references_block
     assert _references_block({"slug": "x"}) == ""
     assert _references_block({"slug": "x", "references": []}) == ""
 
 
 def test_references_block_renders_kind_url_pairs():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _references_block
+    from raincloud.pipeline.browse import _references_block
     refs = [{"kind": "paper", "url": "https://arxiv.org/abs/1234.5678"},
             {"kind": "github", "url": "https://github.com/foo/bar"}]
     out = _references_block({"slug": "x", "references": refs})
@@ -151,7 +162,7 @@ def test_references_block_renders_kind_url_pairs():
 def test_columns_block_renders_states():
     """Three rendering paths: None (not built), [] (empty schema), populated."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _columns_block
+    from raincloud.pipeline.browse import _columns_block
 
     spec = {"slug": "x"}
     not_built = _columns_block(spec, None)
@@ -172,7 +183,7 @@ def test_read_column_stats_extracts_full_metadata(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as pq
 
-    from scripts.pipeline.browse import _read_column_stats
+    from raincloud.pipeline.browse import _read_column_stats
 
     p = tmp_path / "x.parquet"
     pq.write_table(
@@ -195,13 +206,13 @@ def test_read_column_stats_extracts_full_metadata(tmp_path):
 
 def test_read_column_stats_returns_none_for_missing(tmp_path):
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _read_column_stats
+    from raincloud.pipeline.browse import _read_column_stats
     assert _read_column_stats(tmp_path / "missing.parquet") is None
 
 
 def test_build_time_estimate_brackets():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _build_time_estimate
+    from raincloud.pipeline.browse import _build_time_estimate
     # row-based fallback
     assert "seconds" in _build_time_estimate({"expect": {"rows": 5_000}})
     assert "minutes" in _build_time_estimate({"expect": {"rows": 5_000_000}})
@@ -216,7 +227,7 @@ def test_build_time_estimate_brackets():
 
 def test_per_slug_type_coverage_aggregates_by_canonical_type():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _per_slug_type_coverage
+    from raincloud.pipeline.browse import _per_slug_type_coverage
 
     stats = [
         {"name": "a", "type": "string"},
@@ -242,17 +253,21 @@ def test_resolve_columns_prefers_parquet_over_snapshot(tmp_path, monkeypatch):
     import pyarrow as pa
     import pyarrow.parquet as pq
 
-    from scripts.pipeline import browse
+    from raincloud.pipeline import browse
 
     slug = "test-resolve-prefers"
-    parquet = browse.prepared_parquet(slug)
+    # Write and resolve MUST use one manifest: prepared_parquet is version-scoped
+    # (outputs/v{n}/), so a v2-write + v1-resolve would miss the file and spuriously
+    # fall back to the snapshot (the bug this test would otherwise mask).
+    manifest = browse.load_manifest()
+    parquet = browse.prepared_parquet(slug, manifest)
     parquet.parent.mkdir(parents=True, exist_ok=True)
     pq.write_table(pa.table({"id": pa.array([1, 2, 3], type=pa.int32())}), parquet)
     try:
         snapshot = {"slugs": {slug: {"columns": [
             {"name": "STALE_FROM_SNAPSHOT", "type": "string"},
         ]}}}
-        cols, src = browse._resolve_columns(slug, manifest={"schema_version": 1}, snapshot=snapshot)
+        cols, src = browse._resolve_columns(slug, manifest=manifest, snapshot=snapshot)
         assert src == "parquet"
         assert cols == [("id", "int32")]
     finally:
@@ -265,7 +280,7 @@ def test_resolve_columns_prefers_parquet_over_snapshot(tmp_path, monkeypatch):
 
 def test_resolve_columns_falls_back_to_snapshot():
     pytest.importorskip("textual")
-    from scripts.pipeline import browse
+    from raincloud.pipeline import browse
 
     slug = "no-such-slug-anywhere"
     snapshot = {"slugs": {slug: {"columns": [
@@ -279,7 +294,7 @@ def test_resolve_columns_falls_back_to_snapshot():
 
 def test_resolve_columns_returns_none_when_no_data():
     pytest.importorskip("textual")
-    from scripts.pipeline import browse
+    from raincloud.pipeline import browse
     cols, src = browse._resolve_columns("no-such-slug", manifest={"schema_version": 1}, snapshot=None)
     assert cols is None and src is None
 
@@ -288,7 +303,7 @@ def test_resolve_stats_snapshot_fills_unknowns():
     """Snapshot fallback for the stats path: name+type from snapshot,
     None for the per-row-group fields (length, null_count, min, max)."""
     pytest.importorskip("textual")
-    from scripts.pipeline import browse
+    from raincloud.pipeline import browse
 
     slug = "no-such-slug-stats"
     snapshot = {"slugs": {slug: {"columns": [
@@ -304,7 +319,7 @@ def test_load_snapshot_returns_none_when_absent(monkeypatch, tmp_path):
     """If docs/v1/snapshot.json doesn't exist, _load_snapshot returns None
     cleanly (no exception)."""
     pytest.importorskip("textual")
-    from scripts.pipeline import browse
+    from raincloud.pipeline import browse
 
     monkeypatch.setattr(browse, "REPO_ROOT", tmp_path)
     assert browse._load_snapshot() is None
@@ -312,7 +327,7 @@ def test_load_snapshot_returns_none_when_absent(monkeypatch, tmp_path):
 
 def test_columns_modal_renders_unbuilt_state():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import ColumnsModal, _build_time_estimate
+    from raincloud.pipeline.browse import ColumnsModal, _build_time_estimate
 
     spec = {"slug": "x", "expect": {"rows": 1_000_000}}
     m = ColumnsModal("x", spec, None)
@@ -325,7 +340,7 @@ def test_columns_modal_renders_unbuilt_state():
 
 def test_columns_modal_renders_built_state():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import ColumnsModal
+    from raincloud.pipeline.browse import ColumnsModal
 
     stats = [{"name": "id", "type": "int32", "length": 100,
               "null_count": 0, "min": 1, "max": 99}]
@@ -341,7 +356,7 @@ def test_columns_modal_dedupes_duplicate_column_names():
     so the DataTable row key is unique and stats_by_name doesn't silently
     collapse duplicate-named entries onto the last one."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import ColumnsModal
+    from raincloud.pipeline.browse import ColumnsModal
 
     stats = [
         {"name": "Q1", "type": "string", "length": 100,
@@ -369,7 +384,7 @@ def test_columns_modal_dedupes_duplicate_column_names():
 def test_render_column_detail_dtype_shapes():
     """`_render_column_detail` produces shape-appropriate multi-line markup."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _render_column_detail
+    from raincloud.pipeline.browse import _render_column_detail
 
     # Numeric column with histogram → spark + range labels.
     out = _render_column_detail(
@@ -406,7 +421,7 @@ def test_render_column_detail_dtype_shapes():
         "y", {"type": "int32", "null_count": 5, "min": 0, "max": 9}, None,
     )
     assert "nulls:" in out and "No profile yet" in out
-    assert "scripts.pipeline.profile" in out
+    assert "raincloud.pipeline.profile" in out
 
     # Profile WAS loaded but this column's entry is null — e.g. a struct
     # field. The user shouldn't be told to re-run profile (they'd get the
@@ -416,7 +431,7 @@ def test_render_column_detail_dtype_shapes():
         None, profile_loaded=True,
     )
     assert "No profile yet" not in out
-    assert "scripts.pipeline.profile" not in out
+    assert "raincloud.pipeline.profile" not in out
     assert "skips" in out and "struct" in out
 
     # No data at all → defensive "(no data)" placeholder.
@@ -433,7 +448,7 @@ def test_format_stat_truncates_by_pessimistic_render_width():
     The pessimistic measure (`max(1, cell_len(ch))` per codepoint) bounds
     what the terminal will actually paint."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _format_stat, _render_len
+    from raincloud.pipeline.browse import _format_stat, _render_len
 
     # CJK: worst-case fullwidth — 2 cells per codepoint.
     cjk = "你好世界" * 20
@@ -467,7 +482,7 @@ def test_render_column_detail_fits_pane_width(pane_cells):
     pytest.importorskip("textual")
     import re
 
-    from scripts.pipeline.browse import _render_column_detail, _render_len
+    from raincloud.pipeline.browse import _render_column_detail, _render_len
 
     strip_markup = re.compile(r"\[/?[^\]]+\]")
 
@@ -514,7 +529,7 @@ def test_render_block_histogram_scales_with_bar_cells():
     pytest.importorskip("textual")
     from rich.cells import cell_len
 
-    from scripts.pipeline.browse import _render_block_histogram
+    from raincloud.pipeline.browse import _render_block_histogram
 
     counts = [1, 3, 5, 7, 9, 7, 5, 3, 1, 0]
     bars = _render_block_histogram(counts, rows=5, bar_cells=3)
@@ -532,7 +547,7 @@ def test_render_block_histogram_scales_with_bar_cells():
 def test_render_x_axis_ticks_spaces_lo_mid_hi():
     """3-tick axis: lo left, hi right, mid centered, ASCII spaces between."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _render_len, _render_x_axis_ticks
+    from raincloud.pipeline.browse import _render_len, _render_x_axis_ticks
 
     # 11 bin edges → mid = buckets[5].
     edges = [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
@@ -561,7 +576,7 @@ def test_format_axis_value_uses_standard_notation_between_1_and_100k():
     when the reader would naturally read `1,000` / `12,300`. Outside that
     range and below 1, fall through to `:.3g`."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _format_axis_value
+    from raincloud.pipeline.browse import _format_axis_value
 
     # Standard-notation band — was the bug zone.
     assert _format_axis_value(1.0) == "1.00"
@@ -592,7 +607,7 @@ def test_render_top_value_bars_proportional_widths():
     """Top-value bars scale to count / max(counts); each row reports the
     raw count right-justified."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _render_top_value_bars
+    from raincloud.pipeline.browse import _render_top_value_bars
 
     top = [
         {"value": "alpha", "count": 1000},
@@ -616,7 +631,7 @@ def test_search_query_parser_and_matcher():
     """Free-text search supports bare tokens (match anywhere) + qualified
     `field:value` clauses, ANDed across tokens."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _parse_query, _query_matches
+    from raincloud.pipeline.browse import _parse_query, _query_matches
 
     spec_iris = {
         "slug": "uci-iris", "short_name": "UCI Iris", "full_name": "UCI Iris dataset",
@@ -681,7 +696,7 @@ def test_search_query_parser_and_matcher():
 def test_columns_modal_profile_passthrough():
     """`profile=...` is unpacked into `profile_columns` keyed by column name."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import ColumnsModal
+    from raincloud.pipeline.browse import ColumnsModal
 
     profile = {"columns": {
         "id":  {"histogram": {"counts": [1, 2, 3]}},
@@ -694,7 +709,7 @@ def test_columns_modal_profile_passthrough():
 
 def test_build_confirm_modal_plumbs_inputs():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import BuildConfirmModal
+    from raincloud.pipeline.browse import BuildConfirmModal
 
     spec = {
         "slug": "x", "short_name": "X", "full_name": "X (full)",
@@ -711,7 +726,7 @@ def test_build_log_modal_constructor():
     """Sanity-check that the BuildLogModal class instantiates without
     actually starting a subprocess (subprocess only spawns on mount)."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import BuildLogModal
+    from raincloud.pipeline.browse import BuildLogModal
 
     m = BuildLogModal("x")
     assert m.slug == "x"
@@ -726,7 +741,7 @@ def test_build_confirm_dismiss_returns_true_on_confirm():
     from textual.app import App, ComposeResult
     from textual.widgets import Static
 
-    from scripts.pipeline.browse import BuildConfirmModal
+    from raincloud.pipeline.browse import BuildConfirmModal
 
     spec = {
         "slug": "x", "short_name": "X", "full_name": "X",
@@ -763,7 +778,7 @@ def test_build_log_modal_runs_subprocess_and_exposes_returncode():
     from textual.app import App, ComposeResult
     from textual.widgets import Static
 
-    from scripts.pipeline.browse import BuildLogModal
+    from raincloud.pipeline.browse import BuildLogModal
 
     captured: dict = {}
 
@@ -812,7 +827,7 @@ def test_build_log_modal_runs_subprocess_and_exposes_returncode():
 def test_browse_app_mounts_and_renders():
     """The TUI composes, mounts, and updates the detail pane without errors."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import DatasetBrowser
+    from raincloud.pipeline.browse import DatasetBrowser
 
     fixture = [
         {
@@ -848,7 +863,7 @@ def test_browse_app_mounts_and_renders():
 
             table = app.query_one("#table", DataTable)
             assert table.row_count == 2
-            assert len(table.columns) == 10
+            assert len(table.columns) == 11
 
     asyncio.run(_run())
 
@@ -863,7 +878,7 @@ def test_shape_trait_radioset_is_visible_in_facet_panel():
     pytest.importorskip("textual")
     from textual.widgets import Collapsible, RadioSet
 
-    from scripts.pipeline.browse import DatasetBrowser
+    from raincloud.pipeline.browse import DatasetBrowser
 
     specs = [{"slug": "x", "license": {"spdx": "MIT"},
               "fetch": {"type": "http", "urls": []}, "parse": {"reader": "csv"},
@@ -898,7 +913,7 @@ def test_shape_trait_yes_propagates_to_filter():
     pytest.importorskip("textual")
     from textual.widgets import DataTable, RadioButton, RadioSet
 
-    from scripts.pipeline.browse import DatasetBrowser
+    from raincloud.pipeline.browse import DatasetBrowser
 
     specs = [
         {"slug": "nested-alpha", "license": {"spdx": "MIT"},
@@ -931,7 +946,7 @@ def test_collect_filter_state_from_facet_selections():
     """_filter_state_from_selections collects checkbox selections from each
     group into a FilterState (multi-select within axis, AND across axes)."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _filter_state_from_selections
+    from raincloud.pipeline.browse import _filter_state_from_selections
 
     selections = {
         "showcase": {"encoding"},
@@ -953,7 +968,7 @@ def test_collect_filter_state_from_facet_selections():
 
 def test_filter_state_from_selections_handles_vortex_none():
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _filter_state_from_selections
+    from raincloud.pipeline.browse import _filter_state_from_selections
     state = _filter_state_from_selections({"vortex": None})
     assert state.vortex is None
 
@@ -961,7 +976,7 @@ def test_filter_state_from_selections_handles_vortex_none():
 def test_trait_tri_state_to_filter_state():
     """A tri-state widget maps {yes, no, unknown} → {trait, trait_negated, ignore}."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _trait_state_to_filter
+    from raincloud.pipeline.browse import _trait_state_to_filter
 
     state = _trait_state_to_filter({
         "has_nested": "yes",
@@ -978,8 +993,8 @@ def test_trait_tri_state_to_filter_state():
 def test_combine_filters_merges_axes():
     """The combine helper preserves set fields from both sources."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _combine_filters, _filter_state_from_selections
-    from scripts.pipeline.discovery import FilterState
+    from raincloud.pipeline.browse import _combine_filters, _filter_state_from_selections
+    from raincloud.pipeline.discovery import FilterState
 
     a = _filter_state_from_selections({"showcase": {"encoding"}})
     b = FilterState(trait={"has_nested"})
@@ -991,7 +1006,7 @@ def test_combine_filters_merges_axes():
 def test_apply_view_preset_matches_filter_state():
     """Applying a preset programmatically yields the expected FilterState shape."""
     pytest.importorskip("textual")
-    from scripts.pipeline.discovery import apply_preset
+    from raincloud.pipeline.discovery import apply_preset
 
     state = apply_preset("stress")
     assert state.showcase == {"stress"}
@@ -1005,7 +1020,7 @@ def test_apply_view_preset_matches_filter_state():
 def test_row_helper_renders_tags_and_size_cells():
     """_row now emits cells for the new sortable columns (tags, showcase, size_bucket)."""
     pytest.importorskip("textual")
-    from scripts.pipeline.browse import _row
+    from raincloud.pipeline.browse import _row
 
     spec = {"slug": "x", "tags": ["geospatial"], "showcase": ["encoding"],
             "convert": {"vortex": True},

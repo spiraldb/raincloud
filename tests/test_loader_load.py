@@ -76,12 +76,12 @@ def test_format_unavailable_raises(tmp_path, monkeypatch):
     # Snapshot-only slug (not in manifest): only vortex bytes recorded, no
     # parquet bytes. Catalog falls back to legacy snapshot-only behaviour, so
     # requesting parquet (which is absent from the snapshot) must raise.
-    snapshot = {"schema_version": 1, "slugs": {"vx": {
+    snapshot = {"schema_version": 2, "slugs": {"vx": {
         "expected_rows": 1, "last_built_rows": 1,
         "parquet_bytes": None, "vortex_bytes": 10,
-        "parquet_sha256": None, "vortex_sha256": "aa",
+        "parquet_sha256": None, "vortex_sha256": "aa" * 32,
         "columns": [{"name": "x", "type": "int64"}]}}}
-    manifest = {"schema_version": 1, "datasets": []}  # vx not in manifest
+    manifest = {"schema_version": 2, "datasets": [{"slug": "vx", "export": {"formats": ["vortex"]}}]}  # vx not in manifest
     (tmp_path / "s.json").write_text(json.dumps(snapshot))
     (tmp_path / "m.json").write_text(json.dumps(manifest))
     monkeypatch.setenv("RAINCLOUD_SNAPSHOT", str(tmp_path / "s.json"))
@@ -96,3 +96,31 @@ def test_format_unavailable_raises(tmp_path, monkeypatch):
             raincloud.load("vx", format="parquet")
     finally:
         _catalog.load_catalog.cache_clear()
+
+
+def test_unknown_slug_suggests_near_matches():
+    from raincloud._suggest import hint, suggest
+    names = ["clickbench-hits", "tpcgen-rs-tpch-sf1-lineitem", "tpcgen-rs-tpch-sf10-lineitem",
+             "duckdb-tpch-sf1-lineitem", "uci-iris", "uci-wine"]
+    assert suggest("clickbench", names) == (["clickbench-hits"], 0)
+    # every word of the query must appear; shorter names first
+    assert suggest("tpch-sf1-lineitem", names)[0][:2] == ["duckdb-tpch-sf1-lineitem", "tpcgen-rs-tpch-sf1-lineitem"]
+    assert suggest("uci-irs", names)[0][0] == "uci-iris"  # typo: close spelling
+    assert suggest("lineitem", names, limit=1) == (["duckdb-tpch-sf1-lineitem"], 2)
+    assert hint("zzz", names, everything="see list") == "unknown dataset 'zzz'. see list"
+    many = [f"t{i}-lineitem" for i in range(7)]  # 5 shown, 2 cut
+    assert hint("lineitem", many, narrow="list {query}").endswith("? (+2 more: list lineitem)")
+
+
+def test_unknown_slug_carries_suggestions(tmp_path, monkeypatch):
+    import json
+
+    import raincloud
+    manifest = tmp_path / "sources.json"
+    manifest.write_text(json.dumps({"schema_version": 2, "datasets": [{"slug": "clickbench-hits"}]}))
+    monkeypatch.setenv("RAINCLOUD_MANIFEST", str(manifest))
+    with pytest.raises(raincloud.UnknownSlug) as error:
+        raincloud.load("clickbench")
+    assert error.value.slug == "clickbench"
+    assert error.value.suggestions == ["clickbench-hits"]
+    assert "Did you mean clickbench-hits?" in str(error.value)

@@ -1,25 +1,31 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
-"""Resolution order: local cache -> mirror -> local build."""
+"""Resolution order: local data/cache -> mirror -> local build."""
 from __future__ import annotations
 
 import importlib
 import os
-import shutil
 import subprocess
 import sys
 import time
 import uuid
+import warnings
+from contextlib import ExitStack
 from pathlib import Path
 
-from . import _cache, _transport
+from . import _builds, _cache, _transport
 from ._catalog import load_catalog
+from ._formats import WRITERS, select_format
+from ._locking import locked
+from .config import Config, get_config, redact_url
 from .exceptions import (
     ArtifactNotFound,
     BuildFailed,
     BuildToolingMissing,
     FormatUnavailable,
+    MirrorUnavailable,
     OfflineMiss,
+    UnknownSlug,
 )
 
 # Stale .part files (crash / SIGKILL leftovers) older than this get swept on
@@ -59,20 +65,33 @@ def _sweep_stale_parts(dest: Path) -> None:
         pass
 
 
-def artifact_key(slug: str, fmt: str) -> str:
-    # v1 is hardcoded across the loader; revisit at a schema_version bump
-    return f"v1/{slug}/{fmt}/{slug}.{_cache.EXT[fmt]}"
+def artifact_key(slug: str, fmt: str, version: int) -> str:
+    """"v{version}/<slug>/<fmt>/<slug>.<ext>": an artifact's address in any store.
+
+    `version` is the catalog's schema_version (Entry.version); it has no default
+    because a forgotten one would quietly address the frozen v1 layout.
+    """
+    if fmt not in WRITERS:
+        raise FormatUnavailable(f"unsupported artifact: {fmt!r}")
+    return f"v{version}/{slug}/{fmt}/{slug}.{_cache.EXT[fmt]}"
 
 
-def _mirror_base(mirror: str | None) -> str | None:
-    base = mirror if mirror is not None else os.environ.get("RAINCLOUD_MIRROR")
-    return base.rstrip("/") if base else None
+def _stderr_fd() -> int:
+    """A descriptor for a child's output that keeps it off our stdout.
+
+    `raincloud load --build` prints a path for `$(...)`; a build log on stdout
+    would be read as part of it.
+    """
+    try:
+        return sys.stderr.fileno()
+    except (AttributeError, OSError, ValueError):
+        return 2
 
 
 def _build_import_error() -> BaseException | None:
     """Return the exception that blocks importing the build pipeline, or None.
 
-    `scripts.pipeline.build` is packaged into the wheel even in a loader-only
+    `raincloud.pipeline.build` is packaged into the wheel even in a loader-only
     install, so `find_spec` is insufficient (it only checks the file exists).
     The module must be actually importable, which requires the `[build]` extra.
 
@@ -85,10 +104,95 @@ def _build_import_error() -> BaseException | None:
     Either way the build is unavailable; the caller decides the message.
     """
     try:
-        importlib.import_module("scripts.pipeline.build")
+        importlib.import_module("raincloud.pipeline.build")
         return None
     except Exception as e:  # noqa: BLE001 — both classes mean "can't build"
         return e
+
+
+def _earlier_build(config: Config, key: str, candidate: Path, recipe: str | None) -> bool:
+    """Whether `candidate` is this install's build of `key` from a recipe other than `recipe`.
+
+    Only the data dir holds builds; a file in the cache is a mirror download.
+    """
+    if recipe is None or candidate != config.data_dir / key:
+        return False
+    built = _builds.lookup(config.data_dir, key)
+    return built is not None and built.get("recipe") != recipe
+
+
+def _from_mirror(base: str, key: str, config: Config, info, slug: str, recipe: str | None) -> Path | None:
+    """Fetch `key` from the mirror into the cache, or None when the mirror lacks it.
+
+    The download runs under a per-artifact lock, so concurrent loaders of one
+    artifact wait for the first and reuse its file; only the rename into the
+    store takes the store lock. Locks are taken in one order, store then
+    artifact, and the store lock is never WAITED for while holding the artifact
+    lock: a build holds the store lock for hours and may itself load this
+    artifact (a derived dataset loads its parent), so waiting there would
+    deadlock the two processes. If a writer holds the store when the download
+    finishes, the artifact lock is released first. With the default cache_dir
+    (the data dir) that means adoption waits for a running build to finish; the
+    wait is announced on stderr after ~10s.
+    """
+    dest = config.cache_dir / key
+    store_lock = config.cache_dir / ".raincloud-write.lock"
+
+    def present() -> bool:
+        if not dest.is_file():
+            return False
+        if info.nbytes is not None:
+            return dest.stat().st_size == info.nbytes
+        # No recorded size: a file prepared() refused as an earlier recipe's
+        # build is not the catalog's, so it is replaced, not returned.
+        return not _earlier_build(config, key, dest, recipe)
+
+    def adopt() -> Path:
+        if present():
+            return dest
+        _cache.adopt(tmp, dest, info.sha256, expected_size=info.nbytes, slug=slug)
+        if dest == config.data_dir / key:
+            # The catalog's bytes replaced whatever this install built there.
+            _builds.forget(config.data_dir, key)
+        return dest
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = _tmp_path(dest)
+    try:
+        with locked(dest.parent / f".{dest.name}.lock"):
+            if present():
+                return dest
+            _sweep_stale_parts(dest)
+            try:
+                _transport.fetch(f"{base}/{key}", tmp)
+            except ArtifactNotFound:
+                return None
+            with ExitStack() as held:
+                try:
+                    held.enter_context(locked(store_lock, timeout=0))
+                except TimeoutError:
+                    pass  # a writer has the store: wait for it below, without the artifact lock
+                else:
+                    return adopt()
+        with locked(store_lock):
+            if not tmp.is_file() and not present():
+                # A wait of more than _STALE_PART_SECONDS let another loader sweep
+                # the download. Fetch again, now holding the store (store, then artifact).
+                return _from_mirror(base, key, config, info, slug, recipe)
+            return adopt()
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def _local_mirror_problem(base: str) -> str | None:
+    """Why the local mirror `base` cannot be read here, or None (always None for a remote one)."""
+    if not _transport.is_local(base):
+        return None
+    try:
+        root = Path(_transport.filesystem_url(base))
+    except ValueError as exc:
+        raise MirrorUnavailable(f"the mirror {redact_url(base)} is not a usable file URL: {exc}") from None
+    return None if root.is_dir() else f"{redact_url(base)} is not a directory on this machine"
 
 
 def _build_available() -> bool:
@@ -98,187 +202,199 @@ def _build_available() -> bool:
     return _build_import_error() is None
 
 
+def measured_unavailable(entry, fmt: str, config: Config) -> dict | None:
+    """The build measurement saying `entry`'s `fmt` cannot be made at its
+    recipe, or None: this install's build record when it has an entry for the
+    current recipe, else the catalog's (`_builds.measured_unavailable`)."""
+    info = entry.formats.get(fmt)
+    return _builds.measured_unavailable(config.data_dir, artifact_key(entry.slug, fmt, entry.version),
+                                        entry.recipe, info.unavailable if info is not None else None)
+
+
+def unavailable_error(entry, fmt: str, measurement: dict) -> FormatUnavailable:
+    """The typed error for a format measured unavailable: it quotes the
+    measurement and names what the dataset does have, never a build."""
+    from ._formats import describe_unavailable
+    others = sorted(f for f in entry.formats if f != fmt)
+    return FormatUnavailable(
+        f"{entry.slug}/{fmt} is unavailable at this recipe: {describe_unavailable(measurement)}"
+        + (f". Available formats: {', '.join(others)}" if others else ""),
+        measurement=measurement)
+
+
+def prepared(entry, fmt: str, config: Config) -> tuple[Path | None, str | None]:
+    """The local file that is `entry`'s `fmt` artifact, else (None, why a file there is not).
+
+    Looks in the shared data store, then this user's cache; reads only file
+    sizes and the build record. A file of the catalog's size is the catalog's
+    file; a different one is served only if this install built it, from the
+    current recipe. For a format measured unavailable at the current recipe,
+    only a file of the catalog's size is served (the catalog's file); with no
+    catalog file, whatever is there is from an earlier build.
+    """
+    slug = entry.slug
+    key = artifact_key(slug, fmt, entry.version)
+    info = entry.formats[fmt]
+    measurement = measured_unavailable(entry, fmt, config)
+    if measurement is not None:
+        found = [candidate for candidate in dict.fromkeys((config.data_dir / key, config.cache_dir / key))
+                 if info.nbytes is not None and candidate.is_file() and candidate.stat().st_size == info.nbytes]
+        return (found[0], None) if found else (None, str(unavailable_error(entry, fmt, measurement)))
+    dest = config.cache_dir / key
+    different = []
+    earlier = None
+    for candidate in dict.fromkeys((config.data_dir / key, dest)):
+        if candidate.is_file():
+            size = candidate.stat().st_size
+            built_here = candidate == config.data_dir / key  # builds write the data dir, never the cache
+            if info.nbytes is None:
+                # No recorded size to recognise the catalog's file by. A build
+                # record naming an earlier recipe still identifies a stale file.
+                if not _earlier_build(config, key, candidate, entry.recipe):
+                    return candidate, None
+                earlier = candidate
+                continue
+            if size == info.nbytes:
+                return candidate, None
+            if built_here and _builds.serves(config.data_dir, key, size, entry.recipe):
+                return candidate, None
+            different.append(candidate)
+    mismatch = None
+    if earlier is not None:
+        mismatch = (f"{earlier} was built here from an earlier recipe of {slug}, and the catalog records "
+                    f"no size to recognise its own file by. Rebuild it with `raincloud build {slug}`, "
+                    f"or select the catalog it came from")
+    elif different:
+        built = _builds.lookup(config.data_dir, key)
+        why = ("it was exported here from an earlier build of the dataset, which a rebuild superseded"
+               if built is not None and built.get("superseded") else
+               "it was built here from an earlier recipe of the dataset"
+               if built is not None and built.get("recipe") != entry.recipe else
+               "it is not the catalog's file, and this install's build record does not name it")
+        mismatch = (f"{different[0]} is {different[0].stat().st_size} bytes but the catalog's {slug}/{fmt} "
+                    f"is {info.nbytes}; {why}. Rebuild it with `raincloud build {slug}`, "
+                    f"or select the catalog it came from")
+    return None, mismatch
+
+
 def resolve(
     slug: str,
     fmt: str,
     *,
     mirror: str | None = None,
     offline: bool | None = None,
-    allow_build: bool = True,
+    allow_build: bool = False,
     entry=None,
+    config: Config | None = None,
+    context=None,
 ) -> Path:
+    """Where `slug`'s `fmt` artifact is: the data store, the cache, a mirror, or a build.
+
+    The catalog is the authority. A file at the artifact's key with the
+    catalog's byte size is that artifact; bytes from a mirror are checked
+    against the catalog's sha256 as they arrive. Reads never build unless
+    `allow_build`.
+    """
     # `entry` is passed by Dataset.path_for (already resolved); fall back to a
     # lookup for direct callers. load_catalog().entry(slug) raises UnknownSlug.
+    config = config or get_config()
     if entry is None:
-        entry = load_catalog().entry(slug)
-    if fmt not in entry.formats:
-        raise FormatUnavailable(
-            f"{slug}: format {fmt!r} not available; have {sorted(entry.formats)}"
-        )
-    dest = _cache.cache_path(slug, fmt)
-    expected = entry.formats[fmt].sha256
-    expected_size = entry.formats[fmt].nbytes
+        catalog = load_catalog(config)
+        entry = catalog.entry(slug)
+        context = catalog.context
+    fmt = select_format(entry.formats, fmt)
+    key = artifact_key(slug, fmt, entry.version)
+    info = entry.formats[fmt]
 
-    # 1) cache hit. Several short-circuits, cheapest first, so a full sha256
-    #    over multi-GB artifacts never runs on the common load:
-    #
-    #    No pinned sha (the ~80% of the catalog with only a byte size): a pin
-    #    matching the on-disk size serves immediately (covers deliberately
-    #    adopted / locally-built bytes); else the snapshot byte size is used as
-    #    a cheap corruption check — a size mismatch with no vouching pin warns
-    #    and re-fetches rather than serving possibly-truncated bytes on trust.
-    #
-    #    With a pinned sha:
-    #      a) size matches the pin   -> treat as the blessed artifact. (A
-    #         same-size, different-content snapshot revision is the one case
-    #         this can't tell apart — an accepted, pre-existing blind spot.)
-    #      b) bytes are drift we already adopted against THIS snapshot pin
-    #         (pin sidecar records snap sha + adopted size, and the file is
-    #         still that size) -> serve it. Without this, knowingly-adopted
-    #         drift matches neither (a) nor a sha match and would be
-    #         re-fetched/rebuilt on *every* load.
-    #      c) full sha matches the pin -> serve (legacy cache w/o a pin, or a
-    #         post-revision re-download landing here).
-    #    Otherwise warn and fall through to re-fetch (genuine snapshot revision
-    #    or external corruption).
-    #
-    #    Strict mode (RAINCLOUD_STRICT_CHECKSUM) only changes behavior for a
-    #    slug that HAS a pinned sha: it rehashes such a cache hit and serves
-    #    only a sha match (so mirror drift adopted by a prior non-strict run
-    #    can't slip through) — with ONE provenance exception: a locally-built
-    #    artifact (origin=build pin) adopted against the current snapshot pin
-    #    is served without rehashing, since there's no maintainer sha a
-    #    non-reproducible build could match. Sha-less slugs have nothing to
-    #    rehash against, so strict leaves their size/pin path unchanged.
-    strict = _cache.strict_checksum()
-    if dest.exists():
-        cached_size = dest.stat().st_size
-        if expected is None:
-            # No pinned sha (true for ~80% of the catalog today). We can't
-            # rehash, so the snapshot byte size is the cheap corruption check —
-            # but mirror semantics mirror the strict branch: only a
-            # *build-origin* pin overrides a size disagreement (a local build
-            # legitimately differs from the maintainer's size, so its provenance
-            # is the trust signal). A mirror/pin-less artifact must still match
-            # the snapshot size, so a snapshot revision that ships a new
-            # (still-sha-less) size is detected as stale and re-fetched instead
-            # of serving the old cache forever.
-            pin = _cache.read_pin(dest)
-            if (pin is not None and pin.get("origin") == "build"
-                    and pin.get("size") == cached_size):
-                return dest
-            if expected_size is None or cached_size == expected_size:
-                return dest
-            print(
-                f"[raincloud] WARN: cached {slug}/{fmt} size {cached_size} != snapshot "
-                f"{expected_size} and no local-build pin vouches for it; re-fetching.",
-                file=sys.stderr,
-            )
-        elif strict:
-            # Strict verifies UNTRUSTED bytes (mirror / pin-less) against the
-            # snapshot sha on every load — this catches even same-size on-disk
-            # tampering of a previously-verified file. But a locally-built
-            # artifact has no maintainer sha to match (a non-reproducible build
-            # legitimately differs), so trust its provenance pin instead of
-            # rebuilding every load: an origin=build artifact adopted against
-            # THIS snapshot pin (snap_sha == expected) and unchanged on disk
-            # (size match) is served. A snapshot revision (expected changes)
-            # makes the pin stale, so it falls through and the slug is rebuilt
-            # — the cache is trusted until the source of truth moves.
-            pin = _cache.read_pin(dest)
-            if (pin is not None and pin.get("origin") == "build"
-                    and pin.get("snap_sha") == expected
-                    and pin.get("size") == cached_size):
-                return dest
-            if _cache.sha256_file(dest) == expected:
-                return dest
-            print(
-                f"[raincloud] WARN: cached {slug}/{fmt} sha256 != snapshot (strict); "
-                f"re-fetching from mirror/build.",
-                file=sys.stderr,
-            )
-        else:
-            if expected_size is not None and cached_size == expected_size:
-                return dest
-            pin = _cache.read_pin(dest)
-            if pin is not None and pin.get("snap_sha") == expected and pin.get("size") == cached_size:
-                return dest
-            if _cache.sha256_file(dest) == expected:
-                return dest
-            print(
-                f"[raincloud] WARN: cached {slug}/{fmt} sha256 drifted from snapshot; "
-                f"re-fetching from mirror/build.",
-                file=sys.stderr,
-            )
+    # 0) measured unavailable at this recipe: nothing local is served, and a
+    #    build would take the same measurement -- unless one was asked for,
+    #    which may run a different toolchain. When only this install measured
+    #    it and the catalog records a file, a mirror may still hold that file.
+    measurement = measured_unavailable(entry, fmt, config)
+    fetchable = measurement is not None and info.nbytes is not None
+    if measurement is not None and not fetchable and not allow_build:
+        raise unavailable_error(entry, fmt, measurement)
 
-    is_offline = _cache.is_offline() if offline is None else offline
+    # 1) prepared locally: the shared data store, then this user's cache.
+    local, mismatch = prepared(entry, fmt, config)
+    if local is not None:
+        return local
+
+    is_offline = config.offline if offline is None else offline
     if is_offline:
-        raise OfflineMiss(f"{slug}/{fmt} not cached and offline mode is on")
+        refused = "; a build was not attempted because offline mode is on" if allow_build else ""
+        raise OfflineMiss((mismatch or f"{slug}/{fmt} not cached and offline mode is on") + refused)
 
-    # 2) mirror. Drifted bytes warn-and-adopt (upstream changes are not panic
-    #    cases); a clean miss falls through to local build.
-    base = _mirror_base(mirror)
+    # 2) mirror: bytes are checked against the catalog as they arrive.
+    base = (mirror if mirror is not None else config.mirror)
+    base = base.rstrip("/") if base else None
+    where = "in a mirror (none is configured)"
+    if base is not None and measurement is not None and not fetchable:
+        # The catalog records no file to fetch: a build is the only way to one.
+        base = None
     if base is not None:
-        url = f"{base}/{artifact_key(slug, fmt)}"
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        _sweep_stale_parts(dest)
-        tmp = _tmp_path(dest)
+        where = f"in the mirror {redact_url(base)}"
         try:
-            _transport.fetch(url, tmp)
-            return _cache.adopt(tmp, dest, expected, strict=strict, slug=slug, origin="mirror")
-        except ArtifactNotFound:
-            pass  # fall through to build
+            problem = _local_mirror_problem(base)
+            if problem is not None:
+                # Said, because otherwise a mistyped mirror reads exactly like a real miss.
+                where = f"in a mirror ({problem})"
+                if allow_build:
+                    warnings.warn(f"the mirror {problem}; building {slug} locally instead",
+                                  RuntimeWarning, stacklevel=3)
+            else:
+                found = _from_mirror(base, key, config, info, slug, entry.recipe)
+                if found is not None:
+                    return found
+        except MirrorUnavailable as exc:
+            if not allow_build:
+                raise
+            warnings.warn(f"{exc}; building {slug} locally instead", RuntimeWarning, stacklevel=3)
 
-    # 3) local build. Works from a wheel install too: scripts.pipeline reads the
-    #    packaged manifest and writes under data_root() (~/.cache/raincloud) when
-    #    there's no checkout. Requires the [build] extra (see _build_import_error).
-    #    Only probe importability when we'd actually build — the import is wasted
-    #    work when allow_build is False.
-    if allow_build:
-        build_err = _build_import_error()
-        if build_err is None:
+    if not allow_build:
+        if measurement is not None:
+            raise unavailable_error(entry, fmt, measurement)
+        raise ArtifactNotFound(f"{mismatch}; it is not {where} either" if mismatch else
+                               f"{slug}/{fmt} is not prepared locally or {where}; "
+                               f"build it with `raincloud build {slug}` (or load(..., build=True))")
+
+    # 3) local build. Works from a wheel install too: raincloud.pipeline reads the
+    #    selected manifest and writes to the same configured artifact directory.
+    #    Requires the [build] extra (see _build_import_error).
+    if context is not None:
+        spec = next((s for s in context.manifest["datasets"] if s["slug"] == slug), None)
+        if spec is None:
+            raise UnknownSlug(f"{slug} is not in the {context.source} catalog", slug=slug)
+        context.build_check(spec)
+    build_err = _build_import_error()
+    if build_err is None:
+        with ExitStack() as stack:
+            pinned = stack.enter_context(context.pinned(config)) if context else config
             try:
-                subprocess.run(
-                    [sys.executable, "-m", "scripts.pipeline.build", slug], check=True
-                )
+                # The build log goes to stderr: stdout is the caller's (a path, or JSON).
+                subprocess.run([sys.executable, "-m", "raincloud.pipeline.build", slug], check=True,
+                               env=pinned.subprocess_env(), stdout=_stderr_fd())
             except (subprocess.CalledProcessError, OSError) as e:
                 # Honour the typed-error contract — callers catch RaincloudError,
                 # not raw subprocess errors. CalledProcessError = non-zero exit;
                 # OSError = couldn't even spawn (e.g. a bogus sys.executable).
                 raise BuildFailed(f"build of {slug} failed: {e}") from e
-            from scripts.pipeline.spec import output_format_dir  # type: ignore
-
-            built = output_format_dir(slug, fmt) / f"{slug}.{_cache.EXT[fmt]}"
-            if not built.exists():
-                raise ArtifactNotFound(f"build produced no {fmt} for {slug}")
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            _sweep_stale_parts(dest)
-            tmp = _tmp_path(dest)
-            try:
-                shutil.copyfile(built, tmp)
-                # adopt(strict=False, origin="build"): a client's local build
-                # legitimately differs from the maintainer's snapshot bytes
-                # (columnar output is rarely bit-reproducible), so we never
-                # strict-gate it on the maintainer's sha. `expected` is still
-                # passed so the pin records (snap_sha, size, origin=build) —
-                # that provenance lets BOTH non-strict and strict later loads
-                # serve these bytes straight from cache (no rebuild loop). The
-                # slug is rebuilt only when the snapshot pin changes (the source
-                # of truth moved) or the cached file is corrupted (size drift).
-                return _cache.adopt(tmp, dest, expected, strict=False, slug=slug, origin="build")
-            except Exception:
-                if tmp.exists():
-                    tmp.unlink()
-                raise
-        if not isinstance(build_err, ImportError):
-            # The [build] subtree is present but failed to import for a
-            # non-import reason (broken handler, malformed manifest). Surface
-            # the real cause rather than telling the user to `pip install`
-            # something they already have.
-            raise BuildToolingMissing(
-                f"{slug}/{fmt} not cached and not in mirror; the build pipeline is "
-                f"installed but failed to import: {type(build_err).__name__}: {build_err}"
-            )
+        built = config.data_dir / key
+        measurement = measured_unavailable(entry, fmt, config)
+        if measurement is not None:
+            raise unavailable_error(entry, fmt, measurement)
+        if not built.is_file():
+            raise ArtifactNotFound(f"build produced no {fmt} for {slug}")
+        return built
+    if not isinstance(build_err, ImportError):
+        # The [build] subtree is present but failed to import for a
+        # non-import reason (broken handler, malformed manifest). Surface
+        # the real cause rather than telling the user to `pip install`
+        # something they already have.
+        raise BuildToolingMissing(
+            f"{slug}/{fmt} not cached and not in mirror; the build pipeline is "
+            f"installed but failed to import: {type(build_err).__name__}: {build_err}"
+        )
     raise BuildToolingMissing(
         f"{slug}/{fmt} not cached and not in mirror; "
         f"install `raincloud[build]` or set RAINCLOUD_MIRROR"

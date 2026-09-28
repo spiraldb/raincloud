@@ -1,5 +1,4 @@
 {
-  "_comment": "Copy-paste this object into the `datasets` array in sources.json and edit the placeholder values. Validates against sources.schema.json. Use the Python load-edit-dump pattern from AGENTS.md to insert it — never `sed`.",
   "slug": "my-dataset",
   "short_name": "My Dataset",
   "full_name": "My Dataset (Publisher Attribution, Year)",
@@ -14,7 +13,9 @@
   },
   "fetch": {
     "type": "http",
-    "urls": ["https://example.com/data.csv"],
+    "urls": [
+      "https://example.com/data.csv"
+    ],
     "auth": null,
     "expected_bytes": null,
     "expected_sha256": null
@@ -38,19 +39,13 @@
     "params": {}
   },
   "write": {
-    "output": "my-dataset.parquet",
     "compression": "zstd",
-    "row_group_size_rows": 1048576,
-    "statistics": true,
-    "page_index": false
+    "row_group_size_rows": 10000000,
+    "statistics": true
   },
   "expect": {
     "rows": null,
     "schema_hash": null,
     "notes": "Populate `rows` after the first successful build."
-  },
-  "convert": {
-    "vortex": true,
-    "vortex_skip_reason": null
   }
 }

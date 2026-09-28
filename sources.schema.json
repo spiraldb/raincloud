@@ -2,32 +2,78 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/spiraldb/raincloud/sources.schema.json",
   "title": "raincloud manifest (sources.json)",
-  "description": "JSON Schema for sources.json, the manifest that drives the raincloud pipeline. Companion to sources.schema.md (the human-friendly reference). Validated by `python -m scripts.pipeline.validate_manifest`. Note: `transform.handler` is intentionally not enum-constrained here — the validator cross-checks it against the live handler registry in scripts/pipeline/handlers/__init__.py so this schema doesn't need updating every time a handler is added.",
+  "description": "JSON Schema for sources.json, the manifest that drives the raincloud pipeline. Companion to sources.schema.md (the human-friendly reference). Validated by `python -m raincloud.pipeline.validate_manifest`. Note: `transform.handler` is intentionally not enum-constrained here — the validator cross-checks it against `HANDLERS` in raincloud/_registry.py, the only place a handler is declared, so this schema doesn't need updating every time a handler is added.",
   "type": "object",
-  "required": ["schema_version", "datasets"],
+  "required": [
+    "schema_version",
+    "datasets"
+  ],
   "additionalProperties": true,
   "properties": {
     "schema_version": {
-      "const": 1,
-      "description": "Manifest schema version. Bumping this would create outputs/v{n}/ alongside outputs/v1/. The within-version layout is outputs/v{n}/<slug>/<format>/<filename> (e.g. parquet/<slug>.parquet, vortex/<slug>.vortex)."
+      "enum": [
+        1,
+        2
+      ],
+      "description": "Manifest schema version (1 or 2). Bumping this creates outputs/v{n}/ alongside outputs/v1/. The within-version layout is outputs/v{n}/<slug>/<format>/<filename> (e.g. parquet/<slug>.parquet, vortex/<slug>.vortex, arrow/<slug>.arrow.zstd). v2 adds the canonical Arrow spine and the per-slug `export` block, which is then the only declaration of a dataset's formats in a manifest being authored: `convert` and write.output / write.page_index are v1 only, and this schema rejects them in v2. v2 catalogs released before that rule may still carry `convert.vortex: false`; readers keep treating such a spec (with no export.formats) as Parquet-only. Code accepts both versions; sources.json selects v2."
     },
-    "generated_at": { "type": "string" },
-    "audit_cutoff": { "type": "string" },
+    "generated_at": {
+      "type": "string"
+    },
+    "audit_cutoff": {
+      "type": "string"
+    },
     "notes": {
       "description": "Free-form metadata about the manifest itself. Object or string.",
-      "type": ["object", "string", "null"]
+      "type": [
+        "object",
+        "string",
+        "null"
+      ]
+    },
+    "export_priority": {
+      "$ref": "#/$defs/WriterPriority",
+      "description": "Catalog-wide writer preference: the default for every dataset without its own export.priority. Same shape as export.priority; a format it does not name falls through to the machine's RAINCLOUD_EXPORT_PRIORITY, then the built-in order. Omit the key for no catalog-wide preference (null is not accepted)."
     },
     "datasets": {
       "type": "array",
-      "items": { "$ref": "#/$defs/DatasetSpec" }
+      "items": {
+        "$ref": "#/$defs/DatasetSpec"
+      }
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "schema_version"
+        ],
+        "properties": {
+          "schema_version": {
+            "const": 2
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "datasets": {
+            "items": {
+              "$ref": "#/$defs/V2Only"
+            }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "DatasetSpec": {
       "type": "object",
       "required": [
-        "slug", "short_name", "full_name", "description",
-        "license", "fetch", "extract", "parse", "transform", "write", "expect"
+        "slug",
+        "short_name",
+        "full_name",
+        "description",
+        "license"
       ],
       "additionalProperties": false,
       "properties": {
@@ -36,31 +82,72 @@
           "pattern": "^[a-z0-9][a-z0-9_-]*$",
           "description": "kebab-case identifier (a few legacy nyc-tlc slugs use snake_case); matches outputs/v{n}/<slug>/parquet/<slug>.parquet."
         },
-        "short_name": { "type": "string", "minLength": 1 },
-        "full_name":  { "type": "string", "minLength": 1 },
-        "description": { "type": "string" },
-        "license": { "$ref": "#/$defs/License" },
-        "fetch":   { "$ref": "#/$defs/Fetch" },
-        "extract": { "$ref": "#/$defs/Extract" },
-        "parse":   { "$ref": "#/$defs/Parse" },
-        "transform": { "$ref": "#/$defs/Transform" },
-        "write":   { "$ref": "#/$defs/Write" },
-        "expect":  { "$ref": "#/$defs/Expect" },
-        "convert": { "$ref": "#/$defs/Convert" },
-        "hydrate": { "$ref": "#/$defs/Hydrate" },
+        "short_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "full_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "license": {
+          "$ref": "#/$defs/License"
+        },
+        "fetch": {
+          "$ref": "#/$defs/Fetch"
+        },
+        "extract": {
+          "$ref": "#/$defs/Extract"
+        },
+        "parse": {
+          "$ref": "#/$defs/Parse"
+        },
+        "transform": {
+          "$ref": "#/$defs/Transform"
+        },
+        "write": {
+          "$ref": "#/$defs/Write"
+        },
+        "expect": {
+          "$ref": "#/$defs/Expect"
+        },
+        "convert": {
+          "$ref": "#/$defs/Convert"
+        },
+        "export": {
+          "$ref": "#/$defs/Export"
+        },
         "references": {
-          "type": ["array", "null"],
+          "type": [
+            "array",
+            "null"
+          ],
           "items": {
             "type": "object",
-            "required": ["kind", "url"],
+            "required": [
+              "kind",
+              "url"
+            ],
             "additionalProperties": false,
             "properties": {
               "kind": {
                 "type": "string",
-                "enum": ["paper", "blog", "homepage", "github", "dataset_card"],
+                "enum": [
+                  "paper",
+                  "blog",
+                  "homepage",
+                  "github",
+                  "dataset_card"
+                ],
                 "description": "Reference type. `dataset_card` rarely needs a separate entry since `license.source_url` typically points there; reserve `references` for canonical paper / blog / homepage / source-repo links."
               },
-              "url":  { "type": "string", "format": "uri" }
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
             }
           },
           "description": "Optional canonical references for the dataset beyond `license.source_url`. Most useful for surfacing the underlying paper or the project homepage in the TUI."
@@ -73,12 +160,22 @@
           "items": {
             "type": "string",
             "enum": [
-              "urls", "prose", "enums", "identifiers", "code-strings",
-              "timestamps", "embeddings", "counts", "monetary", "measurements",
-              "coordinates", "binary-payload", "nested-json"
+              "urls",
+              "prose",
+              "enums",
+              "identifiers",
+              "code-strings",
+              "timestamps",
+              "embeddings",
+              "counts",
+              "monetary",
+              "measurements",
+              "coordinates",
+              "binary-payload",
+              "nested-json"
             ]
           },
-          "description": "Closed-vocab data-kind tags (0–3) describing the *content shape* a slug exercises (URLs / prose / enums / identifiers / code / timestamps / embeddings / counts / money / measurements / coordinates / binary blobs / nested JSON). Used by the TUI faceted side panel and `list_datasets --tag`. See `scripts/pipeline/discovery.py:TAG_VOCAB` for the authoritative list."
+          "description": "Closed-vocab data-kind tags (0–3) describing the *content shape* a slug exercises (URLs / prose / enums / identifiers / code / timestamps / embeddings / counts / money / measurements / coordinates / binary blobs / nested JSON). Used by the TUI faceted side panel and `list_datasets --tag`. See `raincloud/pipeline/discovery.py:TAG_VOCAB` for the authoritative list."
         },
         "showcase": {
           "type": "array",
@@ -86,114 +183,367 @@
           "uniqueItems": true,
           "items": {
             "type": "string",
-            "enum": ["encoding", "stress"]
+            "enum": [
+              "encoding",
+              "stress"
+            ]
           },
-          "description": "Editorial showcase tiers. See `scripts/pipeline/discovery.py:SHOWCASE_TIERS`."
+          "description": "Editorial showcase tiers. See `raincloud/pipeline/discovery.py:SHOWCASE_TIERS`."
+        },
+        "derive": {
+          "$ref": "#/$defs/Derive"
+        },
+        "advisory": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Required on a derived dataset: why a reader probably wants the parent instead -- takedown rates, copyright posture, expected null prevalence. Shown by `raincloud describe`, which the warning every load emits points to."
+        }
+      },
+      "if": {
+        "required": [
+          "derive"
+        ]
+      },
+      "then": {
+        "required": [
+          "derive",
+          "advisory"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "fetch"
+              ]
+            },
+            {
+              "required": [
+                "extract"
+              ]
+            },
+            {
+              "required": [
+                "parse"
+              ]
+            },
+            {
+              "required": [
+                "transform"
+              ]
+            },
+            {
+              "required": [
+                "write"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "required": [
+          "fetch",
+          "extract",
+          "parse",
+          "transform",
+          "write",
+          "expect"
+        ],
+        "not": {
+          "required": [
+            "advisory"
+          ]
         }
       }
     },
     "License": {
       "type": "object",
-      "required": ["spdx", "source_url", "redistribution_permitted", "attribution_required", "notes", "scrape_advisory"],
+      "required": [
+        "spdx",
+        "source_url",
+        "redistribution_permitted",
+        "attribution_required",
+        "notes",
+        "scrape_advisory"
+      ],
       "additionalProperties": false,
       "properties": {
-        "spdx": { "type": "string", "description": "SPDX id, or free-form token if no SPDX assignment exists. Describes the aggregator's declared license — see `scrape_advisory` for the gap between that and any uncleared underlying content." },
-        "source_url": { "type": ["string", "null"], "format": "uri" },
-        "redistribution_permitted": { "type": "boolean" },
-        "attribution_required": { "type": "boolean" },
-        "notes": { "type": ["string", "null"] },
+        "spdx": {
+          "type": "string",
+          "description": "SPDX id, or free-form token if no SPDX assignment exists. Describes the aggregator's declared license — see `scrape_advisory` for the gap between that and any uncleared underlying content."
+        },
+        "source_url": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri"
+        },
+        "redistribution_permitted": {
+          "type": "boolean"
+        },
+        "attribution_required": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "scrape_advisory": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Heavy asterisk for datasets that aggregate or reference content whose underlying licenses have not been individually cleared (public-web scrapes, Common Crawl derivatives, image/code corpora distributed under takedown models). When non-null, the text renders as a prominent warning in datasets.md, list_datasets --long, and the TUI. `spdx` still describes the aggregator's declared license; this field captures the gap between that and the unclaimed status of the underlying content."
         }
       }
     },
     "Fetch": {
       "type": "object",
-      "required": ["type", "urls", "auth", "expected_bytes", "expected_sha256"],
+      "required": [
+        "type",
+        "urls",
+        "auth",
+        "expected_bytes",
+        "expected_sha256"
+      ],
       "additionalProperties": false,
       "properties": {
         "type": {
+          "description": "Where the bytes come from. For `custom`, `notes` names the fetcher: a CUSTOM_FETCHERS entry in raincloud/_registry.py (the slug when notes is null).",
           "type": "string",
-          "enum": ["http", "kaggle", "huggingface", "uci", "custom"]
+          "enum": [
+            "http",
+            "kaggle",
+            "huggingface",
+            "uci",
+            "custom",
+            "generated"
+          ]
         },
         "urls": {
-          "description": "List of upstream URLs to fetch in order. May be empty when fetch.type=\"custom\" and the handler resolves URLs at runtime (e.g. Public BI workloads).",
+          "description": "List of upstream URLs to fetch in order. May be empty when fetch.type=\"custom\" (the custom fetcher resolves its URLs at run time, e.g. Public BI workloads) or \"generated\".",
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "auth": {
-          "type": ["string", "null"],
-          "enum": [null, "kaggle", "huggingface"]
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            null,
+            "kaggle",
+            "huggingface"
+          ]
         },
         "requires_interactive_accept": {
           "type": "boolean",
           "description": "Marks datasets gated behind a one-time terms-of-use click-through on the upstream's web UI. Valid on fetch.type=kaggle (Kaggle dataset ToS) and fetch.type=huggingface (HF gated repos like LAION). Both fetchers catch the 401/403 and surface a 'visit URL, click Accept, re-run' message regardless of this flag — setting it lets the orchestrator announce the requirement up front."
         },
         "hf_allow_patterns": {
-          "type": ["array", "null"],
-          "items": { "type": "string" },
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          },
           "description": "huggingface-only: glob patterns passed through to snapshot_download(allow_patterns=...). Lets a slug fetch a subset of a giant repo (e.g. just one config or sample of fineweb) without paying for the whole corpus. Null/omitted = whole repo."
         },
         "hf_revision": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "huggingface-only: git revision (branch, tag, or commit SHA) passed through to snapshot_download(revision=...). Null/omitted = whatever main resolves to at fetch time."
         },
-        "expected_bytes": { "type": ["integer", "null"], "minimum": 0 },
-        "expected_sha256": { "type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$" },
-        "verify_tls": {
-          "type": "boolean",
-          "default": true,
-          "description": "Whether to verify TLS certs when fetching from HTTPS URLs. Default true. Set to false only as a documented escape hatch for upstreams whose certs have rotted but whose payload integrity we cover via expected_sha256."
+        "expected_bytes": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
         },
-        "notes": { "type": ["string", "null"] }
-      }
+        "expected_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-fA-F0-9]{64}$"
+        },
+        "notes": {
+          "description": "Free-form note. For fetch.type=\"custom\" it is load-bearing: it names the CUSTOM_FETCHERS entry in raincloud/_registry.py that fetches this dataset (the slug is used when it is null).",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "generator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "output": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "generated"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "generator",
+              "version",
+              "parameters",
+              "output"
+            ],
+            "properties": {
+              "urls": {
+                "maxItems": 0
+              },
+              "auth": {
+                "type": "null"
+              },
+              "expected_bytes": {
+                "type": "null"
+              },
+              "expected_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "generator"
+                  ]
+                },
+                {
+                  "required": [
+                    "version"
+                  ]
+                },
+                {
+                  "required": [
+                    "parameters"
+                  ]
+                },
+                {
+                  "required": [
+                    "output"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
     },
     "Extract": {
       "type": "object",
-      "required": ["type", "include", "exclude", "post"],
+      "required": [
+        "type",
+        "include",
+        "exclude",
+        "post"
+      ],
       "additionalProperties": false,
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["passthrough", "zip", "tar", "bz2", "gzip", "7z", "custom"]
+          "enum": [
+            "passthrough",
+            "zip",
+            "tar",
+            "bz2",
+            "gzip",
+            "7z"
+          ],
+          "description": "How fetched files are unpacked. `tar` handles .tar, .tar.gz and .tgz."
         },
         "include": {
-          "type": ["array", "null"],
-          "items": { "type": "string" }
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
         },
         "exclude": {
-          "type": ["array", "null"],
-          "items": { "type": "string" }
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
         },
-        "post": { "type": ["string", "null"] }
+        "post": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     },
     "Parse": {
       "type": "object",
-      "required": ["reader", "options"],
+      "required": [
+        "reader",
+        "options"
+      ],
       "additionalProperties": false,
       "properties": {
         "reader": {
           "type": "string",
-          "enum": ["csv", "parquet", "jsonl", "xml", "pbf", "custom"]
+          "enum": [
+            "csv",
+            "parquet",
+            "jsonl",
+            "xml",
+            "pbf",
+            "custom"
+          ]
         },
         "options": {
           "type": "object",
           "additionalProperties": true,
-          "description": "Reader-specific kwargs. Shape varies by reader — see scripts/pipeline/parse.py."
+          "description": "Reader-specific kwargs. Shape varies by reader — see raincloud/pipeline/parse.py."
         }
       }
     },
     "Transform": {
       "type": "object",
-      "required": ["handler", "params"],
+      "required": [
+        "handler",
+        "params"
+      ],
       "additionalProperties": false,
       "properties": {
         "handler": {
           "type": "string",
           "minLength": 1,
-          "description": "Name of a registered handler in scripts/pipeline/handlers/__init__.py. Validated by validate_manifest.py."
+          "description": "Name of a handler declared in `HANDLERS` in raincloud/_registry.py (raincloud/pipeline/handlers/__init__.py only resolves those names). Validated by validate_manifest.py."
         },
         "params": {
           "type": "object",
@@ -203,79 +553,254 @@
     },
     "Write": {
       "type": "object",
-      "required": ["output", "compression", "row_group_size_rows", "statistics", "page_index"],
+      "required": [
+        "compression",
+        "row_group_size_rows",
+        "statistics"
+      ],
       "additionalProperties": false,
       "properties": {
         "output": {
           "type": "string",
           "pattern": "\\.parquet$",
-          "description": "Output filename. Ignored for multi-output handlers — they emit per-output_slug filenames."
+          "description": "schema_version 1 only (rejected in v2): the output filename, which no writer read; files are always <format>/<slug>.<ext>."
         },
         "compression": {
           "type": "string",
-          "enum": ["zstd", "snappy", "gzip", "lz4", "brotli", "none"]
+          "enum": [
+            "zstd",
+            "snappy",
+            "gzip",
+            "lz4",
+            "brotli",
+            "none"
+          ]
         },
-        "row_group_size_rows": { "type": "integer", "minimum": 1 },
-        "statistics": { "type": "boolean" },
-        "page_index": { "type": "boolean" }
-      }
+        "row_group_size_rows": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Backstop cap on rows in one row group, in every Parquet writer. Groups are sized by ENCODED bytes (128 MiB by default, RAINCLOUD_ROW_GROUP_TARGET_ENCODED_BYTES; parquet@java counts closed pages at their compressed size, so its groups come out larger); this only catches shapes bytes cannot, such as a single narrow integer column that would otherwise reach ~134M rows per group. NOT a target: set it too low and it binds before the byte target, which is exactly what the former 1048576 did. The manifest convention is 10000000."
+        },
+        "statistics": {
+          "type": "boolean"
+        },
+        "page_index": {
+          "type": "boolean",
+          "description": "schema_version 1 only (rejected in v2): never read by any writer."
+        }
+      },
+      "description": "Parquet writer settings. parquet@py honours all three of compression, row_group_size_rows and statistics. The sidecar writers (parquet@rs, parquet@java, parquet@hardwood) receive row_group_size_rows as RAINCLOUD_ROW_GROUP_MAX_ROWS in their environment, so the recipe's row cap wins in every lane; they choose their own compression and statistics."
     },
     "Expect": {
       "type": "object",
-      "required": ["rows", "schema_hash", "notes"],
+      "required": [
+        "rows",
+        "schema_hash",
+        "notes"
+      ],
       "additionalProperties": false,
       "properties": {
-        "rows": { "type": ["integer", "null"], "minimum": 0 },
-        "schema_hash": { "type": ["string", "null"] },
-        "notes": { "type": ["string", "null"] },
+        "rows": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "schema_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "row_stability": {
-          "enum": ["static", "grow_only", "mutable", null],
+          "enum": [
+            "static",
+            "grow_only",
+            "mutable",
+            null
+          ],
           "description": "How the upstream row count evolves over time:\n  static     — frozen snapshot (Kaggle dump, archived release, Wikipedia 2024 dump). expect.rows is contractual; drift is a bug.\n  grow_only  — append-only live source (NYC OpenData, NOAA observations); past rows don't change.\n  mutable    — past records may be revised or deleted (some live CKAN portals).\n  null/absent — unclassified."
         }
       }
     },
     "Convert": {
       "type": "object",
-      "required": ["vortex", "vortex_skip_reason"],
+      "required": [
+        "vortex",
+        "vortex_skip_reason"
+      ],
       "additionalProperties": false,
       "properties": {
-        "vortex": { "type": "boolean" },
+        "vortex": {
+          "type": "boolean",
+          "description": "v1: true emits a sibling <slug>.vortex beside the parquet."
+        },
         "vortex_skip_reason": {
-          "type": ["string", "null"],
-          "description": "Free-form explanation of why the Vortex sibling is opted out. Required (non-null string) when vortex=false; must be null when vortex=true. Surfaced in docs/v{n}/vortex_skip.md, the TUI detail pane, and list_datasets --json. Use this for known type-support gaps in the current Vortex release (e.g. FixedSizeBinary(16) UUIDs, nested list<struct> on chunked-array writes) so the catalog records *why* a slug doesn't have a `.vortex` rather than leaving it ambiguous."
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "v1: why the Vortex sibling is opted out. Required (non-null string) when vortex=false; must be null when vortex=true. Shown by `list_datasets --no-vortex --json` and the TUI detail pane."
+        }
+      },
+      "description": "schema_version 1 only: the pre-spine Vortex opt-in. v2 declares formats in `export.formats`."
+    },
+    "Hydrate": {
+      "type": "object",
+      "description": "Which of the parent's URL columns to fetch, and into what. Each fetched column `<into>` is followed by a `_<into>_provenance` struct recording every fetch's outcome.",
+      "required": [
+        "columns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "Parent column holding URLs -> the column to add.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "into",
+              "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "into": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the new column (typically `content`)."
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "binary",
+                  "string"
+                ],
+                "description": "`binary` for image/audio/PDF bytes, `string` for HTML/text."
+              }
+            }
+          }
+        },
+        "blocked_hosts_extra": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "Hostnames to add to the fetch blocklist for this dataset, on top of run-time --block files and (if enabled) URLhaus. Hostnames only -- no schemes, no paths."
         }
       }
     },
-    "Hydrate": {
-      "type": ["object", "null"],
-      "description": "Opt-in hydration config. When non-null, the slug carries a URL column whose contents can be dereferenced into a sibling parquet at outputs/v{n}/<slug>/parquet-hydrated/<slug>.parquet. The base slug ships only the URL index — hydration is a separate, deliberately sketchy artefact tier with no file-size guarantees. Run `python -m scripts.pipeline.hydrate <slug>` to produce the hydrated copy.",
-      "required": ["url_column", "output_column", "output_type", "advisory"],
+    "Export": {
+      "type": "object",
+      "description": "Per-slug export policy (v2): which formats to materialise from the canonical Arrow spine beyond the always-produced `arrow/<slug>.arrow.zstd`, and which writer makes them. Each format is one file, `<format>/<slug>.<ext>`, whichever writer made it; the catalog records the writer beside the file's sha256. In a v2 manifest this is the only declaration of a dataset's formats; omitted, it exports parquet and vortex.",
       "additionalProperties": false,
       "properties": {
-        "url_column": {
-          "type": "string",
-          "description": "Name of the existing string column whose values are URLs to dereference."
+        "formats": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "parquet",
+              "vortex"
+            ]
+          },
+          "uniqueItems": true,
+          "description": "Formats the dataset wants. Replaces the default [\"parquet\", \"vortex\"]; [] produces only canonical Arrow. Never `arrow` (the canonical every exporter reads) and never a writer-qualified name — the writer comes from `priority`. A format the planned writer cannot produce for this dataset is not declared here: the build measures the failure and records it, and the catalog shows the format as unavailable with that measurement."
         },
-        "output_column": {
-          "type": "string",
-          "description": "Name of the new column to add to the hydrated copy (typically `content` or `bytes`)."
+        "priority": {
+          "$ref": "#/$defs/WriterPriority",
+          "description": "This dataset's writer preference. The first writer that exists for a format AND is installed writes it, so a machine without a preferred sidecar falls through. Overrides the catalog's `export_priority`, the machine's RAINCLOUD_EXPORT_PRIORITY and the built-in py-first order, for the formats it covers."
         },
-        "output_type": {
-          "type": "string",
-          "enum": ["binary", "string"],
-          "description": "Wire shape of the dereferenced payload — `binary` for image/audio/PDF bytes, `string` for HTML/text. Embeddings or other model-derived representations belong on a sibling slug, not on this column."
-        },
-        "advisory": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Free-form per-slug warning describing the hydration's pitfalls — takedown rates, copyright posture, expected null-row prevalence. Rendered in HYDRATING.md alongside the global 'this dereferences arbitrary URLs' preamble."
-        },
-        "blocked_hosts_extra": {
-          "type": ["array", "null"],
-          "items": { "type": "string" },
-          "description": "Optional per-slug list of hostnames to add to the hydrate stage's blocklist. Stacks on top of the user-supplied --block files and (if enabled) URLhaus. Use for slug-specific bans the dataset author wants to enforce regardless of run-time flags. Hostnames only — no schemes, no paths."
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Free-form annotation, e.g. why a deliberate policy leaves a format out. Never a writer's technical limitation: that is measured by the build and recorded in the catalog. Shown by `list_datasets --no-vortex` and the TUI for a spec whose formats leave out vortex."
         }
       }
+    },
+    "Derive": {
+      "type": "object",
+      "description": "A dataset built from another catalog dataset instead of an upstream source. Today the only derivation is hydration: `<parent>-hydrated`, the parent's rows with some URL columns fetched into bytes. Never built unless named (`raincloud build <parent>-hydrated`).",
+      "required": [
+        "from",
+        "hydrate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$",
+          "description": "Slug of the parent dataset, read from its canonical Arrow."
+        },
+        "hydrate": {
+          "$ref": "#/$defs/Hydrate"
+        }
+      }
+    },
+    "V2Only": {
+      "description": "What schema_version 2 drops. `export.formats` is the one declaration of which formats a dataset exports, so v1's `convert` block is rejected in a v2 manifest being authored (released v2 catalogs that still carry `convert.vortex: false` keep reading as Parquet-only); `write.output` and `write.page_index` were never read by any writer.",
+      "not": {
+        "required": [
+          "convert"
+        ]
+      },
+      "properties": {
+        "write": {
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "output"
+                ]
+              },
+              {
+                "required": [
+                  "page_index"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "WriterPriority": {
+      "description": "Writer preference, most preferred first. Either a list of writer names, which serves every format and does not fall through, so it must name a writer for each format the dataset exports (a list like [\"hardwood\"], a Parquet-only writer, leaves Vortex with no writer and its export fails), or a map from format to such a list (e.g. {\"parquet\": [\"rs\", \"py\"]}), which serves only the formats it names; any other format falls through to the next level. validate_manifest rejects a name that is no export writer (`canonical` writes only the Arrow spine).",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/WriterList"
+        },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "enum": [
+              "parquet",
+              "vortex"
+            ]
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/WriterList"
+          }
+        }
+      ]
+    },
+    "WriterList": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
     }
   }
 }

@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Default-lane coverage for the Dataset materialization API.
 
-`.scan()`, `.to_pandas()`, `.to_vortex()`, and `.schema` were previously
-exercised ONLY in the `--run-wheel`-gated subprocess tests, so a regression in
-any of them sailed through the blocking `pytest` lane. duckdb + pandas are
-installed via `--extra build` in that lane, so these run hermetically against a
+`.dataset()`, `.to_pandas()`, `.to_vortex()`, and `.schema` were previously
+exercised only in the `--run-wheel`-gated subprocess tests, so they need
+coverage in the blocking `pytest` lane, which installs duckdb (through
+`--extra build`) and `--extra pandas`. They run hermetically against a
 file:// mirror with no network and no wheel build.
 """
 import hashlib
@@ -53,24 +53,29 @@ def both_formats(tmp_path, monkeypatch):
     _catalog.load_catalog.cache_clear()
 
 
-def test_scan_returns_queryable_relation(both_formats):
+def test_dataset_is_lazy_and_engine_neutral(both_formats):
+    import pyarrow.compute as pc
+    import pyarrow.dataset as pads
+
     import raincloud
-    ds = raincloud.load("tiny", format="parquet")
-    rel = ds.scan()
-    assert rel.aggregate("count(*)").fetchone()[0] == 3
-    assert rel.filter("x >= 2").aggregate("count(*)").fetchone()[0] == 2
+    for fmt in ("parquet", "vortex"):
+        d = raincloud.load("tiny", format=fmt).dataset()
+        assert isinstance(d, pads.Dataset)
+        assert d.count_rows() == 3
+        assert d.to_table(columns=["x"], filter=pc.field("x") >= 2).num_rows == 2
 
 
-def test_scan_from_vortex_resolves_parquet_sibling(both_formats, capsys):
-    """A vortex-loaded handle has no native DuckDB reader, so scan() resolves
-    the parquet sibling and warns first so the implicit fetch isn't a surprise."""
+def test_dataset_scans_the_loaded_format_without_swapping(both_formats, capsys):
+    """The default load is Vortex, and dataset() reads that file -- no Parquet
+    sibling resolution, no notice."""
+    pytest.importorskip("duckdb")
     import raincloud
     ds = raincloud.load("tiny")  # default vortex (available here)
     assert ds.format == "vortex"
-    rel = ds.scan()
-    assert rel.aggregate("count(*)").fetchone()[0] == 3
-    err = capsys.readouterr().err
-    assert "scan() needs parquet" in err and "tiny" in err
+    d = ds.dataset()  # noqa: F841 -- DuckDB finds `d` by name in the SQL below
+    with raincloud.duckdb_connect() as con:
+        assert con.sql("select count(*) from d where x >= 2").fetchone()[0] == 2
+    assert capsys.readouterr().err == ""
 
 
 def test_to_pandas_returns_dataframe(both_formats):
