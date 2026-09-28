@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Real network build tests (opt-in via --run-network, non-blocking in CI).
 
-Each parametrized case calls raincloud.load('<slug>'), which exercises the
+Each parametrized case calls raincloud.load('<slug>', build=True), which exercises the
 loader's real build-fallback against a live upstream: load → cache miss →
 mirror absent → subprocess build (fetch→…→convert) → adopt → materialize.
 Three tiny slugs across two hosts and three handlers for coverage.
@@ -19,31 +19,19 @@ pytestmark = pytest.mark.network
     ("uci-seeds", 210),
     ("countries-of-the-world", 262),
 ])
-def test_real_build_via_load(tmp_path, monkeypatch, slug, expected_rows):
-    monkeypatch.setenv("RAINCLOUD_HOME",  str(tmp_path / "home"))
-    monkeypatch.setenv("RAINCLOUD_CACHE", str(tmp_path / "cache"))
-    monkeypatch.delenv("RAINCLOUD_MIRROR",  raising=False)
-    monkeypatch.delenv("RAINCLOUD_OFFLINE", raising=False)
-
+def test_real_build_via_load(tmp_path, slug, expected_rows):
     import raincloud
-    from raincloud import _catalog
-    _catalog.load_catalog.cache_clear()
-    try:
-        ds = raincloud.load(slug)
-        tbl = ds.to_arrow()
-        assert tbl.num_rows == expected_rows, (
-            f"{slug}: expected {expected_rows} rows, got {tbl.num_rows}"
-        )
-        # Pin the RAINCLOUD_HOME hermeticity invariant: the build subprocess
-        # must have written its outputs under tmp, NOT the repo's outputs/v1.
-        # Without this, a regression that ignored RAINCLOUD_HOME would silently
-        # corrupt the repo's tracked outputs while the row-count assertion
-        # above still passed (the loader cache would adopt the wrong-location
-        # artifact).
-        built = tmp_path / "home" / "outputs" / "v1" / slug / "parquet" / f"{slug}.parquet"
-        assert built.exists(), (
-            f"{slug}: build did not write under RAINCLOUD_HOME; "
-            f"expected {built}, repo's outputs/v1/ may have been written instead"
-        )
-    finally:
-        _catalog.load_catalog.cache_clear()
+
+    cfg = raincloud.resolve_config(no_config=True, catalog="checkout",
+        data_dir=tmp_path / "data", cache_dir=tmp_path / "cache",
+        raw_dir=tmp_path / "raw", scratch_dir=tmp_path / "scratch",
+        catalog_dir=tmp_path / "catalogs", mirror="", offline=False)
+    ds = raincloud.load(slug, config=cfg, build=True)
+    tbl = ds.to_arrow()
+    assert tbl.num_rows == expected_rows
+    # Assert the actual public read resolves the artifact produced by the child
+    # builder inside this store; ambient machine configuration cannot redirect it.
+    assert ds.path().is_relative_to(cfg.data_dir)
+    parquet = next(a["key"] for a in ds.artifacts if a["format"] == "parquet" and a["writer"] == "py")
+    assert (cfg.data_dir / parquet).is_file()
+    assert not cfg.cache_dir.exists()

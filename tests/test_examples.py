@@ -5,8 +5,10 @@
 - compile check: every examples/*.py must byte-compile (catches syntax/indent
   rot on every default `pytest` run, no network).
 - end-to-end: one small example (kepler) actually runs against real upstream
-  data — load -> build -> query -> print — gated behind --run-network so the
+  data — `--build` -> load -> query -> print — gated behind --run-network so the
   default suite stays hermetic. Exercises the real code path at least once.
+  (tests/test_docs_contracts.py runs every example hermetically, against synthetic
+  file:// sources, on the default run.)
 """
 from __future__ import annotations
 
@@ -39,19 +41,22 @@ def test_example_compiles(path):
 def test_kepler_example_runs_end_to_end(tmp_path):
     """Run the kepler example for real: small upstream fetch + build + query.
 
+    Reads never build, so the example is asked to (`--build`), exactly as its
+    docstring tells a user on a fresh install.
+
     Non-blocking in CI (the realbuild job is continue-on-error). Proves the
     examples' load->materialize->query path works against live data, not just
     that the file parses.
     """
     script = EXAMPLES_DIR / "kepler_exoplanets.py"
     # Scrub the developer's ambient RAINCLOUD_* (OUTPUTS / WORKDIR /
-    # STRICT_CHECKSUM / MIRROR / OFFLINE) so the run is hermetic, then set only
+    # MIRROR / OFFLINE) so the run is hermetic, then set only
     # HOME + CACHE under tmp_path. Mirrors test_wheel._clean_env.
     env = {k: v for k, v in os.environ.items() if not k.startswith("RAINCLOUD_")}
     env["RAINCLOUD_HOME"] = str(tmp_path / "home")
     env["RAINCLOUD_CACHE"] = str(tmp_path / "cache")
     cp = subprocess.run(
-        [sys.executable, str(script)],
+        [sys.executable, str(script), "--build"],
         capture_output=True, text=True, env=env, timeout=600,
     )
     assert cp.returncode == 0, f"stdout={cp.stdout!r}\nstderr={cp.stderr!r}"

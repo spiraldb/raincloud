@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
-"""Regression guard against REPO_ROOT path fragility in scripts/pipeline/.
+"""Regression guard against REPO_ROOT path fragility in raincloud/pipeline/.
 
 Long-running build / hydrate / tighten stages must not crash on log or
 cleanup operations when their outputs live outside the checkout (wheel

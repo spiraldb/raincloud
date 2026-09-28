@@ -1,0 +1,3 @@
+[submodule "sidecars/java/parquet-arrow-java"]
+	path = sidecars/java/parquet-arrow-java
+	url = https://github.com/mprammer/parquet-arrow-java.git

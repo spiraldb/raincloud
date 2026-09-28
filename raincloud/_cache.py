@@ -1,39 +1,47 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
-"""Local artifact cache: paths, sha256 verification, atomic adoption."""
+"""Local artifact files: paths, sha256, and safe replacement.
+
+The catalog is the authority for what each artifact is: its sha256 and byte
+size. Bytes are checked once, when they enter a store (a mirror download here,
+a publish into a shared store); after that a file at its key with the
+catalog's size is the artifact.
+"""
 from __future__ import annotations
 
 import hashlib
-import json
 import os
+import re
+import shutil
 import sys
+import time
+import uuid
 from pathlib import Path
 
 from .exceptions import ChecksumMismatch
 
-# Format -> on-disk file extension. Identity for today's two formats, but kept
-# as a map so a future format whose extension differs from its name (e.g. a
-# "parquet-hydrated" tier -> "parquet") slots in without touching call sites.
-EXT = {"parquet": "parquet", "vortex": "vortex"}
+# Format -> on-disk file extension. Identity for parquet/vortex, but kept as a
+# map precisely so a format whose extension differs from its name slots in
+# without touching call sites. `arrow` -> `arrow.zstd` is the live example: an
+# Arrow IPC file whose buffers are zstd-compressed inside the IPC format (there
+# is no outer zstd frame). The suffix is part of the native-client path contract.
+EXT = {"parquet": "parquet", "vortex": "vortex", "arrow": "arrow.zstd"}
 
-_TRUTHY = {"1", "true", "yes", "on"}
+# A rollback copy another process left this long ago is an orphan of a crash
+# (SIGKILL, OOM) mid-publish; nothing else would ever remove it.
+_STALE_BACKUP_SECONDS = 6 * 3600
 
 
 def cache_root() -> Path:
-    env = os.environ.get("RAINCLOUD_CACHE")
-    if env:
-        # .expanduser() for parity with _catalog._data_file and
-        # scripts.pipeline.spec._env_path so `RAINCLOUD_CACHE=~/foo` resolves
-        # to the home dir rather than a literal ./~/foo.
-        return Path(env).expanduser()
-    xdg = os.environ.get("XDG_CACHE_HOME")
-    base = Path(xdg) if xdg else Path.home() / ".cache"
-    return base / "raincloud"
+    from .config import get_config
+    return get_config().cache_dir
 
 
-def cache_path(slug: str, fmt: str) -> Path:
-    # schema_version is 1 today; hardcoded to match the loader's artifact_key + the pipeline's outputs/v1 layout
-    return cache_root() / "v1" / slug / fmt / f"{slug}.{EXT[fmt]}"
+def cache_path(slug: str, fmt: str, version: int = 1) -> Path:
+    # Only tests call this. The loader composes cache_dir / artifact_key(slug,
+    # fmt, Entry.version) itself; artifact_key has no default version.
+    from ._resolve import artifact_key
+    return cache_root() / artifact_key(slug, fmt, version)
 
 
 def sha256_file(path: Path) -> str:
@@ -44,144 +52,102 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def is_offline() -> bool:
-    return os.environ.get("RAINCLOUD_OFFLINE", "").lower() in _TRUTHY
+class Publication:
+    """Keep the previous `dest` restorable until the caller accepts its replacement.
 
-
-def strict_checksum() -> bool:
-    """True if `RAINCLOUD_STRICT_CHECKSUM` opts into hard checksum failures.
-
-    Default (off) is the 'drift is an alert' policy: a sha mismatch warns and
-    adopts. Strict (on) is for security-sensitive deployments / CI:
-
-      - A slug that HAS a pinned sha and comes from the mirror is rehashed on
-        every cache hit and on download; a mismatch raises ChecksumMismatch
-        (catches even same-size on-disk tampering of a previously-verified
-        file). This is the integrity property strict buys, at the cost of a
-        rehash per load.
-      - A slug with NO pinned sha has nothing to rehash against, so strict
-        changes nothing for it — the size/pin corruption check still applies.
-      - A LOCALLY-BUILT artifact can't be verified against the maintainer's
-        sha (a non-reproducible build legitimately differs), so it is trusted
-        via its provenance pin (origin=build + the snapshot pin it was built
-        against) rather than rebuilt every load. It is rebuilt only when that
-        snapshot pin changes (the source of truth moved) — see _resolve.
-        For full cryptographic integrity, point strict deployments at a mirror.
+    Writers replace files by rename, never in place, so readers see the old
+    file or the new one, never a torn one. This adds rollback for a failed
+    write: a hard link (a copy where links are unavailable) holds the old bytes
+    until `accept()`.
     """
-    return os.environ.get("RAINCLOUD_STRICT_CHECKSUM", "").lower() in _TRUTHY
 
+    def __init__(self, dest: Path):
+        self.dest = dest
+        self.backup = None
+        self.existed = False
+        self.accepted = False
 
-def pin_path(dest: Path) -> Path:
-    """Sidecar recording which snapshot pin a cached file was reconciled against."""
-    return dest.parent / f".{dest.name}.pin"
+    def __enter__(self):
+        _sweep_stale_backups(self.dest)
+        if self.dest.is_file():
+            self.existed = True
+            self.backup = self.dest.parent / f".{self.dest.name}.{os.getpid()}-{uuid.uuid4().hex}.rollback"
+            try:
+                os.link(self.dest, self.backup)
+            except OSError:
+                try:
+                    shutil.copy2(self.dest, self.backup)
+                except BaseException:
+                    # __exit__ never runs when __enter__ raises; a partial copy
+                    # of a large file (ENOSPC) must not stay behind.
+                    self.backup.unlink(missing_ok=True)
+                    raise
+        return self
 
+    def accept(self):
+        self.accepted = True
 
-def read_pin(dest: Path) -> dict | None:
-    """Return {"snap_sha": str|None, "size": int, "origin": str|None} for
-    `dest`, or None.
-
-    Returns None when the sidecar is absent, unreadable, or contains valid JSON
-    that isn't an object (e.g. a torn/partial write leaving `42` or `[...]`) —
-    callers do `pin.get(...)`, so a non-dict must not slip through and raise
-    AttributeError inside resolve(). `origin` is absent on pins written before
-    it was added; callers must treat a missing `origin` as untrusted (None).
-    """
-    try:
-        pin = json.loads(pin_path(dest).read_text())
-    except (OSError, ValueError):
-        return None
-    return pin if isinstance(pin, dict) else None
-
-
-def _write_pin(dest: Path, snap_sha: str | None, size: int,
-               origin: str | None = None) -> None:
-    """Best-effort: record the snapshot sha (may be None), on-disk size, and
-    origin (`build` / `mirror` / None) of the bytes we just adopted.
-
-    Lets a later resolve() recognise bytes it deliberately adopted and serve
-    them from cache instead of re-fetching/rebuilding every load. This covers
-    cases the snapshot size alone can't bless: (a) already-adopted *drift*
-    (bytes diverging from a pinned sha), (b) a slug with no pinned sha at all
-    (`snap_sha=None`), and (c) a locally-built artifact whose bytes legitimately
-    differ from the maintainer's snapshot. `origin` is what lets strict mode
-    distinguish "my own local build against this snapshot pin" (trust the
-    provenance) from "mirror bytes" (must rehash). A pin is hygiene, not
-    correctness — a write failure just costs a rehash on the next load.
-    """
-    p = pin_path(dest)
-    tmp = p.parent / f"{p.name}.{os.getpid()}.tmp"
-    try:
-        tmp.write_text(json.dumps({"snap_sha": snap_sha, "size": size, "origin": origin}))
-        os.replace(tmp, p)  # atomic: a concurrent reader never sees a torn pin
-    except OSError:
+    def __exit__(self, *exc):
         try:
-            if tmp.exists():
-                tmp.unlink()
-        except OSError:
+            if not self.accepted:
+                if self.existed:
+                    os.replace(self.backup, self.dest)
+                else:
+                    self.dest.unlink(missing_ok=True)
+        finally:
+            # Always drop the backup name. When the old file was never replaced,
+            # backup and dest are links to one inode and rename() is a no-op.
+            if self.backup is not None:
+                self.backup.unlink(missing_ok=True)
+
+
+def _sweep_stale_backups(dest: Path) -> None:
+    """Remove rollback copies of `dest` that a crashed publisher left behind.
+
+    Only another process's, and only once stale: this process may hold a live
+    one (a pending publication). Age is the link's ctime -- a hard link shares
+    the old file's mtime, which says nothing about when the link was made.
+    """
+    pattern = re.compile(rf"\.{re.escape(dest.name)}\.(?:(\d+)-)?[0-9a-f]{{32}}\.rollback")
+    cutoff = time.time() - _STALE_BACKUP_SECONDS
+    try:
+        siblings = list(dest.parent.iterdir())
+    except FileNotFoundError:
+        return
+    for path in siblings:
+        found = pattern.fullmatch(path.name)
+        if not found or found.group(1) == str(os.getpid()):
+            continue
+        try:
+            if path.lstat().st_ctime < cutoff:
+                path.unlink()
+                print(f"[publish] removed a stale rollback copy left by a crashed publisher: {path}",
+                      file=sys.stderr)
+        except FileNotFoundError:
             pass
+        except OSError as exc:
+            # Housekeeping: another account's orphan in a sticky-bit directory
+            # is not ours to remove, and must not fail this publication.
+            print(f"[publish] could not remove a stale rollback copy {path}: {exc}", file=sys.stderr)
 
 
-def adopt(
-    tmp: Path,
-    dest: Path,
-    expected_sha256: str | None,
-    *,
-    strict: bool = False,
-    slug: str | None = None,
-    origin: str | None = None,
-) -> Path:
-    """Atomically move tmp -> dest, optionally checking against a known sha.
+def adopt(tmp: Path, dest: Path, expected_sha256: str | None, *,
+          expected_size: int | None = None, slug: str | None = None) -> Path:
+    """Move downloaded `tmp` to `dest` if it is the artifact the catalog names.
 
-    Default semantics (`strict=False`): if `expected_sha256` is set and the
-    bytes disagree, print a `[raincloud]` warning to stderr identifying the
-    slug + origin, then adopt anyway. Upstream data drifts; we want the user
-    informed, not blocked. The loader's mirror-fetch path passes
-    `strict=strict` (i.e. `strict=True` under RAINCLOUD_STRICT_CHECKSUM) to
-    turn a mismatch into a `ChecksumMismatch`; the local-build path always
-    passes `strict=False` (a client build legitimately differs from the
-    maintainer's bytes). NOTE: `scripts.pipeline.publish` does NOT go through
-    adopt — it gates uploads with its own `PublishMismatch` in `plan_uploads`.
-
-    When `expected_sha256` is None, verification is skipped — there's nothing
-    pinned to alert against.
-
-    `origin` (`build` / `mirror`) is recorded in the pin so a later strict
-    resolve can trust a locally-built artifact by provenance instead of
-    rebuilding it every load.
-
-    On any failure, the tmp file is removed and dest is left untouched.
+    The catalog's sha256 decides; with no sha recorded, its byte size does.
+    Anything else is refused with ChecksumMismatch and `dest` is left as it was.
     """
     try:
+        label = slug or dest.name
         if expected_sha256 is not None:
             actual = sha256_file(tmp)
             if actual != expected_sha256:
-                if strict:
-                    raise ChecksumMismatch(
-                        f"{tmp}: expected sha256 {expected_sha256}, got {actual}"
-                    )
-                label = slug or dest.name
-                where = f" from {origin}" if origin else ""
-                # A local build legitimately differs from the maintainer's
-                # snapshot bytes (parquet/vortex output is rarely bit-stable
-                # across library versions), so don't cry "upstream changed".
-                why = ("locally built; differs from the maintainer's snapshot "
-                       "(expected for non-reproducible formats)"
-                       if origin == "build"
-                       else "adopting anyway — upstream may have changed")
-                print(
-                    f"[raincloud] WARN: {label}{where} sha256 drifted "
-                    f"(got {actual[:12]}…, snapshot expected {expected_sha256[:12]}…); "
-                    f"{why}.",
-                    file=sys.stderr,
-                )
+                raise ChecksumMismatch(f"{label}: downloaded sha256 {actual} is not the catalog's {expected_sha256}")
+        elif expected_size is not None and tmp.stat().st_size != expected_size:
+            raise ChecksumMismatch(f"{label}: downloaded {tmp.stat().st_size} bytes, the catalog says {expected_size}")
         dest.parent.mkdir(parents=True, exist_ok=True)
         os.replace(tmp, dest)  # atomic within a filesystem
-        # Always record (snap_sha, size, origin) we just adopted so a later
-        # resolve() can serve these exact bytes from cache without a rehash —
-        # see _write_pin for the cases this covers (drift, sha-less slugs,
-        # locally-built artifacts). origin lets strict mode trust a local
-        # build by provenance instead of rebuilding it every load.
-        _write_pin(dest, expected_sha256, dest.stat().st_size, origin)
         return dest
     finally:
         if tmp.exists():

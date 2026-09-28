@@ -1,11 +1,11 @@
 ---
 name: raincloud-profile
-description: Use when the user asks to compute or refresh per-column statistics for a raincloud dataset — produces `outputs/v1/<slug>/profile.json` for the TUI's detail pane and `list_datasets --inspect`.
+description: Use when the user asks to compute or refresh per-column statistics for a raincloud dataset — produces `outputs/v{n}/<slug>/profile.json` for the TUI's detail pane and `list_datasets --inspect`.
 ---
 
 # raincloud-profile
 
-Wraps `python -m scripts.pipeline.profile`. Opt-in stage; off the default
+Wraps `python -m raincloud.pipeline.profile`. Opt-in stage; off the default
 build path. Idempotent against parquet sha256.
 
 ## When to invoke
@@ -17,9 +17,9 @@ build path. Idempotent against parquet sha256.
 ## Patterns
 
 ```bash
-python -m scripts.pipeline.profile <slug>                          # one
-python -m scripts.pipeline.profile --all                           # every built parquet
-python -m scripts.pipeline.profile --sample-rows 1000000 <slug>    # cap for huge slugs
+python -m raincloud.pipeline.profile <slug>                          # one
+python -m raincloud.pipeline.profile --all                           # every built parquet
+python -m raincloud.pipeline.profile --sample-rows 1000000 <slug>    # cap for huge slugs
 ```
 
 Per-dtype stats:
@@ -30,17 +30,11 @@ Per-dtype stats:
 - **List/Map**: length min/max/mean
 - **Struct / variant**: skipped (emits null at column-map level)
 
-Profiles live at `outputs/v1/<slug>/profile.json` and are read by:
-- The TUI's right-pane Columns section (`python -m scripts.pipeline.browse`)
+Profiles live at `outputs/v{n}/<slug>/profile.json` and are read by:
+- The TUI's right-pane Columns section (`python -m raincloud.pipeline.browse`)
 - The CLI's `--inspect <slug>` rendering
 - `docs.py` for backfilling `shape_traits.high_cardinality_present` into `snapshot.json`
 
-The tracked mirror at `docs/v1/profiles/<slug>.json` is the fallback path that
-fresh clones ship — both `list_datasets --inspect` and the TUI's Columns pane
-read it when no built `outputs/v1/<slug>/profile.json` exists locally. The
-`profile` stage auto-runs `python -m scripts.pipeline.promote_profiles` at the
-end of a successful run (copies built profile.json into the tracked mirror,
-byte-identical mirror skipped), so the tracked snapshot stays in sync without
-a manual step. Pass `--no-promote` to suppress that auto-step while iterating;
-invoke `promote_profiles` explicitly (or with `--check`) to re-sync or audit
-the mirror after manual edits.
+For the checkout catalog, promotion mirrors profiles into `docs/v{n}/profiles/`; the current version is v2. Installed, pinned and custom catalogs use `<data_dir>/.raincloud/observations/<catalog-revision>/profiles/` instead. Profiles from unrelated catalogs must not be used as fallbacks. A checkout falls back to the frozen `docs/v1/profiles/` for a slug with no v2 profile. That fallback is removed once `docs/v2/profiles/` covers the catalog: `tests/test_docs_contracts.py::test_v1_profile_fallback_is_still_needed` fails then, naming the code to delete. The overnight runner pins its catalog for the entire run, so its parent and subprocesses use revision-local observations even when launched from a checkout.
+
+The profile command promotes after a successful run. Pass `--no-promote` to suppress that step; use `python -m raincloud.pipeline.promote_profiles --check` to audit the selected profile destination.

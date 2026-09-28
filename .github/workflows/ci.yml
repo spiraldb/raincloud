@@ -31,24 +31,65 @@ jobs:
       - name: Pin Python
         run: uv python install 3.11
 
-      # `--extra dev` brings in pytest + ruff. `--extra tui` brings in
-      # textual so the test_browse suite runs instead of skipping. `--extra
-      # build` brings in the heavy pipeline deps (duckdb, osmium, pyreadstat,
-      # zstandard, jsonschema, …) — required because validate_manifest +
-      # pytest collection import the handler registry, which transitively
-      # pulls those. Skip kaggle/huggingface — those deps are only needed at
-      # fetch time and neither test path imports them.
+      # `--extra dev` brings in pytest + ruff; `--extra tui` textual, so the
+      # test_browse suite runs instead of skipping. `build` is the pipeline
+      # core and `pandas` backs Dataset.to_pandas(); osm/sas/excel/archives are the
+      # per-handler format extras, which the handler tests import. Skip
+      # kaggle/huggingface -- those deps are only
+      # needed at fetch time and neither test path imports them.
       - name: Install dependencies
-        run: uv sync --extra dev --extra tui --extra build
+        run: uv sync --extra dev --extra tui --extra build --extra pandas --extra osm --extra sas --extra excel --extra archives --inexact
 
       - name: Lint (ruff)
         run: uv run ruff check
 
       - name: Validate manifest
-        run: uv run python -m scripts.pipeline.validate_manifest
+        run: uv run python -m raincloud.pipeline.validate_manifest
 
       - name: Test (pytest)
         run: uv run pytest -q
+
+  java-sidecars:
+    # Validate the JVM conformance lanes: the parquet@java lane is a Gradle
+    # composite build over the parquet-arrow-java git submodule, so this job
+    # must check out submodules recursively (the default checkout omits them,
+    # which would break `includeBuild`). Guards against the "green PR, broken
+    # composite build" gap. parquet@hardwood builds on Java 21 (Hardwood's
+    # target); Gradle finds it through JAVA_HOME_21_X64 (sidecars/java/gradle.properties),
+    # and the last version listed, 17, stays the default JAVA_HOME.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 21 and 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            17
+          cache: gradle
+
+      - name: Build + test JVM sidecars (conformance-common + parquet@java, parquet@hardwood, vortex@jni lanes)
+        run: ./sidecars/java/gradlew -p sidecars/java :conformance-common:test :parquet-java:test :parquet-java:installDist :parquet-hardwood:test :parquet-hardwood:installDist :vortex-jni-reader:test :vortex-jni-reader:installDist
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install reader-fixture dependencies
+        run: uv sync --python 3.11 --extra dev --extra build --inexact
+
+      - name: Verify Java lanes against shared fidelity fixtures
+        env:
+          RAINCLOUD_READER_PARQUET_JAVA: ${{ github.workspace }}/sidecars/java/parquet-java/build/install/raincloud-export-parquet-java/bin/raincloud-read-parquet-java
+          RAINCLOUD_SIDECAR_PARQUET_HARDWOOD: ${{ github.workspace }}/sidecars/java/parquet-hardwood/build/install/raincloud-export-parquet-hardwood/bin/raincloud-export-parquet-hardwood
+          RAINCLOUD_READER_PARQUET_HARDWOOD: ${{ github.workspace }}/sidecars/java/parquet-hardwood/build/install/raincloud-export-parquet-hardwood/bin/raincloud-read-parquet-hardwood
+          RAINCLOUD_SIDECAR_VORTEX_JNI: ${{ github.workspace }}/sidecars/java/vortex-jni-reader/build/install/raincloud-read-vortex-jni/bin/raincloud-export-vortex-jni
+          RAINCLOUD_READER_VORTEX_JNI: ${{ github.workspace }}/sidecars/java/vortex-jni-reader/build/install/raincloud-read-vortex-jni/bin/raincloud-read-vortex-jni
+        run: uv run --no-sync pytest -q tests/test_reader_fidelity.py tests/test_java_reader_schema_compare.py tests/test_jvm_sidecar_lanes.py
 
   wheel:
     runs-on: ubuntu-latest
@@ -60,8 +101,8 @@ jobs:
           enable-cache: true
       - name: Pin Python
         run: uv python install 3.11
-      - name: Install dev deps (for pytest + vortex base dep used by fixtures)
-        run: uv sync --extra dev
+      - name: Install dev and optional Vortex fixture dependencies
+        run: uv sync --extra dev --extra vortex --inexact
       # Scope collection to test_wheel.py: this env intentionally omits the
       # [build] extra, but pytest imports every collected module before -m
       # filtering, and test_manifest/test_profile import jsonschema (a [build]
@@ -81,6 +122,42 @@ jobs:
       - name: Pin Python
         run: uv python install 3.11
       - name: Install dev + build deps
-        run: uv sync --extra dev --extra build
+        run: uv sync --extra dev --extra all --inexact
       - name: Run real-build network tests
         run: uv run pytest --run-network -m network -v
+
+  native-readers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: astral-sh/setup-uv@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: |
+            21
+            17
+      - name: Install fixture and test dependencies
+        run: uv sync --python 3.11 --extra dev --extra build --extra http --inexact
+      # Also builds the Rust and Java sidecars and runs their conformance suites;
+      # PYTEST_MODULES in the runner lists the pytest modules it covers. Needs
+      # CMake and readelf (both preinstalled).
+      - name: Verify Python, Rust, C, C++, and Java readers
+        run: uv run --no-sync python scripts/test_native_readers.py
+
+  portable-base-wheel:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install base and test tools
+        run: uv sync --python 3.11 --extra dev --inexact
+      - name: Test isolated base wheel outside the checkout
+        run: uv run --no-sync pytest --run-wheel -q tests/test_wheel.py -k "portable_base_install or wheel_builds_and_base_install_imports or base_install_excludes_heavy_deps"

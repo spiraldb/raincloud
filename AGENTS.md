@@ -1,133 +1,209 @@
 # AGENTS.md
 
-Guidance for AI coding agents (Claude Code, Cursor, etc.) working in this repo. Read this before making non-trivial changes — the repo's layout is intentional and the core invariants below are easy to violate accidentally.
+Guidance for AI coding agents working in this repo. The layout is deliberate and the
+invariants below are easy to break by accident — read them before non-trivial changes.
 
-For the user-facing overview, see [`README.md`](README.md). For the manifest schema, see [`sources.schema.md`](sources.schema.md). The repo root also has a `CLAUDE.md → AGENTS.md` symlink so Claude Code auto-loads this file; both names point at the same content.
+For what raincloud is and how to use it, see [`README.md`](README.md). For the manifest
+schema, [`sources.schema.md`](sources.schema.md). For step-by-step procedures,
+[`SKILLS.md`](SKILLS.md). `CLAUDE.md` is a symlink to this file.
 
-## First contact
+## Start here
 
-On a fresh clone `outputs/` is empty — that's expected. The `outputs/v1/<slug>/` directories are gitignored and only populated by builds. Verify your environment with the read-only smoke test before doing anything heavy:
-
-```bash
-python -m scripts.pipeline.status --fast --missing-only
-```
-
-It loads `sources.json`, walks the manifest, and prints per-slug filesystem state in seconds with no side effects. A bare `uv sync --inexact` (or `pip install "raincloud @ git+https://github.com/spiraldb/raincloud"` from GitHub — not PyPI) installs only the lightweight loader; running any **build** needs the heavy toolchain, so fix the env with `uv sync --extra build --inexact` before invoking `scripts.pipeline.build`. Always pass `--inexact` to `uv sync`: without it, syncing one extra (e.g. `--extra dev`) silently uninstalls the others (build, kaggle, huggingface, tui), so a subsequent build of an HF/Kaggle slug will fail.
-
-For a manifest sanity check that doesn't touch the filesystem at all:
+On a fresh clone `outputs/` is empty. That's expected — artifacts are built, not shipped.
 
 ```bash
-python -m scripts.pipeline.validate_manifest
+python -m raincloud.pipeline.status --fast --missing-only   # read-only; seconds
+python -m raincloud.pipeline.validate_manifest              # schema + registry cross-checks
+pytest                                                    # needs --extra dev --extra all
 ```
 
-Validates `sources.json` against [`sources.schema.json`](sources.schema.json) (Draft 2020-12) plus cross-checks that the schema can't express — handler-name resolution against the live registry, slug uniqueness, `fetch.type`/`fetch.auth` consistency. Sub-second; safe to invoke after any manifest edit.
+Installs are layered. A bare `uv sync --inexact` gets only the loader; builds need
+`uv sync --extra build --inexact`, plus the extra a dataset needs for its format or
+source: `osm`, `sas`, `excel`, `archives`, `generated` (the TPC-H/TPC-DS generators),
+`kaggle`, `huggingface`. `--extra all` installs everything. **Always pass
+`--inexact`**: without it, syncing one extra silently uninstalls the others, and a
+later Kaggle/HF build fails.
 
-For catalog queries that would otherwise require greping the ~545 KB `sources.json` (or scrolling ~158 KB of [`docs/v1/datasets.md`](docs/v1/datasets.md)):
+Query the catalog rather than grepping `sources.json` or scrolling
+`docs/v2/datasets.md`:
 
 ```bash
-python -m scripts.pipeline.list_datasets --handler uci_default --count
-python -m scripts.pipeline.list_datasets --handler tighten_types --long
-python -m scripts.pipeline.list_datasets --fetch-type kaggle --kaggle-tos
-python -m scripts.pipeline.list_datasets --grep '\bgeo' --long
+python -m raincloud.pipeline.list_datasets --handler uci_default --count
+python -m raincloud.pipeline.list_datasets --kaggle-tos         # gated behind a one-time click-through (Kaggle or Hugging Face)
+python -m raincloud.pipeline.list_datasets --grep '\bgeo' --long
+raincloud describe <slug>                                      # one dataset's columns and types, from the catalog
+python -m raincloud.pipeline.list_datasets --columns --column-grep PATTERN   # columns across locally built files
+python -m raincloud.pipeline.list_datasets --coverage --source parquet       # type coverage of locally built files
+python -m raincloud.pipeline.list_datasets --stale-version      # slugs BUILT under an OLDER schema_version (never-built excluded)
 ```
 
-Filters compose with AND across `--handler`, `--license`, `--fetch-type`, `--reader`, `--vortex` / `--no-vortex`, `--kaggle-tos`, `--grep`. Output modes: default (one slug per line), `--long` (wide table), `--json` (jq-friendly), `--count`.
+`--grep` is a regex over `slug short_name full_name description` joined by spaces,
+so anchor one slug as `'^<slug> '`; `'^<slug>\b'` also matches `<slug>-hydrated`
+and other hyphenated siblings.
 
-If the user wants to *browse* interactively rather than query, point them at `python -m scripts.pipeline.browse` (read-only Textual TUI over the same data; requires `uv sync --extra tui --inexact`). It's a human-facing tool — don't try to run it from an agent context, since it won't render and will hang waiting for keystrokes.
+Filters AND together across `--handler`, `--license`, `--fetch-type`, `--reader`,
+`--vortex`/`--no-vortex`, `--kaggle-tos`, `--stale-version`, `--local`, `--grep`. Output:
+default one bare slug per line (a terminal also marks hydrated ones `[hydrated]`),
+`--long`, `--json`, `--count`. In `--long`, `recorded` is what the tracked catalog
+records (in `--json`, `built_version` / `stale_version`) and `local` is the formats
+prepared on this install's disk.
 
-For a slightly broader regression net, the `tests/` directory carries a sub-second pytest smoke suite (manifest shape, schema self-consistency, handler registry, example template). Run it after any change to the manifest, the schema, or the handler registry:
+`raincloud.pipeline.browse` is a human-facing TUI — it will hang waiting for keystrokes.
+Don't run it from an agent context; point the user at it instead.
 
-```bash
-uv sync --extra dev --inexact   # one-time — installs pytest, preserves other extras
-pytest
-```
+## Invariants
 
-Copy-pasteable templates for the two most common edits live under [`templates/`](templates/) — `minimal_spec.json` for new manifest entries, `streaming_handler.py.tmpl` for memory-constrained transform handlers. (Runnable demos of the `raincloud.load` API live under [`examples/`](examples/).)
+1. **`sources.json` is authoritative.** Every row of every derived artifact maps back to
+   a spec here. Never hand-edit `docs/*.md` or drop a file into `outputs/` — fix the
+   manifest, rebuild, regenerate docs.
+2. **`outputs/raw_downloads/<slug>/` is unversioned; `outputs/v{n}/<slug>/<format>/` is
+   version-scoped.** Raw upstream bytes don't depend on schema version, so they're cached
+   outside the version prefix and shared across versions. Path helpers live in
+   `raincloud/pipeline/spec.py` — use them rather than composing paths by hand.
+3. **`<scratch_dir>/.recipes/<recipe-hash>/<slug>/` is scratch.** Handlers clean up after
+   themselves; `build.py --clean-workdir` removes only the selected generation. Clearing
+   it forces re-extraction without disturbing another recipe.
+4. **Raincloud code, tests and examples open DuckDB through `raincloud.duckdb_connect`**,
+   never `duckdb.connect` directly. It applies the `RAINCLOUD_DUCKDB_*` resource limits
+   and `storage_compatibility_version=v1.5.0`, which persistent VARIANT writes require.
+5. **`docs/` is split.** Top-level `docs/*.md` is gitignored scratch. `docs/v{n}/*` is the
+   tracked canonical set. `raincloud.pipeline.docs` writes to the top level; promoting to
+   `docs/v{n}/` is a deliberate manual copy.
+6. **A superseded version is frozen.** Artifacts under an older `outputs/v{n}/` are not
+   rebuilt and must not be wiped — nothing regenerates them.
+7. **`.archive/` is local-only and gitignored.** A fresh clone won't have it. Where other
+   docs name it as a fallback, git history is the only one you can rely on.
 
-If your agent harness supports the [Agent Skills](https://agentskills.io) standard (Claude Code, Codex, etc.), the `.agents/skills/` directory carries 21 invokable skills wrapping every pipeline entry point and procedural playbook — see [`.agents/skills/README.md`](.agents/skills/README.md). `.claude → .agents` is a symlink so both naming conventions resolve. The `.agents/settings.json` at the same level is a tracked allow-list of safe, read-only commands so a fresh-clone agent doesn't burn turns on permission prompts; per-machine overrides go in the gitignored `.agents/settings.local.json`.
+## How a build works
 
-## Don't read the giant derived docs cover-to-cover
+Orchestrated by `raincloud.pipeline.build`. The pipeline is **canonical-Arrow-spined**:
+transform produces Arrow, `write_canonical` persists the one canonical artifact, and
+every output format is derived from it by an exporter.
 
-`docs/v1/datasets.md` (~158 KB) is large; prefer targeted reads via `offset`/`limit`. Column-level / coverage / vortex-skip / hydrate-candidate views are NOT markdown anymore — they used to be (huge `columns_*.md` and `coverage_*.md` files, plus per-slug `vortex_skip.md` and `hydrated.md` listings) but those were unscannable as a reading experience and duplicated state already queryable. They're now flags on `list_datasets`:
-
-```bash
-python -m scripts.pipeline.list_datasets --columns [<slug>...] [--column-grep PATTERN]
-python -m scripts.pipeline.list_datasets --coverage [--source parquet|vortex]
-python -m scripts.pipeline.list_datasets --no-vortex --long      # vortex-opted-out slugs + reasons (via --json)
-python -m scripts.pipeline.list_datasets --hydrate --long        # hydration candidates
-```
-
-Hydration policy / philosophy lives in the hand-maintained [`HYDRATING.md`](HYDRATING.md) (preamble only, no auto-generated per-slug list). For catalog-shape questions ("which slugs use handler X", "what's CC0-licensed") prefer `list_datasets`. The top-level `docs/*.md` mirrors are gitignored scratch and behave identically.
-
-[`docs/v1/handlers.md`](docs/v1/handlers.md) (small — ~3 KB) is fine to read in full and carries one row per registered handler with purpose, streaming flag, **the format-specific deps it imports** (`pandas`, `openpyxl`, `pyreadstat`, `osmium`, `zstandard`, `unlzw3` — pyarrow / numpy / duckdb suppressed as core), manifest spec count, and example slugs. Read it before adding a new handler so you can pick precedent and know which extras the manifest entry will need.
-
-## What this repo does
-
-Raincloud is a **client-reproducible pipeline** for building a curated catalog of public datasets as Parquet + optional Vortex files. The single source of truth is `sources.json`. Everything under `outputs/`, the two derived docs (`docs/datasets.md`, `docs/handlers.md`), and the JSON catalog snapshot (`docs/snapshot.json` — read by the TUI as a fallback for unbuilt-locally slugs, AND used by `docs.py` itself as the row-count / file-size fallback when regenerating `datasets.md` on a partial build) is **derived** — regenerate, never hand-edit. Column-level / coverage / vortex-skip / hydrate-candidate views are queryable via `list_datasets` flags rather than markdown.
-
-The pipeline flow is: **fetch → extract → parse → transform → write → validate → convert** (stage 7 opt-in per-spec), orchestrated by `scripts.pipeline.build`.
-
-## The loader package (`raincloud`)
-
-Separate from the build pipeline under `scripts/`, the repo also ships an importable **`raincloud`** package — a lightweight loader for *already-prepared* artefacts. `raincloud.load("<slug>")` (alias `load_dataset`) returns a lazy `Dataset` handle; nothing is fetched until you call `.path()` / `.to_arrow()` / `.scan()` / `.to_pandas()`. Resolution order is **local cache → mirror → local build** (`raincloud/_resolve.py`): a cache hit short-circuits, otherwise it pulls from the configured mirror, and only on a cache+mirror miss does it shell out to `scripts.pipeline.build` as a last resort.
-
-The install is **layered** — this is a behaviour change from earlier releases:
-
-- A bare `uv sync --inexact` (or a `pip install` from the GitHub repo) installs only the lightweight loader: base deps are `pyarrow`, `numpy`, `vortex-data`, `fsspec`. Transport backends are per-scheme extras (`[s3]` → s3fs, `[http]` → aiohttp; `file://` needs neither); `[duckdb]` / `[pandas]` back `Dataset.scan()` / `.to_pandas()`.
-- **Building datasets now requires `uv sync --extra build --inexact`** — the heavy toolchain (duckdb, osmium, pyreadstat, pandas, openpyxl, py7zr, unlzw3, zstandard, jsonschema) moved behind the `[build]` extra. A bare sync no longer pulls these, so any `scripts.pipeline.build` / handler work needs `--extra build` first.
-
-The mirror is a **private/internal artefact store** — a bucket a team points its own CI at, configured via the `RAINCLOUD_MIRROR` env var (`s3://bucket/prefix`, `file:///path`, etc.); there is no public Raincloud-hosted endpoint, and this does not change the no-redistribution posture in [`DISCLAIMER.md`](DISCLAIMER.md). `RAINCLOUD_CACHE` overrides the cache dir and `RAINCLOUD_OFFLINE` forces cache-only (mirror/build misses raise). Maintainers publish built `outputs/v1/...` to a mirror with `python -m scripts.pipeline.publish <slugs|--all> --mirror <url>`, gated on a snapshot sha256 match. Integrity: `docs/v1/snapshot.json` carries per-slug `parquet_sha256` / `vortex_sha256` (recorded only for slugs already built + hashed locally — today a minority of the catalog) plus a byte size for *every* slug. `publish` refuses to upload an artifact whose on-disk sha disagrees with the snapshot (slugs with no recorded sha are uploaded ungated). The loader, by default, **warns-and-adopts** on a checksum mismatch (drift is an alert, not a blocker — upstream data shifts) and falls back to the byte size as a cheap corruption check when no sha is pinned; set `RAINCLOUD_STRICT_CHECKSUM=1` to turn a mismatch on mirror bytes into a hard `ChecksumMismatch`. Locally-built artefacts are never strict-gated against the maintainer's sha (a client build legitimately differs); instead they're trusted via a provenance pin (`origin=build` + the snapshot pin they were built against) and served from cache until that snapshot pin changes — so a strict, mirror-less deployment rebuilds a slug once when the source of truth moves, not on every load. To backfill checksums for the rest of the catalog, build the slugs and run `python -m scripts.pipeline.docs snapshot --rehash`.
-
-**Build data-area env vars** (separate from the loader's cache vars above): the build pipeline writes artefacts under a configurable root. In a checkout, that root is the repo directory; in a `pip install raincloud[build]` wheel install, it defaults to `~/.cache/raincloud` (XDG-aware, no init step). The resolution logic lives in `scripts/pipeline/spec.py:data_root()`.
-
-| Env var | Controls | Default |
-|---|---|---|
-| `RAINCLOUD_HOME` | build data-area root | checkout root (if `sources.json` present), else `~/.cache/raincloud` |
-| `RAINCLOUD_OUTPUTS` | built-artifact base (`/v{n}` under it) | `$RAINCLOUD_HOME/outputs` |
-| `RAINCLOUD_RAW_DOWNLOADS` | cached raw upstream bytes | `$RAINCLOUD_OUTPUTS/raw_downloads` |
-| `RAINCLOUD_WORKDIR` | extract/scratch space | `$RAINCLOUD_HOME/_workdir` |
-| `RAINCLOUD_MANIFEST` | `sources.json` path | checkout copy, else the wheel-packaged copy |
-
-In the defaults above, `$RAINCLOUD_HOME` / `$RAINCLOUD_OUTPUTS` mean the *resolved* roots — when those vars are unset they fall back to the checkout (or `~/.cache/raincloud`) and `<root>/outputs` respectively.
-
-From an agent context: on a fresh clone all five default to the repo tree (existing behaviour). On a wheel install with no checkout present, builds silently use `~/.cache/raincloud` (honoring `XDG_CACHE_HOME`) — same root `RAINCLOUD_CACHE` defaults to — so the loader's cache-hit path fires after the first build without any extra config.
-
-## Invariants (don't break these)
-
-1. **`sources.json` is authoritative.** Every row of every derived artefact maps back to a `DatasetSpec` here. If you're tempted to hand-edit `docs/*.md` or drop a parquet into `outputs/v1/<slug>/` by hand — stop, fix the manifest, re-run the build, re-run `docs.py`.
-2. **`outputs/raw_downloads/<slug>/` is unversioned; `outputs/v{schema_version}/<slug>/<format>/<filename>` is version-scoped.** Raw upstream bytes are the same regardless of output schema_version, so they're cached outside the version prefix. Within a version, artefacts live under per-format subdirectories: today `parquet/<slug>.parquet` and `vortex/<slug>.vortex`, with room for `parquet-hydrated/`, partitioned variants, etc. without filename collisions. Path helpers in `scripts/pipeline/spec.py`: `output_format_dir(slug, fmt)`, `prepared_parquet(slug)`, `prepared_vortex(slug)`. A manifest bump to v2 would populate `outputs/v2/` alongside `outputs/v1/`, both sharing `raw_downloads/`.
-3. **`_workdir/<slug>/` is scratch.** Gitignored and safe to wipe. Handlers should clean up what they put there; `build.py --clean-workdir` also wipes after a successful build.
-4. **`.archive/` is gitignored and local-only.** Holds Kaggle-era triage/attribution docs kept on the maintainer's tree for reference. A fresh-clone agent won't have this directory — when other docs reference it as a "fallback" alongside git history, treat git history as the only fallback you can rely on.
-5. **Always go through `spec.duckdb_connect`** when opening a DuckDB connection, not `duckdb.connect(...)` directly. The helper applies env-var-driven resource limits and the `storage_compatibility_version=v1.5.0` setting required for persistent VARIANT writes. See [`SKILLS.md`](SKILLS.md#opening-a-duckdb-connection) for detail.
-6. **`docs/` layout is split.** Top-level `docs/*.md` is gitignored scratch — regenerable against a subset of parquets for local type-coverage experiments. `docs/v{schema_version}/*.md` is the tracked canonical snapshot matching `outputs/v{n}/`. Regenerating docs via `scripts.pipeline.docs` writes to the top-level path; promotion to `docs/v{n}/` is a manual copy.
-
-## How the build pipeline is structured
-
-The seven stages are in `scripts/pipeline/` and are each independently invokable:
-
-| Stage | Module | Reads | Writes |
+| stage | module | reads | writes |
 |---|---|---|---|
 | fetch | `fetch.py` | `fetch.*` | `outputs/raw_downloads/<slug>/` |
-| extract | `extract.py` | `extract.*` | `_workdir/<slug>/` |
-| parse | `parse.py` | `parse.*` | in-memory `(Path, Table)` tuples |
-| transform | `transform.py` | `transform.*` | in-memory `(slug, Table)` tuples *or* direct-to-parquet (streaming handlers) |
-| write | `write.py` | `write.*` | `outputs/v{n}/<slug>/parquet/<slug>.parquet` |
-| validate | `validate.py` | `expect.*` | raises on mismatch unless `--loose` |
-| convert | `convert.py` | `convert.*` | `outputs/v{n}/<slug>/vortex/<slug>.vortex` (when `convert.vortex = true`); ALSO `outputs/v{n}/<slug>/vortex-hydrated/<slug>.vortex` when a hydrated parquet exists. Same flag governs both pairs. |
-| hydrate (opt-in, off the default build path) | `hydrate.py` | `hydrate.*` | `outputs/v{n}/<slug>/parquet-hydrated/<slug>.parquet` (only when `hydrate` is set; safety-filter-gated; outbound HTTP). Auto-runs convert at the end when `convert.vortex = true`. |
+| extract | `extract.py` | `extract.*` | `<scratch_dir>/.recipes/<hash>/<slug>/` |
+| parse | `parse.py` | `parse.*` | in-memory `(Path, Table)` |
+| transform | `transform.py` | `transform.*` | in-memory `(slug, Table)` |
+| write_canonical | `canonical.py` | transform output | `outputs/v{n}/<slug>/arrow/<slug>.arrow.zstd` |
+| validate | `validate.py` | `expect.*` | hashes canonical schema, checks rows; `[WARN]` unless `--strict` |
+| run_exporters | `export/` | `export.formats`, `export.priority` | `parquet/`, `vortex/` under `outputs/v{n}/<slug>/`; the build record |
+| hydrate *(named builds only)* | `hydrate.py` | `derive.hydrate` | a `<parent>-hydrated` dataset — outbound HTTP, safety-filter gated |
 
-Streaming handlers (`factbook_variant_parse`, `jsonbench_variant_parse`, `wikipedia_variant_parse`, `lichess_pgn_parse`, `stack_exchange_split`, `osm_pbf_split`, `public_bi_merge`) write the parquet themselves and return `[]` — the write stage becomes a no-op.
+`run_exporters` is also invokable on its own, which is the whole job whenever a
+change touches only the export stage (row-group sizing, a codec, a new cell) —
+the canonical is the input and is left alone:
 
-Some `fetch.type: "kaggle"` entries carry `fetch.requires_interactive_accept: true` — those datasets are gated behind a one-time click-through ToS acceptance on the Kaggle web UI and can't be built on a fresh Kaggle account without that manual step. See [`SKILLS.md`](SKILLS.md#adding-a-kaggle-dataset-gated-behind-tos-acceptance) for the pattern.
+```bash
+python -m raincloud.pipeline.export <slug>...                   # re-derive from existing canonicals
+python -m raincloud.pipeline.export <slug> --format vortex      # refresh only the Vortex file
+python -m raincloud.pipeline.export <slug> --format parquet@rs  # this writer, this run
+```
 
-## Safe ways to edit `sources.json`
+It refuses a slug with no canonical rather than silently starting a build. A
+`--format parquet@rs` override replaces that dataset's file with one from another
+writer, so its sha256 no longer matches the catalog; `--all` with it rewrites every
+Parquet file in the store, which takes hours. Confirm before running either. The
+file is `parquet/<slug>.parquet` whichever writer made it, and the build record
+(`<data_dir>/builds.json`) records the writer; the catalog learns it only when a
+maintainer regenerates it (see [Regenerating derived docs](#regenerating-derived-docs)).
 
-The manifest is a large hand-authored JSON file (~545 KB, 249 dataset entries) with a specific top-level key order (`schema_version`, `generated_at`, `audit_cutoff`, `notes`, `datasets`). Stick with small Python scripts for edits:
+Field-level `custom_metadata` (the `VARIANT_EXT` marker, GeoParquet `geo` metadata) rides
+through the canonical IPC losslessly. Stamp VARIANT only through `variant.attach_variant` /
+`attach_variant_schema` (the DuckDB bridge does): the stamp also declares the storage struct's
+`metadata`, and an unshredded `value`, non-nullable, as the Parquet VARIANT spec and
+`arrow.parquet.variant` require, and checks every row against that. DuckDB's Arrow export
+declares every field nullable, which a hand-set marker would carry into the Parquet schema.
+
+**Streaming handlers** write the canonical spine themselves via
+`canonical.open_canonical_writer` and `return []`, so `write_canonical` is a no-op for
+them; they share the same `validate → run_exporters` tail. To find which handlers do
+this, check the `streaming` column in `docs/v2/handlers.md` — don't rely on a list here.
+
+In `schema_version` 2, `export.formats` is the only declaration of which formats a
+dataset exports. `convert.vortex` is v1-only: the schema and `validate_manifest`
+reject it in a v2 manifest, while a released v2 catalog that still carries
+`convert.vortex: false` (and no `export.formats`) keeps reading as Parquet-only. A
+format is one file whichever writer makes it. The writer is the first *installed* one
+in `export.priority`, looked up in the spec, then the catalog's `export_priority`, then
+`RAINCLOUD_EXPORT_PRIORITY`, then the built-in `py, rs, java`. The spec and catalog
+levels take a list, which applies to every format and so must name a writer for each
+one the dataset exports, or a map from format to list (`{"parquet": ["rs", "py"]}`);
+a format the map leaves out falls through to the next level. The machine level is a
+list. The build record, and after regeneration the catalog, records the writer as
+`<fmt>_writer`. Sidecar cells (`parquet@rs`, `parquet@java`, `parquet@hardwood`,
+`vortex@rs`, `vortex@jni`) run only where their binary is installed. Compliance
+measures every writer in scratch, never over the dataset's file.
+
+`export.formats` lists the formats a dataset wants. When the planned writer cannot
+produce one for the dataset -- it raises, dies, reports a failed round-trip, or exceeds
+`RAINCLOUD_EXPORT_TIMEOUT` -- the previous file comes back and the build records the
+failure in the build record as that format's `unavailable` measurement (writer cell,
+error, toolchain versions, recipe, canonical sha, time), then carries on: the dataset is
+built with the formats that worked, `[unavailable] <slug>/<fmt>` is printed and repeated
+in the summary, and the build exits 0. Never write a writer's limitation into
+`export.notes`: docs regen carries the measurement into the snapshot
+(`<fmt>_unavailable`), the loader reports it (`describe`; `FormatUnavailable` quoting
+it; `auto` skips it), a later successful export replaces it, and `compliance` prints
+`[stale opt-out]` once a writer round-trips it. In-process writers run in a forked
+child so the limits can stop them: `RAINCLOUD_EXPORT_TIMEOUT` and
+`RAINCLOUD_EXPORT_MEMORY` (resident memory, default half of RAM), and the child raises
+its own `oom_score_adj` so a machine that runs short loses the writer, not the build.
+Run an unattended build as a systemd unit with `OOMPolicy=continue`: the default
+`stop` ends the whole unit when the kernel kills one process in it. `export` without `--format` behaves like the build;
+with a bare `--format vortex` it records the failure and exits 1, and a named cell's
+failure (`--format vortex@rs`) exits 1 and records nothing.
+
+Every writer reads back what it writes before its file is promoted. An in-process
+writer reads its file with the same format's in-process reader and compares it to the
+canonical (`exporters.read_back`), streamed window by window (`compare.stream_equal`:
+one batch of each side in memory, Parquet read batches sized by bytes), inside the
+bounded child, so the time and memory limits cover the read too. A mismatch or a read
+error (Vortex 0.86.1 writes a multi-batch VARIANT column it cannot read back) is a
+failed round-trip, recorded as above; an in-process writer never reports
+`roundtrip=None`, and a read-back that decides neither pass nor fail raises as a bug. A
+sidecar verifies in its own process and may report `roundtrip: null` (a comparator gap,
+or out of memory while verifying): that file is promoted, `[unverified] <slug>/<fmt>`
+is printed and repeated in the summary, the build record keeps `verified: false` and the
+writer's note as `verify_note` (every other export records `verified: true`), docs
+regen carries them into the snapshot (`<fmt>_verified`, `<fmt>_verify_note`), and
+`describe` shows the file as UNVERIFIED with the reason. The read-back is one more full
+read of every file a build writes: on stackoverflow-badges (51M rows, 479 MB canonical)
+it adds 6.7 s to an 8.1 s Parquet write and 2.0 s to a 2.7 s Vortex write; a streamed
+compare peaks at 2.9 GiB resident on code-contests' 4.3 GB Parquet (18.5 GiB decoded)
+and 1.1 GiB on jsonbench's 22.5 GB Vortex file.
+
+A recorded failure is not repeated. Before a writer runs, `run_exporters` looks up the
+measurement that applies (this install's build record at the recipe, else the catalog's
+snapshot; `records.recorded_failure`). If it names the same writer cell with the same
+toolchain (`writer_toolchain`, compared exactly: Python and library versions in
+process, binary name and sha prefix for a sidecar) and, when it records one, the same
+canonical sha, the format is skipped: `[skip] <slug>/<fmt>: ...; pass --retry-errors to
+try again`, nothing new recorded, the measurement kept. Anything different (an upgraded
+`vortex-data`, another writer, a rebuilt canonical) is attempted with a `[retry]` line
+naming the difference. A skip is not a new failure: `build` and `export` without
+`--format` exit 0 and list it in the summary; `export --format <fmt|cell>` and `convert`
+asked for that file, so they exit 1. `--retry-errors` on `build`, `export` and `convert`
+(`raincloud load --retry-errors`, `load(..., retry_errors=True)`, or the `retry_errors`
+setting / `RAINCLOUD_RETRY_ERRORS`, which carries it to a child build) attempts it
+anyway: a success replaces the measurement, a planned writer's failure records it again.
+Compliance calls `run_bounded` directly and measures every write cell regardless, which
+is how a stale opt-out is found. A write cell's `roundtrip` is the writer's own
+read-back, including for an in-process file compliance finds on disk and does not
+re-encode (`bounded.read_back_bounded`), and that read-back is also the in-process
+writer's diagonal read cell (its own reader over its own file), not a second read. Only
+a sidecar's `null` is filled from the read matrix's diagonal cell.
+
+## Editing `sources.json`
+
+Large hand-authored JSON with a fixed top-level key order (`schema_version`,
+`generated_at`, `audit_cutoff`, `notes`, `datasets`). Edit structurally, never with `sed`:
 
 ```python
 import json
 from pathlib import Path
-SRC = Path("sources.json")  # run from the repo root, or use an absolute path
+SRC = Path("sources.json")
 m = json.loads(SRC.read_text())
 for d in m["datasets"]:
     if d["slug"] == "target-slug":
@@ -136,31 +212,160 @@ for d in m["datasets"]:
 SRC.write_text(json.dumps(m, indent=2) + "\n")
 ```
 
-Don't use `sed` or text-based edits — JSON-safe structural edits are cheap and avoid accidental quoting breakage.
+Run `validate_manifest` afterwards. Templates for common edits are in
+[`templates/`](templates/).
 
-## Rebuilding is expensive — confirm before triggering
+## Data locations
 
-Building a single large dataset can take hours (observed: JSONBench 100M ≈ 6 h; OSM Germany extract ≈ 45 min per element kind; Wikipedia Structured Contents → 34 GB parquet, multi-hour). The `outputs/v1/<slug>/parquet/<slug>.parquet` + `vortex/<slug>.vortex` pair on disk already reflects a full catalog build — rebuilding wipes and redoes that work. Before running `python -m scripts.pipeline.build <slug>` on anything non-trivial, confirm with the user.
+The build and loader resolve their roots in this order: explicit argument, environment,
+user config file, system config file, default. `raincloud config show` prints what is
+in effect and where each value came from. A source checkout skips the system config
+files (the user config and `RAINCLOUD_CONFIG` still apply), so a checkout builds into
+its own `outputs/` rather than a machine's shared store.
 
-Small (<100 MB) parquets are fine to rebuild without asking.
+| env var | controls | default |
+|---|---|---|
+| `RAINCLOUD_HOME` | when set, forces `<home>/outputs` and `<home>/_workdir` | checkout root, else the user data dir |
+| `RAINCLOUD_OUTPUTS` | built-artifact root (`v{n}/` and `raw_downloads/` live directly under it) | `<checkout>/outputs`; outside a checkout, the user data dir itself |
+| `RAINCLOUD_RAW_DOWNLOADS` | cached raw upstream bytes | `$RAINCLOUD_OUTPUTS/raw_downloads` |
+| `RAINCLOUD_WORKDIR` | scratch root holding `.recipes/` | `<checkout>/_workdir`; outside a checkout, `<user cache>/workdir` |
+| `RAINCLOUD_MANIFEST` / `RAINCLOUD_SNAPSHOT` | a matched local catalog: `sources.json` and its snapshot | checkout copy, else the packaged copy |
+| `RAINCLOUD_CATALOG` | which catalog: `auto`, `active`, `checkout`, `bundled`, `local` (the manifest `RAINCLOUD_MANIFEST` names), a revision or unique prefix, or a bundle/pack directory | `auto` |
+| `RAINCLOUD_CATALOG_DIR` | installed catalog revisions | `<user data>/catalogs` |
+| `RAINCLOUD_CATALOG_URL` | where `raincloud catalog update` looks when no `--source` is given | unset |
+| `RAINCLOUD_CACHE` | optional separate artifact cache for the loader | same as the data root |
+| `RAINCLOUD_MIRROR` | a private artifact store readers fall back to (`s3://` needs `[s3]`, `https://` needs `[http]`) | unset |
+| `RAINCLOUD_OFFLINE` | `1`: read only local files; never contact the mirror | unset |
+| `RAINCLOUD_RETRY_ERRORS` | `1`: a build attempts a format whose writer, with this toolchain, already failed at the recipe (as `--retry-errors`) | unset |
+| `RAINCLOUD_CONFIG` / `RAINCLOUD_NO_CONFIG` | select or disable the config file | unset |
+| `RAINCLOUD_SETTINGS` | settings JSON the CLI reads with `--settings-env`; how native readers pass options | unset |
+| `RAINCLOUD_DUCKDB_MEMORY_LIMIT` | DuckDB memory ceiling, applied by `raincloud.duckdb_connect` | DuckDB default (~80% RAM) |
+| `RAINCLOUD_DUCKDB_THREADS` | DuckDB thread count | DuckDB default |
+| `RAINCLOUD_DUCKDB_TEMP_DIRECTORY` | DuckDB spill directory | DuckDB default |
+| `RAINCLOUD_FETCH_DEADLINE` | wall-clock ceiling on one download | 6 h (`0` disables) |
+| `RAINCLOUD_GENERATOR_TIMEOUT` | ceiling on a generator subprocess | 6 h (`0` disables) |
+| `RAINCLOUD_MAX_TABLE_CELLS` | rows x columns a whole-table handler may materialize | 50,000,000 (`0` disables) |
+| `RAINCLOUD_MAX_DECOMPRESSED_BYTES` | one in-memory decompression | 4 GiB (`0` disables) |
+| `RAINCLOUD_ROW_GROUP_TARGET_ENCODED_BYTES` | Parquet row-group size, in encoded bytes (parquet@java counts compressed pages, so its groups come out larger) | 128 MiB |
+| `RAINCLOUD_ROW_GROUP_MAX_ROWS` | row cap per group, used only when a spec omits `write.row_group_size_rows`; a spec's cap wins in every writer, sidecars included | 10,000,000 |
+| `RAINCLOUD_ROW_GROUP_TARGET_BYTES` | memory guard: decoded Arrow bytes buffered for one row group | 512 MiB |
+| `RAINCLOUD_ROW_GROUP_PROBE_ROWS` | rows the Python Parquet writer samples to size its groups (must be > 0) | 262,144 |
+| `RAINCLOUD_BATCH_ROWS` / `RAINCLOUD_BATCH_BYTES` | batch bounds in the streaming ingestion paths (memory only, NOT the row-group size) | 4096 rows / 16 MiB |
+| `RAINCLOUD_EXPORT_PRIORITY` | machine writer preference, e.g. `rs,py` | unset (`py, rs, java`) |
+| `RAINCLOUD_EXPORT_TIMEOUT` | ceiling on one export: an in-process writer (run in a child process) or a sidecar writer; hitting it records the format unavailable | 6 h (`0` disables) |
+| `RAINCLOUD_EXPORT_MEMORY` | ceiling on one in-process export's resident memory (bytes); the parent stops a writer over it and records the format unavailable | half of physical memory (`0` disables) |
+| `RAINCLOUD_SIDECAR_TIMEOUT` | ceiling on one sidecar reader call (sidecar writers use `RAINCLOUD_EXPORT_TIMEOUT`) | 30 min (`0` disables) |
+| `RAINCLOUD_TPCGEN_CLI` | path to the `tpcgen-cli` executable the tpcgen-rs TPC-DS generator runs | beside the Python executable, else `PATH` |
 
-## Regenerate derived docs after any pipeline change
+Individual vars and explicit values win over `RAINCLOUD_HOME`. A malformed numeric value
+is an error naming the variable, never a silent default. Loader handles and build
+entry points freeze these for the duration of an operation. The seven `0 disables`
+ceilings exist because builds are often left to run unattended: each bounds work that
+is otherwise decided by an upstream file or an external process (a download, a
+generator, a sidecar), and each can be lifted with `0` for a run that genuinely needs
+it.
+
+Two directories are named `.recipes/`. `<scratch_dir>/.recipes/<recipe-hash>/<slug>/`
+is one recipe's extract scratch, so a changed recipe never reuses another's
+intermediates. `<raw_dir>/<slug>/.recipes/<fetch-key>/` holds raw bytes for a catalog
+or fetch recipe other than the one that owns `<raw_dir>/<slug>/` itself. Skills and
+playbooks that say `<recipe-hash>` mean the first.
+
+## Public loader API
+
+`load` / `load_dataset`, `slugs()`, `describe(slug)`, `reader_capabilities()`,
+`Config` / `resolve_config`, and the exception hierarchy. Anything under a leading
+underscore is not it — an example that reaches into `raincloud._catalog` teaches
+that import to everyone who copies it, and usage is what makes a name public.
+
+## Confirm before rebuilding
+
+Large datasets take hours, and a rebuild wipes and redoes existing work. Ask the user
+before running `raincloud.pipeline.build` on anything non-trivial. Parquets under ~100 MB
+are fine to rebuild unprompted.
+
+## Regenerating derived docs
 
 ```bash
-python -m scripts.pipeline.docs    # datasets.md + handlers.md + snapshot.json
+python -m raincloud.pipeline.docs    # datasets.md + handlers.md + snapshot.json
 ```
 
-All three derived artefacts regenerate in one pass by default. Run this after any build, convert run, in-place parquet mutation, or when a handler is added/removed/renamed (handlers.md regenerates from the registry + manifest).
+This is the only way the catalog changes: builds write the install's build record
+(`<data_dir>/builds.json`), never the tracked snapshot, and regenerating takes each built
+file's sha and writer from that record. In a checkout it writes the gitignored scratch
+copies under `docs/`; promote them, then review and commit:
 
-**Keep `docs/snapshot.json` fresh — it's load-bearing.** `datasets.md` regen reads from disk for slugs you've built locally and falls back to `docs/snapshot.json` (or `docs/v{schema_version}/snapshot.json` on a fresh clone) for everything else. Without that fallback, regenerating on a partial build would dash-out 200+ rows and silently destroy ground truth in the tracked snapshot. The default no-args invocation regens snapshot + datasets in lockstep, so it's only at risk if you do partial regens — `docs.py datasets` alone won't refresh the snapshot. After a build, prefer the no-args form.
+```bash
+python -m raincloud.pipeline.docs
+cp docs/snapshot.json docs/datasets.md docs/handlers.md docs/v2/
+git diff docs/v2/
+```
 
-## Style and scope
+A machine's shared store is released from a commit with
+`python -m raincloud.pipeline.publish <slugs|--all> --store DIR --catalogs DIR`.
 
-- **No Kaggle-era narrative.** The legacy triage / binary-blob-integration / Kaggle-filter history lives in `.archive/`. New README/AGENTS/SKILLS content should reflect only the current three-point intent: fetch → transform → outputs.
-- **One handler per upstream shape.** Don't shoehorn a new shape into `tighten_types` or `identity`; write a dedicated handler under `scripts/pipeline/handlers/` and register it in `handlers/__init__.py`.
-- **Handlers are short.** Most are under 150 lines. If a new handler balloons past that, look for reuse opportunities with existing helpers (`duckdb_connect`, `outputs_root`, `spec_field`).
-- **No backwards-compat stubs.** When removing a handler or slug, remove it fully — git history (and the maintainer's local `.archive/`) is the fallback, not half-wired shims.
+**The snapshot is load-bearing.** `datasets.md` regen reads from disk for locally built
+slugs and falls back to the snapshot for everything else. A partial regen without that
+fallback would dash out most rows and destroy ground truth. The no-args form regenerates
+snapshot and datasets in lockstep — prefer it; `docs.py datasets` alone will not refresh
+the snapshot.
+
+## Conventions
+
+- **One handler per upstream shape.** Don't stretch `tighten_types` or `identity` — add a
+  handler under `raincloud/pipeline/handlers/` and declare it in `HANDLERS` in
+  `raincloud/_registry.py` (see below). Read `docs/v2/handlers.md` first to pick
+  precedent and see which extras you'll need.
+- **Handlers stay short.** Most are under 150 lines; reuse `open_canonical_writer`,
+  `duckdb_connect`, `workdir_root`, `spec_field` before growing one.
+- **No backwards-compat stubs.** Remove a handler or slug fully; git history is the
+  fallback.
+- **Handlers, exporters and generators are declared in `raincloud/_registry.py`**,
+  and nowhere else. The registries build from it (`handlers/__init__.py` only
+  resolves names lazily), and the capability list a catalog bundle records derives
+  from it, so adding one is a single edit. That module
+  imports nothing, which is what lets the loader answer "can this be built here?"
+  without pulling in the build toolchain.
+- **Version numbers have one home each.** The release version is
+  `raincloud/__init__.py:__version__`. `pyproject.toml`, the Java client and the
+  C/C++ CMake build read it. Two files cannot and carry a literal:
+  `clients/rust/Cargo.toml` (Cargo requires one) and `CITATION.cff`. Bump them with
+  it; `tests/test_loader_package.py::test_version_mirrors_agree` fails on drift. The set of
+  artifact layouts is the `schema_version` enum in `sources.schema.json`, read by
+  Python at runtime; the native clients hold no copy, because the CLI resolves
+  layouts for them. Don't add a second copy, and don't give `schema_version` a
+  default — a wrong one silently selects another layout.
+- **Upstream bytes are untrusted input.** Archive members get `_safe_target` +
+  `_claim` (no escape, no two members on one path); anything written under a final
+  name goes through an atomic temp-then-rename, so `[cached]` can mean "complete";
+  and a row the pipeline drops gets counted and printed. Silence is the bug — a
+  short table looks exactly like a correct one.
+- **Test the observable result**, not the mock. Use real small Arrow/Parquet files and
+  real build subprocesses; don't mock the resolver, serializer, checksum or builder that
+  the test exists to verify. Wheel and live-upstream tests are opt-in
+  (`--run-wheel`, `--run-network`).
+
+## Where things are
+
+- `raincloud/pipeline/` — the build stages and CLI entry points
+- `raincloud/` — the importable loader; `clients/` — Rust, C/C++, Java readers
+  (`clients/README.md`). The native readers hold no catalog; they ask the `raincloud`
+  CLI, so there is nothing of the catalog to keep in step there.
+- `sidecars/` — reference writers/readers behind the sidecar cells, a PATH-discovered CLI
+  contract. The JVM lanes are a Gradle composite build over a git submodule; a fresh
+  clone needs `git submodule update --init`.
+- `raincloud.pipeline.compliance` — maintainer-run measurement of the
+  `(slug × format × impl)` matrix. Never gates a build; absent toolchains `skip`.
+  `--check-oracle` runs the additive-only gate: a cell may be added, never removed or
+  mutated. Re-measure the committed oracle whenever the toolchain pins move; until
+  then the gate reports every cell the new toolchain changed as a mutation. See
+  `sidecars/README.md`.
+- `.agents/skills/` — invokable skills wrapping the pipeline entry points.
+  `.claude → .agents` is a symlink. `.agents/settings.json` is a tracked read-only
+  command allow-list; machine overrides go in the gitignored `settings.local.json`.
 
 ## When you're unsure
 
-Prefer *Read* → *Grep* → ask, over guessing. The pipeline has hidden contracts (streaming handlers returning `[]`, raw_downloads being unversioned, VARIANT requiring storage_compatibility_version) that aren't obvious from any single file.
+Read, then grep, then ask — don't guess. The pipeline has contracts that aren't visible
+from any single file: streaming handlers returning `[]`, `raw_downloads` being
+unversioned, VARIANT requiring the DuckDB compatibility setting.

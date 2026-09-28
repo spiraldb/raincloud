@@ -24,8 +24,8 @@ class _FakePackaged:
     ("manifest", "sources.json", "sources.json"),
 ])
 def test_data_file_prefers_repo_over_packaged(tmp_path, monkeypatch, kind, repo_rel, packaged_name):
-    """Finding 5: precedence must be env -> repo checkout -> wheel-packaged,
-    matching scripts.pipeline.spec._default_manifest and the documented intent.
+    """Precedence must be env -> repo checkout -> wheel-packaged,
+    matching raincloud.pipeline.spec._default_manifest and the documented intent.
     A checkout copy must win over a packaged copy when both exist."""
     from importlib import resources
 
@@ -35,6 +35,13 @@ def test_data_file_prefers_repo_over_packaged(tmp_path, monkeypatch, kind, repo_
     monkeypatch.delenv(env, raising=False)
 
     repo = tmp_path / "repo"
+    # The checkout's schema names the known layouts (the snapshot path falls
+    # back to the oldest); an unreadable schema is a broken install.
+    repo.mkdir()
+    (repo / "sources.schema.json").write_text(
+        json.dumps({"properties": {"schema_version": {"enum": [1, 2]}}}))
+    _catalog.known_schema_versions.cache_clear()
+    monkeypatch.setattr(_catalog, "_packaged_schema", lambda: None)
     repo_file = repo / repo_rel
     repo_file.parent.mkdir(parents=True, exist_ok=True)
     repo_file.write_text("{}")
@@ -50,6 +57,7 @@ def test_data_file_prefers_repo_over_packaged(tmp_path, monkeypatch, kind, repo_
     # Repo absent -> packaged wins (the wheel-install path).
     repo_file.unlink()
     assert str(_catalog._data_file(kind)) == str(packaged_file)
+    _catalog.known_schema_versions.cache_clear()
 
 
 class _Joiner:
@@ -68,13 +76,13 @@ def fake_catalog(tmp_path, monkeypatch):
             "tiny": {
                 "expected_rows": 3, "last_built_rows": 3,
                 "parquet_bytes": 100, "vortex_bytes": 120,
-                "parquet_sha256": "aa", "vortex_sha256": "bb",
+                "parquet_sha256": "aa" * 32, "vortex_sha256": "bb" * 32,
                 "columns": [{"name": "x", "type": "int64"}],
             },
             "pq_only": {
                 "expected_rows": 5, "last_built_rows": 5,
                 "parquet_bytes": 50, "vortex_bytes": None,
-                "parquet_sha256": "cc", "vortex_sha256": None,
+                "parquet_sha256": "cc" * 32, "vortex_sha256": None,
                 "columns": [{"name": "y", "type": "string"}],
             },
         },
@@ -103,7 +111,7 @@ def test_entry_formats_and_checksums(fake_catalog):
     e = fake_catalog.entry("tiny")
     assert e.rows == 3
     assert set(e.formats) == {"parquet", "vortex"}
-    assert e.formats["vortex"].sha256 == "bb"
+    assert e.formats["vortex"].sha256 == "bb" * 32
     assert e.formats["parquet"].nbytes == 100
 
 
@@ -158,30 +166,18 @@ def test_entry_formats_from_manifest_only(tmp_path, monkeypatch):
         _catalog.load_catalog.cache_clear()
 
 
-def test_entry_parquet_visible_for_snapshot_only_slug(tmp_path, monkeypatch):
-    """A slug present in the snapshot but dropped from the manifest (legacy/
-    deprecated entries still on a mirror) must still expose parquet — the
-    snapshot's recorded parquet_bytes is the loader's signal that bytes exist.
-    Mirrors the vortex_bytes fallback that already covers the same case.
-    """
-    snapshot = {"schema_version": 1, "slugs": {"legacy": {
-        "expected_rows": 7, "last_built_rows": 7,
-        "parquet_bytes": 999, "parquet_sha256": "ff" * 32,
-    }}}
+def test_unmatched_local_snapshot_slug_is_rejected(tmp_path, monkeypatch):
+    from raincloud import _catalog
+    from raincloud.exceptions import CatalogError
+    snapshot = {"schema_version": 1, "slugs": {"legacy": {"parquet_bytes": 999}}}
     manifest = {"schema_version": 1, "datasets": []}
-    sp = tmp_path / "snapshot.json"; sp.write_text(json.dumps(snapshot))
-    mp = tmp_path / "sources.json"; mp.write_text(json.dumps(manifest))
+    sp, mp = tmp_path / "snapshot.json", tmp_path / "sources.json"
+    sp.write_text(json.dumps(snapshot))
+    mp.write_text(json.dumps(manifest))
     monkeypatch.setenv("RAINCLOUD_SNAPSHOT", str(sp))
     monkeypatch.setenv("RAINCLOUD_MANIFEST", str(mp))
-    from raincloud import _catalog
-    _catalog.load_catalog.cache_clear()
-    try:
-        e = _catalog.load_catalog().entry("legacy")
-        assert "parquet" in e.formats
-        assert e.formats["parquet"].sha256 == "ff" * 32
-        assert e.formats["parquet"].nbytes == 999
-    finally:
-        _catalog.load_catalog.cache_clear()
+    with pytest.raises(CatalogError, match="no manifest recipe"):
+        _catalog.load_catalog()
 
 
 def test_entry_no_vortex_when_convert_vortex_false(tmp_path, monkeypatch):
@@ -203,3 +199,20 @@ def test_entry_no_vortex_when_convert_vortex_false(tmp_path, monkeypatch):
         assert set(e.formats) == {"parquet"}
     finally:
         _catalog.load_catalog.cache_clear()
+
+
+def test_fallback_snapshot_cannot_change_recipe_namespace():
+    """A snapshot of another schema_version never reaches a Catalog: its
+    checksums describe another namespace's artifacts. resolve_context owns the
+    skew rule, so a Catalog handed one directly refuses it rather than mixing
+    namespaces."""
+    from raincloud._catalog import Catalog
+    from raincloud.exceptions import CatalogError
+
+    with pytest.raises(CatalogError, match="resolve_context"):
+        Catalog(
+            {"schema_version": 2, "slugs": {
+                "recipe": {"parquet_sha256": "wrong-version", "parquet_bytes": 20},
+            }},
+            {"schema_version": 1, "datasets": [{"slug": "recipe"}]},
+        )

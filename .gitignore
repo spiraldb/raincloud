@@ -53,12 +53,18 @@ htmlcov/
 *.sqlite
 *.sqlite3
 
-# Pipeline build artifacts — regenerate with scripts/pipeline/build.py
+# Pipeline build artifacts — regenerate with raincloud/pipeline/build.py.
+# `/outputs` also matches when it is a symlink to bulk storage (a trailing-slash
+# pattern matches only a real directory).
 outputs/
+/outputs
 
 # Archived notes from prior iterations (Kaggle triage, attribution audit,
 # conversation logs). Kept locally for reference but not tracked.
 .archive/
+
+# Local planning notes — not tracked.
+.big-plans/
 
 # OS metadata
 .DS_Store
@@ -76,7 +82,18 @@ Thumbs.db
 _workdir/
 .tmp
 
-# scratch (top-level docs/*.md / *.json mirror; canonical copies live in docs/v1/)
+# scratch (top-level docs/*.md / *.json mirror; canonical copies live in docs/v{n}/)
 docs/datasets.md
 docs/handlers.md
 docs/snapshot.json
+
+# Local planning notes — not tracked.
+.dispatch/
+
+# Native reader build outputs
+/clients/rust/target/
+/clients/java/.gradle/
+/clients/java/build/
+/clients/c/build/
+# profile promotion lock beside tracked profiles
+docs/**/.profiles-write.lock

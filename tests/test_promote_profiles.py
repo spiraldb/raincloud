@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
-"""Mirror semantics for scripts.pipeline.promote_profiles.
+"""Mirror semantics for raincloud.pipeline.promote_profiles.
 
 Verifies the outputs/v{n}/<slug>/profile.json → docs/v{n}/profiles/<slug>.json
 sync used to ship profile data to fresh clones. Runs entirely in tmp_path so
@@ -17,13 +17,22 @@ import pytest
 @pytest.fixture
 def fake_repo(tmp_path, monkeypatch):
     """Redirect REPO_ROOT to tmp_path in both modules that read it."""
-    from scripts.pipeline import promote_profiles, spec
+    from raincloud.pipeline import promote_profiles, spec
     monkeypatch.setattr(spec, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(promote_profiles, "REPO_ROOT", tmp_path)
     (tmp_path / "sources.json").write_text(
         json.dumps({"schema_version": 1, "datasets": [{"slug": "alpha"}, {"slug": "beta"}]})
     )
-    return tmp_path
+    import raincloud
+    from raincloud._bundle import encode, make_bundle
+    from raincloud.catalogs import Context, operation
+    manifest = json.loads((tmp_path / "sources.json").read_text())
+    bundle = make_bundle(encode(manifest), encode({"schema_version": 1, "slugs": {}}), "raincloud")
+    config = raincloud.resolve_config(no_config=True, data_dir=tmp_path / "outputs",
+        raw_dir=tmp_path / "raw", scratch_dir=tmp_path / "scratch",
+        catalog_dir=tmp_path / "catalogs")
+    with operation(config, Context(bundle, "checkout", True)):
+        yield tmp_path
 
 
 def _put_built_profile(repo: Path, slug: str, body: str) -> None:
@@ -33,59 +42,59 @@ def _put_built_profile(repo: Path, slug: str, body: str) -> None:
 
 
 def test_promote_copies_built_profile_to_tracked_dir(fake_repo):
-    from scripts.pipeline.promote_profiles import promote
+    from raincloud.pipeline.promote_profiles import promote
 
-    _put_built_profile(fake_repo, "alpha", '{"version": 1}')
+    _put_built_profile(fake_repo, "alpha", '{"schema_version": 2, "version": 1}')
     copied, skipped, missing = promote()
     assert copied == 1 and skipped == 0 and missing == []
     dst = fake_repo / "docs" / "v1" / "profiles" / "alpha.json"
-    assert dst.read_text() == '{"version": 1}'
+    assert dst.read_text() == '{"schema_version": 2, "version": 1}'
 
 
 def test_promote_is_idempotent(fake_repo):
-    from scripts.pipeline.promote_profiles import promote
+    from raincloud.pipeline.promote_profiles import promote
 
-    _put_built_profile(fake_repo, "alpha", '{"version": 1}')
+    _put_built_profile(fake_repo, "alpha", '{"schema_version": 2, "version": 1}')
     promote()
     copied, skipped, _ = promote()
     assert copied == 0 and skipped == 1
 
 
 def test_promote_rewrites_when_source_changes(fake_repo):
-    from scripts.pipeline.promote_profiles import promote
+    from raincloud.pipeline.promote_profiles import promote
 
-    _put_built_profile(fake_repo, "alpha", '{"version": 1}')
+    _put_built_profile(fake_repo, "alpha", '{"schema_version": 2, "version": 1}')
     promote()
-    _put_built_profile(fake_repo, "alpha", '{"version": 2}')
+    _put_built_profile(fake_repo, "alpha", '{"schema_version": 2, "version": 2}')
     copied, skipped, _ = promote()
     assert copied == 1 and skipped == 0
     dst = fake_repo / "docs" / "v1" / "profiles" / "alpha.json"
-    assert dst.read_text() == '{"version": 2}'
+    assert dst.read_text() == '{"schema_version": 2, "version": 2}'
 
 
 def test_promote_reports_named_slug_without_built_profile(fake_repo):
-    from scripts.pipeline.promote_profiles import promote
+    from raincloud.pipeline.promote_profiles import promote
 
-    _put_built_profile(fake_repo, "alpha", '{"v": 1}')
+    _put_built_profile(fake_repo, "alpha", '{"schema_version": 2, "v": 1}')
     copied, skipped, missing = promote(slugs=["alpha", "beta"])
     assert copied == 1
     assert missing == ["beta"]
 
 
 def test_promote_named_subset_skips_others(fake_repo):
-    from scripts.pipeline.promote_profiles import promote
+    from raincloud.pipeline.promote_profiles import promote
 
-    _put_built_profile(fake_repo, "alpha", '{"v": 1}')
-    _put_built_profile(fake_repo, "beta", '{"v": 1}')
+    _put_built_profile(fake_repo, "alpha", '{"schema_version": 2, "v": 1}')
+    _put_built_profile(fake_repo, "beta", '{"schema_version": 2, "v": 1}')
     copied, _, _ = promote(slugs=["alpha"])
     assert copied == 1
     assert not (fake_repo / "docs" / "v1" / "profiles" / "beta.json").exists()
 
 
 def test_promote_check_mode_does_not_write(fake_repo):
-    from scripts.pipeline.promote_profiles import promote
+    from raincloud.pipeline.promote_profiles import promote
 
-    _put_built_profile(fake_repo, "alpha", '{"v": 1}')
+    _put_built_profile(fake_repo, "alpha", '{"schema_version": 2, "v": 1}')
     copied, _, _ = promote(check_only=True)
     assert copied == 1
     assert not (fake_repo / "docs" / "v1" / "profiles" / "alpha.json").exists()

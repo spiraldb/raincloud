@@ -4,24 +4,30 @@
 
 Loads 120 years of Olympic athlete results
 (`120-years-of-olympic-history-athletes-and-results`, ~271k athlete-event rows)
-and runs two DuckDB group-bys over `Dataset.scan()`: the top medal-winning
+and runs two DuckDB group-bys over `Dataset.dataset()`: the top medal-winning
 national committees (NOC), and medals awarded per decade. Each row is one
 athlete in one event, so a medal row is a medal won (team events count once
 per athlete — a known quirk of this dataset).
 
 Run it:
 
-    python examples/olympic_medals.py
+    python examples/olympic_medals.py [--build]
 
 Install (raincloud is not on PyPI — install from GitHub):
 
-    pip install "raincloud[build,duckdb] @ git+https://github.com/spiraldb/raincloud"   # build: first-run fetch; duckdb: .scan()
+    pip install "raincloud[build,pandas] @ git+https://github.com/spiraldb/raincloud"   # build: prepare the data, and DuckDB; pandas: DuckDB's .df()
 
-First run fetches ~5 MB from upstream (or a configured RAINCLOUD_MIRROR), then
-it's cached.
+The dataset must be prepared first; there is no public mirror. Either build it
+once (needs the [build] extra; fetches ~5 MB from upstream):
+
+    raincloud build 120-years-of-olympic-history-athletes-and-results
+
+or pass --build to let this script build it on a miss, or set RAINCLOUD_MIRROR
+to a mirror your team runs. Later runs read the prepared file directly.
 """
 from __future__ import annotations
 
+import argparse
 import sys
 
 import raincloud
@@ -47,20 +53,32 @@ PER_DECADE = """
 
 
 def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
+    ap.add_argument("--build", action="store_true",
+                    help="build the dataset locally if it is not prepared (needs raincloud[build])")
+    args = ap.parse_args(argv)
     try:
-        rel = raincloud.load(SLUG, format="parquet").scan()
+        connection = raincloud.duckdb_connect()
     except raincloud.MissingDependency as e:
-        print(f"this example needs DuckDB: {e}\n"
-              '  pip install "raincloud[duckdb] @ git+https://github.com/spiraldb/raincloud"')
+        print(f"this example needs DuckDB: {e}", file=sys.stderr)
         return 1
+    try:
+        games = raincloud.load(SLUG, build=args.build).dataset()
     except raincloud.RaincloudError as e:
-        print(f"could not load {SLUG}: {type(e).__name__}: {e}")
-        print('  hint: pip install "raincloud[build] @ git+https://github.com/spiraldb/raincloud" '
-              "(first run fetches ~5 MB) or set RAINCLOUD_MIRROR=<url>")
+        print(f"could not load {SLUG}: {type(e).__name__}: {e}", file=sys.stderr)
+        if isinstance(e, raincloud.BuildToolingMissing):
+            hint = 'install the builder: pip install "raincloud[build] @ git+https://github.com/spiraldb/raincloud"'
+        elif isinstance(e, raincloud.BuildFailed):
+            hint = "the build failed; its output above says why"
+        else:
+            hint = (f"prepare it with `raincloud build {SLUG}` (needs raincloud[build]; fetches ~5 MB)"
+                    + ("" if args.build else ", rerun with --build,") + " or set RAINCLOUD_MIRROR")
+        print(f"  hint: {hint}", file=sys.stderr)
         return 1
 
-    top = rel.query("games", TOP_NOCS).df()
-    decades = rel.query("games", PER_DECADE).df()
+    connection.register("games", games)
+    top = connection.sql(TOP_NOCS).df()
+    decades = connection.sql(PER_DECADE).df()
 
     print("top 10 medal-winning national committees (1896-2016):")
     for r in top.itertuples():

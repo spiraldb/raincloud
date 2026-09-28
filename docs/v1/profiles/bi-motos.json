@@ -1054,23 +1054,23 @@
       "mean_length": 51.36482307929779,
       "top_values": [
         {
-          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/TV_GUA",
+          "value": "ftp://<redacted-credential>@181.48.50.21/TV_GUA",
           "count": 13065546
         },
         {
-          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/RADIO_GUA/",
+          "value": "ftp://<redacted-credential>@181.48.50.21/RADIO_GUA/",
           "count": 6846414
         },
         {
-          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/TV_GUA/",
+          "value": "ftp://<redacted-credential>@181.48.50.21/TV_GUA/",
           "count": 6431712
         },
         {
-          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/PE_GUA/",
+          "value": "ftp://<redacted-credential>@181.48.50.21/PE_GUA/",
           "count": 965060
         },
         {
-          "value": "ftp://spotsftpgua:Ftpgu4t3m4l4@181.48.50.21/PRENSA_GUA",
+          "value": "ftp://<redacted-credential>@181.48.50.21/PRENSA_GUA",
           "count": 864404
         }
       ],

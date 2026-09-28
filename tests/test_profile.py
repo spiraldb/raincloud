@@ -1,10 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for the per-column profile stage.
-
-Tasks 7-9 land the schema (this file), the numeric/bool/temporal stats, then
-string/list/struct. The golden fixture for uci-seeds gets committed in Task 9
-once the full stat menu is implemented; Task 7 only validates schema shape.
+"""Tests for the per-column profile stage: the profile schema, the numeric, bool,
+temporal, string, list and struct stats, and a golden uci-seeds profile.
 """
 from __future__ import annotations
 
@@ -16,7 +13,7 @@ from pathlib import Path
 import jsonschema
 import pytest
 
-from scripts.pipeline.spec import REPO_ROOT
+from raincloud.pipeline.spec import REPO_ROOT
 
 
 @pytest.fixture(scope="module")
@@ -66,7 +63,7 @@ def uci_seeds_parquet() -> Path:
 
 def test_profile_skeleton_writes_top_level_fields(tmp_path, uci_seeds_parquet, profile_schema):
     """profile_slug() returns a dict with the required envelope keys."""
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     result = profile_slug(
         slug="uci-seeds",
@@ -77,12 +74,12 @@ def test_profile_skeleton_writes_top_level_fields(tmp_path, uci_seeds_parquet, p
     assert result["slug"] == "uci-seeds"
     assert result["row_count"] == 210
     assert result["parquet_sha256"] == _sha256(uci_seeds_parquet)
-    assert result["schema_version"] == 1
+    assert result["schema_version"] == 2
     datetime.fromisoformat(result["computed_at"].replace("Z", "+00:00"))
 
 
 def test_profile_numeric_columns_have_histogram(uci_seeds_parquet):
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     result = profile_slug(slug="uci-seeds", parquet_path=uci_seeds_parquet)
     numeric_cols = [name for name, col in result["columns"].items()
@@ -98,7 +95,7 @@ def test_profile_numeric_columns_have_histogram(uci_seeds_parquet):
 
 def test_profile_idempotent_for_same_sha(uci_seeds_parquet):
     """Two invocations against the same parquet produce identical columns/stats."""
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     a = profile_slug(slug="uci-seeds", parquet_path=uci_seeds_parquet)
     b = profile_slug(slug="uci-seeds", parquet_path=uci_seeds_parquet)
@@ -112,7 +109,7 @@ def test_profile_all_null_column_returns_null(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     table = pa.table({
         "name": pa.array([None, None, None], type=pa.string()),
@@ -126,9 +123,7 @@ def test_profile_all_null_column_returns_null(tmp_path):
     # All three columns reported as null (no profile body).
     assert result["columns"]["n"] is None
     assert result["columns"]["ts"] is None
-    # The string column also returns None today because Task 9 hasn't landed
-    # yet — placeholder; this assertion stays true once Task 9 wires strings
-    # since an all-null string also produces "all-null at column-map level."
+    # An all-null string column is null at the column-map level too.
     assert result["columns"]["name"] is None
 
 
@@ -137,7 +132,7 @@ def test_profile_string_column_records_ndv(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     table = pa.table({"label": ["a", "b", "a", "c", None, "a", "b"]})
     parquet = tmp_path / "x.parquet"
@@ -158,7 +153,7 @@ def test_profile_string_column_skips_topk_when_ndv_large(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     table = pa.table({"id": [f"u{i}" for i in range(1024)]})
     parquet = tmp_path / "ids.parquet"
@@ -172,7 +167,7 @@ def test_profile_list_column_length_stats(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     table = pa.table({"xs": [[1, 2], [3], [], [4, 5, 6]]})
     parquet = tmp_path / "lists.parquet"
@@ -192,7 +187,7 @@ def test_profile_struct_column_emits_null_entry(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     inner = pa.struct([("v", pa.int32())])
     table = pa.table({"nested": pa.array([{"v": 1}, {"v": 2}], type=inner)})
@@ -208,7 +203,7 @@ def test_profile_binary_column_uses_octet_length(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     table = pa.table({"blob": pa.array([b"abc", b"defgh", b""], type=pa.binary())})
     parquet = tmp_path / "blobs.parquet"
@@ -231,7 +226,7 @@ def test_profile_map_column_uses_cardinality(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     map_type = pa.map_(pa.string(), pa.int32())
     table = pa.table({"m": pa.array([
@@ -257,7 +252,7 @@ def test_profile_large_string_column(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     table = pa.table({"s": pa.array(["alpha", "beta", "alpha"], type=pa.large_string())})
     parquet = tmp_path / "ls.parquet"
@@ -275,7 +270,7 @@ def test_profile_handles_column_name_with_quotes(tmp_path):
     import pyarrow as pa
     import pyarrow.parquet as papq
 
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
 
     weird = 'foo"bar'
     table = pa.table({weird: [1, 2, 3]})
@@ -292,7 +287,7 @@ def test_profile_handles_column_name_with_quotes(tmp_path):
 
 def test_uci_seeds_profile_matches_golden(uci_seeds_parquet, profile_schema):
     """Hermetic golden check — the committed fixture round-trips against a fresh profile."""
-    from scripts.pipeline.profile import profile_slug
+    from raincloud.pipeline.profile import profile_slug
     fresh = profile_slug(slug="uci-seeds", parquet_path=uci_seeds_parquet)
     jsonschema.Draft202012Validator(profile_schema).validate(fresh)
     golden_path = REPO_ROOT / "tests" / "fixtures" / "profile_uci_seeds.json"
@@ -304,8 +299,8 @@ def test_uci_seeds_profile_matches_golden(uci_seeds_parquet, profile_schema):
 
 def test_profile_main_auto_promotes_by_default(uci_seeds_parquet, monkeypatch, capsys):
     """`profile <slug>` calls promote_profiles.promote(slugs=[<slug>]) at the end."""
-    from scripts.pipeline import profile as profile_mod
-    from scripts.pipeline import promote_profiles
+    from raincloud.pipeline import profile as profile_mod
+    from raincloud.pipeline import promote_profiles
 
     calls: list[dict] = []
 
@@ -319,13 +314,13 @@ def test_profile_main_auto_promotes_by_default(uci_seeds_parquet, monkeypatch, c
     assert rc == 0
     assert calls == [{"slugs": ["uci-seeds"], "check_only": False}]
     out = capsys.readouterr().out
-    assert "mirrored 1 profile(s) to docs/v1/profiles/ (0 unchanged)" in out
+    assert f"mirrored 1 profile(s) to {promote_profiles.profile_observations_dir()} (0 unchanged)" in out
 
 
 def test_profile_main_no_promote_flag_suppresses(uci_seeds_parquet, monkeypatch, capsys):
     """`--no-promote` skips the auto-mirror step entirely."""
-    from scripts.pipeline import profile as profile_mod
-    from scripts.pipeline import promote_profiles
+    from raincloud.pipeline import profile as profile_mod
+    from raincloud.pipeline import promote_profiles
 
     calls: list[dict] = []
 
@@ -349,8 +344,8 @@ def test_profile_main_force_bypasses_sha_cache(uci_seeds_parquet, monkeypatch, c
     `profile_slug`; with `--force` the work runs unconditionally. We assert
     both halves of that contract in one test so the gate stays exercised.
     """
-    from scripts.pipeline import profile as profile_mod
-    from scripts.pipeline import promote_profiles
+    from raincloud.pipeline import profile as profile_mod
+    from raincloud.pipeline import promote_profiles
 
     # Stub promote so we don't touch docs/v1/profiles/ from the test.
     monkeypatch.setattr(promote_profiles, "promote",
@@ -363,7 +358,7 @@ def test_profile_main_force_bypasses_sha_cache(uci_seeds_parquet, monkeypatch, c
     original_exists = out_path.exists()
     original_bytes = out_path.read_bytes() if original_exists else None
     out_path.write_text(json.dumps({
-        "schema_version": 1,
+        "schema_version": profile_mod._PROFILE_SCHEMA_VERSION,  # a v1 profile is never reused
         "slug": "uci-seeds",
         "row_count": 0,
         "parquet_sha256": _sha256(uci_seeds_parquet),

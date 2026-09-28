@@ -23,15 +23,15 @@ Steps:
    "expect": { "rows": null, "notes": "Row count populated after the first successful build." }
    ```
 
-   Use the [Python load-edit-dump pattern](../../context/AGENTS.md#safe-ways-to-edit-sourcesjson) — never `sed`.
+   Use the [Python load-edit-dump pattern](../../context/AGENTS.md#editing-sourcesjson) — never `sed`.
 
-2. **Confirm Kaggle creds are set up:** `~/.kaggle/kaggle.json` with `chmod 600`, and the project synced via `uv sync --extra kaggle --inexact`.
+2. **Confirm Kaggle creds are set up:** a Kaggle API token in `KAGGLE_API_TOKEN` or `~/.kaggle/access_token` (mode 600; the legacy `~/.kaggle/kaggle.json` still works), and the project synced via `uv sync --extra kaggle --inexact`.
 
-3. **Try the first build via `/raincloud-build <slug> --loose`.** Pre-flight will print `kaggle (ToS-gated): ...`. Expect a 403 on the first try. The error message will point at the exact Kaggle URL the user must visit.
+3. **Try the first build via `/raincloud-build <slug>`.** Pre-flight will print `kaggle (ToS-gated): ...`. Expect a 403 on the first try. The error message will point at the exact Kaggle URL the user must visit.
 
 4. **Tell the user to click Download once** in a browser signed into Kaggle. The 403 handler is generic — it triggers whether or not `requires_interactive_accept` is set, so forgetting the flag still yields a useful error; the flag only improves the up-front announcement.
 
-5. **Re-run `/raincloud-build <slug> --loose`.** It should succeed.
+5. **Re-run `/raincloud-build <slug>`.** It should succeed.
 
 6. **Update `expect.rows`** in the manifest with the actual count and **drop `expect.notes`** (now that the row count is known).
 

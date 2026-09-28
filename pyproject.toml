@@ -1,43 +1,73 @@
 [project]
 name = "raincloud"
-version = "0.2.1"
+dynamic = ["version"]
 description = "Client-reproducible pipeline for building a curated catalog of public datasets as Parquet + Vortex files."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Raincloud Maintainers", email = "raincloud@spiraldb.com" }]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
+keywords = ["datasets", "parquet", "vortex", "arrow", "benchmark", "data-catalog", "columnar"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering",
+]
 
 dependencies = [
     "pyarrow>=23.0",
     "numpy>=2.0",
-    "vortex-data>=0.69.0,<0.70.0",
     "fsspec>=2024.0",
+    "platformdirs>=4.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/spiraldb/raincloud"
+Repository = "https://github.com/spiraldb/raincloud"
+Issues = "https://github.com/spiraldb/raincloud/issues"
+Changelog = "https://github.com/spiraldb/raincloud/blob/develop/CHANGELOG.md"
+
+[project.scripts]
+raincloud = "raincloud.cli:main"
+
 [project.optional-dependencies]
+# Exact: the Vortex file format is still versioned by its writer, and the
+# snapshot's checksums are recorded against this one.
+vortex = ["vortex-data==0.86.1"]
 s3 = ["s3fs>=2024.0"]
 http = ["aiohttp>=3.9"]
-duckdb = ["duckdb>=1.5.0"]
 pandas = ["pandas>=2.0"]
-# Full build pipeline (enables the local-build fallback). Mirrors the
-# pre-split heavy dependency set.
-build = [
-    "duckdb>=1.5.0", "zstandard>=0.25.0", "py7zr>=1.1.0", "unlzw3>=0.2.0",
-    "pandas>=2.0", "openpyxl>=3.1", "pyreadstat>=1.3", "osmium>=4.3",
-    "jsonschema>=4.0",
-]
+# `raincloud.duckdb_connect()`, the one way raincloud code and examples open DuckDB.
+duckdb = ["duckdb>=1.5.0"]
+# The build pipeline core; local builds are explicitly requested. A handler's
+# format-specific dependency is its own extra, imported only when that handler
+# runs; a build missing one names the extra.
+build = ["raincloud[vortex,duckdb]", "zstandard>=0.25.0", "jsonschema>=4.0"]
+osm = ["osmium>=4.3"]
+sas = ["pyreadstat>=1.3"]
+excel = ["openpyxl>=3.1"]
+archives = ["py7zr>=1.1.0", "unlzw3>=0.2.0"]
+# Exact: generated datasets are recorded by checksum, and a generator's output
+# changes with its version (DuckDB's tpch/tpcds extensions, tpchgen-cli).
+generated = ["raincloud[build]", "duckdb==1.5.5", "tpchgen-cli==3.0.0"]
 kaggle = ["kaggle>=2.0"]
 huggingface = ["huggingface-hub>=0.25"]
 tui = ["textual>=0.80"]
 dev = ["pytest>=8.0", "ruff>=0.13"]
 all = [
-    "raincloud[s3,http,duckdb,pandas,build,kaggle,huggingface,tui]",
+    "raincloud[s3,http,pandas,build,osm,sas,excel,archives,generated,kaggle,huggingface,tui]",
 ]
 
 [tool.ruff]
 line-length = 120
-target-version = "py311"
+# The vendored submodule carries its own tooling and lint rules.
+extend-exclude = ["sidecars/java/parquet-arrow-java"]
 
 [tool.ruff.lint]
 # Conservative starter set: pyflakes (F), pycodestyle errors + warnings
@@ -61,10 +91,31 @@ markers = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# The release version has ONE literal, in `raincloud/__init__.py`. This table
+# and the Java client's `version` read it; `clients/rust/Cargo.toml` and
+# `CITATION.cff` are hand-bumped copies, checked by
+# tests/test_loader_package.py::test_version_mirrors_agree.
+[tool.hatch.version]
+path = "raincloud/__init__.py"
+
 [tool.hatch.build.targets.wheel]
-packages = ["raincloud", "scripts"]
+packages = ["raincloud"]
 
 [tool.hatch.build.targets.wheel.force-include]
-"docs/v1/snapshot.json" = "raincloud/_data/snapshot.json"
+# Package the current schema_version's snapshot — the loader derives its
+# catalog version from the snapshot it reads, so a wheel install (no checkout)
+# must ship the v2 snapshot to expose the canonical arrow format + request the
+# v2 mirror keys `publish` actually writes.
+"docs/v2/snapshot.json" = "raincloud/_data/snapshot.json"
 "sources.json" = "raincloud/_data/sources.json"
 "sources.schema.json" = "raincloud/_data/sources.schema.json"
+
+# Python source releases contain code and operational docs only. Private worktree notes,
+# local environments, artifacts, native build trees and caches never enter them.
+[tool.hatch.build.targets.sdist]
+include = [
+    "/raincloud", "/examples", "/templates",
+    "/docs/v2/snapshot.json", "/sources.json", "/sources.schema.json", "/sources.schema.md",
+    "/README.md", "/LICENSE", "/DISCLAIMER.md", "/CHANGELOG.md", "/pyproject.toml",
+]
+exclude = ["**/build/**", "**/target/**", "**/.gradle/**", "**/__pycache__/**", "**/*.pyc"]
