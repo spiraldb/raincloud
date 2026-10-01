@@ -55,11 +55,13 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from raincloud._formats import ALL_FORMATS
+
 from .discovery import SHOWCASE_TIERS, _is_variant_field, bucket_for_size
 from .spec import (
     REPO_ROOT,
     load_manifest,
-    prepared_arrow,
+    prepared_artifact,
     prepared_parquet,
     prepared_vortex,
     spec_field,
@@ -717,15 +719,12 @@ def generate_snapshot(*, overwrite_missing: bool = False, rehash: bool = False,
     for spec in manifest["datasets"]:
         slug = spec["slug"]
         recipe = recipe_hash(spec, manifest["schema_version"], specs=specs)
-        parquet = prepared_parquet(slug)
-        vortex = prepared_vortex(slug)
         expected_rows = spec_field(spec, "expect.rows")
         prior_for_slug = existing_slugs.get(slug)
         prior = prior_for_slug or {}
-        parquet_bytes = parquet.stat().st_size if parquet.exists() else None
-        vortex_bytes = vortex.stat().st_size if vortex.exists() else None
-        arrow = prepared_arrow(slug)
-        arrow_bytes = arrow.stat().st_size if arrow.exists() else None
+        paths = {fmt: prepared_artifact(slug, fmt) for fmt in ALL_FORMATS}
+        sizes = {fmt: path.stat().st_size if path.exists() else None for fmt, path in paths.items()}
+        parquet, arrow = paths["parquet"], paths["arrow"]
         # Preserve each absent format independently. A local Parquet file does
         # not prove that an Arrow/Vortex artifact recorded elsewhere disappeared.
         fresh: dict = {
@@ -740,9 +739,8 @@ def generate_snapshot(*, overwrite_missing: bool = False, rehash: bool = False,
             "expected_rows": expected_rows,
         }
         n_unavailable = 0
-        for fmt, path, size in (("parquet", parquet, parquet_bytes),
-                                ("vortex", vortex, vortex_bytes),
-                                ("arrow", arrow, arrow_bytes)):
+        for fmt, path in paths.items():
+            size = sizes[fmt]
             built = builds.get(artifact_key(slug, fmt, manifest["schema_version"])) or {}
             if isinstance(built.get("unavailable"), dict) and built.get("recipe") == recipe:
                 # This install's build measured that its writer cannot make the
@@ -826,8 +824,7 @@ def generate_snapshot(*, overwrite_missing: bool = False, rehash: bool = False,
         for k in ("size_bucket", "shape_traits"):
             if k in snap_fragment:
                 fresh[k] = snap_fragment[k]
-        fresh_has_data = n_unavailable or any(size is not None
-                                              for size in (parquet_bytes, vortex_bytes, arrow_bytes))
+        fresh_has_data = n_unavailable or any(size is not None for size in sizes.values())
         if fresh_has_data or overwrite_missing or slug not in existing_slugs:
             out["slugs"][slug] = _without_stale_measurements(fresh, recipe)
         else:

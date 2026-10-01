@@ -33,6 +33,11 @@ HYDRATED = {"slug": "tiny-hydrated", "advisory": "a test fixture's pages",
 TABLE = pa.table({"x": [1, 2], "url": ["https://example.test/a", None]})
 
 
+
+def _artifacts(tmp_path, paths):
+    """A `prepared_artifact` stand-in: `paths[fmt]`, else a file that never exists."""
+    return lambda slug, fmt, manifest=None: paths.get(fmt, tmp_path / f"missing.{fmt}")
+
 def _catalog(tmp_path, name, datasets, slugs=None):
     """A config selecting a catalog of `datasets`, over one shared store."""
     bundle = make_bundle(encode({"schema_version": 2, "datasets": datasets}),
@@ -464,7 +469,7 @@ def _docs_env(tmp_path, monkeypatch, version):
     monkeypatch.setattr(docs, "load_manifest", lambda: {"schema_version": version, "datasets": [{"slug": "kept"}]})
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: tmp_path / "missing.arrow.zstd")
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex", "arrow": tmp_path / "missing.arrow.zstd"}))
     monkeypatch.setenv("RAINCLOUD_HOME", str(tmp_path / "home"))
     (tmp_path / "docs" / f"v{version}").mkdir(parents=True)
 
@@ -827,7 +832,7 @@ def test_snapshot_regen_describes_a_multi_batch_ipc_canonical(tmp_path, monkeypa
     with pa.ipc.new_file(arrow, table.schema, options=pa.ipc.IpcWriteOptions(compression="zstd")) as writer:
         for batch in table.to_batches(3):
             writer.write_batch(batch)
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: arrow)
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"arrow": arrow}))
     dest = tmp_path / "out.json"
     docs.generate_snapshot(destination=dest)
     entry = json.loads(dest.read_text())["slugs"]["kept"]

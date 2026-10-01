@@ -13,7 +13,7 @@ from ._catalog import load_catalog
 from ._catalog import unverified as _catalog_unverified
 from ._duckdb import duckdb_connect
 from ._formats import select_format
-from ._readers import reader_capabilities, require_reader
+from ._readers import open_batches, open_dataset, reader_capabilities, require_reader
 from .config import Config, get_config, resolve_config
 from .exceptions import (  # noqa: F401
     ArtifactNotFound,
@@ -222,32 +222,9 @@ class Dataset:
         import pyarrow as pa
         with ExitStack() as stack:
             def open_reader(path):
-                if fmt == "parquet":
-                    import pyarrow.parquet as pq
-                    source = stack.enter_context(pa.OSFile(str(path), "r"))
-                    reader = stack.enter_context(pq.ParquetFile(source))
-                    schema = reader.schema_arrow
-                    if columns is not None:
-                        _check_columns(schema, columns, fmt, self.slug)
-                        schema = reader.read_row_groups([], columns=columns).schema
-                    native = reader.iter_batches(batch_size=batch_size, columns=columns)
-                elif fmt == "arrow":
-                    source = stack.enter_context(pa.memory_map(str(path), "r"))
-                    reader = pa.ipc.open_file(source)
-                    schema = reader.schema
-                    if columns is not None:
-                        _check_columns(schema, columns, fmt, self.slug)
-                        schema = pa.schema([schema.field(c) for c in columns], metadata=schema.metadata)
-                    native = (reader.get_batch(i) if columns is None else reader.get_batch(i).select(columns)
-                              for i in range(reader.num_record_batches))
-                else:
-                    import vortex
-                    file = vortex.open(str(path))
-                    if columns is not None:
-                        _check_columns(file.dtype.to_arrow_schema(), columns, fmt, self.slug)
-                    # Projection is pushed into the scan: unrequested columns are never read.
-                    reader = stack.enter_context(file.to_arrow(projection=columns, batch_size=batch_size))
-                    schema, native = reader.schema, reader
+                schema, native = open_batches(
+                    fmt, path, stack, columns=columns, batch_size=batch_size,
+                    check_columns=lambda found: _check_columns(found, columns, fmt, self.slug))
 
                 def chunks():
                     with _decoding(path, fmt):
@@ -341,23 +318,7 @@ class Dataset:
         """
         fmt = self.format
         require_reader(fmt)
-        import pyarrow as pa
-        import pyarrow.dataset as pads
-
-        def open_dataset(path):
-            if fmt == "vortex":
-                import vortex
-                return vortex.open(str(path)).to_dataset()
-            if fmt == "parquet":
-                file_format, source = pads.ParquetFileFormat(), pa.OSFile(str(path), "r")
-            else:
-                file_format, source = pads.IpcFileFormat(), pa.memory_map(str(path), "r")
-            # A fragment over the open file, not the path: the dataset keeps
-            # reading this generation for as long as it lives.
-            fragment = file_format.make_fragment(source)
-            return pads.FileSystemDataset([fragment], fragment.physical_schema, file_format)
-
-        return self._acquire(self.format, open_dataset)
+        return self._acquire(fmt, lambda path: open_dataset(fmt, path))
 
     def to_pandas(self):
         try:

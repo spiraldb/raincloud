@@ -3,7 +3,7 @@
 """Lightweight manifest export policy, shared by the loader and build pipeline."""
 from __future__ import annotations
 
-from ._registry import exporter_cells
+from ._registry import FORMATS, exporter_cells
 
 # Formats a dataset exports unless its spec says otherwise. Canonical Arrow is
 # not among them: it is what every exporter reads.
@@ -206,6 +206,9 @@ def _writers() -> dict[str, tuple[str, ...]]:
     writers: dict[str, tuple[str, ...]] = {}
     for cell in exporter_cells():
         base, _, writer = cell.partition("@")
+        if base not in FORMATS or base == "arrow":
+            raise RuntimeError(f"exporter cell {cell!r} writes {base!r}, which _registry.FORMATS "
+                               f"does not declare as an exported format")
         writers[base] = (*writers.get(base, ()), writer)
     return {**writers, "arrow": ("canonical",)}
 
@@ -215,6 +218,8 @@ WRITERS = _writers()
 # artifact format: those plus the canonical Arrow they are all written from.
 EXPORTED_FORMATS = tuple(fmt for fmt in WRITERS if fmt != "arrow")
 ALL_FORMATS = (*EXPORTED_FORMATS, "arrow")
+# What "auto" tries, in order: the formats a caller need not name.
+AUTO_FORMATS = tuple(fmt for fmt, info in FORMATS.items() if info["auto"] and fmt in WRITERS)
 
 
 def base_format(fmt: str) -> str:
@@ -230,16 +235,16 @@ def split_cell(cell: str) -> tuple[str, str]:
 
 
 def select_format(formats, requested: str = "auto") -> str:
-    """The format to open: `requested`, or the first present of vortex, parquet,
-    arrow for "auto". Each format is one file; which writer made it is recorded
-    in the catalog, not chosen here."""
+    """The format to open: `requested`, or for "auto" the first present of
+    AUTO_FORMATS (vortex, parquet, arrow). Each format is one file; which writer
+    made it is recorded in the catalog, not chosen here."""
     from .exceptions import FormatUnavailable
     if "@" in requested:
         raise FormatUnavailable(
             f"format {requested!r}: a dataset has one file per format; ask for "
             f"{base_format(requested)!r} (`raincloud describe` shows which writer made it)"
         )
-    bases = ("vortex", "parquet", "arrow") if requested == "auto" else (requested,)
+    bases = AUTO_FORMATS if requested == "auto" else (requested,)
     for base in bases:
         if base in formats:
             return base

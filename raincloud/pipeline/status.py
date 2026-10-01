@@ -45,13 +45,14 @@ from typing import Any
 
 import pyarrow.parquet as pq
 
-from raincloud._formats import buildable_formats, vortex_cells
+from raincloud._formats import EXPORTED_FORMATS, buildable_formats, vortex_cells
 
 from .selection import SelectionError, select_specs
 from .spec import (
     is_hydrated,
     load_manifest,
     prepared_arrow,
+    prepared_artifact,
     prepared_parquet,
     prepared_vortex,
     raw_slug_dir,
@@ -152,23 +153,32 @@ def _record() -> dict:
     return _RECORD["artifacts"]
 
 
-def _parquet_status(spec: dict, m: dict, *, fast: bool) -> dict:
-    if "parquet" not in buildable_formats(spec, m["schema_version"]):
+def _format_status(spec: dict, m: dict, fmt: str) -> dict:
+    """An exported format's state: `expected` (the export policy includes it),
+    `present` with its `bytes`, `stale` when older than the canonical Arrow it
+    was exported from, and `unavailable` (the measurement) when a build
+    measured its writer unable to produce it."""
+    if fmt not in buildable_formats(spec, m["schema_version"]):
         return {"expected": False}
-    measured = _measured(spec, "parquet", m)
+    measured = _measured(spec, fmt, m)
     if measured is not None:
         return {"expected": True, "present": False, "unavailable": measured}
-    p = _parquet_path(spec, m)
+    p = prepared_artifact(spec["slug"], fmt, m)
     if not p.exists():
         return {"expected": True, "present": False}
     info: dict[str, Any] = {"expected": True, "present": True, "bytes": p.stat().st_size}
     canonical = prepared_arrow(spec["slug"], m) if m["schema_version"] >= 2 else None
     if canonical is not None and canonical.exists() and canonical.stat().st_mtime > p.stat().st_mtime:
         info["stale"] = True  # exported from an older canonical: a display hint, as for vortex
-    if fast:
+    return info
+
+
+def _parquet_status(spec: dict, m: dict, *, fast: bool) -> dict:
+    info = _format_status(spec, m, "parquet")
+    if fast or not info.get("present"):
         return info
     try:
-        pf = pq.ParquetFile(p)
+        pf = pq.ParquetFile(_parquet_path(spec, m))
         info["rows"] = pf.metadata.num_rows
     except Exception as e:
         info["error"] = f"{type(e).__name__}: {e}"
@@ -207,6 +217,12 @@ def vortex_status(spec: dict, m: dict, *, source: Path | None = None,
     return info
 
 
+# Formats with a status of their own: Parquet also reports its footer's row
+# count, Vortex keeps the `opted_in` shape the browser reads. Every other
+# exported format is reported by `_format_status`.
+_OTHER_FORMATS = tuple(fmt for fmt in EXPORTED_FORMATS if fmt not in ("parquet", "vortex"))
+
+
 def gather(spec: dict, m: dict, *, fast: bool) -> dict:
     return {
         "slug": spec["slug"],
@@ -215,29 +231,32 @@ def gather(spec: dict, m: dict, *, fast: bool) -> dict:
         "arrow":   _arrow_status(spec, m),
         "parquet": _parquet_status(spec, m, fast=fast),
         "vortex":  vortex_status(spec, m),
+        **{fmt: _format_status(spec, m, fmt) for fmt in _OTHER_FORMATS},
     }
+
+
+def _wanted(state: dict) -> bool:
+    """A format the export policy includes, not measured unavailable."""
+    return bool((state.get("expected") or state.get("opted_in")) and not state.get("unavailable"))
 
 
 def _is_incomplete(row: dict) -> bool:
     arrow = row["arrow"]
     parq = row["parquet"]
-    vrtx = row["vortex"]
     return bool(
         not row["raw"].get("present")
         or row["raw"].get("bytes_expected") is not None
         or (arrow.get("expected") and not arrow.get("present"))
-        or (parq.get("expected") and not parq.get("unavailable")
-            and (not parq.get("present") or parq.get("stale")))
         or parq.get("rows_expected") is not None
         or parq.get("error")
-        or (vrtx.get("opted_in") and not vrtx.get("unavailable")
-            and (not vrtx.get("present") or vrtx.get("stale")))
+        or any(_wanted(row[fmt]) and (not row[fmt].get("present") or row[fmt].get("stale"))
+               for fmt in EXPORTED_FORMATS)
     )
 
 
 # ---------- rendering ----------
 
-def _fmt_row(row: dict) -> tuple[str, ...]:
+def _fmt_row(row: dict, rows: list[dict] | None = None) -> tuple[str, ...]:
     raw = row["raw"]
     if raw.get("error"):
         raw_cell = "err"
@@ -269,24 +288,29 @@ def _fmt_row(row: dict) -> tuple[str, ...]:
     else:
         parq_cell = "✓"
 
-    v = row["vortex"]
-    if not v.get("opted_in"):
-        vrtx_cell = "n/a"
-    elif v.get("unavailable"):
-        vrtx_cell = "unavail"
-    elif not v.get("present"):
-        vrtx_cell = "·"
-    elif v.get("stale"):
-        vrtx_cell = "stale"
-    else:
-        vrtx_cell = "✓"
+    others = tuple(_presence_cell(row[fmt]) for fmt in ("vortex", *_shown(rows or [row])))
+    return (row["slug"], raw_cell, work_cell, arrow_cell, parq_cell, *others)
 
-    return row["slug"], raw_cell, work_cell, arrow_cell, parq_cell, vrtx_cell
+
+def _presence_cell(state: dict) -> str:
+    if not (state.get("expected") or state.get("opted_in")):
+        return "n/a"
+    if state.get("unavailable"):
+        return "unavail"
+    if not state.get("present"):
+        return "·"
+    return "stale" if state.get("stale") else "✓"
+
+
+def _shown(rows: list[dict]) -> tuple[str, ...]:
+    """The formats beyond parquet and vortex that some row's policy includes:
+    a column no dataset exports would be all n/a."""
+    return tuple(fmt for fmt in _OTHER_FORMATS if any(r.get(fmt, {}).get("expected") for r in rows))
 
 
 def render_table(rows: list[dict]) -> str:
-    headers = ("slug", "raw", "work", "arrow", "parquet", "vortex")
-    cells = [headers] + [_fmt_row(r) for r in rows]
+    headers = ("slug", "raw", "work", "arrow", "parquet", "vortex", *_shown(rows))
+    cells = [headers] + [_fmt_row(r, rows) for r in rows]
     widths = [max(len(r[i]) for r in cells) for i in range(len(headers))]
     out = []
     for i, r in enumerate(cells):
@@ -312,10 +336,15 @@ def render_summary(rows: list[dict]) -> str:
     vrtx_opt  = [r for r in rows if r["vortex"].get("opted_in")]
     vrtx_ok   = sum(1 for r in vrtx_opt if r["vortex"].get("present") and not r["vortex"].get("stale"))
     arrow = f"  ·  arrow {arrow_ok}/{len(arrow_exp)}" if arrow_exp else ""
-    unavailable = sum(1 for r in rows for fmt in ("parquet", "vortex") if r[fmt].get("unavailable"))
+    unavailable = sum(1 for r in rows for fmt in EXPORTED_FORMATS if r[fmt].get("unavailable"))
+    others = ""
+    for fmt in _shown(rows):
+        expected = [r for r in rows if r[fmt].get("expected")]
+        ok = sum(1 for r in expected if r[fmt].get("present") and not r[fmt].get("stale"))
+        others += f"  ·  {fmt} {ok}/{len(expected)}"
     return (f"\n{n} slugs  ·  raw {raw_ok}/{n}{arrow}  ·  parquet {parq_ok}/{len(parq_exp)}"
             f"  ·  rows-match {rows_ok}/{len(parq_exp)}"
-            f"  ·  vortex {vrtx_ok}/{len(vrtx_opt)}"
+            f"  ·  vortex {vrtx_ok}/{len(vrtx_opt)}{others}"
             + (f"  ·  {unavailable} measured unavailable" if unavailable else ""))
 
 

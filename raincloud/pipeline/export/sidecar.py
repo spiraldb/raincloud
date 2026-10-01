@@ -83,7 +83,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from raincloud._cache import sha256_file
+from raincloud._cache import EXT, sha256_file
 from raincloud._registry import SIDECAR_EXPORTERS
 
 from ..spec import display_path, output_format_dir, row_group_cap, spec_field
@@ -148,7 +148,7 @@ class SidecarExporter:
         self.cell_id = cell_id
         self.format_id = format_id
         self.binary = binary
-        self.ext = ext or format_id
+        self.ext = ext or EXT[format_id]
 
     def unavailable(self) -> str | None:
         if self._discover() is not None:

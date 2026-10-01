@@ -54,6 +54,25 @@ GENERATORS: dict[str, str] = {
     "tpcgen-rs-tpch": "tpch:RustTPCH",
 }
 
+# Artifact formats. Each is one file per dataset, `<fmt>/<slug>.<ext>`,
+# whichever writer made it; `arrow` is the canonical every exporter reads.
+#   ext             the file extension; part of the native-client path contract.
+#   auto            whether `load(slug)` with no format may pick it. Those that
+#                   may are tried in declaration order; any other format opens
+#                   only when asked for by name.
+#   reader          the module whose presence means this install reads the
+#                   format in-process, or None when raincloud only serves the
+#                   file's path to a reader the caller brings.
+#   implementation  that reader, as `raincloud describe --readers` names it.
+#   extra           the raincloud extra that installs the reader, if any.
+# Every exporter cell's format must be declared here; `_formats` checks at import.
+FORMATS: dict[str, dict] = {
+    "vortex": {"ext": "vortex", "auto": True, "reader": "vortex",
+               "implementation": "vortex-python", "extra": "vortex"},
+    "parquet": {"ext": "parquet", "auto": True, "reader": "pyarrow", "implementation": "pyarrow"},
+    "arrow": {"ext": "arrow.zstd", "auto": True, "reader": "pyarrow", "implementation": "pyarrow"},
+}
+
 # In-process exporter cells, as "<module>:<class>" under `raincloud.pipeline.export`.
 # The built-in priority's first choice; the class carries its own `cell_id`, and
 # the key here must match it.

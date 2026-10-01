@@ -78,11 +78,11 @@ def main(argv: list[str] | None = None) -> int:
         ap.error(str(exc))
 
     if args.formats:
-        from raincloud._formats import WRITERS
+        from raincloud._formats import EXPORTED_FORMATS
         for cell in args.formats:  # fail before touching anything
             if "@" not in cell:
-                if cell not in WRITERS or cell == "arrow":
-                    ap.error(f"no exported format {cell!r}; formats: parquet, vortex")
+                if cell not in EXPORTED_FORMATS:
+                    ap.error(f"no exported format {cell!r}; formats: {', '.join(EXPORTED_FORMATS)}")
                 continue
             try:
                 get_exporter(cell)

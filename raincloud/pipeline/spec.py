@@ -503,6 +503,13 @@ def output_format_dir(slug: str, fmt: str = "parquet",
     return outputs_root(manifest) / slug / fmt
 
 
+def prepared_artifact(slug: str, fmt: str, manifest: dict | None = None) -> Path:
+    """outputs/v{n}/<slug>/<fmt>/<slug>.<ext> — the dataset's one file of an
+    artifact format (`_registry.FORMATS`), whichever writer made it."""
+    from raincloud._cache import EXT
+    return output_format_dir(slug, fmt, manifest) / f"{slug}.{EXT[fmt]}"
+
+
 def prepared_parquet(slug: str, manifest: dict | None = None) -> Path:
     """outputs/v{n}/<slug>/parquet/<slug>.parquet — the canonical prepared parquet."""
     return output_format_dir(slug, "parquet", manifest) / f"{slug}.parquet"

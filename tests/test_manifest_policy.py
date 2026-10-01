@@ -405,3 +405,26 @@ def test_format_sets_derive_from_the_writers():
     from raincloud._formats import ALL_FORMATS, EXPORTED_FORMATS
     assert set(EXPORTED_FORMATS) == {base for base in WRITERS if base != "arrow"} == {"parquet", "vortex"}
     assert set(ALL_FORMATS) == set(WRITERS)
+
+
+def test_every_artifact_format_is_declared_once():
+    """A format is declared in `_registry.FORMATS`; the extension map, reader
+    capabilities and `auto` order are derived from it, never restated."""
+    from raincloud._cache import EXT
+    from raincloud._formats import ALL_FORMATS, AUTO_FORMATS
+    from raincloud._readers import reader_capabilities
+    from raincloud._registry import FORMATS
+    assert set(ALL_FORMATS) <= set(FORMATS)
+    assert set(EXT) == set(reader_capabilities()) == set(FORMATS)
+    assert AUTO_FORMATS == ("vortex", "parquet", "arrow")
+
+
+def test_the_schema_names_exactly_the_exported_formats():
+    """sources.schema.json cannot import the registry, so this is its gate: a
+    format added to (or removed from) the registry must be added to the schema's
+    `export.formats` and `export.priority` enums too."""
+    from raincloud._formats import EXPORTED_FORMATS
+    defs = SCHEMA["$defs"]
+    assert defs["Export"]["properties"]["formats"]["items"]["enum"] == list(EXPORTED_FORMATS)
+    by_format = next(option for option in defs["WriterPriority"]["oneOf"] if option.get("type") == "object")
+    assert by_format["propertyNames"]["enum"] == list(EXPORTED_FORMATS)
