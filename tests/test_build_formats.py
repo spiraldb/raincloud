@@ -129,3 +129,16 @@ def test_status_counts_a_dataset_complete_without_what_it_does_not_keep(tmp_path
         assert not row["raw"].get("present") and not row["arrow"].get("present")
         assert row["parquet"] == {"expected": False}
         assert not status._is_incomplete(row)
+
+
+def test_a_v1_catalog_loads_and_builds_as_before(tmp_path, defaults):
+    """Install formats arrived in 0.3.1; a v1 catalog keeps 0.3.0's behaviour so
+    its users do not break: `auto` tries vortex, parquet, arrow, and a build
+    writes what the recipe lists."""
+    from raincloud._catalog import Entry, FormatInfo
+    from raincloud._formats import build_formats
+    cfg = raincloud.resolve_config(no_config=True)
+    parquet_only = Entry("old", 1, formats={"parquet": FormatInfo(None, 10)}, version=1)
+    assert raincloud._choose_format(parquet_only, "auto", False, config=cfg) == "parquet"
+    v1 = {"slug": "old", "convert": {"vortex": True}}
+    assert build_formats(v1, 1, cfg) == ["parquet", "vortex"]

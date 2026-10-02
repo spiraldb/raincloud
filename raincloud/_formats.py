@@ -145,6 +145,9 @@ def build_formats(spec: dict, version: int, config, requested=None) -> list[str]
     may be requested: it is written by every build, so it adds no export.
     """
     offered = export_formats(spec, version)
+    if requested is None and version < 2:
+        # A v1 catalog predates install formats: it builds what its recipe lists, as in 0.3.0.
+        return offered
     if requested is None:
         wanted = wanted_formats(config)
         return [fmt for fmt in offered if fmt in wanted]
@@ -156,10 +159,13 @@ def build_formats(spec: dict, version: int, config, requested=None) -> list[str]
     return [fmt for fmt in offered if fmt in requested]
 
 
-def auto_formats(config) -> tuple[str, ...]:
+def auto_formats(config, version: int = 2) -> tuple[str, ...]:
     """What "auto" tries, in order, for this install: the AUTO_FORMATS it
     builds, then the canonical Arrow, which every dataset has -- the file a
-    caller gets when none of those can be made (a writer measured unable)."""
+    caller gets when none of those can be made (a writer measured unable).
+    A v1 catalog predates install formats and keeps 0.3.0's order."""
+    if version < 2:
+        return AUTO_FORMATS
     wanted = wanted_formats(config)
     return tuple(fmt for fmt in AUTO_FORMATS if fmt in wanted or fmt == "arrow")
 

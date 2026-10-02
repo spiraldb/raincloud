@@ -358,15 +358,13 @@ def test_export_cross_check_names_formats_and_writers(manifest):
 
 
 def test_live_manifest_export_policy_is_writer_priority_only(manifest, schema):
-    """The live sources.json is v2. Its export blocks either list both formats
-    (`formats: ["parquet", "vortex"]`, the specs whose Vortex writer once failed:
-    the build now measures that) or, for the SF100 TPC specs, prefer arrow-rs for
-    Parquet only (a per-format priority map); schema and cross-checks pass."""
+    """The live sources.json is v2. No dataset narrows its formats (every one
+    offers all; an install picks what it builds), and the export blocks there
+    are, for the SF100 TPC specs, a preference for arrow-rs for Parquet only (a
+    per-format priority map); schema and cross-checks pass."""
     assert manifest["schema_version"] == 2
     exports = {d["slug"]: d["export"] for d in manifest["datasets"] if "export" in d}
-    assert all(set(e) <= {"formats", "priority", "notes"} for e in exports.values()), exports
-    formats = {slug: e["formats"] for slug, e in exports.items() if "formats" in e}
-    assert formats and all(f == ["parquet", "vortex"] for f in formats.values()), formats
+    assert all(set(e) <= {"priority", "notes"} for e in exports.values()), exports
     priorities = {slug: e["priority"] for slug, e in exports.items() if "priority" in e}
     assert all(p == {"parquet": ["rs", "py"]} for p in priorities.values()), priorities
     sf100 = {d["slug"] for d in manifest["datasets"] if "-sf100-" in d["slug"]}

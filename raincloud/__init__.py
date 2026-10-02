@@ -378,7 +378,7 @@ def _choose_format(entry, requested: str, readable: bool, readers: set[str] | No
                 raise MissingDependency(f"{entry.slug} is prepared only as {', '.join(sorted(formats))}: {exc}") from None
         formats = usable
     try:
-        fmt = select_format(formats, fmt, auto_formats(config))
+        fmt = select_format(formats, fmt, auto_formats(config, entry.version))
     except FormatUnavailable as exc:
         raise FormatUnavailable(f"{entry.slug}: {exc}") from None
     # A format raincloud reads in-process must be readable here; one it only

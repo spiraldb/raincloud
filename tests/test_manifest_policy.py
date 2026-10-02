@@ -368,6 +368,18 @@ def test_released_v2_catalog_with_convert_still_reads():
     assert export_formats(manifest["datasets"][1], 2) == list(EXPORTED_FORMATS)
 
 
+def test_offered_formats_are_not_part_of_the_recipe():
+    """Since formats are the install's choice, `export.formats` decides no
+    file's bytes; an `export` emptied without it fingerprints like none."""
+    from raincloud._bundle import recipe_hash
+    base = {"slug": "x", "fetch": {"type": "http"}}
+    narrowed = {**base, "export": {"formats": ["parquet"]}}
+    assert recipe_hash(narrowed, 2, specs=None) == recipe_hash(base, 2, specs=None)
+    prioritised = {**base, "export": {"priority": ["rs", "py"]}}
+    assert (recipe_hash({**base, "export": {"formats": ["vortex"], "priority": ["rs", "py"]}}, 2, specs=None)
+            == recipe_hash(prioritised, 2, specs=None) != recipe_hash(base, 2, specs=None))
+
+
 def test_recipe_keys_only_grow():
     # Dropping a key re-fingerprints every released catalog that carries it.
     from raincloud._bundle import _RECIPE_KEYS

@@ -68,6 +68,15 @@ def recipe_hash(spec: dict, version: int, *, specs) -> str:
     # still carries it, so artifacts built against it stop matching their pins.
     # (`hydrate` is the pre-0.3.0 spelling of a hydration block on the parent.)
     recipe = {key: spec[key] for key in _RECIPE_KEYS if key in spec}
+    # Which formats a dataset offers decides no file's bytes (since 0.3.1 an install
+    # chooses what it builds), so `export.formats` stays out, and an `export` left
+    # empty without it fingerprints like none at all.
+    if isinstance(recipe.get("export"), dict) and "formats" in recipe["export"]:
+        export = {k: v for k, v in recipe["export"].items() if k != "formats"}
+        if export:
+            recipe["export"] = export
+        else:
+            del recipe["export"]
     parent = (spec.get("derive") or {}).get("from")
     if parent and specs and parent in specs and parent != spec.get("slug"):
         recipe["from_recipe"] = recipe_hash(specs[parent], version, specs=specs)

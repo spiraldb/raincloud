@@ -65,7 +65,9 @@ def stages(monkeypatch):
 
 @pytest.fixture
 def store(tmp_path, stages):
-    cfg = _catalog(tmp_path, "contracts", [TINY, HYDRATED, {"slug": "other", "export": {"formats": ["parquet"]}}])
+    # `other` has a recipe of its own (offered formats are not part of one).
+    other = {"slug": "other", "export": {"formats": ["parquet"]}, "expect": {"rows": 7}}
+    cfg = _catalog(tmp_path, "contracts", [TINY, HYDRATED, other])
     with operation(cfg):
         assert build.run_one(TINY, strict=False)
         yield cfg

@@ -30,8 +30,12 @@ formats are written, a successful build removes it unless `keep_canonical` is
 set, `--format arrow` asked for it, or no format was written (it is then the
 dataset's only file: the one `load` serves when, say, the Vortex writer cannot
 make Vortex). It removes the raw download too, unless `keep_raw` is set.
-Generated datasets keep their generator output, which a group of datasets
-shares.
+
+A generated dataset is one table of a group its generator writes at once (every
+TPC-H table of one scale factor, say), so building one builds the whole group:
+every table, in the same formats. Once a group has built, its generator output
+is removed too, unless `keep_raw` is set. `--only` builds just the tables named,
+and the generator output still goes: the rest would be generated again.
 
 A failure already measured is not repeated: when the measurement that applies
 (this install's build record at the recipe, else the catalog's) records the
@@ -176,7 +180,9 @@ def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
             # already measured with this writer and toolchain is skipped.
             written[canonical] = run_exporters(spec, canonical, exports, retry_errors=retry_errors,
                                                on_skip=skip, **recorders(slug, note, on_unverified=unchecked))
-        _clean(spec, written, config, formats)
+        if context.manifest["schema_version"] >= 2:
+            # A v1 catalog builds as in 0.3.0, keeping what it was made from.
+            _clean(spec, written, config, formats)
         if clean_workdir:
             wd = workdir_root() / spec["slug"]
             if wd.exists():
@@ -263,6 +269,67 @@ def _clean(spec: dict, written: dict, config, formats) -> None:
             break
 
 
+def _generation(spec: dict) -> str | None:
+    """The key of the generator group `spec` is a table of, or None."""
+    from raincloud._generated import generation_key
+    fetch = spec.get("fetch") or {}
+    return generation_key(fetch) if fetch.get("type") == "generated" and not spec.get("derive") else None
+
+
+def _with_groups(selected: list[dict], manifest: dict) -> list[dict]:
+    """`selected` with every other table of each generator group it names, in
+    manifest order after the first table selected from that group."""
+    chosen = {spec["slug"] for spec in selected}
+    members: dict[str, list[dict]] = {}
+    for spec in manifest["datasets"]:
+        key = _generation(spec)
+        if key is not None:
+            members.setdefault(key, []).append(spec)
+    out, seen = [], set()
+    for spec in selected:
+        if spec["slug"] in seen:
+            continue
+        out.append(spec)
+        seen.add(spec["slug"])
+        key = _generation(spec)
+        added = [m for m in members.get(key, []) if m["slug"] not in chosen and m["slug"] not in seen]
+        if added:
+            print(f"[group] {spec['slug']}: building its generator group too: "
+                  + ", ".join(m["slug"] for m in added))
+        out += added
+        seen.update(m["slug"] for m in added)
+    return out
+
+
+def _clean_generated(selected: list[dict], built: dict[str, bool]) -> None:
+    """Remove the generator output of each group whose tables in this run all
+    built, unless `keep_raw` keeps it."""
+    from .generate import group_root
+    from .lifecycle import operation_lock
+
+    if get_config().keep_raw:
+        return
+    groups: dict[str, list[dict]] = {}
+    for spec in selected:
+        key = _generation(spec)
+        if key is not None:
+            groups.setdefault(key, []).append(spec)
+    for specs in groups.values():
+        if not all(built.get(spec["slug"]) for spec in specs):
+            continue
+        root = group_root(specs[0]["fetch"])
+        if not root.exists():
+            continue
+        with operation_lock(resources=True):
+            try:
+                shutil.rmtree(root)
+            except OSError as e:
+                print(f"  [clean] could not remove {display_path(root)}: {e}", file=sys.stderr)
+            else:
+                print(f"  [clean] removed {display_path(root)}, the generator output of "
+                      f"{', '.join(spec['slug'] for spec in specs)} (set keep_raw to keep it)")
+
+
 def _formats_arg(values: list[str] | None) -> list[str] | None:
     if not values:
         return None
@@ -284,6 +351,8 @@ def _main(argv: list[str] | None = None) -> int:
     ap.add_argument("--format", action="append", dest="formats", metavar="FORMAT",
                     help="write this format instead of the install's `formats` setting (repeatable, or "
                          "comma-separated); `arrow` keeps the canonical Arrow")
+    ap.add_argument("--only", action="store_true",
+                    help="build only the generated tables named, not the rest of their generator's group")
     ap.add_argument("--retry-errors", action="store_true",
                     help="attempt a format even when its writer, with this toolchain, already failed to "
                          "write it at this recipe (skipped by default; see `[skip]` lines)")
@@ -295,7 +364,10 @@ def _main(argv: list[str] | None = None) -> int:
         ap.error(str(exc))
     # Every name is checked before any work: a typo is an error with a
     # did-you-mean, never a silently smaller build.
-    selected = select_or_exit(ap, load_manifest(), args.slugs, all_=args.all, verb="build")
+    manifest = load_manifest()
+    selected = select_or_exit(ap, manifest, args.slugs, all_=args.all, verb="build")
+    if manifest["schema_version"] >= 2 and not args.only:
+        selected = _with_groups(selected, manifest)
     formats = _formats_arg(args.formats)
     if formats is not None:
         from raincloud._formats import ALL_FORMATS
@@ -308,13 +380,17 @@ def _main(argv: list[str] | None = None) -> int:
     unavailable: list = []
     skipped: list = []
     unverified: list = []
+    built: dict[str, bool] = {}
     for spec in selected:
-        if run_one(spec, strict=args.strict, clean_workdir=args.clean_workdir, unavailable=unavailable,
-                   skipped=skipped, unverified=unverified, retry_errors=args.retry_errors,
-                   formats=formats):
+        built[spec["slug"]] = run_one(spec, strict=args.strict, clean_workdir=args.clean_workdir,
+                                      unavailable=unavailable, skipped=skipped, unverified=unverified,
+                                      retry_errors=args.retry_errors, formats=formats)
+        if built[spec["slug"]]:
             ok += 1
         else:
             failed += 1
+    if manifest["schema_version"] >= 2:
+        _clean_generated(selected, built)
     print(f"\nsummary: ok={ok}  failed/skipped={failed}"
           + (f"  unavailable={len(unavailable)}" if unavailable else "")
           + (f"  known failures not retried={len(skipped)}" if skipped else "")
