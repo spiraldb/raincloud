@@ -40,7 +40,7 @@ from .exceptions import (  # noqa: F401
 # and `clients/java/build.gradle.kts` reads it directly. `clients/rust/Cargo.toml`
 # and `CITATION.cff` are hand-bumped copies: bump them with this literal, and
 # tests/test_loader_package.py::test_version_mirrors_agree fails if they disagree.
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 _DEFAULT_FORMAT = "auto"
 # Spellings people type for a format, suggested (never silently substituted).
