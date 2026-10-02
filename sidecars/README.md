@@ -46,6 +46,8 @@ export RAINCLOUD_SIDECAR_VORTEX_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/vortex-write"
 export RAINCLOUD_READER_VORTEX_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/vortex-read"
 export RAINCLOUD_SIDECAR_ORC_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/orc-write"
 export RAINCLOUD_READER_ORC_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/orc-read"
+export RAINCLOUD_SIDECAR_AVRO_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/avro-write"
+export RAINCLOUD_READER_AVRO_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/avro-read"
 ```
 
 The ORC lane (`orc@rs`) is orc-rust, pinned exactly in `sidecars/rust/Cargo.toml`.
@@ -55,6 +57,20 @@ not write (anything but signed integers, floats, strings, binary, booleans,
 unavailable for that dataset. The Python lane (`orc@py`, pyarrow's Apache ORC C++
 library) needs no sidecar.
 
+Avro has two lanes and no Python one (pyarrow reads and writes no Avro): `avro@rs`,
+arrow-avro (released with arrow-rs, pinned with it), and `avro@java`, Arrow Java's own Avro
+adapter over Apache Avro's Java implementation (the `avro-java` project). Both write a
+zstandard object container file, one block per canonical batch (Rust) or Avro's own
+block size (Java), with the same fixed sync marker, `raincloud-avro01`: each library
+otherwise draws one at random, so a rebuild would change the file's sha256. Avro Java
+takes the marker as an argument; arrow-avro offers no way to choose it, so the Rust lane
+overwrites the marker it drew in place, after the header and after each block, leaving
+every other byte arrow-avro's. Nothing converts a column for either library. Arrow
+Java 19.0.0's adapter reads with its legacy mapping (the only one its public API
+offers), which decodes a nullable Avro field into a sparse union; the JVM comparator
+cannot compare that to the canonical's column, so most `avro@java` reads and
+self-verifies are unmeasured rather than passed.
+
 Build Java distributions with JDK 17 and the pinned submodule. The
 parquet-hardwood project builds on Java 21, because Hardwood's jar targets it. If a
 JDK a project needs is not installed, Gradle's toolchain resolver provisions one,
@@ -63,7 +79,7 @@ which may download it:
 ```bash
 git submodule update --init --recursive
 bash sidecars/java/gradlew -p sidecars/java :parquet-java:installDist \
-    :parquet-hardwood:installDist :vortex-jni-reader:installDist
+    :parquet-hardwood:installDist :vortex-jni-reader:installDist :avro-java:installDist
 ```
 
 Copy each complete directory from the corresponding project's `build/install/`
@@ -78,6 +94,8 @@ these environment variables at the copied launchers:
 | `RAINCLOUD_READER_PARQUET_HARDWOOD` | `raincloud-export-parquet-hardwood` | `bin/raincloud-read-parquet-hardwood` |
 | `RAINCLOUD_SIDECAR_VORTEX_JNI` | `raincloud-read-vortex-jni` | `bin/raincloud-export-vortex-jni` |
 | `RAINCLOUD_READER_VORTEX_JNI` | `raincloud-read-vortex-jni` | `bin/raincloud-read-vortex-jni` |
+| `RAINCLOUD_SIDECAR_AVRO_JAVA` | `raincloud-export-avro-java` | `bin/raincloud-export-avro-java` |
+| `RAINCLOUD_READER_AVRO_JAVA` | `raincloud-export-avro-java` | `bin/raincloud-read-avro-java` |
 
 The `vortex-jni-reader` project holds the `vortex@jni` writer as well as its
 reader, so its one distribution carries both launchers.

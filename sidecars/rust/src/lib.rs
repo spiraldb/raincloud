@@ -7,11 +7,12 @@
 //! (see `raincloud/pipeline/export/sidecar.py` for WRITE and
 //! `raincloud/pipeline/export/readers.py` for READ):
 //!
-//! * `parquet-write` / `vortex-write` / `orc-write` — read the canonical Arrow
-//!   IPC file, write the target format, then SELF-VERIFY (re-read, compare) and
-//!   emit `{"roundtrip", "variant_faithful", "note"}`.
-//! * `parquet-read` / `vortex-read` / `orc-read` — read an artifact, compare to
-//!   the canonical with LOGICAL equality, emit `{"status", "note", "detail"}`.
+//! * `parquet-write` / `vortex-write` / `orc-write` / `avro-write` — read the
+//!   canonical Arrow IPC file, write the target format, then SELF-VERIFY
+//!   (re-read, compare) and emit `{"roundtrip", "variant_faithful", "note"}`.
+//! * `parquet-read` / `vortex-read` / `orc-read` / `avro-read` — read an
+//!   artifact, compare to the canonical with LOGICAL equality, emit
+//!   `{"status", "note", "detail"}`.
 //!
 //! Every lane streams: both sides are read batch by batch and compared window
 //! by window, so memory does not grow with the table. Any failure, a panic
@@ -38,6 +39,10 @@ use std::sync::Arc;
 
 use anyhow::{bail, Context, Result};
 use arrow_array::{Array, RecordBatch, RecordBatchReader};
+use arrow_avro::compression::CompressionCodec;
+use arrow_avro::reader::ReaderBuilder as AvroReaderBuilder;
+use arrow_avro::writer::format::AvroOcfFormat;
+use arrow_avro::writer::WriterBuilder as AvroWriterBuilder;
 use arrow_ipc::reader::FileReader;
 use arrow_schema::{DataType, Field, Fields, Schema, SchemaRef};
 use parquet::arrow::arrow_reader::{
@@ -695,6 +700,147 @@ pub fn open_orc(input: &Path) -> Result<(SchemaRef, impl Iterator<Item = Result<
     Ok((
         schema,
         reader.map(|b| b.context("orc-rust: read a record batch")),
+    ))
+}
+
+// ---------------------------------------------------------------------------
+// Avro (arrow-avro)
+// ---------------------------------------------------------------------------
+
+/// The sync marker of every Avro file raincloud writes. An object container
+/// file separates its blocks with a 16-byte marker the writer chooses, and
+/// arrow-avro draws it at random, so the same canonical would give a file with
+/// a different sha256 on every build. The Java lane writes the same marker.
+pub const AVRO_SYNC_MARKER: &[u8; 16] = b"raincloud-avro01";
+
+/// Replace the random sync marker `drawn` with [`AVRO_SYNC_MARKER`] in the
+/// object container file at `path`, in place: after the header and after each
+/// block, each checked to be `drawn` first. Nothing else in the file changes.
+///
+/// arrow-avro offers no way to choose the marker: `AvroOcfFormat` draws it,
+/// and the `AvroFormat` trait a caller could implement instead must write the
+/// header itself, whose schema JSON arrow-avro builds with a crate-private
+/// option. Rewriting the marker keeps every other byte arrow-avro's.
+fn fix_sync_marker(path: &Path, drawn: &[u8; 16]) -> Result<()> {
+    use std::io::{BufReader, Read, Seek, SeekFrom, Write};
+
+    struct Counted<R> {
+        inner: R,
+        at: u64,
+    }
+    impl<R: Read> Counted<R> {
+        fn bytes(&mut self, n: u64) -> Result<Vec<u8>> {
+            let mut buf = vec![0; n as usize];
+            self.inner.read_exact(&mut buf)?;
+            self.at += n;
+            Ok(buf)
+        }
+        /// An Avro `long` (zig-zag varint), or None at a clean end of file.
+        fn long(&mut self) -> Result<Option<i64>> {
+            let (mut n, mut shift) = (0u64, 0);
+            loop {
+                let mut byte = [0u8];
+                if self.inner.read(&mut byte)? == 0 {
+                    if shift == 0 {
+                        return Ok(None);
+                    }
+                    bail!("truncated Avro long");
+                }
+                self.at += 1;
+                n |= u64::from(byte[0] & 0x7f) << shift;
+                if byte[0] & 0x80 == 0 {
+                    return Ok(Some((n >> 1) as i64 ^ -((n & 1) as i64)));
+                }
+                shift += 7;
+            }
+        }
+        fn need(&mut self) -> Result<i64> {
+            self.long()?.context("unexpected end of the Avro file")
+        }
+        fn marker(&mut self, drawn: &[u8; 16], markers: &mut Vec<u64>) -> Result<()> {
+            let at = self.at;
+            if self.bytes(16)? != drawn {
+                bail!("no sync marker at byte {at}");
+            }
+            markers.push(at);
+            Ok(())
+        }
+    }
+
+    let mut file = Counted {
+        inner: BufReader::new(File::open(path)?),
+        at: 0,
+    };
+    let mut markers = Vec::new();
+    if file.bytes(4)? != b"Obj\x01" {
+        bail!("not an Avro object container file");
+    }
+    // The header's metadata map: blocks of key/value pairs, ending with 0.
+    loop {
+        let mut count = file.need()?;
+        if count == 0 {
+            break;
+        }
+        if count < 0 {
+            count = -count;
+            file.need()?; // the block's byte size
+        }
+        for _ in 0..2 * count {
+            let len = file.need()?;
+            file.bytes(len as u64)?;
+        }
+    }
+    file.marker(drawn, &mut markers)?;
+    // Data blocks: a row count, a byte size, the bytes, the marker.
+    while file.long()?.is_some() {
+        let size = file.need()?;
+        file.bytes(size as u64)?;
+        file.marker(drawn, &mut markers)?;
+    }
+    let mut out = std::fs::OpenOptions::new().write(true).open(path)?;
+    for at in markers {
+        out.seek(SeekFrom::Start(at))?;
+        out.write_all(AVRO_SYNC_MARKER)?;
+    }
+    out.sync_all()?;
+    Ok(())
+}
+
+/// Write `output` from the canonical with arrow-avro's `AvroWriter`: zstd, one
+/// block per canonical batch, then [`AVRO_SYNC_MARKER`] in place of its random
+/// sync marker, for a reproducible file. A type arrow-avro does not write is
+/// its error; nothing here converts a column.
+pub fn write_avro(output: &Path, canonical: &Path) -> Result<()> {
+    let (schema, reader) = open_canonical(canonical)?;
+    let file = File::create(output).with_context(|| format!("create {}", output.display()))?;
+    let mut writer = AvroWriterBuilder::new(schema.as_ref().clone())
+        .with_compression(Some(CompressionCodec::ZStandard))
+        .build::<_, AvroOcfFormat>(std::io::BufWriter::new(file))
+        .context("arrow-avro: start the Avro file")?;
+    let drawn = *writer.sync_marker().context("arrow-avro: no sync marker")?;
+    for batch in canonical_batches(reader) {
+        writer
+            .write(&batch?)
+            .context("arrow-avro: write a record batch")?;
+    }
+    writer
+        .finish()
+        .context("arrow-avro: finish the Avro file")?;
+    drop(writer);
+    fix_sync_marker(output, &drawn).context("set the Avro sync marker")
+}
+
+/// Open an Avro object container file with arrow-avro's `Reader`, in the
+/// batches it yields.
+pub fn open_avro(input: &Path) -> Result<(SchemaRef, impl Iterator<Item = Result<RecordBatch>>)> {
+    let file = File::open(input).with_context(|| format!("open {}", input.display()))?;
+    let reader = AvroReaderBuilder::new()
+        .build(std::io::BufReader::new(file))
+        .with_context(|| format!("arrow-avro: read the Avro header of {}", input.display()))?;
+    let schema = reader.schema();
+    Ok((
+        schema,
+        reader.map(|b| b.context("arrow-avro: read a record batch")),
     ))
 }
 
@@ -1803,6 +1949,61 @@ mod tests {
         assert!(
             format!("{err:#}").contains("unsupported datatype"),
             "{err:#}"
+        );
+    }
+
+    #[test]
+    fn avro_changes_only_the_sync_marker() {
+        let schema = mixed_schema();
+        let batch = |xs: Vec<i64>| {
+            let s: Vec<Option<String>> = xs
+                .iter()
+                .map(|x| (x % 3 != 0).then(|| format!("v{x}")))
+                .collect();
+            RecordBatch::try_new(
+                schema.clone(),
+                vec![
+                    Arc::new(Int64Array::from(xs)),
+                    Arc::new(StringArray::from(s)),
+                ],
+            )
+            .unwrap()
+        };
+        let scratch = Scratch::new("avro");
+        let batches = [batch((0..1000).collect()), batch((1000..3000).collect())];
+        let source = scratch.canonical("source.arrow", &schema, &batches);
+        let output = scratch.path("out.avro");
+        write_avro(&output, &source).unwrap();
+        let ours = std::fs::read(&output).unwrap();
+
+        // What arrow-avro writes on its own, with its marker swapped for ours.
+        let mut w = AvroWriterBuilder::new(schema.as_ref().clone())
+            .with_compression(Some(CompressionCodec::ZStandard))
+            .build::<_, AvroOcfFormat>(Vec::new())
+            .unwrap();
+        let drawn = *w.sync_marker().unwrap();
+        for b in &batches {
+            w.write(b).unwrap();
+        }
+        w.finish().unwrap();
+        let mut theirs = w.into_inner();
+        let mut at = 0;
+        while let Some(i) = theirs[at..].windows(16).position(|w| w == drawn) {
+            theirs[at + i..at + i + 16].copy_from_slice(AVRO_SYNC_MARKER);
+            at += i + 16;
+        }
+        assert_eq!(ours, theirs);
+        // After the header and after each of the two blocks.
+        assert_eq!(
+            ours.windows(16).filter(|w| w == AVRO_SYNC_MARKER).count(),
+            3
+        );
+        let (got_schema, got) = open_avro(&output).unwrap();
+        let (_, expected) = open_canonical(&source).unwrap();
+        assert!(
+            logical_eq_stream(&got_schema, got, &schema, canonical_batches(expected))
+                .unwrap()
+                .0
         );
     }
 

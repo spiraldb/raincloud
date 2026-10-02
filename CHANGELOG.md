@@ -18,6 +18,16 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   integers, floats, strings, binary, booleans, dates and timestamps for orc-rust)
   records ORC unavailable for that dataset, with the library's error.
 
+- **Avro.** A dataset can be built as an Avro object container file
+  (`formats = ["avro"]`, `--format avro`). Two writers, both sidecars: `avro@rs`,
+  arrow-avro 59.2 (`avro-write` / `avro-read`), and `avro@java`, Arrow Java 19.0.0's Avro
+  adapter (the new `avro-java` Gradle project). Both write zstandard and the same fixed
+  sync marker, so a rebuild gives the same bytes. pyarrow has no Avro support, so
+  `load(..., format="avro")` serves the file's `path()` and its readers raise
+  `MissingDependency`.
+- A format raincloud only serves by path loads like any other: `path()` works and
+  `to_arrow()` / `batches()` / `dataset()` raise `MissingDependency`.
+
 ### Changed
 
 - **Formats are opt-in, per install.** A build writes only Vortex unless the new
@@ -34,8 +44,9 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   their generator output, which a group of datasets shares. A shared store or a
   maintainer's checkout sets `formats = "all"`, `keep_raw = true` and
   `keep_canonical = true`.
-- `python -m raincloud.pipeline.export` without `--format` writes the install's
-  formats, as a build does, instead of every format the recipe lists.
+- `python -m raincloud.pipeline.export` without `--format`, and `run_exporters` /
+  `plan` without `formats`, write the install's formats, as a build does, instead of
+  every format the recipe lists.
 - Each artifact format is declared once, in `raincloud._registry.FORMATS`, and
   everything that listed Parquet and Vortex by hand derives from it. A format with
   no in-process reader raises `MissingDependency` instead of being opened as Vortex.

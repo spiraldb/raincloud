@@ -478,3 +478,5 @@ register_reader(SidecarReader("parquet@java", {"parquet"}, "raincloud-read-parqu
 register_reader(SidecarReader("parquet@hardwood", {"parquet"}, "raincloud-read-parquet-hardwood"))
 register_reader(SidecarReader("vortex@jni", {"vortex"}, "raincloud-read-vortex-jni"))
 register_reader(SidecarReader("orc@rs", {"orc"}, "raincloud-read-orc-rs"))
+register_reader(SidecarReader("avro@rs", {"avro"}, "raincloud-read-avro-rs"))
+register_reader(SidecarReader("avro@java", {"avro"}, "raincloud-read-avro-java"))

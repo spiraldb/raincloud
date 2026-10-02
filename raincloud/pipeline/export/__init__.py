@@ -81,7 +81,8 @@ def all_exporters() -> list[Exporter]:
 
 
 def plan(spec: dict, formats: list[str] | None = None) -> list[str]:
-    """The writer cell for each format to write.
+    """The writer cell for each format to write: `formats`, else the install's
+    (`build_formats`).
 
     A bare format takes the first INSTALLED writer in its priority. The
     priority is the most specific one that names the format -- spec, then
@@ -98,7 +99,7 @@ def plan(spec: dict, formats: list[str] | None = None) -> list[str]:
 
 def _plan(spec: dict, formats: list[str] | None) -> list[tuple[str, bool]]:
     """`plan`, with whether each cell was named outright rather than planned."""
-    from raincloud._formats import export_formats, export_priority, resolve_export_cell
+    from raincloud._formats import build_formats, export_priority, resolve_export_cell
     from raincloud.catalogs import current
     from raincloud.config import get_config
 
@@ -107,7 +108,7 @@ def _plan(spec: dict, formats: list[str] | None) -> list[tuple[str, bool]]:
     version = int(manifest["schema_version"]) if manifest else 2
     config = get_config()
     cells = []
-    for fmt in (formats if formats is not None else export_formats(spec, version)):
+    for fmt in (formats if formats is not None else build_formats(spec, version, config)):
         if "@" in fmt:
             cells.append((fmt, True))
             continue
@@ -222,8 +223,8 @@ def run_exporters(spec: dict, canonical: Path, formats: list[str] | None = None,
     """Write each of `spec`'s formats from its canonical Arrow artifact.
 
     Every format is one file, `<fmt>/<slug>.<ext>`, whichever writer makes it
-    (see `plan`). `formats` replaces the spec's list for this run; an entry may
-    be a bare format or a writer cell (`parquet@rs`).
+    (see `plan`). `formats` replaces the install's formats (`build_formats`)
+    for this run; an entry may be a bare format or a writer cell (`parquet@rs`).
 
     Each file is published under a `Publication`, and each writer runs under
     the export time limit (`bounded.run_bounded`). Every writer reads back what

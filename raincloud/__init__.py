@@ -14,6 +14,7 @@ from ._catalog import unverified as _catalog_unverified
 from ._duckdb import duckdb_connect
 from ._formats import auto_formats, select_format
 from ._readers import open_batches, open_dataset, reader_capabilities, require_reader
+from ._registry import FORMATS
 from .config import Config, get_config, resolve_config
 from .exceptions import (  # noqa: F401
     ArtifactNotFound,
@@ -380,7 +381,10 @@ def _choose_format(entry, requested: str, readable: bool, readers: set[str] | No
         fmt = select_format(formats, fmt, auto_formats(config))
     except FormatUnavailable as exc:
         raise FormatUnavailable(f"{entry.slug}: {exc}") from None
-    if readable:
+    # A format raincloud reads in-process must be readable here; one it only
+    # serves by path (`_registry.FORMATS` declares no reader) loads for its
+    # `path()`, and its readers raise MissingDependency saying so.
+    if readable and FORMATS[fmt]["reader"] is not None:
         require_reader(fmt, import_native=False)
     return fmt
 

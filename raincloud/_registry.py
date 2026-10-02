@@ -73,6 +73,8 @@ FORMATS: dict[str, dict] = {
     "arrow": {"ext": "arrow.zstd", "auto": True, "reader": "pyarrow", "implementation": "pyarrow"},
     # pyarrow's ORC support is a compiled extension some builds leave out.
     "orc": {"ext": "orc", "auto": False, "reader": "pyarrow._orc", "implementation": "pyarrow"},
+    # pyarrow reads no Avro: the loader serves the file's path.
+    "avro": {"ext": "avro", "auto": False, "reader": None, "implementation": None},
 }
 
 # In-process exporter cells, as "<module>:<class>" under `raincloud.pipeline.export`.
@@ -96,6 +98,8 @@ SIDECAR_EXPORTERS: dict[str, tuple[str, str]] = {
     "vortex@rs": ("vortex", "raincloud-export-vortex-rs"),
     "vortex@jni": ("vortex", "raincloud-export-vortex-jni"),
     "orc@rs": ("orc", "raincloud-export-orc-rs"),
+    "avro@rs": ("avro", "raincloud-export-avro-rs"),
+    "avro@java": ("avro", "raincloud-export-avro-java"),
 }
 
 # Custom fetchers, as "<module>:<attr>" under `raincloud.pipeline`. A recipe

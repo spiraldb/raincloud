@@ -15,7 +15,6 @@ import pyarrow as pa
 import pytest
 
 from raincloud import duckdb_connect
-from raincloud._registry import PY_EXPORTERS
 from raincloud.pipeline import discovery, duckdb_variant
 from raincloud.pipeline.export import run_exporters, slug_from_canonical
 from raincloud.pipeline.export.exporters import ParquetExporter, VortexExporter
@@ -38,8 +37,8 @@ def test_run_exporters_default_produces_parquet_and_vortex(tmp_path, monkeypatch
 
     results = run_exporters({"slug": slug}, canonical_path)
 
-    # Every in-process cell ran, tagged with its qualified ledger cell-id.
-    assert {r.format_id for r in results} == set(PY_EXPORTERS)
+    # The install's formats (conftest: parquet, vortex), tagged with their qualified ledger cell-ids.
+    assert {r.format_id for r in results} == {"parquet@py", "vortex@py"}
     for r in results:
         assert r.nbytes > 0 and len(r.sha256) == 64
         # MEASURED: every export reads its file back and compares it to the
@@ -157,7 +156,7 @@ def test_exporters_place_artifacts_by_canonical_slug(tmp_path, monkeypatch):
     canonical_path = write_canonical("canon-slug", table)
 
     results = run_exporters({"slug": "different-slug"}, canonical_path)
-    assert {r.format_id for r in results} == set(PY_EXPORTERS)
+    assert {r.format_id for r in results} == {"parquet@py", "vortex@py"}
 
     # Artifacts land under the canonical's slug ...
     assert prepared_parquet("canon-slug").exists()

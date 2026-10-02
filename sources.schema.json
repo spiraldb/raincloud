@@ -711,7 +711,8 @@
             "enum": [
               "parquet",
               "vortex",
-              "orc"
+              "orc",
+              "avro"
             ]
           },
           "uniqueItems": true,
@@ -788,7 +789,8 @@
             "enum": [
               "parquet",
               "vortex",
-              "orc"
+              "orc",
+              "avro"
             ]
           },
           "additionalProperties": {
