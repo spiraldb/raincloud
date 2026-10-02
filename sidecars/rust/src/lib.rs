@@ -674,21 +674,71 @@ pub fn open_vortex(input: &Path) -> Result<(SchemaRef, VortexBatches)> {
 // ORC (orc-rust)
 // ---------------------------------------------------------------------------
 
+/// `data_type` as the ORC lane stores it: ORC has no unsigned integers or view
+/// types, so the lane deliberately expands them, losslessly, before any writer
+/// sees them: UInt8/16/32 to the next wider signed integer, UInt64 to
+/// Decimal128(20, 0), and views to their plain equivalents, at any depth.
+fn orc_storage_type(data_type: &DataType) -> DataType {
+    let field = |f: &Arc<Field>| {
+        Arc::new(
+            f.as_ref()
+                .clone()
+                .with_data_type(orc_storage_type(f.data_type())),
+        )
+    };
+    match data_type {
+        DataType::UInt8 => DataType::Int16,
+        DataType::UInt16 => DataType::Int32,
+        DataType::UInt32 => DataType::Int64,
+        DataType::UInt64 => DataType::Decimal128(20, 0),
+        DataType::Utf8View => DataType::Utf8,
+        DataType::BinaryView => DataType::Binary,
+        DataType::List(f) => DataType::List(field(f)),
+        DataType::LargeList(f) => DataType::LargeList(field(f)),
+        DataType::FixedSizeList(f, n) => DataType::FixedSizeList(field(f), *n),
+        DataType::Map(f, sorted) => DataType::Map(field(f), *sorted),
+        DataType::Struct(fields) => DataType::Struct(fields.iter().map(field).collect()),
+        other => other.clone(),
+    }
+}
+
 /// Write `output` from the canonical with orc-rust's `ArrowWriter`: zstd, since
 /// the API makes the caller pick a codec (its default is none), and its own
-/// default stripe and batch sizes. orc-rust panics on a type it does not write
-/// (`unimplemented!("unsupported datatype")`); [`run_writer`] reports that
-/// panic as the write's failure, and nothing here converts a column for it.
+/// default stripe and batch sizes. Columns are first expanded to
+/// [`orc_storage_type`]. orc-rust panics on a type it does not write
+/// (`unimplemented!("unsupported datatype")`) -- 0.9.0 writes no decimal, so a
+/// uint64 column fails here (measured); [`run_writer`] reports that panic as
+/// the write's failure.
 pub fn write_orc(output: &Path, canonical: &Path) -> Result<()> {
-    let (schema, reader) = open_canonical(canonical)?;
+    let (canonical_schema, reader) = open_canonical(canonical)?;
+    let schema = Arc::new(Schema::new_with_metadata(
+        canonical_schema
+            .fields()
+            .iter()
+            .map(|f| {
+                f.as_ref()
+                    .clone()
+                    .with_data_type(orc_storage_type(f.data_type()))
+            })
+            .collect::<Vec<_>>(),
+        canonical_schema.metadata().clone(),
+    ));
     let file = File::create(output).with_context(|| format!("create {}", output.display()))?;
-    let mut writer = orc_rust::ArrowWriterBuilder::new(file, schema)
+    let mut writer = orc_rust::ArrowWriterBuilder::new(file, schema.clone())
         .with_compression(orc_rust::compression::CompressionType::Zstd)
         .try_build()
         .context("orc-rust: start the ORC file")?;
     for batch in canonical_batches(reader) {
+        let batch = batch?;
+        let columns = batch
+            .columns()
+            .iter()
+            .zip(schema.fields())
+            .map(|(column, field)| arrow_cast::cast(column, field.data_type()))
+            .collect::<std::result::Result<Vec<_>, _>>()
+            .context("expand the canonical to ORC's types")?;
         writer
-            .write(&batch?)
+            .write(&RecordBatch::try_new(schema.clone(), columns)?)
             .context("orc-rust: write a record batch")?;
     }
     writer.close().context("orc-rust: finish the ORC file")
@@ -1109,7 +1159,9 @@ pub fn parquet_variant_loss(
 
 // Check schema before values: reversible casts of empty/null arrays can erase
 // incompatible types and struct children. Representation widths, dictionary
-// indices, list element names and metadata are intentionally not identities.
+// indices, list element names and metadata are intentionally not identities;
+// nor are a null|T union's spelling of a nullable T, a timestamp's zone label,
+// or a scale-0 decimal's spelling of an integer (sidecars/compare_cases).
 fn compatible_fields(got: &Fields, expected: &Fields) -> bool {
     got.len() == expected.len()
         && got
@@ -1118,8 +1170,118 @@ fn compatible_fields(got: &Fields, expected: &Fields) -> bool {
             .all(|(g, e)| g.name() == e.name() && compatible(g.data_type(), e.data_type()))
 }
 
+/// The type id and field of `T` in a union of exactly `null` and `T`, else
+/// None: such a union is how some readers spell a nullable `T` (Avro's
+/// `["null", T]`).
+fn nullable_member(data_type: &DataType) -> Option<(i8, &Arc<Field>)> {
+    let DataType::Union(fields, _) = data_type else {
+        return None;
+    };
+    let mut members = fields
+        .iter()
+        .filter(|(_, f)| f.data_type() != &DataType::Null);
+    match (fields.len(), members.next(), members.next()) {
+        (2, Some(member), None) => Some(member),
+        _ => None,
+    }
+}
+
+fn has_nullable_union(data_type: &DataType) -> bool {
+    use DataType::*;
+    nullable_member(data_type).is_some()
+        || match data_type {
+            Struct(fields) => fields.iter().any(|f| has_nullable_union(f.data_type())),
+            List(f)
+            | LargeList(f)
+            | ListView(f)
+            | LargeListView(f)
+            | FixedSizeList(f, _)
+            | Map(f, _) => has_nullable_union(f.data_type()),
+            _ => false,
+        }
+}
+
+/// `array` with every union of `null` and `T` replaced by the nullable `T` it
+/// spells, at any depth of struct, list and map: a row selecting the null
+/// member is null, any other is the `T` member's value (a sparse member at the
+/// row, a dense one at its offset).
+fn without_nullable_unions(
+    array: &arrow_array::ArrayRef,
+) -> Result<arrow_array::ArrayRef, arrow_schema::ArrowError> {
+    use DataType::*;
+    if !has_nullable_union(array.data_type()) {
+        return Ok(Arc::clone(array));
+    }
+    if let Some((code, _)) = nullable_member(array.data_type()) {
+        let union = array
+            .as_any()
+            .downcast_ref::<arrow_array::UnionArray>()
+            .expect("a union type is a UnionArray");
+        let picks: arrow_array::UInt32Array = (0..union.len())
+            .map(|i| (union.type_id(i) == code).then(|| union.value_offset(i) as u32))
+            .collect();
+        let picked = arrow_select::take::take(union.child(code).as_ref(), &picks, None)?;
+        return without_nullable_unions(&picked);
+    }
+    let data = array.to_data();
+    let children = data
+        .child_data()
+        .iter()
+        .map(|c| without_nullable_unions(&arrow_array::make_array(c.clone())).map(|a| a.to_data()))
+        .collect::<Result<Vec<_>, _>>()?;
+    // A field that held the union now holds nulls for its null member.
+    let field = |f: &Arc<Field>, child: &DataType| {
+        let nullable = f.is_nullable() || nullable_member(f.data_type()).is_some();
+        Arc::new(
+            f.as_ref()
+                .clone()
+                .with_data_type(child.clone())
+                .with_nullable(nullable),
+        )
+    };
+    let child = |i: usize| children[i].data_type();
+    let dtype = match array.data_type() {
+        Struct(fields) => Struct(
+            fields
+                .iter()
+                .enumerate()
+                .map(|(i, f)| field(f, child(i)))
+                .collect(),
+        ),
+        List(f) => List(field(f, child(0))),
+        LargeList(f) => LargeList(field(f, child(0))),
+        ListView(f) => ListView(field(f, child(0))),
+        LargeListView(f) => LargeListView(field(f, child(0))),
+        FixedSizeList(f, n) => FixedSizeList(field(f, child(0)), *n),
+        Map(f, sorted) => Map(field(f, child(0)), *sorted),
+        _ => unreachable!("has_nullable_union covers these containers only"),
+    };
+    Ok(arrow_array::make_array(
+        data.into_builder()
+            .data_type(dtype)
+            .child_data(children)
+            .build()?,
+    ))
+}
+
+/// A decimal holding integers: scale 0.
+fn is_integral_decimal(data_type: &DataType) -> bool {
+    use DataType::*;
+    matches!(
+        data_type,
+        Decimal32(_, 0) | Decimal64(_, 0) | Decimal128(_, 0) | Decimal256(_, 0)
+    )
+}
+
 fn compatible(got: &DataType, expected: &DataType) -> bool {
     use DataType::*;
+    // A null|T union is a nullable T, on either side.
+    if let Some((_, member)) = nullable_member(got) {
+        return compatible(member.data_type(), expected);
+    }
+    if let Some((_, member)) = nullable_member(expected) {
+        return compatible(got, member.data_type());
+    }
     match (got, expected) {
         (Dictionary(_, value), other) | (other, Dictionary(_, value)) => compatible(value, other),
         (Struct(g), Struct(e)) => compatible_fields(g, e),
@@ -1137,7 +1299,13 @@ fn compatible(got: &DataType, expected: &DataType) -> bool {
                 })
         }
         (RunEndEncoded(_, g), RunEndEncoded(_, e)) => compatible(g.data_type(), e.data_type()),
-        (Timestamp(_, g), Timestamp(_, e)) => g == e,
+        // A zone labels UTC instants; it is not data. Naive and zoned differ in kind.
+        (Timestamp(_, g), Timestamp(_, e)) => g.is_some() == e.is_some(),
+        _ if (got.is_integer() && is_integral_decimal(expected))
+            || (is_integral_decimal(got) && expected.is_integer()) =>
+        {
+            true
+        }
         (FixedSizeBinary(g), FixedSizeBinary(e)) if g != e => false,
         (Utf8 | LargeUtf8 | Utf8View, Utf8 | LargeUtf8 | Utf8View)
         | (
@@ -1251,8 +1419,9 @@ fn normalize(
 ///
 /// Returns `(matches, detail)` — `detail` is a human-readable mismatch reason
 /// when `!matches`, else empty. Row count, names and recursive logical schema
-/// compatibility first, then each column is cast losslessly to the canonical type
-/// (identity when types already match) and compared at the `ArrayData` level. `ArrayData` equality ignores
+/// compatibility first, then each column, with null|T unions read as nullable T,
+/// is cast losslessly to the canonical type (identity when types already match)
+/// and compared at the `ArrayData` level. `ArrayData` equality ignores
 /// field metadata, so a dropped VARIANT annotation does not fail the round-trip.
 fn logical_eq(got: &RecordBatch, expected: &RecordBatch) -> (bool, String) {
     if got.num_rows() != expected.num_rows() {
@@ -1318,6 +1487,19 @@ fn logical_eq(got: &RecordBatch, expected: &RecordBatch) -> (bool, String) {
                 ),
             );
         }
+        let (g, e) = match (without_nullable_unions(g), without_nullable_unions(e)) {
+            (Ok(g), Ok(e)) => (g, e),
+            (Err(err), _) | (_, Err(err)) => {
+                return (
+                    false,
+                    format!(
+                        "column {:?}: cannot read a null|T union as T: {err}",
+                        exp_names[i]
+                    ),
+                );
+            }
+        };
+        let (g, e) = (&g, &e);
         let g_cast = if g.data_type() == e.data_type() {
             Arc::clone(g)
         } else {
@@ -1787,6 +1969,33 @@ mod tests {
     }
 
     #[test]
+    fn comparisons_follow_the_shared_cases() {
+        // The same pairs pytest and JUnit read; Rust takes no `gap`.
+        let table: serde_json::Value =
+            serde_json::from_str(include_str!("../../compare_cases/cases.json")).unwrap();
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../compare_cases");
+        for case in table["cases"].as_array().unwrap() {
+            let name = case["name"].as_str().unwrap();
+            let (got_schema, got) = open_canonical(&dir.join(format!("{name}.got.arrow"))).unwrap();
+            let (expected_schema, expected) =
+                open_canonical(&dir.join(format!("{name}.expected.arrow"))).unwrap();
+            let (equal, detail) = logical_eq_stream(
+                &got_schema,
+                canonical_batches(got),
+                &expected_schema,
+                canonical_batches(expected),
+            )
+            .unwrap();
+            let verdict = if equal { "equal" } else { "differ" };
+            assert_eq!(
+                verdict,
+                case["verdict"].as_str().unwrap(),
+                "{name}: {detail}"
+            );
+        }
+    }
+
+    #[test]
     fn normalize_bridges_fixed_size_forms() {
         let opts = arrow_cast::CastOptions {
             safe: false,
@@ -2128,14 +2337,51 @@ mod tests {
     }
 
     #[test]
-    fn orc_rust_panicking_on_an_unsigned_column_is_an_error() {
-        let schema = Arc::new(Schema::new(vec![Field::new("u", DataType::UInt32, true)]));
+    fn orc_expands_unsigned_columns_to_wider_signed_ones() {
+        let schema = Arc::new(Schema::new(vec![
+            Field::new("a", DataType::UInt8, true),
+            Field::new("b", DataType::UInt32, true),
+        ]));
         let b = RecordBatch::try_new(
             schema.clone(),
-            vec![Arc::new(arrow_array::UInt32Array::from(vec![1, 2]))],
+            vec![
+                Arc::new(arrow_array::UInt8Array::from(vec![
+                    Some(0),
+                    None,
+                    Some(255),
+                ])),
+                Arc::new(arrow_array::UInt32Array::from(vec![
+                    Some(0),
+                    Some(u32::MAX),
+                    None,
+                ])),
+            ],
         )
         .unwrap();
         let scratch = Scratch::new("orc-unsigned");
+        let source = scratch.canonical("source.arrow", &schema, &[b]);
+        let output = scratch.path("out.orc");
+        write_orc(&output, &source).unwrap();
+        let (got_schema, got) = open_orc(&output).unwrap();
+        let types: Vec<_> = got_schema.fields().iter().map(|f| f.data_type()).collect();
+        assert_eq!(types, [&DataType::Int16, &DataType::Int64]);
+        let (_, expected) = open_canonical(&source).unwrap();
+        assert_eq!(
+            logical_eq_stream(&got_schema, got, &schema, canonical_batches(expected)).unwrap(),
+            (true, String::new())
+        );
+    }
+
+    #[test]
+    fn orc_rust_panicking_on_a_uint64_column_is_an_error() {
+        // Expanded to Decimal128(20, 0), which orc-rust 0.9.0 does not write.
+        let schema = Arc::new(Schema::new(vec![Field::new("u", DataType::UInt64, true)]));
+        let b = RecordBatch::try_new(
+            schema.clone(),
+            vec![Arc::new(arrow_array::UInt64Array::from(vec![1, u64::MAX]))],
+        )
+        .unwrap();
+        let scratch = Scratch::new("orc-uint64");
         let source = scratch.canonical("source.arrow", &schema, &[b]);
         let output = scratch.path("out.orc");
         let err = unwound(|| write_orc(&output, &source)).unwrap_err();

@@ -67,9 +67,21 @@ takes the marker as an argument; arrow-avro offers no way to choose it, so the R
 overwrites the marker it drew in place, after the header and after each block, leaving
 every other byte arrow-avro's. Nothing converts a column for either library. Arrow
 Java 19.0.0's adapter reads with its legacy mapping (the only one its public API
-offers), which decodes a nullable Avro field into a sparse union; the JVM comparator
-cannot compare that to the canonical's column, so most `avro@java` reads and
-self-verifies are unmeasured rather than passed.
+offers), which decodes a nullable Avro field into a sparse union of `null` and the
+value type; every comparator reads such a union as the nullable column it spells.
+
+Where equality turns on representation rather than data, the three comparators share
+one rule set, declared once in [`compare_cases/`](compare_cases/): pairs of Arrow files
+and the verdict each must get, which every lane's tests read (`generate.py` writes
+them). A union of exactly `null` and `T` is a nullable `T`; zoned timestamps compare by
+instant whatever zone labels them (naive and zoned differ); an integer and a scale-0
+decimal holding the same values are equal.
+
+Both ORC lanes widen what ORC cannot hold before writing, always rather than by the
+data's range, so a dataset's ORC schema never changes with its values: uint8 → int16,
+uint16 → int32, uint32 → int64, uint64 → decimal(20, 0), and view types to their plain
+types. The comparators read each back as the canonical's type. orc-rust 0.9.0 writes
+no decimals, so a uint64 column is still unavailable in `orc@rs`.
 
 Build Java distributions with JDK 17 and the pinned submodule. The
 parquet-hardwood project builds on Java 21, because Hardwood's jar targets it. If a
@@ -179,14 +191,17 @@ representation changes they can judge:
 | integer width or signedness | pass if the values are exact | pass if the values are exact | pass if exact (BigInteger) |
 | float width (incl. half) | pass only if reversible | pass only if reversible | compares decoded values bitwise, so the same pass/fail |
 | timestamp unit, same timezone | pass if the instant survives | pass if the instant survives | compares the instant: pass or fail |
-| timestamp timezone changed or dropped | fail | fail | fail |
+| timestamp timezone relabelled (both zoned) | pass if the instants match | pass if the instants match | pass if the instants match |
+| timestamp timezone dropped or added | fail | fail | fail |
 | decimal precision/scale | reversible cast | reversible cast | skip (gap) |
+| integer ↔ scale-0 decimal | pass if the values are exact | pass if the values are exact | pass if exact |
 | date32 / date64 | reversible cast | reversible cast | skip (gap) |
 | time32 / time64, duration unit | reversible cast | reversible cast | skip (gap) |
 | dictionary ↔ plain, top level | pass | pass | decoded to values, then compared |
 | dictionary inside a nested column | pass | pass | skip (gap) |
 | struct with duplicate child names | compared | compared | skip (gap) |
-| union ↔ non-union | fail | fail | skip (gap) |
+| union of `null` and `T` ↔ `T` | compared as `T` | compared as `T` | compared as `T` |
+| any other union ↔ non-union | fail | fail | fail |
 | fixed-size ↔ variable binary/list | reversible cast | reversible cast | compared by value |
 
 A JVM `skip` means the JVM lane is unmeasured for that cell, never that the
@@ -266,8 +281,8 @@ writes no `ARROW:schema` footer. What it cannot carry is reported, never guessed
   `"unsupported type"`, no file. SECOND
   times and date64 are written (as MILLIS and days) but read back in another unit,
   a comparator gap, so the round trip is unmeasured. A timezone other than UTC
-  cannot be kept: Parquet records only "adjusted to UTC", so the self-verify
-  fails as a timezone change.
+  is not kept (Parquet records only "adjusted to UTC"), but the instants are, and
+  zoned timestamps compare by instant.
 - The reader reports `INT96`, `INTERVAL`, a key-only map, a repeated field
   outside a `LIST` or `MAP`, and a layer layout it does not expect as a
   comparator gap (`skip`). It bundles zstd, snappy and lz4 but not brotli, which

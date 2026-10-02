@@ -1,6 +1,13 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
-"""Logical Arrow equality with lossless normalization and recursive float fidelity."""
+"""Logical Arrow equality with lossless normalization and recursive float fidelity.
+
+Where equality turns on representation rather than data, the rule is shared with
+the Rust and JVM comparators through `sidecars/compare_cases` (pairs of files and
+the verdict each must get): a union of exactly `null` and `T` is a nullable `T`;
+zoned timestamps compare by instant, whatever zone labels them; an integer and
+a scale-0 decimal holding the same values are equal.
+"""
 from __future__ import annotations
 
 import numpy as np
@@ -14,11 +21,65 @@ def _is_list(dtype: pa.DataType) -> bool:
             or pa.types.is_large_list_view(dtype))
 
 
+def _nullable_member(dtype: pa.DataType) -> int | None:
+    """The index of `T` in a union of exactly `null` and `T`, else None: such a
+    union is how some readers spell a nullable `T` (Avro's ["null", T])."""
+    if pa.types.is_union(dtype) and dtype.num_fields == 2:
+        nulls = [pa.types.is_null(field.type) for field in dtype]
+        if nulls.count(True) == 1:
+            return nulls.index(False)
+    return None
+
+
 def _logical_type(dtype: pa.DataType) -> pa.DataType:
-    # Extension annotations and dictionary indices are physical representations.
-    while isinstance(dtype, pa.BaseExtensionType) or pa.types.is_dictionary(dtype):
-        dtype = dtype.storage_type if isinstance(dtype, pa.BaseExtensionType) else dtype.value_type
-    return dtype
+    # Extension annotations, dictionary indices and a null|T union are physical
+    # representations.
+    while True:
+        if isinstance(dtype, pa.BaseExtensionType):
+            dtype = dtype.storage_type
+        elif pa.types.is_dictionary(dtype):
+            dtype = dtype.value_type
+        elif (member := _nullable_member(dtype)) is not None:
+            dtype = dtype.field(member).type
+        else:
+            return dtype
+
+
+def _has_nullable_union(dtype: pa.DataType) -> bool:
+    if _nullable_member(dtype) is not None:
+        return True
+    return any(_has_nullable_union(dtype.field(i).type) for i in range(dtype.num_fields))
+
+
+def _without_nullable_unions(array: pa.Array) -> pa.Array:
+    """`array` with every union of `null` and `T` replaced by the nullable `T`
+    it spells, at any depth of struct, list and map."""
+    dtype = array.type
+    if not _has_nullable_union(dtype):
+        return array
+    member = _nullable_member(dtype)
+    if member is not None:
+        selected = pc.equal(array.type_codes, pa.scalar(dtype.type_codes[member], pa.int8()))
+        positions = (array.offsets if dtype.mode == "dense"
+                     else pa.array(np.arange(len(array), dtype=np.int32)))
+        # A sparse member comes sliced with its union; a dense one is indexed by the offsets.
+        picked = array.field(member).take(pc.if_else(selected, positions, pa.scalar(None, positions.type)))
+        return _without_nullable_unions(picked)
+    validity = array.is_null() if array.null_count else None
+    if pa.types.is_struct(dtype):
+        children = [_without_nullable_unions(child) for child in array.flatten()]
+        return pa.StructArray.from_arrays(children, fields=[f.with_type(c.type) for f, c in zip(dtype, children)],
+                                          mask=validity)
+    if pa.types.is_map(dtype):
+        return pa.MapArray.from_arrays(array.offsets, _without_nullable_unions(array.keys),
+                                       _without_nullable_unions(array.items), mask=validity)
+    if pa.types.is_list(dtype) or pa.types.is_large_list(dtype):
+        factory = pa.LargeListArray if pa.types.is_large_list(dtype) else pa.ListArray
+        return factory.from_arrays(array.offsets, _without_nullable_unions(array.values), mask=validity)
+    if pa.types.is_fixed_size_list(dtype):
+        values = array.values.slice(array.offset * dtype.list_size, len(array) * dtype.list_size)
+        return pa.FixedSizeListArray.from_arrays(_without_nullable_unions(values), dtype.list_size, mask=validity)
+    return array
 
 
 def _compatible(got: pa.DataType, expected: pa.DataType) -> bool:
@@ -51,7 +112,11 @@ def _compatible(got: pa.DataType, expected: pa.DataType) -> bool:
     if pa.types.is_run_end_encoded(got) and pa.types.is_run_end_encoded(expected):
         return _compatible(got.value_type, expected.value_type)
     if pa.types.is_timestamp(got) and pa.types.is_timestamp(expected):
-        return got.tz == expected.tz
+        # A zone labels instants; it is not data. Naive and zoned differ in kind.
+        return (got.tz is None) == (expected.tz is None)
+    if ((pa.types.is_integer(got) and pa.types.is_decimal(expected) and expected.scale == 0)
+            or (pa.types.is_decimal(got) and got.scale == 0 and pa.types.is_integer(expected))):
+        return True
     if (pa.types.is_fixed_size_binary(got) and pa.types.is_fixed_size_binary(expected)
             and got.byte_width != expected.byte_width):
         return False
@@ -196,6 +261,7 @@ def values_equal(got: pa.Table, expected: pa.Table) -> tuple[bool, str]:
             return False, f"column {name!r}: incompatible logical types {got.column(name).type} vs {expected.column(name).type}"
         try:
             for g, e in _windows(got.column(name), expected.column(name)):
+                g, e = _without_nullable_unions(g), _without_nullable_unions(e)
                 g, e = _materialize_views(g), _materialize_views(e)
                 if pa.types.is_dictionary(g.type):
                     g = g.dictionary_decode()

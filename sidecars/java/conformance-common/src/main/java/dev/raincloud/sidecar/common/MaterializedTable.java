@@ -11,6 +11,7 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryEncoder;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -170,7 +171,7 @@ public final class MaterializedTable {
 
         /** Type, dictionary encoding and children agree recursively (names are not compared). */
         private static boolean sameShape(Field recorded, Field actual) {
-            if (!recorded.getType().equals(actual.getType())
+            if (!sameType(recorded.getType(), actual.getType())
                     || !Objects.equals(recorded.getDictionary(), actual.getDictionary())
                     || recorded.getChildren().size() != actual.getChildren().size()) {
                 return false;
@@ -181,6 +182,15 @@ public final class MaterializedTable {
                 }
             }
             return true;
+        }
+
+        // UnionVector.getField() re-derives type ids from its members' minor types, so a
+        // union read from IPC reports other ids than its schema; mode and members decide.
+        private static boolean sameType(ArrowType recorded, ArrowType actual) {
+            if (recorded instanceof ArrowType.Union && actual instanceof ArrowType.Union) {
+                return ((ArrowType.Union) recorded).getMode() == ((ArrowType.Union) actual).getMode();
+            }
+            return recorded.equals(actual);
         }
 
         /** The path of the first dictionary-encoded descendant of {@code field}, or null. */

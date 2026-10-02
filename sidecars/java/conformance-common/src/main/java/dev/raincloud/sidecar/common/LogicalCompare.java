@@ -3,6 +3,7 @@
 package dev.raincloud.sidecar.common;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -34,11 +35,16 @@ import org.apache.arrow.vector.types.pojo.Field;
  *       boxed kind; INT compares exact signed/unsigned integers; FLOAT compares the
  *       decoded values' {@code doubleToRawLongBits} (matches Rust's bitwise NaN /
  *       signed-zero semantics; half floats are decoded from their raw bits first);
- *       TIMESTAMP of the same timezone compares the INSTANT across differing units
- *       (e.g. the SECOND→MILLIS promotion Parquet forces); timestamps of differing
- *       timezone, and different families, are a genuine mismatch (fail);
+ *       TIMESTAMP compares the INSTANT across differing units (e.g. the
+ *       SECOND→MILLIS promotion Parquet forces) and, when both are zoned, across
+ *       zone labels; naive vs zoned, and different families, are a genuine
+ *       mismatch (fail);
+ *   <li>an INT and a scale-0 DECIMAL compare as exact integers;
+ *   <li>a union of exactly Null and T (sparse or dense, at any depth) is a
+ *       nullable T, as Arrow Java's Avro adapter spells Avro's ["null", T];
+ *       any other union against a non-union is a mismatch;
  *   <li>a type pair the comparator can't confidently judge (differing
- *       DECIMAL/DATE/TIME/DURATION/NESTED encodings) → the column is a
+ *       DECIMAL/DATE/TIME/DURATION/NESTED encodings, union vs union) → the column is a
  *       <b>comparator gap</b>: the run yields {@code skip} with a distinct note,
  *       never a false {@code pass} and never a {@code fail} for OUR limitation.
  * </ul>
@@ -215,9 +221,37 @@ public final class LogicalCompare {
         return false;
     }
 
+    /**
+     * {@code field} with every union of exactly Null and T replaced by T. Such a
+     * union's {@code getObject} is already T's value (null for the Null member), so
+     * only the type needs unwrapping. Callers keep the outer name.
+     */
+    private static Field logical(Field field) {
+        while (field.getType() instanceof ArrowType.Union && field.getChildren().size() == 2) {
+            Field a = field.getChildren().get(0), b = field.getChildren().get(1);
+            boolean aNull = a.getType() instanceof ArrowType.Null, bNull = b.getType() instanceof ArrowType.Null;
+            if (aNull == bNull) {
+                break;
+            }
+            field = aNull ? b : a;
+        }
+        return field;
+    }
+
+    private static boolean isScaleZeroDecimal(ArrowType t) {
+        return t instanceof ArrowType.Decimal && ((ArrowType.Decimal) t).getScale() == 0;
+    }
+
+    private static boolean intAndScaleZeroDecimal(ArrowType a, ArrowType b) {
+        return (a instanceof ArrowType.Int && isScaleZeroDecimal(b))
+                || (isScaleZeroDecimal(a) && b instanceof ArrowType.Int);
+    }
+
     // Check shape before looking at values: null parents and empty containers still
     // have schemas. List element names are representation details; struct names are not.
     private static Compatibility compatibility(Field expected, Field got) {
+        expected = logical(expected);
+        got = logical(got);
         if (expected.getDictionary() != null || got.getDictionary() != null) {
             return Compatibility.GAP;
         }
@@ -236,7 +270,8 @@ public final class LogicalCompare {
         }
         if (family(et) == Family.NESTED || family(gt) == Family.NESTED) {
             if (!sameContainer(et, gt)) {
-                return et instanceof ArrowType.Union || gt instanceof ArrowType.Union
+                // Two unions box by type id, unjudged; a union vs a non-union is another type.
+                return et instanceof ArrowType.Union && gt instanceof ArrowType.Union
                         ? Compatibility.GAP : Compatibility.MISMATCH;
             }
             List<Field> ec = expected.getChildren(), gc = got.getChildren();
@@ -272,13 +307,16 @@ public final class LogicalCompare {
             }
             return result;
         }
+        if (intAndScaleZeroDecimal(et, gt)) {
+            return Compatibility.MATCH;
+        }
         if (family(et) != family(gt)) {
             return Compatibility.MISMATCH;
         }
-        // A timezone is part of a timestamp's meaning: dropping or changing it is a real
-        // difference, as in the Python and Rust comparators, not a unit representation.
-        if (et instanceof ArrowType.Timestamp && !Objects.equals(
-                ((ArrowType.Timestamp) et).getTimezone(), ((ArrowType.Timestamp) gt).getTimezone())) {
+        // A zone labels UTC instants; it is not data. Naive and zoned differ in kind, as in
+        // the Python and Rust comparators.
+        if (et instanceof ArrowType.Timestamp && (((ArrowType.Timestamp) et).getTimezone() == null)
+                != (((ArrowType.Timestamp) gt).getTimezone() == null)) {
             return Compatibility.MISMATCH;
         }
         return isGap(et, gt) ? Compatibility.GAP : Compatibility.MATCH;
@@ -288,6 +326,8 @@ public final class LogicalCompare {
         if (e == null || g == null) {
             return e == g;
         }
+        expected = logical(expected);
+        got = logical(got);
         ArrowType et = expected.getType(), gt = got.getType();
         if (family(et) != Family.NESTED && family(gt) != Family.NESTED) {
             return cellEquals(et, e, gt, g);
@@ -335,7 +375,7 @@ public final class LogicalCompare {
     /**
      * True when a same-family (et, gt) pair is a comparator gap (can't confidently
      * judge). Only reached from {@link #compatibility}, after cross-family pairs and
-     * timezone differences have already been ruled a mismatch.
+     * naive-vs-zoned timestamps have already been ruled a mismatch.
      */
     private static boolean isGap(ArrowType et, ArrowType gt) {
         if (et.equals(gt)) {
@@ -364,6 +404,9 @@ public final class LogicalCompare {
         if (et.equals(gt)) {
             return deepEquals(e, g);
         }
+        if (intAndScaleZeroDecimal(et, gt)) {
+            return exactInteger(et, e).compareTo(exactInteger(gt, g)) == 0;
+        }
         Family fe = family(et);
         Family fg = family(gt);
         if (fe != fg) {
@@ -387,9 +430,16 @@ public final class LogicalCompare {
         }
     }
 
-    // Compares two timestamps of the same timezone but possibly differing units. No-tz timestamps
-    // box as LocalDateTime already at their wall-clock instant (equal instants compare equal
-    // regardless of source unit); tz timestamps box as a raw long, so normalize both to nanoseconds.
+    // An INT or scale-0 DECIMAL cell (boxed as a BigDecimal) as an exact number.
+    private static BigDecimal exactInteger(ArrowType t, Object v) {
+        return t instanceof ArrowType.Int
+                ? new BigDecimal(ArrowValues.intAsExact((ArrowType.Int) t, v)) : (BigDecimal) v;
+    }
+
+    // Compares two timestamps, both naive or both zoned (any zones), possibly of differing units.
+    // No-tz timestamps box as LocalDateTime already at their wall-clock instant (equal instants
+    // compare equal regardless of source unit); tz timestamps box as a raw long UTC instant, so
+    // normalize both to nanoseconds.
     private static boolean timestampEquals(ArrowType.Timestamp et, Object e, ArrowType.Timestamp gt, Object g) {
         if (e instanceof java.time.LocalDateTime && g instanceof java.time.LocalDateTime) {
             return e.equals(g);

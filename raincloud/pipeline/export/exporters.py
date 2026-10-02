@@ -396,15 +396,43 @@ class VortexExporter:
         )
 
 
+def orc_storage_type(dtype: pa.DataType) -> pa.DataType:
+    """`dtype` as both ORC lanes store it: ORC has no unsigned integers and no
+    view types, so they widen to the next type that holds every value --
+    uint8 -> int16, uint16 -> int32, uint32 -> int64, uint64 -> decimal(20, 0),
+    string/binary views -> their plain types -- at any depth. Always, not by the
+    data's range: a dataset's ORC schema must not change with its values. The
+    comparators read each back as the canonical's type (`sidecars/compare_cases`).
+    The Rust lane's `orc_storage_type` is the same rule."""
+    widened = {pa.uint8(): pa.int16(), pa.uint16(): pa.int32(), pa.uint32(): pa.int64(),
+               pa.uint64(): pa.decimal128(20, 0), pa.string_view(): pa.string(),
+               pa.binary_view(): pa.binary()}
+    if dtype in widened:
+        return widened[dtype]
+    if pa.types.is_struct(dtype):
+        return pa.struct([f.with_type(orc_storage_type(f.type)) for f in dtype])
+    if pa.types.is_map(dtype):
+        return pa.map_(dtype.key_field.with_type(orc_storage_type(dtype.key_type)),
+                       dtype.item_field.with_type(orc_storage_type(dtype.item_type)),
+                       keys_sorted=dtype.keys_sorted)
+    if pa.types.is_fixed_size_list(dtype):
+        return pa.list_(dtype.value_field.with_type(orc_storage_type(dtype.value_type)), dtype.list_size)
+    if pa.types.is_large_list(dtype):
+        return pa.large_list(dtype.value_field.with_type(orc_storage_type(dtype.value_type)))
+    if pa.types.is_list(dtype):
+        return pa.list_(dtype.value_field.with_type(orc_storage_type(dtype.value_type)))
+    return dtype
+
+
 class OrcExporter:
     """pyarrow ORC writer, the Apache ORC C++ library -- the `orc@py` cell.
 
     Streams the canonical's stored batches into one `ORCWriter`, which cuts
     stripes at its own default size. zstd, since the API makes the caller pick
-    a codec (its default is none). Types the library does not write (unsigned
-    integers, dictionaries, time, durations, string views, ...) raise from it,
-    and the build records ORC unavailable for that dataset with its error;
-    nothing here converts a column for it.
+    a codec (its default is none). Unsigned integers and view types are widened
+    first (`orc_storage_type`); any other type the library does not write
+    (dictionaries, time, durations, ...) raises from it, and the build records
+    ORC unavailable for that dataset with its error.
     """
 
     format_id = "orc"
@@ -428,13 +456,15 @@ class OrcExporter:
         print(f"[export:orc@py] {display_path(dest)}")
         with pa.ipc.open_file(str(canonical)) as reader:
             schema = reader.schema
+            stored = pa.schema([f.with_type(orc_storage_type(f.type)) for f in schema], metadata=schema.metadata)
             try:
                 writer = orc.ORCWriter(str(tmp), compression="zstd")
                 try:
                     for i in range(reader.num_record_batches):
-                        writer.write(pa.Table.from_batches([reader.get_batch(i)], schema=schema))
+                        batch = pa.Table.from_batches([reader.get_batch(i)], schema=schema)
+                        writer.write(batch if stored == schema else batch.cast(stored))
                     if not reader.num_record_batches:
-                        writer.write(schema.empty_table())
+                        writer.write(stored.empty_table())
                 finally:
                     writer.close()
                 tmp.replace(dest)
