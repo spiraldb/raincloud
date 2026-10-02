@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Report per-dataset state across the manifest.
 
-For each DatasetSpec in sources.json, walk the filesystem and report:
+For each DatasetSpec in sources.json, walk the filesystem and report what this
+install builds and keeps (its `formats`, `keep_raw` and `keep_canonical`
+settings):
     raw      — the selected recipe generation's raw bytes (under the configured
                raw root, `<slug>/` or `<slug>/.recipes/<key>/`) present, and
                matching expected_bytes if the manifest declared one for a
@@ -11,11 +13,16 @@ For each DatasetSpec in sources.json, walk the filesystem and report:
     work     — the recipe's scratch directory under the configured scratch root
                present (extract scratch — wiped by --clean-workdir)
     arrow    — (schema_version 2+) the canonical outputs/v{n}/<slug>/arrow/<slug>.arrow.zstd present
-    parquet  — outputs/v{n}/<slug>/parquet/<slug>.parquet present when the export
-               policy includes Parquet; row count vs expect.rows; stale (v2) when
-               older than the canonical Arrow
-    vortex   — the Vortex export present when the export policy includes Vortex;
-               stale when older than its source (the canonical Arrow in v2)
+    parquet  — outputs/v{n}/<slug>/parquet/<slug>.parquet present when this install
+               builds Parquet; row count vs expect.rows; stale (v2) when older
+               than the canonical Arrow
+    vortex   — the Vortex export present when this install builds Vortex; stale
+               when older than its source (the canonical Arrow in v2)
+    <format> — likewise for each other format this install builds, as a column
+               when any dataset has it
+
+A raw download or canonical Arrow the install does not keep is reported, but
+its absence leaves a dataset complete.
 
 A format a build measured unavailable at the current recipe (this install's
 build record, else the selected catalog's snapshot) shows `unavail` and counts
@@ -45,7 +52,8 @@ from typing import Any
 
 import pyarrow.parquet as pq
 
-from raincloud._formats import EXPORTED_FORMATS, buildable_formats, vortex_cells
+from raincloud._formats import EXPORTED_FORMATS, buildable_formats, vortex_cells, wanted_formats
+from raincloud.config import get_config
 
 from .selection import SelectionError, select_specs
 from .spec import (
@@ -112,12 +120,20 @@ def _parquet_path(spec: dict, m: dict) -> Path:
 
 
 def _arrow_status(spec: dict, m: dict) -> dict:
+    """The canonical Arrow: `expected` when this install keeps it."""
     if m["schema_version"] < 2:  # v1 catalogs only; remove when v1 bundles are no longer read.
         return {"expected": False}
+    expected = get_config().keep_canonical
     p = prepared_arrow(spec["slug"], m)
     if not p.is_file():
-        return {"expected": True, "present": False}
-    return {"expected": True, "present": True, "bytes": p.stat().st_size}
+        return {"expected": expected, "present": False}
+    return {"expected": expected, "present": True, "bytes": p.stat().st_size}
+
+
+def _builds_here(fmt: str, m: dict) -> bool:
+    """Whether this install builds `fmt` (its `formats` setting); a v1 catalog
+    predates the setting and builds what its recipes say."""
+    return m["schema_version"] < 2 or fmt in wanted_formats(get_config())
 
 
 def _measured(spec: dict, fmt: str, m: dict) -> dict | None:
@@ -154,11 +170,11 @@ def _record() -> dict:
 
 
 def _format_status(spec: dict, m: dict, fmt: str) -> dict:
-    """An exported format's state: `expected` (the export policy includes it),
-    `present` with its `bytes`, `stale` when older than the canonical Arrow it
-    was exported from, and `unavailable` (the measurement) when a build
-    measured its writer unable to produce it."""
-    if fmt not in buildable_formats(spec, m["schema_version"]):
+    """An exported format's state: `expected` (the dataset offers it and this
+    install builds it), `present` with its `bytes`, `stale` when older than the
+    canonical Arrow it was exported from, and `unavailable` (the measurement)
+    when a build measured its writer unable to produce it."""
+    if fmt not in buildable_formats(spec, m["schema_version"]) or not _builds_here(fmt, m):
         return {"expected": False}
     measured = _measured(spec, fmt, m)
     if measured is not None:
@@ -198,7 +214,7 @@ def vortex_status(spec: dict, m: dict, *, source: Path | None = None,
     `vortex` and `source` default to the prepared paths; `source` is the
     canonical Arrow in schema_version 2 and the Parquet in v1.
     """
-    if not vortex_cells(spec, m["schema_version"], m):
+    if not vortex_cells(spec, m["schema_version"], m) or not _builds_here("vortex", m):
         return {"opted_in": False}
     measured = _measured(spec, "vortex", m)
     if measured is not None:
@@ -244,7 +260,7 @@ def _is_incomplete(row: dict) -> bool:
     arrow = row["arrow"]
     parq = row["parquet"]
     return bool(
-        not row["raw"].get("present")
+        (not row["raw"].get("present") and get_config().keep_raw)
         or row["raw"].get("bytes_expected") is not None
         or (arrow.get("expected") and not arrow.get("present"))
         or parq.get("rows_expected") is not None
@@ -268,7 +284,9 @@ def _fmt_row(row: dict, rows: list[dict] | None = None) -> tuple[str, ...]:
     work_cell = "✓" if row["work"].get("present") else "·"
 
     arrow = row["arrow"]
-    arrow_cell = "n/a" if not arrow.get("expected") else ("✓" if arrow.get("present") else "·")
+    # A canonical the install does not keep can still be present: kept as the
+    # dataset's only file, or left by an earlier build.
+    arrow_cell = "✓" if arrow.get("present") else ("·" if arrow.get("expected") else "n/a")
 
     parq = row["parquet"]
     if not parq.get("expected"):

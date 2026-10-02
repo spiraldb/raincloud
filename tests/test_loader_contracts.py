@@ -66,7 +66,8 @@ def cli(capsys, options, *args):
 @pytest.mark.parametrize("empty", [False, True])
 def test_subprocess_env_round_trips_every_setting(tmp_path, monkeypatch, key, empty):
     values = {"export_priority": "rs,py", "offline": True, "retry_errors": True, "mirror": "s3://bucket/prefix",
-              "catalog": "checkout", "catalog_url": "https://example.com/catalogs"}
+              "catalog": "checkout", "catalog_url": "https://example.com/catalogs", "formats": "parquet,vortex",
+              "keep_raw": True, "keep_canonical": True}
     value = values.get(key, str(tmp_path / key))
     parent = resolve_config(no_config=True, **({} if empty else {key: value}))
     for name, setting in parent.subprocess_env().items():
@@ -255,10 +256,17 @@ def test_cli_resolution_does_not_need_a_python_reader(fixture, no_vortex, capsys
     assert reply["path"].endswith("tiny.vortex") and reply["catalog_revision"]
     code, out, _ = cli(capsys, options, "--json", "describe", "tiny")
     assert json.loads(out)["format"] == "vortex"
+    # Parquet is opt-in: an install that does not build it gets the canonical
+    # Arrow when it cannot read Vortex, even with a Parquet file present...
     code, out, _ = cli(capsys, options, "--json", "describe", "tiny", "--readers", "arrow,parquet")
+    assert json.loads(out)["format"] == "arrow"
+    # ...and Parquet once it opts in.
+    code, out, _ = cli(capsys, {**options, "formats": "vortex,parquet"}, "--json", "describe", "tiny",
+                       "--readers", "arrow,parquet")
     assert json.loads(out)["format"] == "parquet"
     # Python reads still need their reader.
-    assert raincloud.load("tiny", config=cfg).format == "parquet"
+    assert raincloud.load("tiny", config=cfg).format == "arrow"
+    assert raincloud.load("tiny", config=replace(cfg, formats=("vortex", "parquet"))).format == "parquet"
     with pytest.raises(MissingDependency):
         raincloud.load("tiny", format="vortex", config=cfg)
 

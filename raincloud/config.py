@@ -21,9 +21,13 @@ from platformdirs import site_config_dir, user_cache_path, user_config_path, use
 _PATHS = {"data_dir", "scratch_dir", "raw_dir", "cache_dir", "manifest", "snapshot", "catalog_dir"}
 # retry_errors: a build re-attempts a format whose writer, with this toolchain,
 # already failed to write it at the recipe (`export.run_exporters`).
-_BOOLS = {"offline", "retry_errors"}
-# Comma-separated writer names, most preferred first (e.g. "rs,java,py").
-_LISTS = {"export_priority"}
+# keep_raw / keep_canonical: a successful build keeps the dataset's raw
+# download / its canonical Arrow instead of removing it (`build._clean`).
+_BOOLS = {"offline", "retry_errors", "keep_raw", "keep_canonical"}
+# Comma-separated names: export_priority names writers, most preferred first
+# (e.g. "rs,java,py"); formats names the formats a build writes (e.g.
+# "vortex,parquet", or "all").
+_LISTS = {"export_priority", "formats"}
 _KEYS = _PATHS | _BOOLS | _LISTS | {"mirror", "catalog", "catalog_url"}
 # Named catalog selectors; anything else is a revision id (or its prefix) or a directory.
 _SELECTORS = {"auto", "active", "checkout", "bundled", "local"}
@@ -31,13 +35,31 @@ _SELECTORS = {"auto", "active", "checkout", "bundled", "local"}
 REVISION_PREFIX = re.compile(r"[0-9a-f]{4,63}")
 
 
-def _writers(value: str | list | tuple) -> tuple[str, ...]:
-    """Parse "rs,java,py" (or a list of names) into a writer tuple, ignoring blanks."""
+def _names(value: str | list | tuple, key: str = "export_priority") -> tuple[str, ...]:
+    """Parse "rs,java,py" (or a list of names) into a tuple, ignoring blanks."""
     if isinstance(value, str):
         value = value.split(",")
     elif not isinstance(value, (list, tuple)) or not all(isinstance(v, str) for v in value):
-        raise ValueError(f"writer priority must be a list of writer names, not {value!r}")
-    return tuple(part.strip() for part in value if part.strip())
+        raise ValueError(f"{key} must be a list of {_NOUNS[key]}, not {value!r}")
+    names = tuple(part.strip() for part in value if part.strip())
+    if key == "formats":
+        _check_formats(names)
+    return names
+
+
+_NOUNS = {"export_priority": "writer names", "formats": "format names"}
+
+
+def _check_formats(names: tuple[str, ...]) -> None:
+    """Refuse a `formats` entry that names no exported format, with a did-you-mean."""
+    from ._formats import EXPORTED_FORMATS
+    from ._suggest import hint
+    for name in names:
+        if name == "arrow":
+            raise ValueError("formats: the canonical Arrow is not an exported format; "
+                             "set keep_canonical = true to keep it")
+        if name != "all" and name not in EXPORTED_FORMATS:
+            raise ValueError("formats: " + hint(name, [*EXPORTED_FORMATS, "all"], noun="format"))
 
 
 def redact_url(value: str) -> str:
@@ -57,6 +79,8 @@ _ENV = {
     "manifest": "RAINCLOUD_MANIFEST", "snapshot": "RAINCLOUD_SNAPSHOT",
     "mirror": "RAINCLOUD_MIRROR", "offline": "RAINCLOUD_OFFLINE",
     "export_priority": "RAINCLOUD_EXPORT_PRIORITY", "retry_errors": "RAINCLOUD_RETRY_ERRORS",
+    "formats": "RAINCLOUD_FORMATS", "keep_raw": "RAINCLOUD_KEEP_RAW",
+    "keep_canonical": "RAINCLOUD_KEEP_CANONICAL",
 }
 
 
@@ -105,6 +129,14 @@ class Config:
     retry_errors: bool = False
     # Machine-level writer preference; a catalog or a single spec can override it.
     export_priority: tuple[str, ...] | None = None
+    # The formats a build writes when none is asked for (`all`: every format a
+    # dataset offers). Only Vortex by default: every other format is opt-in.
+    formats: tuple[str, ...] = ("vortex",)
+    # Whether a successful build keeps what it built from. Off by default: the
+    # dataset's file is what most installs want, and either can be made again
+    # (the raw by fetching, the canonical by building).
+    keep_raw: bool = False
+    keep_canonical: bool = False
     manifest: Path | None = None
     snapshot: Path | None = None
     file: Path | None = None
@@ -232,12 +264,10 @@ def resolve_config(*, config: str | Path | None = None, no_config: bool = False,
             elif key in _LISTS:
                 # A TOML array is the natural spelling here; a comma string is
                 # accepted so the file and the env var take the same value.
-                if isinstance(value, str):
-                    value = layer[key] = _writers(value)
-                elif isinstance(value, list) and all(isinstance(v, str) for v in value):
-                    value = layer[key] = tuple(value)
-                else:
-                    raise ValueError(f"{settings_file}: {key} must be a list of writer names")
+                try:
+                    value = layer[key] = _names(value, key)
+                except ValueError as exc:
+                    raise ValueError(f"{settings_file}: {exc}") from None
             elif not isinstance(value, str) or (key in _PATHS and not value):
                 raise ValueError(f"{settings_file}: {key} must be a nonempty path/string")
             if key in _PATHS:
@@ -265,7 +295,7 @@ def resolve_config(*, config: str | Path | None = None, no_config: bool = False,
             if key in _BOOLS:
                 values[key] = _flag(value)
             elif key in _LISTS:
-                values[key] = _writers(value)
+                values[key] = _names(value, key)
             else:
                 values[key] = _path(value, cwd) if key in _PATHS else value
             origins[key] = name
@@ -274,7 +304,7 @@ def resolve_config(*, config: str | Path | None = None, no_config: bool = False,
             if key in _BOOLS and not isinstance(value, bool):
                 raise ValueError(f"{key} must be a boolean")
             if key in _LISTS:
-                value = _writers(value)
+                value = _names(value, key)
             values[key] = _path(value, cwd) if key in _PATHS else value
             origins[key] = "explicit"
     values.setdefault("catalog_dir", native_data / "catalogs")

@@ -36,6 +36,9 @@ _INIT_TEMPLATE = """\
 # cache_dir = "~/.cache/raincloud"  # mirror downloads (default: data_dir)
 # scratch_dir = "/tmp/raincloud"    # build scratch space
 # mirror = "s3://bucket/prefix"     # a store to fetch prepared files from
+# formats = ["vortex", "parquet"]   # formats a build writes (default: vortex; "all")
+# keep_raw = true                   # keep raw downloads after a build
+# keep_canonical = true             # keep the canonical Arrow after a build
 """
 
 

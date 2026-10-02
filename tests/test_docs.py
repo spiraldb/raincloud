@@ -27,10 +27,10 @@ _FAKE_SPEC = {
 }
 
 
-
 def _artifacts(tmp_path, paths):
     """A `prepared_artifact` stand-in: `paths[fmt]`, else a file that never exists."""
     return lambda slug, fmt, manifest=None: paths.get(fmt, tmp_path / f"missing.{fmt}")
+
 
 @pytest.fixture
 def patched_docs(tmp_path, monkeypatch):

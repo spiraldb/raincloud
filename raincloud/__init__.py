@@ -12,7 +12,7 @@ from ._cache import EXT
 from ._catalog import load_catalog
 from ._catalog import unverified as _catalog_unverified
 from ._duckdb import duckdb_connect
-from ._formats import select_format
+from ._formats import auto_formats, select_format
 from ._readers import open_batches, open_dataset, reader_capabilities, require_reader
 from .config import Config, get_config, resolve_config
 from .exceptions import (  # noqa: F401
@@ -339,6 +339,8 @@ def _choose_format(entry, requested: str, readable: bool, readers: set[str] | No
     path to native readers that bring their own) every recorded format counts.
     `readers`, when given, is the set "auto" chooses among instead.
 
+    "auto" tries the install's `auto_formats`: the formats it builds (only
+    Vortex by default), in vortex, parquet order, then the canonical Arrow.
     "auto" also skips a format a build measured unavailable at this recipe
     (`_resolve.measured_unavailable`); asking for one outright raises
     FormatUnavailable quoting that measurement, unless `build` allows a new
@@ -375,7 +377,7 @@ def _choose_format(entry, requested: str, readable: bool, readers: set[str] | No
                 raise MissingDependency(f"{entry.slug} is prepared only as {', '.join(sorted(formats))}: {exc}") from None
         formats = usable
     try:
-        fmt = select_format(formats, fmt)
+        fmt = select_format(formats, fmt, auto_formats(config))
     except FormatUnavailable as exc:
         raise FormatUnavailable(f"{entry.slug}: {exc}") from None
     if readable:

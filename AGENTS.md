@@ -88,8 +88,17 @@ every output format is derived from it by an exporter.
 | transform | `transform.py` | `transform.*` | in-memory `(slug, Table)` |
 | write_canonical | `canonical.py` | transform output | `outputs/v{n}/<slug>/arrow/<slug>.arrow.zstd` |
 | validate | `validate.py` | `expect.*` | hashes canonical schema, checks rows; `[WARN]` unless `--strict` |
-| run_exporters | `export/` | `export.formats`, `export.priority` | `parquet/`, `vortex/` under `outputs/v{n}/<slug>/`; the build record |
+| run_exporters | `export/` | the install's `formats`, `export.priority` | `<fmt>/` under `outputs/v{n}/<slug>/`; the build record |
 | hydrate *(named builds only)* | `hydrate.py` | `derive.hydrate` | a `<parent>-hydrated` dataset — outbound HTTP, safety-filter gated |
+
+**Formats are opt-in, per install.** A dataset offers every exported format (a recipe's
+`export.formats` can only narrow that); a build writes the install's `formats` setting —
+only Vortex by default — or what `--format` names, and then removes the raw download and
+the canonical unless `keep_raw` / `keep_canonical` are set (a canonical from which no
+format was written stays: it is the dataset's file). Maintaining the catalog wants
+everything, so a maintainer's config (or environment) sets `formats = "all"`,
+`keep_raw = true` and `keep_canonical = true`; without them a checkout build deletes the
+raw bytes a re-run would reuse.
 
 `run_exporters` is also invokable on its own, which is the whole job whenever a
 change touches only the export stage (row-group sizing, a codec, a new cell) —
@@ -237,6 +246,9 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_MIRROR` | a private artifact store readers fall back to (`s3://` needs `[s3]`, `https://` needs `[http]`) | unset |
 | `RAINCLOUD_OFFLINE` | `1`: read only local files; never contact the mirror | unset |
 | `RAINCLOUD_RETRY_ERRORS` | `1`: a build attempts a format whose writer, with this toolchain, already failed at the recipe (as `--retry-errors`) | unset |
+| `RAINCLOUD_FORMATS` | formats a build writes, e.g. `vortex,parquet`, or `all` (as `--format` for one build) | `vortex` |
+| `RAINCLOUD_KEEP_RAW` | `1`: a successful build keeps the raw download (generated datasets always keep their generator output) | unset (removed) |
+| `RAINCLOUD_KEEP_CANONICAL` | `1`: a successful build keeps the canonical Arrow (kept anyway when no other format was written) | unset (removed) |
 | `RAINCLOUD_CONFIG` / `RAINCLOUD_NO_CONFIG` | select or disable the config file | unset |
 | `RAINCLOUD_SETTINGS` | settings JSON the CLI reads with `--settings-env`; how native readers pass options | unset |
 | `RAINCLOUD_DUCKDB_MEMORY_LIMIT` | DuckDB memory ceiling, applied by `raincloud.duckdb_connect` | DuckDB default (~80% RAM) |

@@ -33,10 +33,10 @@ HYDRATED = {"slug": "tiny-hydrated", "advisory": "a test fixture's pages",
 TABLE = pa.table({"x": [1, 2], "url": ["https://example.test/a", None]})
 
 
-
 def _artifacts(tmp_path, paths):
     """A `prepared_artifact` stand-in: `paths[fmt]`, else a file that never exists."""
     return lambda slug, fmt, manifest=None: paths.get(fmt, tmp_path / f"missing.{fmt}")
+
 
 def _catalog(tmp_path, name, datasets, slugs=None):
     """A config selecting a catalog of `datasets`, over one shared store."""

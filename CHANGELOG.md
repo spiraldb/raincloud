@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Formats are opt-in, per install.** A build writes only Vortex unless the new
+  `formats` setting (`RAINCLOUD_FORMATS`; `"all"` for every format) or
+  `raincloud build --format` asks for more, and a load that names another format
+  builds just that one. `format="auto"` picks among the formats the install builds,
+  Vortex then Parquet, and falls back to the canonical Arrow when neither can be had.
+  Every dataset now offers every exported format; a recipe's `export.formats` only
+  narrows that. To keep 0.3.0's behaviour, set `formats = ["vortex", "parquet"]`.
+- **A build cleans up after itself.** Once a dataset's files are written, a
+  successful build removes its raw download and its canonical Arrow, unless the new
+  `keep_raw` / `keep_canonical` settings keep them. A canonical from which no other
+  format was written is the dataset's only file and stays. Generated datasets keep
+  their generator output, which a group of datasets shares. A shared store or a
+  maintainer's checkout sets `formats = "all"`, `keep_raw = true` and
+  `keep_canonical = true`.
+- `python -m raincloud.pipeline.export` without `--format` writes the install's
+  formats, as a build does, instead of every format the recipe lists.
+- Each artifact format is declared once, in `raincloud._registry.FORMATS`, and
+  everything that listed Parquet and Vortex by hand derives from it. A format with
+  no in-process reader raises `MissingDependency` instead of being opened as Vortex.
+
 ## [0.3.0] - 2026-09-28
 
 A breaking release: the pipeline's entry points, the default data locations and

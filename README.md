@@ -129,12 +129,22 @@ raincloud load uci-iris --build
 ```
 
 **Which format you get.** A dataset can have Arrow IPC, Parquet and Vortex files.
-`format="auto"`, the default, picks Vortex, then Parquet, then Arrow, among the
-formats you have a reader for. The base install reads Arrow and Parquet; `[vortex]`
-adds Vortex, and `[build]` includes it. Installing either one therefore changes what
-`auto` returns, down to the Arrow types: Vortex returns some string columns as
-`string_view`. Name the format when that matters:
-`raincloud.load("uci-iris", format="parquet")`.
+An install builds only Vortex unless it opts into more: the `formats` setting
+(`formats = ["vortex", "parquet"]` in the config file, `RAINCLOUD_FORMATS`, or
+`"all"`) names what a build writes, and a load that names another format builds just
+that one. `format="auto"`, the default, picks Vortex, then Parquet, among the formats
+the install builds and you have a reader for, and falls back to the canonical Arrow
+when neither can be had (for a dataset whose Vortex writer is measured unable to write
+it, say). The base install reads Arrow and Parquet; `[vortex]` adds Vortex, and
+`[build]` includes it. Installing either one therefore changes what `auto` returns,
+down to the Arrow types: Vortex returns some string columns as `string_view`. Name the
+format when that matters: `raincloud.load("uci-iris", format="parquet")`.
+
+A build removes what it was made from once the dataset's files are written: the raw
+download and the canonical Arrow. Set `keep_raw` and `keep_canonical` (or
+`RAINCLOUD_KEEP_RAW=1`, `RAINCLOUD_KEEP_CANONICAL=1`) to keep them, as a shared store
+or a maintainer does; a later request for another format then needs no fetch. A
+canonical that is the dataset's only file is always kept.
 
 Other extras: `[s3]` and `[http]` add mirror transports, `[pandas]` backs `.to_pandas()`.
 
