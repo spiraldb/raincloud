@@ -103,6 +103,10 @@ int readNext(ArrowArrayStream* stream, ArrowArray* out) {
       out->release = nullptr;  // end of stream
       return 0;
     }
+    // Every batch must match the schema get_schema declared, which is the plain type: a
+    // reader may hand back constant (an all-null column) or dictionary vectors, which
+    // Velox would export as run-end-encoded or dictionary arrays. Flat at every depth.
+    velox::BaseVector::flattenVector(batch);
     velox::exportToArrow(batch, *out, pools().leaf.get());
     return 0;
   } catch (const std::exception& e) {
