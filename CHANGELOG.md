@@ -31,6 +31,16 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   `raincloud-read-nimble-cpp`, which link the Rust crate's new `nimble-ffi` member for the
   sidecar contract and hand batches across in memory. Served by path. The built-in writer
   order is `py, rs, java, cpp, canonical`.
+- **One comparison rule set for every lane.** Where equality turns on representation
+  rather than data, the Python, Rust and JVM comparators follow the cases in
+  `sidecars/compare_cases` (pairs of Arrow files and their verdicts, read by every
+  lane's tests): a union of exactly `null` and `T` is a nullable `T`; zoned timestamps
+  compare by instant, whatever zone labels them; an integer and a scale-0 decimal holding
+  the same values are equal.
+- **Generated groups build together.** A generated table is one of a group its generator
+  writes at once (every TPC-H table of a scale factor, say): building one builds the whole
+  group in the same formats, and its generator output is removed once the group has
+  built, unless `keep_raw` keeps it. `raincloud build --only` builds just the tables named.
 - A format raincloud only serves by path loads like any other: `path()` works and
   `to_arrow()` / `batches()` / `dataset()` raise `MissingDependency`.
 
@@ -53,6 +63,15 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - `python -m raincloud.pipeline.export` without `--format`, and `run_exporters` /
   `plan` without `formats`, write the install's formats, as a build does, instead of
   every format the recipe lists.
+- **Both ORC lanes widen what ORC cannot hold**, always rather than by the data's range:
+  uint8 → int16, uint16 → int32, uint32 → int64, uint64 → decimal(20, 0), and view types
+  to their plain types. orc-rust writes no decimals, so a uint64 column is still
+  unavailable in `orc@rs`.
+- **`export.formats` is no longer part of a recipe's fingerprint**: an install chooses
+  what it builds, so which formats a dataset offers decides no file's bytes. The four
+  recipes that restated the old default drop the line; their fingerprints change once.
+- **v1 catalogs behave as in 0.3.0**: a build writes every format the recipe lists and
+  removes nothing, and `auto` keeps the vortex, parquet, arrow order.
 - Each artifact format is declared once, in `raincloud._registry.FORMATS`, and
   everything that listed Parquet and Vortex by hand derives from it. A format with
   no in-process reader raises `MissingDependency` instead of being opened as Vortex.
