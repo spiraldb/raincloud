@@ -40,6 +40,7 @@ from raincloud._cache import sha256_file
 from ..discovery import VARIANT_EXT, has_variant
 from ..spec import (
     display_path,
+    prepared_artifact,
     prepared_parquet,
     prepared_vortex,
     row_group_cap,
@@ -395,5 +396,68 @@ class VortexExporter:
         )
 
 
+class OrcExporter:
+    """pyarrow ORC writer, the Apache ORC C++ library -- the `orc@py` cell.
+
+    Streams the canonical's stored batches into one `ORCWriter`, which cuts
+    stripes at its own default size. zstd, since the API makes the caller pick
+    a codec (its default is none). Types the library does not write (unsigned
+    integers, dictionaries, time, durations, string views, ...) raise from it,
+    and the build records ORC unavailable for that dataset with its error;
+    nothing here converts a column for it.
+    """
+
+    format_id = "orc"
+    cell_id = "orc@py"
+
+    def unavailable(self) -> str | None:
+        if importlib.util.find_spec("pyarrow._orc") is not None:
+            return None
+        return "needs a pyarrow built with ORC support (this platform's wheel has none)"
+
+    def out_path(self, slug: str) -> Path:
+        return prepared_artifact(slug, "orc")
+
+    def export(self, spec: dict, canonical: Path, dest: Path | None = None) -> ExportResult:
+        import pyarrow.orc as orc
+
+        slug = slug_from_canonical(canonical)
+        dest = dest or self.out_path(slug)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        tmp = tmp_path(dest)
+        print(f"[export:orc@py] {display_path(dest)}")
+        with pa.ipc.open_file(str(canonical)) as reader:
+            schema = reader.schema
+            try:
+                writer = orc.ORCWriter(str(tmp), compression="zstd")
+                try:
+                    for i in range(reader.num_record_batches):
+                        writer.write(pa.Table.from_batches([reader.get_batch(i)], schema=schema))
+                    if not reader.num_record_batches:
+                        writer.write(schema.empty_table())
+                finally:
+                    writer.close()
+                tmp.replace(dest)
+            finally:
+                tmp.unlink(missing_ok=True)
+
+        variant = has_variant(schema)
+        note = ("VARIANT column written as its shredded struct — ORC has no VARIANT type"
+                if variant else "")
+        roundtrip, why = read_back(self.cell_id, dest, canonical)
+        return ExportResult(
+            format_id=self.cell_id,
+            out_path=dest,
+            nbytes=dest.stat().st_size,
+            sha256=sha256_file(dest),
+            compliance=Compliance(
+                roundtrip=roundtrip,
+                variant_faithful=not variant,
+                note="; ".join(n for n in (why, note) if n),
+            ),
+        )
+
+
 register(ParquetExporter())
 register(VortexExporter())
+register(OrcExporter())

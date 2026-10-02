@@ -109,6 +109,11 @@ def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
         except ValueError as exc:
             print(f"  FAILED: {exc}")
             return False
+        if formats is None and "all" in config.formats:
+            # `all` is every format this machine can write: one with no
+            # installed writer is left out, said, rather than failing the build.
+            # A format named outright still fails below.
+            exports = [fmt for fmt in exports if _installed(spec, fmt)]
         print(f"  formats: {', '.join(exports) or 'none'} (canonical Arrow "
               f"{'kept' if _keeps_canonical(config, formats) else 'removed once they are written'})")
         # Fail in a second, not after the transform, when a format this
@@ -203,6 +208,15 @@ def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
         print(f"  FAILED: {type(e).__name__}: {e}")
         traceback.print_exc()
         return False
+
+
+def _installed(spec: dict, fmt: str) -> bool:
+    try:
+        plan(spec, [fmt])
+    except BuildToolingMissing as exc:
+        print(f"  [skip] {fmt}: {exc}")
+        return False
+    return True
 
 
 def _keeps_canonical(config, formats) -> bool:

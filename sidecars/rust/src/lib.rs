@@ -3,15 +3,15 @@
 
 //! Shared machinery for raincloud's Rust sidecar binaries.
 //!
-//! Four `[[bin]]` targets implement raincloud's fixed sidecar CLI contracts
+//! The `[[bin]]` targets implement raincloud's fixed sidecar CLI contracts
 //! (see `raincloud/pipeline/export/sidecar.py` for WRITE and
 //! `raincloud/pipeline/export/readers.py` for READ):
 //!
-//! * `parquet-write` / `vortex-write` — read the canonical Arrow IPC file, write
-//!   the target format, then SELF-VERIFY (re-read, compare) and emit
-//!   `{"roundtrip", "variant_faithful", "note"}`.
-//! * `parquet-read` / `vortex-read` — read an artifact, compare to the canonical
-//!   with LOGICAL equality, emit `{"status", "note", "detail"}`.
+//! * `parquet-write` / `vortex-write` / `orc-write` — read the canonical Arrow
+//!   IPC file, write the target format, then SELF-VERIFY (re-read, compare) and
+//!   emit `{"roundtrip", "variant_faithful", "note"}`.
+//! * `parquet-read` / `vortex-read` / `orc-read` — read an artifact, compare to
+//!   the canonical with LOGICAL equality, emit `{"status", "note", "detail"}`.
 //!
 //! Every lane streams: both sides are read batch by batch and compared window
 //! by window, so memory does not grow with the table. Any failure, a panic
@@ -660,6 +660,43 @@ pub fn open_vortex(input: &Path) -> Result<(SchemaRef, VortexBatches)> {
 // ---------------------------------------------------------------------------
 // Logical comparison + variant detection
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// ORC (orc-rust)
+// ---------------------------------------------------------------------------
+
+/// Write `output` from the canonical with orc-rust's `ArrowWriter`: zstd, since
+/// the API makes the caller pick a codec (its default is none), and its own
+/// default stripe and batch sizes. orc-rust panics on a type it does not write
+/// (`unimplemented!("unsupported datatype")`); [`run_writer`] reports that
+/// panic as the write's failure, and nothing here converts a column for it.
+pub fn write_orc(output: &Path, canonical: &Path) -> Result<()> {
+    let (schema, reader) = open_canonical(canonical)?;
+    let file = File::create(output).with_context(|| format!("create {}", output.display()))?;
+    let mut writer = orc_rust::ArrowWriterBuilder::new(file, schema)
+        .with_compression(orc_rust::compression::CompressionType::Zstd)
+        .try_build()
+        .context("orc-rust: start the ORC file")?;
+    for batch in canonical_batches(reader) {
+        writer
+            .write(&batch?)
+            .context("orc-rust: write a record batch")?;
+    }
+    writer.close().context("orc-rust: finish the ORC file")
+}
+
+/// Open an ORC file with orc-rust's `ArrowReader`, in the batches it yields.
+pub fn open_orc(input: &Path) -> Result<(SchemaRef, impl Iterator<Item = Result<RecordBatch>>)> {
+    let file = File::open(input).with_context(|| format!("open {}", input.display()))?;
+    let reader = orc_rust::ArrowReaderBuilder::try_new(file)
+        .with_context(|| format!("orc-rust: read the ORC footer of {}", input.display()))?
+        .build();
+    let schema = reader.schema();
+    Ok((
+        schema,
+        reader.map(|b| b.context("orc-rust: read a record batch")),
+    ))
+}
 
 /// True if any top-level field carries raincloud's VARIANT marker.
 pub fn has_variant(schema: &Schema) -> bool {
@@ -1716,6 +1753,57 @@ mod tests {
         vortex_round_trip(&scratch, &schema, &[]);
         let scratch = Scratch::new("vortex-zero-rows");
         vortex_round_trip(&scratch, &schema, &[RecordBatch::new_empty(schema.clone())]);
+    }
+
+    #[test]
+    fn orc_writes_and_reads_back_across_batches() {
+        let schema = mixed_schema();
+        let batch = |xs: Vec<i64>| {
+            let s: Vec<Option<String>> = xs
+                .iter()
+                .map(|x| (x % 3 != 0).then(|| format!("v{x}")))
+                .collect();
+            RecordBatch::try_new(
+                schema.clone(),
+                vec![
+                    Arc::new(Int64Array::from(xs)),
+                    Arc::new(StringArray::from(s)),
+                ],
+            )
+            .unwrap()
+        };
+        let scratch = Scratch::new("orc");
+        let source = scratch.canonical(
+            "source.arrow",
+            &schema,
+            &[batch((0..1000).collect()), batch((1000..5000).collect())],
+        );
+        let output = scratch.path("out.orc");
+        write_orc(&output, &source).unwrap();
+        let (got_schema, got) = open_orc(&output).unwrap();
+        let (_, expected) = open_canonical(&source).unwrap();
+        assert_eq!(
+            logical_eq_stream(&got_schema, got, &schema, canonical_batches(expected)).unwrap(),
+            (true, String::new())
+        );
+    }
+
+    #[test]
+    fn orc_rust_panicking_on_an_unsigned_column_is_an_error() {
+        let schema = Arc::new(Schema::new(vec![Field::new("u", DataType::UInt32, true)]));
+        let b = RecordBatch::try_new(
+            schema.clone(),
+            vec![Arc::new(arrow_array::UInt32Array::from(vec![1, 2]))],
+        )
+        .unwrap();
+        let scratch = Scratch::new("orc-unsigned");
+        let source = scratch.canonical("source.arrow", &schema, &[b]);
+        let output = scratch.path("out.orc");
+        let err = unwound(|| write_orc(&output, &source)).unwrap_err();
+        assert!(
+            format!("{err:#}").contains("unsupported datatype"),
+            "{err:#}"
+        );
     }
 
     #[test]

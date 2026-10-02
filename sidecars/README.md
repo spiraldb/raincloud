@@ -7,8 +7,8 @@ these programs during ordinary reads.
 
 ## Which writer a build uses
 
-A dataset has one file per format; `export.formats` says which formats, never
-which writer. For each format a build takes the first writer that is installed,
+A dataset has one file per format; the install's `formats` setting says which
+formats a build writes, never which writer. For each format a build takes the first writer that is installed,
 from the first of these that names one:
 
 1. the recipe's `export.priority` (a list for every format, or a map such as
@@ -44,7 +44,16 @@ export RAINCLOUD_SIDECAR_PARQUET_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/parquet-writ
 export RAINCLOUD_READER_PARQUET_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/parquet-read"
 export RAINCLOUD_SIDECAR_VORTEX_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/vortex-write"
 export RAINCLOUD_READER_VORTEX_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/vortex-read"
+export RAINCLOUD_SIDECAR_ORC_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/orc-write"
+export RAINCLOUD_READER_ORC_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/orc-read"
 ```
+
+The ORC lane (`orc@rs`) is orc-rust, pinned exactly in `sidecars/rust/Cargo.toml`.
+It writes zstd with orc-rust's default stripe size, and panics on a type it does
+not write (anything but signed integers, floats, strings, binary, booleans,
+`date32` and timestamps); the panic is its report, and the build records ORC
+unavailable for that dataset. The Python lane (`orc@py`, pyarrow's Apache ORC C++
+library) needs no sidecar.
 
 Build Java distributions with JDK 17 and the pinned submodule. The
 parquet-hardwood project builds on Java 21, because Hardwood's jar targets it. If a

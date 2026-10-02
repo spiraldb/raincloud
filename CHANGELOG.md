@@ -7,6 +7,17 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- **ORC.** A dataset can be built as ORC (`formats = ["orc"]`, or
+  `raincloud build --format orc`) and loaded with `format="orc"`; `auto` never picks
+  it. Two writers: `orc@py`, pyarrow's Apache ORC C++ library, and `orc@rs`,
+  orc-rust 0.9.0 in the Rust sidecar (`orc-write` / `orc-read`). Both write zstd.
+  Neither has a type converted for it: a column the library does not write
+  (unsigned integers and string views for pyarrow; anything beyond signed
+  integers, floats, strings, binary, booleans, dates and timestamps for orc-rust)
+  records ORC unavailable for that dataset, with the library's error.
+
 ### Changed
 
 - **Formats are opt-in, per install.** A build writes only Vortex unless the new

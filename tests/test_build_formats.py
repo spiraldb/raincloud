@@ -86,6 +86,21 @@ def test_formats_all_writes_every_offered_format(tmp_path, stages, defaults):
         assert prepared_parquet("tiny").is_file() and prepared_vortex("tiny").is_file()
 
 
+def test_formats_all_leaves_out_a_format_with_no_installed_writer(tmp_path, stages, defaults, monkeypatch,
+                                                                  capsys):
+    from raincloud._formats import WRITERS
+    from raincloud.pipeline.export import get_exporter
+    for writer in WRITERS["orc"]:
+        monkeypatch.setattr(get_exporter(f"orc@{writer}"), "unavailable", lambda: "not on this machine")
+    cfg, _ = _store(tmp_path, formats=("all",))
+    with operation(cfg):
+        assert build.run_one(SPEC, strict=False)
+        assert prepared_vortex("tiny").is_file()
+        # Named outright, it fails the build instead.
+        assert not build.run_one(SPEC, strict=False, formats=["orc"])
+    assert "[skip] orc: tiny: no installed writer for 'orc'" in capsys.readouterr().out
+
+
 def test_a_format_the_dataset_does_not_offer_fails_the_build(tmp_path, stages, defaults, capsys):
     narrow = {"slug": "tiny", "export": {"formats": ["parquet"]}}
     cfg, _ = _store(tmp_path, datasets=(narrow,))

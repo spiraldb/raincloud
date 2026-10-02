@@ -128,7 +128,7 @@ raincloud.load("uci-iris", build=True)
 raincloud load uci-iris --build
 ```
 
-**Which format you get.** A dataset can have Arrow IPC, Parquet and Vortex files.
+**Which format you get.** A dataset can have Arrow IPC, Parquet, Vortex and ORC files.
 An install builds only Vortex unless it opts into more: the `formats` setting
 (`formats = ["vortex", "parquet"]` in the config file, `RAINCLOUD_FORMATS`, or
 `"all"`) names what a build writes, and a load that names another format builds just

@@ -710,7 +710,8 @@
           "items": {
             "enum": [
               "parquet",
-              "vortex"
+              "vortex",
+              "orc"
             ]
           },
           "uniqueItems": true,
@@ -786,7 +787,8 @@
           "propertyNames": {
             "enum": [
               "parquet",
-              "vortex"
+              "vortex",
+              "orc"
             ]
           },
           "additionalProperties": {

@@ -71,6 +71,8 @@ FORMATS: dict[str, dict] = {
                "implementation": "vortex-python", "extra": "vortex"},
     "parquet": {"ext": "parquet", "auto": True, "reader": "pyarrow", "implementation": "pyarrow"},
     "arrow": {"ext": "arrow.zstd", "auto": True, "reader": "pyarrow", "implementation": "pyarrow"},
+    # pyarrow's ORC support is a compiled extension some builds leave out.
+    "orc": {"ext": "orc", "auto": False, "reader": "pyarrow._orc", "implementation": "pyarrow"},
 }
 
 # In-process exporter cells, as "<module>:<class>" under `raincloud.pipeline.export`.
@@ -79,6 +81,7 @@ FORMATS: dict[str, dict] = {
 PY_EXPORTERS: dict[str, str] = {
     "parquet@py": "exporters:ParquetExporter",
     "vortex@py": "exporters:VortexExporter",
+    "orc@py": "exporters:OrcExporter",
 }
 
 # Opt-in exporter cells that shell out to a PATH-discovered reference writer,
@@ -92,6 +95,7 @@ SIDECAR_EXPORTERS: dict[str, tuple[str, str]] = {
     "parquet@hardwood": ("parquet", "raincloud-export-parquet-hardwood"),
     "vortex@rs": ("vortex", "raincloud-export-vortex-rs"),
     "vortex@jni": ("vortex", "raincloud-export-vortex-jni"),
+    "orc@rs": ("orc", "raincloud-export-orc-rs"),
 }
 
 # Custom fetchers, as "<module>:<attr>" under `raincloud.pipeline`. A recipe

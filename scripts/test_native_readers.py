@@ -72,9 +72,10 @@ def main():
     no_vortex_target = target / "no-vortex"
     run(["cargo", "build", *client, "--no-default-features", "--target-dir", no_vortex_target])
     run(["cargo", "build", "--locked", "--manifest-path", "sidecars/rust/Cargo.toml",
-         "--bin", "parquet-read", "--bin", "vortex-read", "--bin", "parquet-write", "--bin", "vortex-write"])
+         "--bin", "parquet-read", "--bin", "vortex-read", "--bin", "parquet-write", "--bin", "vortex-write",
+         "--bin", "orc-read", "--bin", "orc-write"])
     lib = target / "debug"
-    for binary in ("parquet-read", "vortex-read", "parquet-write", "vortex-write"):
+    for binary in ("parquet-read", "vortex-read", "parquet-write", "vortex-write", "orc-read", "orc-write"):
         if not os.access(lib / binary, os.X_OK):
             raise RuntimeError(f"required conformance reader is not executable: {lib / binary}")
     if not env.get("JAVA_HOME") and shutil.which("java"):
@@ -111,7 +112,9 @@ def main():
                    RAINCLOUD_NATIVE_LIBRARY_NO_VORTEX=str(no_vortex_target / "debug/libraincloud_reader.so"),
                    RAINCLOUD_READER_PARQUET_RS=str(lib / "parquet-read"),
                    RAINCLOUD_SIDECAR_PARQUET_RS=str(lib / "parquet-write"),
-                   RAINCLOUD_READER_VORTEX_RS=str(lib / "vortex-read"))
+                   RAINCLOUD_READER_VORTEX_RS=str(lib / "vortex-read"),
+                   RAINCLOUD_SIDECAR_ORC_RS=str(lib / "orc-write"),
+                   RAINCLOUD_READER_ORC_RS=str(lib / "orc-read"))
         run(["cargo", "test", *client])
         run(["cargo", "test", *client, "--no-default-features", "--target-dir", no_vortex_target])
         run([sys.executable, "-m", "pytest", *PYTEST_MODULES, "-q"])

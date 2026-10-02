@@ -70,6 +70,8 @@ def open_dataset(fmt: str, path):
         file_format, source = pads.ParquetFileFormat(), pa.OSFile(str(path), "r")
     elif fmt == "arrow":
         file_format, source = pads.IpcFileFormat(), pa.memory_map(str(path), "r")
+    elif fmt == "orc":
+        file_format, source = pads.OrcFileFormat(), pa.OSFile(str(path), "r")
     else:
         raise MissingDependency(_missing(fmt))
     # A fragment over the open file, not the path: the dataset keeps reading
@@ -112,4 +114,17 @@ def _vortex_batches(path, stack, *, columns, batch_size, check_columns):
     return reader.schema, reader
 
 
-_BATCHES = {"parquet": _parquet_batches, "arrow": _arrow_batches, "vortex": _vortex_batches}
+def _orc_batches(path, stack, *, columns, batch_size, check_columns):
+    import pyarrow as pa
+    import pyarrow.orc as orc
+    file = orc.ORCFile(stack.enter_context(pa.OSFile(str(path), "r")))
+    schema = file.schema
+    if columns is not None:
+        check_columns(schema)
+        schema = pa.schema([schema.field(c) for c in columns], metadata=schema.metadata)
+    # One stripe at a time; `Dataset.batches` slices each to `batch_size`.
+    return schema, (file.read_stripe(i, columns=columns) for i in range(file.nstripes))
+
+
+_BATCHES = {"parquet": _parquet_batches, "arrow": _arrow_batches, "vortex": _vortex_batches,
+            "orc": _orc_batches}

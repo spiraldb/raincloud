@@ -265,7 +265,7 @@ def _is_incomplete(row: dict) -> bool:
         or (arrow.get("expected") and not arrow.get("present"))
         or parq.get("rows_expected") is not None
         or parq.get("error")
-        or any(_wanted(row[fmt]) and (not row[fmt].get("present") or row[fmt].get("stale"))
+        or any(_wanted(row.get(fmt, {})) and (not row[fmt].get("present") or row[fmt].get("stale"))
                for fmt in EXPORTED_FORMATS)
     )
 
@@ -354,7 +354,7 @@ def render_summary(rows: list[dict]) -> str:
     vrtx_opt  = [r for r in rows if r["vortex"].get("opted_in")]
     vrtx_ok   = sum(1 for r in vrtx_opt if r["vortex"].get("present") and not r["vortex"].get("stale"))
     arrow = f"  ·  arrow {arrow_ok}/{len(arrow_exp)}" if arrow_exp else ""
-    unavailable = sum(1 for r in rows for fmt in EXPORTED_FORMATS if r[fmt].get("unavailable"))
+    unavailable = sum(1 for r in rows for fmt in EXPORTED_FORMATS if r.get(fmt, {}).get("unavailable"))
     others = ""
     for fmt in _shown(rows):
         expected = [r for r in rows if r[fmt].get("expected")]
