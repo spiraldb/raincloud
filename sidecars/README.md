@@ -15,7 +15,7 @@ from the first of these that names one:
    `{"parquet": ["rs", "py"]}`),
 2. the catalog's `export_priority`,
 3. `RAINCLOUD_EXPORT_PRIORITY` (e.g. `rs,py`),
-4. the built-in order `py, rs, java, canonical` (`canonical` writes only the
+4. the built-in order `py, rs, java, cpp, canonical` (`canonical` writes only the
    canonical Arrow IPC file, so it is the last resort for the `arrow` format).
 
 A writer that is not installed falls through to the next one in that order, so a
@@ -139,6 +139,32 @@ read. A recipe's `write.row_group_size_rows` wins over
 `RAINCLOUD_ROW_GROUP_MAX_ROWS` in every lane: the sidecars never see the recipe,
 so the build passes that cap to them as `RAINCLOUD_ROW_GROUP_MAX_ROWS` in their
 environment.
+
+## The Nimble lane
+
+Nimble has one implementation, Meta's C++ (facebookincubator/nimble), with no releases or
+packages, so `nimble@cpp` is built from source. [`sidecars/nimble/build.sh`](nimble/build.sh)
+builds `raincloud-nimble`, a small codec over upstream Nimble's `VeloxWriter` and
+`VeloxReader`, inside a Nimble checkout at a pinned commit: upstream plus build fixes for a
+current Linux toolchain (a host `liburing.h` that Folly mistakes for its own, GCC 16's
+`<cstdint>`, two Velox libraries a minimal build links but never declares), kept on a branch
+of a Nimble fork. A cold build needs the network, about 4 GB on disk and several minutes, so
+CI does not build it and records the lane as absent.
+
+```bash
+RAINCLOUD_NIMBLE_SRC=/path/to/nimble sidecars/nimble/build.sh /srv/raincloud-tools/nimble
+export RAINCLOUD_NIMBLE_TOOL=/srv/raincloud-tools/nimble/bin/raincloud-nimble
+export RAINCLOUD_SIDECAR_NIMBLE_CPP="$RAINCLOUD_TOOLS_ROOT/rust/bin/nimble-write"
+export RAINCLOUD_READER_NIMBLE_CPP="$RAINCLOUD_TOOLS_ROOT/rust/bin/nimble-read"
+```
+
+The lane's sidecar binaries are the Rust crate's `nimble-write` and `nimble-read`: they
+stream the canonical into `raincloud-nimble` as an Arrow IPC stream and read the file back
+out of it the same way, then compare and report like every Rust lane. Arrow reaches Velox
+through the C data interface (nanoarrow 0.9.0 for the stream, Velox's Arrow bridge for the
+vectors). The writer runs at default `VeloxWriterOptions`; the reader reads the file as the
+type it records. Both binaries are part of the writer's toolchain (`sidecar_sha256` and
+`helper_sha256`), so rebuilding `raincloud-nimble` retries a recorded failure.
 
 ## How each lane judges a round trip
 

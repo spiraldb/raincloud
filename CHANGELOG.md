@@ -25,6 +25,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   sync marker, so a rebuild gives the same bytes. pyarrow has no Avro support, so
   `load(..., format="avro")` serves the file's `path()` and its readers raise
   `MissingDependency`.
+- **Nimble.** A dataset can be built as a Nimble file (`formats = ["nimble"]`,
+  `--format nimble`) by `nimble@cpp`: upstream Nimble's C++ writer and reader, built from
+  source by `sidecars/nimble/build.sh` into `raincloud-nimble` and driven by the Rust
+  sidecar's `nimble-write` / `nimble-read` over Arrow IPC streams. Served by path. A
+  sidecar cell may now name a helper binary (`_registry.SIDECAR_HELPERS`): it must be
+  installed for the cell to run, and its sha256 joins the writer's toolchain. The built-in
+  writer order is `py, rs, java, cpp, canonical`.
 - A format raincloud only serves by path loads like any other: `path()` works and
   `to_arrow()` / `batches()` / `dataset()` raise `MissingDependency`.
 

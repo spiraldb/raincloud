@@ -19,7 +19,10 @@ from ._registry import FORMATS, exporter_cells
 # RAINCLOUD_EXPORT_PRIORITY may name a writer this release does not ship. A
 # manifest is stricter: validate_manifest rejects a name with no export cell,
 # since there a typo would silently fall through to the next writer.
-DEFAULT_EXPORT_PRIORITY = ("py", "rs", "java", "canonical")
+#
+# `cpp` is Nimble's only writer (upstream's C++, `nimble@cpp`): every format has
+# a writer this order names, so a dataset needs no priority to export it.
+DEFAULT_EXPORT_PRIORITY = ("py", "rs", "java", "cpp", "canonical")
 
 
 def priority_shape_error(value, where: str) -> str | None:

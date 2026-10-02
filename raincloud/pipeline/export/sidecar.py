@@ -84,13 +84,21 @@ import tempfile
 from pathlib import Path
 
 from raincloud._cache import EXT, sha256_file
-from raincloud._registry import SIDECAR_EXPORTERS
+from raincloud._registry import SIDECAR_EXPORTERS, SIDECAR_HELPERS
 
 from ..spec import display_path, output_format_dir, row_group_cap, spec_field
 from . import register
 from .base import Compliance, ExportResult, slug_from_canonical
 from .bounded import export_timeout
 from .exporters import tmp_path
+
+
+def helper_path(helper: tuple[str, str]) -> Path | None:
+    """Where a sidecar's helper binary (`_registry.SIDECAR_HELPERS`) is: the
+    file its variable names, else the binary on PATH; None when neither is."""
+    binary, variable = helper
+    found = os.environ.get(variable) or shutil.which(binary)
+    return Path(found) if found and Path(found).is_file() else None
 
 
 def _env_var(cell_id: str) -> str:
@@ -149,11 +157,14 @@ class SidecarExporter:
         self.format_id = format_id
         self.binary = binary
         self.ext = ext or EXT[format_id]
+        self.helper = SIDECAR_HELPERS.get(cell_id)
 
     def unavailable(self) -> str | None:
-        if self._discover() is not None:
-            return None
-        return f"needs `{self.binary}` on PATH (or ${_env_var(self.cell_id)})"
+        if self._discover() is None:
+            return f"needs `{self.binary}` on PATH (or ${_env_var(self.cell_id)})"
+        if self.helper is not None and helper_path(self.helper) is None:
+            return f"needs `{self.helper[0]}` on PATH (or ${self.helper[1]})"
+        return None
 
     def out_path(self, slug: str) -> Path:
         return output_format_dir(slug, self.format_id) / f"{slug}.{self.ext}"
@@ -163,8 +174,10 @@ class SidecarExporter:
         hash (a sidecar reports no version of its own)."""
         exe = self._discover()
         found = shutil.which(exe) if exe else None
+        helper = helper_path(self.helper) if self.helper is not None else None
         return {"sidecar": self.binary,
-                **({"sidecar_sha256": sha256_file(Path(found))[:16]} if found else {})}
+                **({"sidecar_sha256": sha256_file(Path(found))[:16]} if found else {}),
+                **({"helper": self.helper[0], "helper_sha256": sha256_file(helper)[:16]} if helper else {})}
 
     def _discover(self) -> str | None:
         """Resolve the reference-writer executable, or `None` if absent."""

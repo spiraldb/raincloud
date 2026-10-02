@@ -712,7 +712,8 @@
               "parquet",
               "vortex",
               "orc",
-              "avro"
+              "avro",
+              "nimble"
             ]
           },
           "uniqueItems": true,
@@ -790,7 +791,8 @@
               "parquet",
               "vortex",
               "orc",
-              "avro"
+              "avro",
+              "nimble"
             ]
           },
           "additionalProperties": {

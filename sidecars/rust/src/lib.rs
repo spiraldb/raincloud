@@ -7,12 +7,16 @@
 //! (see `raincloud/pipeline/export/sidecar.py` for WRITE and
 //! `raincloud/pipeline/export/readers.py` for READ):
 //!
-//! * `parquet-write` / `vortex-write` / `orc-write` / `avro-write` — read the
-//!   canonical Arrow IPC file, write the target format, then SELF-VERIFY
-//!   (re-read, compare) and emit `{"roundtrip", "variant_faithful", "note"}`.
-//! * `parquet-read` / `vortex-read` / `orc-read` / `avro-read` — read an
-//!   artifact, compare to the canonical with LOGICAL equality, emit
+//! * `parquet-write` / `vortex-write` / `orc-write` / `avro-write` /
+//!   `nimble-write` — read the canonical Arrow IPC file, write the target
+//!   format, then SELF-VERIFY (re-read, compare) and emit
+//!   `{"roundtrip", "variant_faithful", "note"}`.
+//! * `parquet-read` / `vortex-read` / `orc-read` / `avro-read` / `nimble-read`
+//!   — read an artifact, compare to the canonical with LOGICAL equality, emit
 //!   `{"status", "note", "detail"}`.
+//!
+//! The Nimble pair drive `raincloud-nimble` (`sidecars/nimble`), upstream
+//! Nimble's C++ writer and reader, over Arrow IPC streams on its stdin/stdout.
 //!
 //! Every lane streams: both sides are read batch by batch and compared window
 //! by window, so memory does not grow with the table. Any failure, a panic
@@ -842,6 +846,195 @@ pub fn open_avro(input: &Path) -> Result<(SchemaRef, impl Iterator<Item = Result
         schema,
         reader.map(|b| b.context("arrow-avro: read a record batch")),
     ))
+}
+
+// ---------------------------------------------------------------------------
+// Nimble (upstream Nimble's VeloxWriter / VeloxReader, via raincloud-nimble)
+// ---------------------------------------------------------------------------
+
+/// Where `raincloud-nimble` is: this variable, else `raincloud-nimble` on PATH.
+pub const NIMBLE_TOOL_ENV: &str = "RAINCLOUD_NIMBLE_TOOL";
+
+fn nimble_tool() -> Result<std::path::PathBuf> {
+    if let Some(path) = std::env::var_os(NIMBLE_TOOL_ENV).filter(|p| !p.is_empty()) {
+        return Ok(path.into());
+    }
+    std::env::var_os("PATH")
+        .into_iter()
+        .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+        .map(|dir| dir.join("raincloud-nimble"))
+        .find(|candidate| candidate.is_file())
+        .with_context(|| format!("raincloud-nimble is not on PATH and {NIMBLE_TOOL_ENV} is unset"))
+}
+
+/// Start `raincloud-nimble <command> <path>`, its stderr collected on a thread
+/// so a chatty child cannot block on a full pipe.
+fn nimble(
+    command: &str,
+    path: &Path,
+    stdin: std::process::Stdio,
+    stdout: std::process::Stdio,
+) -> Result<(std::process::Child, std::thread::JoinHandle<String>)> {
+    let tool = nimble_tool()?;
+    let mut child = std::process::Command::new(&tool)
+        .arg(command)
+        .arg(path)
+        .stdin(stdin)
+        .stdout(stdout)
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .with_context(|| format!("start {}", tool.display()))?;
+    let mut stderr = child.stderr.take().context("raincloud-nimble's stderr")?;
+    let collected = std::thread::spawn(move || {
+        let mut text = String::new();
+        let _ = std::io::Read::read_to_string(&mut stderr, &mut text);
+        text
+    });
+    Ok((child, collected))
+}
+
+/// Why `raincloud-nimble` failed: its stderr, else its exit status.
+fn nimble_failure(status: std::process::ExitStatus, stderr: String) -> anyhow::Error {
+    let said = stderr.trim();
+    if said.is_empty() {
+        anyhow::anyhow!("raincloud-nimble {status}")
+    } else {
+        anyhow::anyhow!("{said}")
+    }
+}
+
+/// `data_type` as the stream to `raincloud-nimble` carries it: view types as
+/// their plain equivalents, which nanoarrow's IPC reader (the tool's side of
+/// the stream) does not read yet. Velox's Arrow bridge imports both as the same
+/// type (VARCHAR / VARBINARY), so what Nimble receives does not change.
+fn nimble_transport_type(data_type: &DataType) -> DataType {
+    let field = |f: &Arc<Field>| {
+        Arc::new(
+            f.as_ref()
+                .clone()
+                .with_data_type(nimble_transport_type(f.data_type())),
+        )
+    };
+    match data_type {
+        DataType::Utf8View => DataType::Utf8,
+        DataType::BinaryView => DataType::Binary,
+        DataType::List(f) => DataType::List(field(f)),
+        DataType::LargeList(f) => DataType::LargeList(field(f)),
+        DataType::FixedSizeList(f, n) => DataType::FixedSizeList(field(f), *n),
+        DataType::Map(f, sorted) => DataType::Map(field(f), *sorted),
+        DataType::Struct(fields) => DataType::Struct(fields.iter().map(field).collect()),
+        other => other.clone(),
+    }
+}
+
+/// Write `output` from the canonical with upstream Nimble's `VeloxWriter`, at
+/// its default options: the canonical's batches go to `raincloud-nimble write`
+/// as an Arrow IPC stream ([`nimble_transport_type`]). A type Velox or Nimble
+/// does not take is its error.
+pub fn write_nimble(output: &Path, canonical: &Path) -> Result<()> {
+    use std::process::Stdio;
+    let (canonical_schema, reader) = open_canonical(canonical)?;
+    let schema = Arc::new(Schema::new_with_metadata(
+        canonical_schema
+            .fields()
+            .iter()
+            .map(|f| {
+                f.as_ref()
+                    .clone()
+                    .with_data_type(nimble_transport_type(f.data_type()))
+            })
+            .collect::<Vec<_>>(),
+        canonical_schema.metadata().clone(),
+    ));
+    let (mut child, stderr) = nimble("write", output, Stdio::piped(), Stdio::null())?;
+    let stdin = child.stdin.take().context("raincloud-nimble's stdin")?;
+    // Streamed until the child stops reading: its exit status and stderr say why.
+    let streamed = (|| -> Result<()> {
+        let mut writer =
+            arrow_ipc::writer::StreamWriter::try_new(std::io::BufWriter::new(stdin), &schema)?;
+        for batch in canonical_batches(reader) {
+            let batch = batch?;
+            let columns = batch
+                .columns()
+                .iter()
+                .zip(schema.fields())
+                .map(|(column, field)| arrow_cast::cast(column, field.data_type()))
+                .collect::<std::result::Result<Vec<_>, _>>()?;
+            writer.write(&RecordBatch::try_new(schema.clone(), columns)?)?;
+        }
+        writer.finish()?;
+        Ok(())
+    })();
+    let status = child.wait().context("wait for raincloud-nimble")?;
+    let stderr = stderr.join().unwrap_or_default();
+    if !status.success() {
+        return Err(nimble_failure(status, stderr));
+    }
+    streamed.context("stream the canonical to raincloud-nimble")
+}
+
+/// The batches upstream Nimble's `VeloxReader` reads from `input`, through
+/// `raincloud-nimble read`.
+pub struct NimbleBatches {
+    reader: arrow_ipc::reader::StreamReader<std::io::BufReader<std::process::ChildStdout>>,
+    child: Option<(std::process::Child, std::thread::JoinHandle<String>)>,
+}
+
+impl NimbleBatches {
+    /// The child's verdict once its stream ends: an error if it failed.
+    fn finish(&mut self) -> Option<Result<RecordBatch>> {
+        let (mut child, stderr) = self.child.take()?;
+        let status = match child.wait() {
+            Ok(status) => status,
+            Err(e) => {
+                return Some(Err(
+                    anyhow::Error::new(e).context("wait for raincloud-nimble")
+                ))
+            }
+        };
+        let stderr = stderr.join().unwrap_or_default();
+        (!status.success()).then(|| Err(nimble_failure(status, stderr)))
+    }
+}
+
+impl Iterator for NimbleBatches {
+    type Item = Result<RecordBatch>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.child.as_ref()?;
+        match self.reader.next() {
+            Some(Ok(batch)) => Some(Ok(batch)),
+            Some(Err(e)) => Some(Err(self.finish().and_then(Result::err).unwrap_or_else(
+                || anyhow::Error::new(e).context("read raincloud-nimble's stream"),
+            ))),
+            None => self.finish(),
+        }
+    }
+}
+
+/// Open a Nimble file through `raincloud-nimble read`: its schema, and its batches.
+pub fn open_nimble(input: &Path) -> Result<(SchemaRef, NimbleBatches)> {
+    use std::process::Stdio;
+    let (mut child, stderr) = nimble("read", input, Stdio::null(), Stdio::piped())?;
+    let stdout = child.stdout.take().context("raincloud-nimble's stdout")?;
+    match arrow_ipc::reader::StreamReader::try_new(std::io::BufReader::new(stdout), None) {
+        Ok(reader) => Ok((
+            reader.schema(),
+            NimbleBatches {
+                reader,
+                child: Some((child, stderr)),
+            },
+        )),
+        Err(e) => {
+            let status = child.wait().context("wait for raincloud-nimble")?;
+            let stderr = stderr.join().unwrap_or_default();
+            if status.success() {
+                Err(anyhow::Error::new(e).context("read raincloud-nimble's stream"))
+            } else {
+                Err(nimble_failure(status, stderr))
+            }
+        }
+    }
 }
 
 /// True if any top-level field carries raincloud's VARIANT marker.

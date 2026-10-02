@@ -73,7 +73,8 @@ def main():
     run(["cargo", "build", *client, "--no-default-features", "--target-dir", no_vortex_target])
     run(["cargo", "build", "--locked", "--manifest-path", "sidecars/rust/Cargo.toml",
          "--bin", "parquet-read", "--bin", "vortex-read", "--bin", "parquet-write", "--bin", "vortex-write",
-         "--bin", "orc-read", "--bin", "orc-write", "--bin", "avro-read", "--bin", "avro-write"])
+         "--bin", "orc-read", "--bin", "orc-write", "--bin", "avro-read", "--bin", "avro-write",
+         "--bin", "nimble-read", "--bin", "nimble-write"])
     lib = target / "debug"
     for binary in ("parquet-read", "vortex-read", "parquet-write", "vortex-write", "orc-read", "orc-write",
                    "avro-read", "avro-write"):
@@ -121,7 +122,11 @@ def main():
                    RAINCLOUD_SIDECAR_ORC_RS=str(lib / "orc-write"),
                    RAINCLOUD_READER_ORC_RS=str(lib / "orc-read"),
                    RAINCLOUD_SIDECAR_AVRO_RS=str(lib / "avro-write"),
-                   RAINCLOUD_READER_AVRO_RS=str(lib / "avro-read"))
+                   RAINCLOUD_READER_AVRO_RS=str(lib / "avro-read"),
+                   # nimble@cpp also needs RAINCLOUD_NIMBLE_TOOL (sidecars/nimble/build.sh),
+                   # which this runner does not build: without it the lane is absent.
+                   RAINCLOUD_SIDECAR_NIMBLE_CPP=str(lib / "nimble-write"),
+                   RAINCLOUD_READER_NIMBLE_CPP=str(lib / "nimble-read"))
         run(["cargo", "test", *client])
         run(["cargo", "test", *client, "--no-default-features", "--target-dir", no_vortex_target])
         run([sys.executable, "-m", "pytest", *PYTEST_MODULES, "-q"])

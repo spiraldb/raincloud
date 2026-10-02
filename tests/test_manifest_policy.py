@@ -87,10 +87,10 @@ def test_priority_rejects_a_bad_shape():
 
 def test_export_cells_per_format():
     s = {"export": {"priority": {"parquet": ["rs", "py"]}}}
-    assert export_cells(s) == ["parquet@rs", "vortex@py", "orc@py", "avro@rs"]
-    assert export_cells({"export": {"priority": ["java", "py"]}}) == ["parquet@java", "vortex@py", "orc@py", "avro@java"]
+    assert export_cells(s) == ["parquet@rs", "vortex@py", "orc@py", "avro@rs", "nimble@cpp"]
+    assert export_cells({"export": {"priority": ["java", "py"]}}) == ["parquet@java", "vortex@py", "orc@py", "avro@java", "nimble@cpp"]
     assert export_cells({}, {"schema_version": 2, "export_priority": {"vortex": ["rs"]}}) == \
-        ["parquet@py", "vortex@rs", "orc@py", "avro@rs"]
+        ["parquet@py", "vortex@rs", "orc@py", "avro@rs", "nimble@cpp"]
 
 
 def test_resolve_export_cell_skips_uninstalled_and_unknown():
@@ -112,7 +112,7 @@ def test_sf100_specs_prefer_rs_for_parquet_only():
     assert len(sf100) == 32
     for d in sf100:
         assert d["export"]["priority"] == {"parquet": ["rs", "py"]}, d["slug"]
-        assert export_cells(d, m) == ["parquet@rs", "vortex@py", "orc@py", "avro@rs"]
+        assert export_cells(d, m) == ["parquet@rs", "vortex@py", "orc@py", "avro@rs", "nimble@cpp"]
 
 
 # ---------- export.formats is the one v2 declaration ----------
@@ -400,13 +400,20 @@ def test_empty_priority_is_refused_everywhere():
 
 
 def test_a_priority_naming_no_writer_for_a_format_falls_back_to_the_default():
-    assert export_cells({"export": {"priority": ["java"]}}) == ["parquet@java", "vortex@py", "orc@py", "avro@java"]
+    assert export_cells({"export": {"priority": ["java"]}}) == ["parquet@java", "vortex@py", "orc@py", "avro@java", "nimble@cpp"]
 
 
 def test_format_sets_derive_from_the_writers():
     from raincloud._formats import ALL_FORMATS, EXPORTED_FORMATS
-    assert set(EXPORTED_FORMATS) == {base for base in WRITERS if base != "arrow"} == {"parquet", "vortex", "orc", "avro"}
+    assert set(EXPORTED_FORMATS) == {base for base in WRITERS if base != "arrow"} == {"parquet", "vortex", "orc", "avro", "nimble"}
     assert set(ALL_FORMATS) == set(WRITERS)
+
+
+def test_the_built_in_order_names_a_writer_for_every_format():
+    """A dataset with no priority still exports every format it offers."""
+    from raincloud._formats import EXPORTED_FORMATS
+    for fmt in EXPORTED_FORMATS:
+        assert set(WRITERS[fmt]) & set(DEFAULT_EXPORT_PRIORITY), fmt
 
 
 def test_every_artifact_format_is_declared_once():

@@ -136,7 +136,7 @@ reject it in a v2 manifest, while a released v2 catalog that still carries
 `convert.vortex: false` (and no `export.formats`) keeps reading as Parquet-only. A
 format is one file whichever writer makes it. The writer is the first *installed* one
 in `export.priority`, looked up in the spec, then the catalog's `export_priority`, then
-`RAINCLOUD_EXPORT_PRIORITY`, then the built-in `py, rs, java`. The spec and catalog
+`RAINCLOUD_EXPORT_PRIORITY`, then the built-in `py, rs, java, cpp`. The spec and catalog
 levels take a list, which applies to every format and so must name a writer for each
 one the dataset exports, or a map from format to list (`{"parquet": ["rs", "py"]}`);
 a format the map leaves out falls through to the next level. The machine level is a
@@ -263,7 +263,7 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_ROW_GROUP_TARGET_BYTES` | memory guard: decoded Arrow bytes buffered for one row group | 512 MiB |
 | `RAINCLOUD_ROW_GROUP_PROBE_ROWS` | rows the Python Parquet writer samples to size its groups (must be > 0) | 262,144 |
 | `RAINCLOUD_BATCH_ROWS` / `RAINCLOUD_BATCH_BYTES` | batch bounds in the streaming ingestion paths (memory only, NOT the row-group size) | 4096 rows / 16 MiB |
-| `RAINCLOUD_EXPORT_PRIORITY` | machine writer preference, e.g. `rs,py` | unset (`py, rs, java`) |
+| `RAINCLOUD_EXPORT_PRIORITY` | machine writer preference, e.g. `rs,py` | unset (`py, rs, java, cpp`) |
 | `RAINCLOUD_EXPORT_TIMEOUT` | ceiling on one export: an in-process writer (run in a child process) or a sidecar writer; hitting it records the format unavailable | 6 h (`0` disables) |
 | `RAINCLOUD_EXPORT_MEMORY` | ceiling on one in-process export's resident memory (bytes); the parent stops a writer over it and records the format unavailable | half of physical memory (`0` disables) |
 | `RAINCLOUD_SIDECAR_TIMEOUT` | ceiling on one sidecar reader call (sidecar writers use `RAINCLOUD_EXPORT_TIMEOUT`) | 30 min (`0` disables) |
