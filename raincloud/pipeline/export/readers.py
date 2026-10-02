@@ -361,19 +361,16 @@ class SidecarReader:
     """
 
     def __init__(self, reader_id: str, formats: set[str], binary: str) -> None:
-        from raincloud._registry import SIDECAR_HELPERS
         self.reader_id = reader_id
         self.formats = set(formats)
         self.binary = binary
-        self.helper = SIDECAR_HELPERS.get(reader_id)
 
     def _discover(self) -> str | None:
         return os.environ.get(_reader_env_var(self.reader_id)) or shutil.which(self.binary)
 
     def read_conformance(self, artifact: Path, canonical: Path) -> Verdict:
-        from .sidecar import helper_path
         exe = self._discover()
-        if exe is None or (self.helper is not None and helper_path(self.helper) is None):
+        if exe is None:
             # The ONLY benign skip: the reader was never invoked, so it says
             # nothing about the artifact. Everything past this point RAN, so any
             # `skip` it yields is a measured verdict — `_read_verdict_report`

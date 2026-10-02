@@ -2,10 +2,13 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build raincloud-nimble, the codec behind the `nimble@cpp` lane, inside a pinned Nimble
-# checkout. Nimble has no releases and no packages, so it is built from source: Nimble at the
-# commit below (upstream plus host-compatibility build fixes), its Velox and OpenZL submodules,
-# the Folly and other dependencies Velox fetches, and four small libraries bootstrapped here.
+# Build the `nimble@cpp` lane's binaries, raincloud-export-nimble-cpp and
+# raincloud-read-nimble-cpp, inside a pinned Nimble checkout. Nimble has no releases and no
+# packages, so it is built from source: Nimble at the commit below (upstream plus
+# host-compatibility build fixes), its Velox and OpenZL submodules, the Folly and other
+# dependencies Velox fetches, and four small libraries bootstrapped here. The binaries link
+# raincloud_nimble_ffi (sidecars/rust/nimble-ffi), the Rust library that runs the sidecar
+# contract, built here too.
 #
 #   RAINCLOUD_NIMBLE_SRC=<nimble checkout> sidecars/nimble/build.sh <ROOT>
 #
@@ -16,12 +19,14 @@
 #   downloads/  the pinned tarballs, sha256-verified
 #   bootstrap/  their sources and build trees      deps/   their install prefix
 #   nimble/     the Nimble build tree (Velox's fetched dependencies land in its _deps/)
-#   bin/        raincloud-nimble and raincloud-nimble.provenance, written last
+#   cargo/      the Rust library's build tree
+#   bin/        the two binaries and nimble-cpp.provenance, written last
 #
-# A cold build needs the network and takes several minutes (about 7 at 8 jobs). Other
+# A cold build needs the network, cargo and several minutes (about 8 at 8 jobs). Other
 # environment: RAINCLOUD_NIMBLE_JOBS (default: half the CPUs); RAINCLOUD_BUILD_LOCK, a file
 # the heavy steps take a shared flock on (waiting up to an hour), for a machine whose users
-# coordinate long jobs that way (unset: no lock). Point RAINCLOUD_NIMBLE_TOOL at ROOT/bin/raincloud-nimble to use the result.
+# coordinate long jobs that way (unset: no lock). Point RAINCLOUD_SIDECAR_NIMBLE_CPP and RAINCLOUD_READER_NIMBLE_CPP at the two
+# binaries in ROOT/bin to use them.
 set -euo pipefail
 
 # The Nimble commit: upstream acead744 (2026-08-07) and the build fixes on top of it. The
@@ -56,7 +61,7 @@ quiet() {
   [[ $status -eq 0 ]] || die "exit status $status from: $*"
 }
 
-for tool in cmake ninja cc c++ git curl sha256sum tar xz; do
+for tool in cmake ninja cc c++ cargo pkg-config git curl sha256sum tar xz; do
   command -v "$tool" >/dev/null || die "missing prerequisite: $tool"
 done
 [[ $# -eq 1 && -n ${RAINCLOUD_NIMBLE_SRC:-} ]] ||
@@ -114,6 +119,13 @@ for dep in "${deps[@]}"; do
   echo "$key" >"$stamp"
 done
 
+step "building raincloud_nimble_ffi"
+# Against the host's libzstd, which the C++ side links too: one zstd in the binary.
+ffi=$root/cargo/release/libraincloud_nimble_ffi.a
+quiet env ZSTD_SYS_USE_PKG_CONFIG=1 CARGO_TARGET_DIR="$root/cargo" \
+  cargo build --release --locked --manifest-path "$repo/sidecars/rust/Cargo.toml" -p raincloud-nimble-ffi
+[[ -f $ffi ]] || die "the cargo build did not produce $ffi"
+
 step "configuring Nimble into $root/nimble"
 quiet cmake -S "$src" -B "$root/nimble" -G Ninja -DCMAKE_BUILD_TYPE=Release "${compilers[@]}" \
   -DCMAKE_PREFIX_PATH="$root/deps" \
@@ -121,23 +133,26 @@ quiet cmake -S "$src" -B "$root/nimble" -G Ninja -DCMAKE_BUILD_TYPE=Release "${c
   -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -Dglog_SOURCE=BUNDLED \
   -DCMAKE_FIND_PACKAGE_TARGETS_GLOBAL=TRUE -DCMAKE_DISABLE_FIND_PACKAGE_LibUring=TRUE \
   -DVELOX_MONO_LIBRARY=OFF -DBUILD_SHARED_LIBS=OFF \
-  -DCMAKE_PROJECT_Nimble_INCLUDE="$here/CMakeLists.txt"
+  -DCMAKE_PROJECT_Nimble_INCLUDE="$here/CMakeLists.txt" -DRAINCLOUD_NIMBLE_FFI="$ffi"
 
-step "building raincloud-nimble"
-rm -f "$root/bin/raincloud-nimble" "$root/bin/raincloud-nimble.provenance"
-quiet cmake --build "$root/nimble" --target raincloud-nimble -j "$jobs"
-tool=$root/nimble/raincloud-nimble
-[[ -x $tool ]] || die "the build did not produce $tool"
-cp "$tool" "$root/bin/raincloud-nimble.part"
-mv "$root/bin/raincloud-nimble.part" "$root/bin/raincloud-nimble"
+binaries=(raincloud-export-nimble-cpp raincloud-read-nimble-cpp)
+step "building ${binaries[*]}"
+rm -f "$root/bin/nimble-cpp.provenance"
+for binary in "${binaries[@]}"; do rm -f "$root/bin/$binary"; done
+quiet cmake --build "$root/nimble" --target "${binaries[@]}" -j "$jobs"
+for binary in "${binaries[@]}"; do
+  [[ -x $root/nimble/$binary ]] || die "the build did not produce $root/nimble/$binary"
+  cp "$root/nimble/$binary" "$root/bin/$binary.part"
+  mv "$root/bin/$binary.part" "$root/bin/$binary"
+done
 {
   echo "nimble $nimble_pin"
   echo "velox $velox_pin"
   echo "openzl $openzl_pin"
   for dep in "${deps[@]}"; do read -r name version _ _ <<<"$dep"; echo "$name $version"; done
-  echo "nanoarrow 0.9.0"
   echo "compiler $(c++ --version | head -n 1)"
-  echo "sources $(cd "$here" && sha256sum raincloud_nimble.cpp CMakeLists.txt build.sh | sha256sum | cut -c1-16)"
-  echo "sha256 $(sha256sum "$root/bin/raincloud-nimble" | cut -d' ' -f1)"
-} >"$root/bin/raincloud-nimble.provenance"
-echo "built $root/bin/raincloud-nimble"
+  echo "rust $(rustc --version)"
+  echo "sources $(cd "$here" && sha256sum ./*.cpp ./*.h CMakeLists.txt build.sh | sha256sum | cut -c1-16)"
+  for binary in "${binaries[@]}"; do echo "sha256 $binary $(sha256sum "$root/bin/$binary" | cut -d' ' -f1)"; done
+} >"$root/bin/nimble-cpp.provenance"
+echo "built ${binaries[*]} in $root/bin"

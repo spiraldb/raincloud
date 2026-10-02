@@ -156,8 +156,8 @@ environment.
 
 Nimble has one implementation, Meta's C++ (facebookincubator/nimble), with no releases or
 packages, so `nimble@cpp` is built from source. [`sidecars/nimble/build.sh`](nimble/build.sh)
-builds `raincloud-nimble`, a small codec over upstream Nimble's `VeloxWriter` and
-`VeloxReader`, inside a Nimble checkout at a pinned commit: upstream plus build fixes for a
+builds the lane's two binaries, `raincloud-export-nimble-cpp` and `raincloud-read-nimble-cpp`,
+inside a Nimble checkout at a pinned commit: upstream plus build fixes for a
 current Linux toolchain (a host `liburing.h` that Folly mistakes for its own, GCC 16's
 `<cstdint>`, two Velox libraries a minimal build links but never declares), kept on a branch
 of a Nimble fork. A cold build needs the network, about 4 GB on disk and several minutes, so
@@ -165,18 +165,17 @@ CI does not build it and records the lane as absent.
 
 ```bash
 RAINCLOUD_NIMBLE_SRC=/path/to/nimble sidecars/nimble/build.sh /srv/raincloud-tools/nimble
-export RAINCLOUD_NIMBLE_TOOL=/srv/raincloud-tools/nimble/bin/raincloud-nimble
-export RAINCLOUD_SIDECAR_NIMBLE_CPP="$RAINCLOUD_TOOLS_ROOT/rust/bin/nimble-write"
-export RAINCLOUD_READER_NIMBLE_CPP="$RAINCLOUD_TOOLS_ROOT/rust/bin/nimble-read"
+export RAINCLOUD_SIDECAR_NIMBLE_CPP=/srv/raincloud-tools/nimble/bin/raincloud-export-nimble-cpp
+export RAINCLOUD_READER_NIMBLE_CPP=/srv/raincloud-tools/nimble/bin/raincloud-read-nimble-cpp
 ```
 
-The lane's sidecar binaries are the Rust crate's `nimble-write` and `nimble-read`: they
-stream the canonical into `raincloud-nimble` as an Arrow IPC stream and read the file back
-out of it the same way, then compare and report like every Rust lane. Arrow reaches Velox
-through the C data interface (nanoarrow 0.9.0 for the stream, Velox's Arrow bridge for the
-vectors). The writer runs at default `VeloxWriterOptions`; the reader reads the file as the
-type it records. Both binaries are part of the writer's toolchain (`sidecar_sha256` and
-`helper_sha256`), so rebuilding `raincloud-nimble` retries a recorded failure.
+The binaries are C++ over upstream Nimble's `VeloxWriter` (default options) and
+`VeloxReader` (the file read as the type it records), and they link `nimble-ffi`, a
+member of the Rust crate, which runs the sidecar contract as every Rust lane does: it
+reads the canonical with arrow-rs, hands its batches to the writer in memory through the
+Arrow C stream interface, takes the read-back the same way, compares and reports. Velox's
+own Arrow bridge imports and exports the batches; nothing converts a column. The build
+links both halves against the host's libzstd, so the binary carries one zstd.
 
 ## How each lane judges a round trip
 

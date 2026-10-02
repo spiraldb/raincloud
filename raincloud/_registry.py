@@ -105,16 +105,6 @@ SIDECAR_EXPORTERS: dict[str, tuple[str, str]] = {
     "nimble@cpp": ("nimble", "raincloud-export-nimble-cpp"),
 }
 
-# A sidecar cell whose binary drives another program, as cell_id -> (helper
-# binary, the variable that names it, else PATH). The cell is unavailable
-# without it, and the helper's sha256 is part of the writer's toolchain: it is
-# the implementation measured. `nimble@cpp`'s sidecar (sidecars/rust) pipes
-# Arrow through raincloud-nimble, upstream Nimble's C++ writer and reader
-# (sidecars/nimble).
-SIDECAR_HELPERS: dict[str, tuple[str, str]] = {
-    "nimble@cpp": ("raincloud-nimble", "RAINCLOUD_NIMBLE_TOOL"),
-}
-
 # Custom fetchers, as "<module>:<attr>" under `raincloud.pipeline`. A recipe
 # names its fetcher in `fetch.notes`, a free-text field that also serves as
 # human notes: only a name allow-listed here runs, and it becomes the recipe's
