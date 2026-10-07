@@ -66,6 +66,18 @@ use vortex::io::session::RuntimeSessionExt;
 use vortex::session::VortexSession;
 use vortex::VortexSessionDefault;
 
+/// The write settings of the other formats (`spec.FORMAT_SETTINGS`).
+const ORC_COMPRESSION: &str = "RAINCLOUD_ORC_COMPRESSION";
+const ORC_COMPRESSION_STRATEGY: &str = "RAINCLOUD_ORC_COMPRESSION_STRATEGY";
+const ORC_STRIPE_BYTES: &str = "RAINCLOUD_ORC_STRIPE_BYTES";
+const ORC_COMPRESSION_BLOCK_BYTES: &str = "RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES";
+const AVRO_COMPRESSION: &str = "RAINCLOUD_AVRO_COMPRESSION";
+const AVRO_COMPRESSION_LEVEL: &str = "RAINCLOUD_AVRO_COMPRESSION_LEVEL";
+const AVRO_BLOCK_BYTES: &str = "RAINCLOUD_AVRO_BLOCK_BYTES";
+const VORTEX_COMPACT: &str = "RAINCLOUD_VORTEX_COMPACT";
+const VORTEX_ROW_BLOCK_ROWS: &str = "RAINCLOUD_VORTEX_ROW_BLOCK_ROWS";
+const VORTEX_DATA_BLOCK_BYTES: &str = "RAINCLOUD_VORTEX_DATA_BLOCK_BYTES";
+
 /// raincloud's top-level VARIANT marker (see `discovery._is_variant_field`).
 const VARIANT_MARKER: &str = "__variant_type";
 
@@ -264,6 +276,46 @@ fn switch(var: &str, raw: Option<&OsStr>) -> Result<Option<bool>> {
         "1" | "true" | "yes" | "on" => Ok(Some(true)),
         "0" | "false" | "no" | "off" => Ok(Some(false)),
         _ => bail!("{var}='{text}' is not a switch; give 1 or 0 (true/false, yes/no, on/off)"),
+    }
+}
+
+/// A setting that names one of `choices` (`spec._env_choice`): unset or empty
+/// -> `None`; otherwise one of them, in any case.
+fn choice(var: &str, choices: &[&'static str]) -> Result<Option<&'static str>> {
+    let Some(raw) = std::env::var_os(var) else {
+        return Ok(None);
+    };
+    let text = raw
+        .to_str()
+        .map(|s| s.trim_matches(is_knob_space).to_ascii_lowercase());
+    match text.as_deref() {
+        Some("") => Ok(None),
+        Some(value) => match choices.iter().find(|c| **c == value) {
+            Some(found) => Ok(Some(found)),
+            None => bail!("{var}={raw:?} is not one of {}", choices.join(", ")),
+        },
+        None => bail!("{var}={raw:?} is not valid UTF-8"),
+    }
+}
+
+/// A size or count setting from the environment, as [`ParquetOptions`] reads
+/// its own: unset -> `None` (the library's default); empty or 0 -> no limit.
+fn setting_count(var: &str) -> Result<Option<usize>> {
+    std::env::var_os(var)
+        .map(|raw| knob(var, Some(&raw), 0, (1 << 31) - 1))
+        .transpose()
+}
+
+/// Refuse a set setting this lane's library has no way to honour.
+fn refuse_set<T: std::fmt::Display>(
+    lane: &str,
+    var: &str,
+    value: Option<T>,
+    why: &str,
+) -> Result<()> {
+    match value {
+        Some(value) => bail!("{lane} cannot honour {var}={value}: {why}"),
+        None => Ok(()),
     }
 }
 
@@ -847,7 +899,9 @@ fn vortex_storage_schema(schema: &Schema) -> SchemaRef {
 }
 
 /// Stream the canonical into a `.vortex` file with Vortex's default write
-/// strategy — chunking, statistics and compression — and the schema
+/// strategy — chunking, statistics and compression — unless a Vortex write
+/// setting asks otherwise (`RAINCLOUD_VORTEX_COMPACT`, `_ROW_BLOCK_ROWS`,
+/// `_DATA_BLOCK_BYTES`), and the schema
 /// [`vortex_storage_schema`] gives, as `vortex@py` (`vortex.io.write`) does,
 /// so the artifact is the one a build would publish, not merely one that
 /// round-trips.
@@ -870,8 +924,34 @@ pub fn write_vortex(output: &Path, canonical: &Path) -> Result<()> {
         let mut file = tokio::fs::File::create(output)
             .await
             .with_context(|| format!("create vortex {}", output.display()))?;
-        session
-            .write_options()
+        // The Vortex write settings (`spec.FORMAT_SETTINGS["vortex"]`). Unset is the
+        // default strategy; set, the strategy vortex@py builds, BtrBlocks limited to
+        // the encodings the session's editions allow, compact on request.
+        let compact = switch(VORTEX_COMPACT, std::env::var_os(VORTEX_COMPACT).as_deref())?;
+        let row_block_rows = setting_count(VORTEX_ROW_BLOCK_ROWS)?;
+        let data_block_bytes = setting_count(VORTEX_DATA_BLOCK_BYTES)?;
+        let mut options = session.write_options();
+        if compact.is_some() || row_block_rows.is_some() || data_block_bytes.is_some() {
+            use vortex::editions::{ComponentKind, EditionSessionExt};
+            let allowed = session
+                .enabled_component_ids(ComponentKind::Array)
+                .into_iter()
+                .collect();
+            let mut compressor = vortex::compressor::BtrBlocksCompressorBuilder::default();
+            if compact == Some(true) {
+                compressor = compressor.with_compact();
+            }
+            let mut strategy = vortex::file::WriteStrategyBuilder::default()
+                .with_btrblocks_builder(compressor.retain_allowed_encodings(&allowed));
+            if let Some(rows) = row_block_rows {
+                strategy = strategy.with_row_block_size(rows);
+            }
+            if let Some(bytes) = data_block_bytes {
+                strategy = strategy.with_data_block_target_bytes(Some(bytes as u64));
+            }
+            options = options.with_strategy(strategy.build());
+        }
+        options
             .write(&mut file, stream)
             .await
             .context("write vortex file")?;
@@ -954,9 +1034,9 @@ fn orc_storage_type(data_type: &DataType) -> DataType {
     }
 }
 
-/// Write `output` from the canonical with orc-rust's `ArrowWriter`: zstd, since
-/// the API makes the caller pick a codec (its default is none), and its own
-/// default stripe and batch sizes. Columns are first expanded to
+/// Write `output` from the canonical with orc-rust's `ArrowWriter` and the ORC
+/// write settings: unset, zstd, since the API makes the caller pick a codec (its
+/// default is none), and its own default stripe and compression block sizes. Columns are first expanded to
 /// [`orc_storage_type`]. orc-rust panics on a type it does not write
 /// (`unimplemented!("unsupported datatype")`) -- 0.9.0 writes no decimal, so a
 /// uint64 column fails here (measured); [`run_writer`] reports that panic as
@@ -975,9 +1055,33 @@ pub fn write_orc(output: &Path, canonical: &Path) -> Result<()> {
             .collect::<Vec<_>>(),
         canonical_schema.metadata().clone(),
     ));
-    let file = File::create(output).with_context(|| format!("create {}", output.display()))?;
-    let mut writer = orc_rust::ArrowWriterBuilder::new(file, schema.clone())
-        .with_compression(orc_rust::compression::CompressionType::Zstd)
+    // The ORC write settings (`spec.FORMAT_SETTINGS["orc"]`); unset, zstd.
+    use orc_rust::compression::CompressionType;
+    refuse_set(
+        "orc@rs",
+        ORC_COMPRESSION_STRATEGY,
+        choice(ORC_COMPRESSION_STRATEGY, &["speed", "compression"])?,
+        "orc-rust has no compression strategy",
+    )?;
+    let mut builder = orc_rust::ArrowWriterBuilder::new(
+        File::create(output).with_context(|| format!("create {}", output.display()))?,
+        schema.clone(),
+    );
+    let codec = choice(ORC_COMPRESSION, &["zstd", "snappy", "zlib", "lz4", "none"])?;
+    builder = match codec.unwrap_or("zstd") {
+        "zstd" => builder.with_compression(CompressionType::Zstd),
+        "snappy" => builder.with_compression(CompressionType::Snappy),
+        "zlib" => builder.with_compression(CompressionType::Zlib),
+        "lz4" => builder.with_compression(CompressionType::Lz4),
+        _ => builder,
+    };
+    if let Some(bytes) = setting_count(ORC_STRIPE_BYTES)? {
+        builder = builder.with_stripe_byte_size(bytes);
+    }
+    if let Some(bytes) = setting_count(ORC_COMPRESSION_BLOCK_BYTES)? {
+        builder = builder.with_compression_block_size(bytes);
+    }
+    let mut writer = builder
         .try_build()
         .context("orc-rust: start the ORC file")?;
     for batch in canonical_batches(reader) {
@@ -1112,15 +1216,47 @@ fn fix_sync_marker(path: &Path, drawn: &[u8; 16]) -> Result<()> {
     Ok(())
 }
 
-/// Write `output` from the canonical with arrow-avro's `AvroWriter`: zstd, one
-/// block per canonical batch, then [`AVRO_SYNC_MARKER`] in place of its random
+/// Write `output` from the canonical with arrow-avro's `AvroWriter`: the Avro
+/// write settings' codec (unset, zstd), one block per canonical batch, then [`AVRO_SYNC_MARKER`] in place of its random
 /// sync marker, for a reproducible file. A type arrow-avro does not write is
 /// its error; nothing here converts a column.
 pub fn write_avro(output: &Path, canonical: &Path) -> Result<()> {
     let (schema, reader) = open_canonical(canonical)?;
+    // The Avro write settings (`spec.FORMAT_SETTINGS["avro"]`); unset, zstd.
+    let level = std::env::var_os(AVRO_COMPRESSION_LEVEL)
+        .and_then(|raw| {
+            raw.to_str()
+                .map(|s| s.trim_matches(is_knob_space).to_string())
+        })
+        .filter(|s| !s.is_empty());
+    refuse_set(
+        "avro@rs",
+        AVRO_COMPRESSION_LEVEL,
+        level,
+        "arrow-avro has no compression level",
+    )?;
+    refuse_set(
+        "avro@rs",
+        AVRO_BLOCK_BYTES,
+        setting_count(AVRO_BLOCK_BYTES)?,
+        "arrow-avro writes one block per batch, with no block size",
+    )?;
+    let codec = match choice(
+        AVRO_COMPRESSION,
+        &["zstd", "deflate", "snappy", "bzip2", "xz", "none"],
+    )?
+    .unwrap_or("zstd")
+    {
+        "zstd" => Some(CompressionCodec::ZStandard),
+        "deflate" => Some(CompressionCodec::Deflate),
+        "snappy" => Some(CompressionCodec::Snappy),
+        "bzip2" => Some(CompressionCodec::Bzip2),
+        "xz" => Some(CompressionCodec::Xz),
+        _ => None,
+    };
     let file = File::create(output).with_context(|| format!("create {}", output.display()))?;
     let mut writer = AvroWriterBuilder::new(schema.as_ref().clone())
-        .with_compression(Some(CompressionCodec::ZStandard))
+        .with_compression(codec)
         .build::<_, AvroOcfFormat>(std::io::BufWriter::new(file))
         .context("arrow-avro: start the Avro file")?;
     let drawn = *writer.sync_marker().context("arrow-avro: no sync marker")?;

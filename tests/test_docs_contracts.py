@@ -371,6 +371,11 @@ def test_agents_parquet_settings_default_to_each_writers_own(monkeypatch):
         row = next(line for line in table.splitlines() if line.startswith(f"| `{var}`"))
         assert "unset (each writer's own" in row, row
     assert spec.parquet_page_options().chosen() == {}
+    for settings in spec.FORMAT_SETTINGS.values():
+        for _, var, _ in settings:
+            monkeypatch.delenv(var, raising=False)
+            row = next(line for line in table.splitlines() if line.startswith(f"| `{var}`"))
+            assert "unset (" in row, row
 
 
 def test_hydrate_bypass_disables_every_layer_as_documented():

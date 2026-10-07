@@ -87,9 +87,9 @@ parquet = { version = "=59.2", features = ["variant_experimental"] }
 orc-rust = { version = "=0.9.0", default-features = false }
 
 # Avro object container files via arrow-avro, released with arrow-rs and pinned
-# with it (=59.2). Only the zstd codec is needed: the writer uses it, and a
-# file of another codec is not one raincloud writes.
-arrow-avro = { version = "=59.2", default-features = false, features = ["zstd"] }
+# with it (=59.2). Every codec Avro defines, so RAINCLOUD_AVRO_COMPRESSION can
+# name any of them (zstd unset).
+arrow-avro = { version = "=59.2", default-features = false, features = ["zstd", "deflate", "snappy", "bzip2", "xz"] }
 
 # CLI + JSON report + async runtime + stream adapter + error plumbing.
 clap = { version = "4.5", features = ["derive"] }

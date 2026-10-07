@@ -24,6 +24,14 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   Parquet unavailable rather than writing something else (`sidecars/README.md` tabulates
   which writer honours what).
 
+- **ORC, Avro and Vortex write settings.** The same kind of install settings for the
+  other formats, given alike to every writer of the format and refused by a writer whose
+  library cannot honour them: `RAINCLOUD_ORC_COMPRESSION`, `_COMPRESSION_STRATEGY`,
+  `_STRIPE_BYTES`, `_COMPRESSION_BLOCK_BYTES`; `RAINCLOUD_AVRO_COMPRESSION` (every Avro
+  codec: `avro@rs` now builds arrow-avro's deflate, snappy, bzip2 and xz too, and
+  `avro@java` ships Avro's optional snappy-java 1.1.10.8 and xz 1.10), `_COMPRESSION_LEVEL`,
+  `_BLOCK_BYTES`; `RAINCLOUD_VORTEX_COMPACT`, `_ROW_BLOCK_ROWS`, `_DATA_BLOCK_BYTES`. Unset,
+  each writer writes what it did before.
 - **ORC.** A dataset can be built as ORC (`formats = ["orc"]`, or
   `raincloud build --format orc`) and loaded with `format="orc"`; `auto` never picks
   it. Two writers: `orc@py`, pyarrow's Apache ORC C++ library, and `orc@rs`,

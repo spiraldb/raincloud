@@ -40,6 +40,8 @@ from raincloud._cache import sha256_file
 from ..discovery import VARIANT_EXT, has_variant
 from ..spec import (
     PARQUET_PAGE_INDEX_COLUMNS,
+    VORTEX_DATA_BLOCK_BYTES,
+    VORTEX_ROW_BLOCK_ROWS,
     ParquetOptions,
     display_path,
     parquet_options,
@@ -50,6 +52,7 @@ from ..spec import (
     row_group_probe_rows,
     row_group_target_bytes,
     row_group_target_encoded_bytes,
+    write_settings,
 )
 from . import register
 from .base import Compliance, ExportResult, slug_from_canonical
@@ -381,6 +384,15 @@ class VortexExporter:
             raise BuildToolingMissing(f"{self.cell_id} {missing}")
         import vortex.io as vxio
 
+        settings = write_settings("vortex")
+        for field, var in (("row_block_rows", VORTEX_ROW_BLOCK_ROWS), ("data_block_bytes", VORTEX_DATA_BLOCK_BYTES)):
+            if settings[field] is not None:
+                raise UnsupportedOption(f"vortex@py cannot honour {var}={settings[field]}: vortex-data's "
+                                        "Python writer has no block size setting")
+        # Unset is `vxio.write`, the default options; compact is BtrBlocks' compact encodings.
+        write = (vxio.VortexWriteOptions.compact().write if settings["compact"]
+                 else vxio.VortexWriteOptions.default().write if settings["compact"] is False else vxio.write)
+
         # `with` closes the reader (RecordBatchFileReader is a context manager,
         # not a .close()-able) — vxio.write consumes the batch generator
         # synchronously inside the block, so the reader is done before exit.
@@ -411,7 +423,7 @@ class VortexExporter:
             tmp = tmp_path(dest)
             rbr = pa.RecordBatchReader.from_batches(schema, batches())
             try:
-                vxio.write(rbr, str(tmp))
+                write(rbr, str(tmp))
                 tmp.replace(dest)
             finally:
                 tmp.unlink(missing_ok=True)
@@ -460,12 +472,26 @@ def orc_storage_type(dtype: pa.DataType) -> pa.DataType:
     return dtype
 
 
+def _orc_writer_options(settings: dict) -> dict:
+    """pyarrow's `ORCWriter` arguments for the ORC write settings; an unset one
+    is left out, so pyarrow's default applies (zstd for the codec)."""
+    codec = settings["compression"] or "zstd"
+    kwargs = {"compression": "uncompressed" if codec == "none" else codec}
+    for name, value in (("compression_strategy", settings["compression_strategy"]),
+                        ("stripe_size", settings["stripe_bytes"]),
+                        ("compression_block_size", settings["compression_block_bytes"])):
+        if value is not None:
+            kwargs[name] = value
+    return kwargs
+
+
 class OrcExporter:
     """pyarrow ORC writer, the Apache ORC C++ library -- the `orc@py` cell.
 
-    Streams the canonical's stored batches into one `ORCWriter`, which cuts
-    stripes at its own default size. zstd, since the API makes the caller pick
-    a codec (its default is none). Unsigned integers and view types are widened
+    Streams the canonical's stored batches into one `ORCWriter`, with the ORC
+    write settings (`spec.FORMAT_SETTINGS["orc"]`): unset, zstd, since the API
+    makes the caller pick a codec (its default is none), and the library's own
+    stripe and compression block sizes and strategy. Unsigned integers and view types are widened
     first (`orc_storage_type`); any other type the library does not write
     (dictionaries, time, durations, ...) raises from it, and the build records
     ORC unavailable for that dataset with its error.
@@ -494,7 +520,7 @@ class OrcExporter:
             schema = reader.schema
             stored = pa.schema([f.with_type(orc_storage_type(f.type)) for f in schema], metadata=schema.metadata)
             try:
-                writer = orc.ORCWriter(str(tmp), compression="zstd")
+                writer = orc.ORCWriter(str(tmp), **_orc_writer_options(write_settings("orc")))
                 try:
                     for i in range(reader.num_record_batches):
                         batch = pa.Table.from_batches([reader.get_batch(i)], schema=schema)

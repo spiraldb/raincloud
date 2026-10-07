@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package dev.raincloud.sidecar.common;
 
-import java.util.Locale;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -32,8 +31,8 @@ public record ParquetKnobs(String compression, Integer compressionLevel, boolean
     public static final String DICTIONARY_PAGE_BYTES = "RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES";
     public static final String PAGE_CHECKSUMS = "RAINCLOUD_PARQUET_PAGE_CHECKSUMS";
     public static final Set<String> CODECS = Set.of("zstd", "snappy", "gzip", "lz4", "brotli", "none");
-    /** What 0 (no limit) means for a count: the libraries take an int. */
-    public static final int NO_LIMIT = Integer.MAX_VALUE;
+    /** What 0 (no limit) means for a count. */
+    public static final int NO_LIMIT = WriteSettings.NO_LIMIT;
 
     /** Every option unset: zstd, statistics on, each library's own defaults. */
     public static final ParquetKnobs DEFAULT = new ParquetKnobs("zstd", null, true, null, null, null, null, null,
@@ -74,51 +73,20 @@ public record ParquetKnobs(String compression, Integer compressionLevel, boolean
         return knobs;
     }
 
-    /**
-     * An on/off setting as every lane reads it ({@code spec._env_switch}): unset or empty is null;
-     * otherwise 1/true/yes/on or 0/false/no/off, in any case.
-     */
-    static Boolean toggle(String var, String raw) {
-        if (raw == null) {
-            return null;
-        }
-        String value = raw.strip().toLowerCase(Locale.ROOT);
-        switch (value) {
-            case "":
-                return null;
-            case "1": case "true": case "yes": case "on":
-                return true;
-            case "0": case "false": case "no": case "off":
-                return false;
-            default:
-                throw new IllegalArgumentException(var + "='" + raw
-                        + "' is not a switch; give 1 or 0 (true/false, yes/no, on/off)");
-        }
+    private static Boolean toggle(String var, String raw) {
+        return WriteSettings.toggle(var, raw);
     }
 
-    /** A size or count: unset is null (the library's default); the count grammar otherwise, 0 no limit. */
     private static Integer count(String var, String raw) {
-        if (raw == null) {
-            return null;
-        }
-        return (int) Math.min(Knobs.count(var, raw, NO_LIMIT, NO_LIMIT), NO_LIMIT);
+        return WriteSettings.count(var, raw);
     }
 
-    /** A compression level: unset or empty is null, else plain ASCII digits. */
     private static Integer level(String raw) {
-        String value = raw == null ? "" : raw.strip();
-        if (value.isEmpty()) {
-            return null;
-        }
-        if (!value.chars().allMatch(c -> c >= '0' && c <= '9') || value.length() > 9) {
-            throw new IllegalArgumentException(COMPRESSION_LEVEL + "='" + raw
-                    + "' is not a compression level; give a whole number such as 3");
-        }
-        return Integer.parseInt(value);
+        return WriteSettings.level(COMPRESSION_LEVEL, raw);
     }
 
     /** Refuse an option this lane's library cannot honour, naming the lane, the setting and why. */
     public static IllegalArgumentException unsupported(String lane, String var, Object value, String why) {
-        return new IllegalArgumentException(lane + " cannot honour " + var + "=" + value + ": " + why);
+        return WriteSettings.unsupported(lane, var, value, why);
     }
 }

@@ -19,14 +19,19 @@ val arrowVersion: String by project
 val junitVersion: String by project
 val slf4jVersion: String by project
 val zstdJniVersion: String by project
+val snappyJavaVersion: String by project
+val xzVersion: String by project
 
 dependencies {
     implementation(project(":conformance-common"))
 
     // Arrow Java's Avro adapter; it brings Apache Avro (1.12.1 with Arrow 19.0.0).
     implementation("org.apache.arrow:arrow-avro:$arrowVersion")
-    // Avro's zstandard codec, which Avro declares optional.
+    // Avro's zstandard, snappy and xz codecs, which Avro declares optional (deflate is the
+    // JDK's, bzip2 commons-compress, a dependency of Avro's own).
     runtimeOnly("com.github.luben:zstd-jni:$zstdJniVersion")
+    runtimeOnly("org.xerial.snappy:snappy-java:$snappyJavaVersion")
+    runtimeOnly("org.tukaani:xz:$xzVersion")
 
     // Off-heap allocator impl + silence SLF4J.
     runtimeOnly("org.apache.arrow:arrow-memory-netty:$arrowVersion")

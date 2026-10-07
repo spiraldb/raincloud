@@ -87,14 +87,12 @@ from raincloud._cache import EXT, sha256_file
 from raincloud._registry import SIDECAR_EXPORTERS
 
 from ..spec import (
-    PARQUET_COMPRESSION,
-    PARQUET_SETTING_VARS,
-    PARQUET_STATISTICS,
+    chosen_settings,
     display_path,
     output_format_dir,
-    parquet_options,
-    parquet_page_options,
     row_group_cap,
+    setting_vars,
+    sidecar_settings,
     spec_field,
 )
 from . import register
@@ -175,7 +173,7 @@ class SidecarExporter:
         found = shutil.which(exe) if exe else None
         return {"sidecar": self.binary,
                 **({"sidecar_sha256": sha256_file(Path(found))[:16]} if found else {}),
-                **(parquet_page_options().chosen() if self.format_id == "parquet" else {})}
+                **chosen_settings(self.format_id)}
 
     def _discover(self) -> str | None:
         """Resolve the reference-writer executable, or `None` if absent."""
@@ -183,16 +181,15 @@ class SidecarExporter:
 
     def _child_env(self, spec: dict) -> dict[str, str]:
         """raincloud's environment, with the recipe's row cap when it declares one
-        and, for a Parquet writer, the Parquet options in the form the sidecars
-        read (`ParquetOptions.env`): the recipe's compression and statistics, and
-        each install setting only when it is set."""
+        and the format's write settings in the one form every sidecar reads
+        (`spec.sidecar_settings`): for Parquet the recipe's compression and
+        statistics, and each install setting only when it is set."""
         env = dict(os.environ)
         if spec_field(spec, "write.row_group_size_rows"):
             env["RAINCLOUD_ROW_GROUP_MAX_ROWS"] = str(row_group_cap(spec))
-        if self.format_id == "parquet":
-            for var in (PARQUET_COMPRESSION, PARQUET_STATISTICS, *PARQUET_SETTING_VARS):
-                env.pop(var, None)
-            env.update(parquet_options(spec).env())
+        for var in setting_vars(self.format_id):
+            env.pop(var, None)
+        env.update(sidecar_settings(self.format_id, spec))
         return env
 
     def _failure(self, dest: Path, reason: str, *, variant_faithful: bool = False) -> ExportResult:

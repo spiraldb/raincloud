@@ -153,7 +153,9 @@ checksums). An unset setting leaves each library's own default, which differ (py
 writes no page index; arrow-rs and parquet-java do). A set one reaches every writer and
 becomes part of its toolchain, and a writer whose library cannot do what it asks fails
 that export as a measurement rather than writing something else; `sidecars/README.md`
-tabulates which writer honours what.
+tabulates which writer honours what. ORC, Avro and Vortex have the same kind of settings
+(`spec.FORMAT_SETTINGS`, `RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`, `RAINCLOUD_VORTEX_*`), read
+and refused the same way; their codec, unset, is the zstd raincloud has always written.
 
 `export.formats` lists the formats a dataset wants. When the planned writer cannot
 produce one for the dataset -- it raises, dies, reports a failed round-trip, or exceeds
@@ -281,6 +283,16 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_PARQUET_DICTIONARY` | `0`: no dictionary encoding (PLAIN); `1`: dictionaries | unset (each writer's own: on) |
 | `RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES` | dictionary page size limit, past which a column falls back to PLAIN (`0`: no limit) | unset (each writer's own) |
 | `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1`: a CRC in every page header; `0`: none | unset (each writer's own: parquet-java and Hardwood write them, pyarrow and arrow-rs do not) |
+| `RAINCLOUD_ORC_COMPRESSION` | ORC codec in every ORC writer: `zstd`, `snappy`, `zlib`, `lz4`, `none` | unset (zstd, as always) |
+| `RAINCLOUD_ORC_COMPRESSION_STRATEGY` | `speed` or `compression` (ORC C++ only; orc-rust refuses) | unset (each writer's own) |
+| `RAINCLOUD_ORC_STRIPE_BYTES` | ORC stripe size target, measured encoded and compressed | unset (each writer's own) |
+| `RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES` | ORC compression block size (ORC C++ takes only multiples of 64 KiB) | unset (each writer's own) |
+| `RAINCLOUD_AVRO_COMPRESSION` | Avro codec in every Avro writer: `zstd`, `deflate`, `snappy`, `bzip2`, `xz`, `none` | unset (zstd, as always) |
+| `RAINCLOUD_AVRO_COMPRESSION_LEVEL` | level for zstd (1-22), deflate or xz (0-9); Avro Java only, arrow-avro refuses | unset (each writer's own) |
+| `RAINCLOUD_AVRO_BLOCK_BYTES` | Avro block (sync interval) size; Avro Java only, arrow-avro refuses | unset (each writer's own) |
+| `RAINCLOUD_VORTEX_COMPACT` | `1`: BtrBlocks' compact encodings (vortex@py and vortex@rs; vortex@jni refuses) | unset (each writer's own: default) |
+| `RAINCLOUD_VORTEX_ROW_BLOCK_ROWS` | Vortex row block size (vortex@rs only) | unset (each writer's own) |
+| `RAINCLOUD_VORTEX_DATA_BLOCK_BYTES` | Vortex data block size target (vortex@rs only) | unset (each writer's own) |
 | `RAINCLOUD_BATCH_ROWS` / `RAINCLOUD_BATCH_BYTES` | batch bounds in the streaming ingestion paths (memory only, NOT the row-group size) | 4096 rows / 16 MiB |
 | `RAINCLOUD_EXPORT_PRIORITY` | machine writer preference, e.g. `rs,py` | unset (`py, rs, java, cpp`) |
 | `RAINCLOUD_EXPORT_TIMEOUT` | ceiling on one export: an in-process writer (run in a child process) or a sidecar writer; hitting it records the format unavailable | 6 h (`0` disables) |

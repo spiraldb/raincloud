@@ -4,6 +4,7 @@ package dev.raincloud.sidecar.avrojava;
 
 import dev.raincloud.sidecar.common.BatchSource;
 import dev.raincloud.sidecar.common.MaterializedTable;
+import dev.raincloud.sidecar.common.WriteSettings;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -60,6 +61,36 @@ final class AvroArrowIo {
      */
     static final byte[] SYNC_MARKER = "raincloud-avro01".getBytes(StandardCharsets.US_ASCII);
 
+    static final String AVRO_COMPRESSION = "RAINCLOUD_AVRO_COMPRESSION";
+    static final String AVRO_COMPRESSION_LEVEL = "RAINCLOUD_AVRO_COMPRESSION_LEVEL";
+    static final String AVRO_BLOCK_BYTES = "RAINCLOUD_AVRO_BLOCK_BYTES";
+
+    /**
+     * The Avro codec the write settings ask for ({@code spec.FORMAT_SETTINGS["avro"]}): unset, zstandard
+     * at Avro's default level, as raincloud has always written; a level only for zstandard,
+     * deflate and xz, the codecs that take one.
+     */
+    static CodecFactory codec(java.util.function.Function<String, String> env) {
+        String codec = WriteSettings.choice(AVRO_COMPRESSION, env.apply(AVRO_COMPRESSION),
+                "zstd", "deflate", "snappy", "bzip2", "xz", "none");
+        Integer level = WriteSettings.level(AVRO_COMPRESSION_LEVEL, env.apply(AVRO_COMPRESSION_LEVEL));
+        switch (codec == null ? "zstd" : codec) {
+            case "zstd":
+                return CodecFactory.zstandardCodec(level == null ? CodecFactory.DEFAULT_ZSTANDARD_LEVEL : level);
+            case "deflate":
+                return CodecFactory.deflateCodec(level == null ? CodecFactory.DEFAULT_DEFLATE_LEVEL : level);
+            case "xz":
+                return CodecFactory.xzCodec(level == null ? CodecFactory.DEFAULT_XZ_LEVEL : level);
+            default:
+                if (level != null) {
+                    throw new IllegalArgumentException(AVRO_COMPRESSION_LEVEL + "=" + level + ": " + codec
+                            + " takes no compression level");
+                }
+                return "snappy".equals(codec) ? CodecFactory.snappyCodec()
+                        : "bzip2".equals(codec) ? CodecFactory.bzip2Codec() : CodecFactory.nullCodec();
+        }
+    }
+
     /** Write the canonical {@code input} to {@code output}; on failure no {@code output} remains. */
     static void writeAvro(Path input, Path output, BufferAllocator allocator) throws Exception {
         try {
@@ -82,7 +113,12 @@ final class AvroArrowIo {
                     ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields(), dictionaries);
             try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(output));
                     DataFileWriter<Object> writer = new DataFileWriter<>(new GenericDatumWriter<>(schema))) {
-                writer.setCodec(CodecFactory.zstandardCodec(CodecFactory.DEFAULT_ZSTANDARD_LEVEL));
+                writer.setCodec(codec(System::getenv));
+                Integer blockBytes = WriteSettings.count(AVRO_BLOCK_BYTES, System.getenv(AVRO_BLOCK_BYTES));
+                if (blockBytes != null) {
+                    // Avro's sync interval: a block closes once it holds about this many bytes.
+                    writer.setSyncInterval(blockBytes);
+                }
                 writer.create(schema, out, SYNC_MARKER);
                 ByteArrayOutputStream row = new ByteArrayOutputStream();
                 BinaryEncoder encoder = EncoderFactory.get().directBinaryEncoder(row, null);

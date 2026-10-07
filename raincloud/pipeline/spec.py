@@ -397,6 +397,101 @@ def parquet_options(spec: dict) -> ParquetOptions:
     return options
 
 
+# Write settings for the other exported formats, declared and read like the
+# Parquet ones (above): one list per format, every writer of the format given
+# the same values, and a writer whose library cannot honour a set one refusing
+# it. These formats have no recipe fields, so an unset codec is what raincloud
+# has always written, zstd; any other unset setting is the library's default.
+ORC_COMPRESSION = "RAINCLOUD_ORC_COMPRESSION"
+ORC_COMPRESSION_STRATEGY = "RAINCLOUD_ORC_COMPRESSION_STRATEGY"
+ORC_STRIPE_BYTES = "RAINCLOUD_ORC_STRIPE_BYTES"
+ORC_COMPRESSION_BLOCK_BYTES = "RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES"
+AVRO_COMPRESSION = "RAINCLOUD_AVRO_COMPRESSION"
+AVRO_COMPRESSION_LEVEL = "RAINCLOUD_AVRO_COMPRESSION_LEVEL"
+AVRO_BLOCK_BYTES = "RAINCLOUD_AVRO_BLOCK_BYTES"
+VORTEX_COMPACT = "RAINCLOUD_VORTEX_COMPACT"
+VORTEX_ROW_BLOCK_ROWS = "RAINCLOUD_VORTEX_ROW_BLOCK_ROWS"
+VORTEX_DATA_BLOCK_BYTES = "RAINCLOUD_VORTEX_DATA_BLOCK_BYTES"
+ORC_CODECS = ("zstd", "snappy", "zlib", "lz4", "none")
+AVRO_CODECS = ("zstd", "deflate", "snappy", "bzip2", "xz", "none")
+AVRO_CODEC_LEVELS = {"zstd": range(1, 23), "deflate": range(0, 10), "xz": range(0, 10)}
+
+
+def _env_choice(*choices: str):
+    """A reader for a setting that names one of `choices`: None when unset or empty."""
+    def read(var: str) -> str | None:
+        raw = os.environ.get(var)
+        value = (raw or "").strip(_ASCII_SPACE).lower()
+        if not value:
+            return None
+        if value not in choices:
+            raise ValueError(f"{var}={raw!r} is not one of {', '.join(choices)}")
+        return value
+    return read
+
+
+# (field, variable, reader) per format, as `_PARQUET_SETTINGS`.
+FORMAT_SETTINGS = {
+    "orc": (
+        ("compression", ORC_COMPRESSION, _env_choice(*ORC_CODECS)),
+        ("compression_strategy", ORC_COMPRESSION_STRATEGY, _env_choice("speed", "compression")),
+        ("stripe_bytes", ORC_STRIPE_BYTES, _env_limit),
+        ("compression_block_bytes", ORC_COMPRESSION_BLOCK_BYTES, _env_limit),
+    ),
+    "avro": (
+        ("compression", AVRO_COMPRESSION, _env_choice(*AVRO_CODECS)),
+        ("compression_level", AVRO_COMPRESSION_LEVEL, _env_level),
+        ("block_bytes", AVRO_BLOCK_BYTES, _env_limit),
+    ),
+    "vortex": (
+        ("compact", VORTEX_COMPACT, _env_switch),
+        ("row_block_rows", VORTEX_ROW_BLOCK_ROWS, _env_limit),
+        ("data_block_bytes", VORTEX_DATA_BLOCK_BYTES, _env_limit),
+    ),
+}
+
+
+def write_settings(fmt: str) -> dict[str, Any]:
+    """`fmt`'s install write settings from the environment, None where unset:
+    the values every writer of the format is given. Not Parquet's, which also
+    take the recipe (`parquet_options`)."""
+    settings = {field: read(var) for field, var, read in FORMAT_SETTINGS.get(fmt, ())}
+    if fmt == "avro":
+        check_level(AVRO_COMPRESSION_LEVEL, settings["compression"] or "zstd", settings["compression_level"],
+                    AVRO_CODEC_LEVELS)
+    return settings
+
+
+def _canonical(value) -> str:
+    return str(int(value)) if isinstance(value, bool | int) else str(value)
+
+
+def setting_vars(fmt: str) -> tuple[str, ...]:
+    """Every environment variable a writer of `fmt` reads its settings from."""
+    if fmt == "parquet":
+        return (PARQUET_COMPRESSION, PARQUET_STATISTICS, *PARQUET_SETTING_VARS)
+    return tuple(var for _, var, _ in FORMAT_SETTINGS.get(fmt, ()))
+
+
+def chosen_settings(fmt: str) -> dict[str, str]:
+    """The install settings of `fmt` that are set, as a writer's toolchain
+    records them, keyed `<fmt>_<setting>`."""
+    if fmt == "parquet":
+        return parquet_page_options().chosen()
+    return {f"{fmt}_{field}": _canonical(value) for field, value in write_settings(fmt).items()
+            if value is not None}
+
+
+def sidecar_settings(fmt: str, spec: dict) -> dict[str, str]:
+    """`fmt`'s settings as a sidecar writer reads them: each set one in one
+    canonical form (`1`/`0`, a whole number, a lower-case name)."""
+    if fmt == "parquet":
+        return parquet_options(spec).env()
+    settings = write_settings(fmt)
+    return {var: _canonical(settings[field]) for field, var, _ in FORMAT_SETTINGS.get(fmt, ())
+            if settings[field] is not None}
+
+
 def max_decompressed_bytes() -> int | None:
     """Ceiling on a single in-memory decompression, from
     `RAINCLOUD_MAX_DECOMPRESSED_BYTES`. `0` (or empty) disables it. Default 4 GiB.

@@ -200,6 +200,23 @@ does not give identical pages in every lane. The gaps in the java column that ar
 parquet-arrow-java's (a compression level, per-column statistics, LZ4) can close in a
 later release of it; the page index ones are parquet-java's.
 
+The ORC, Avro and Vortex writers read their own settings the same way
+(`spec.FORMAT_SETTINGS`): the build passes each set one, in canonical form, under
+the name in `AGENTS.md`'s table, and a lane refuses what its library cannot do. With
+none set, every lane writes exactly what it wrote before (the codec is zstd).
+
+| setting | honoured by | refused by |
+|---|---|---|
+| `RAINCLOUD_ORC_COMPRESSION` (zstd, snappy, zlib, lz4, none) | orc@py, orc@rs | |
+| `RAINCLOUD_ORC_COMPRESSION_STRATEGY` | orc@py | orc@rs (no strategy) |
+| `RAINCLOUD_ORC_STRIPE_BYTES` | orc@py, orc@rs (each measures a stripe its own way) | |
+| `RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES` | orc@py (multiples of 64 KiB only), orc@rs | |
+| `RAINCLOUD_AVRO_COMPRESSION` (zstd, deflate, snappy, bzip2, xz, none) | avro@rs, avro@java | |
+| `RAINCLOUD_AVRO_COMPRESSION_LEVEL` | avro@java | avro@rs (arrow-avro has no level) |
+| `RAINCLOUD_AVRO_BLOCK_BYTES` | avro@java (Avro's sync interval) | avro@rs (one block per batch) |
+| `RAINCLOUD_VORTEX_COMPACT` | vortex@py, vortex@rs (BtrBlocks compact, within the session's editions) | vortex@jni (no write strategy) |
+| `RAINCLOUD_VORTEX_ROW_BLOCK_ROWS`, `_DATA_BLOCK_BYTES` | vortex@rs | vortex@py, vortex@jni (no block settings) |
+
 ## The Nimble lane
 
 Nimble has one implementation, Meta's C++ (facebookincubator/nimble), with no releases or
