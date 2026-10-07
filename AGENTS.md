@@ -145,6 +145,15 @@ list. The build record, and after regeneration the catalog, records the writer a
 `vortex@rs`, `vortex@jni`) run only where their binary is installed. Compliance
 measures every writer in scratch, never over the dataset's file.
 
+Every Parquet writer is given one set of options (`spec.parquet_options`): the recipe's
+`write.compression`, `write.statistics` and row cap, and the install's
+`RAINCLOUD_PARQUET_PAGE_INDEX`, `_PAGE_BYTES` and `_PAGE_ROWS`. An unset page setting
+leaves each library's own default, which differ (pyarrow writes no page index; arrow-rs
+and parquet-java do). A set one reaches every writer and becomes part of its toolchain,
+and a writer whose library cannot do what it asks fails that export as a measurement
+(Hardwood writes no page index and has no page row limit; parquet-java cannot leave the
+page index out while statistics are on), rather than writing something else.
+
 `export.formats` lists the formats a dataset wants. When the planned writer cannot
 produce one for the dataset -- it raises, dies, reports a failed round-trip, or exceeds
 `RAINCLOUD_EXPORT_TIMEOUT` -- the previous file comes back and the build records the
@@ -262,6 +271,9 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_ROW_GROUP_MAX_ROWS` | row cap per group, used only when a spec omits `write.row_group_size_rows`; a spec's cap wins in every writer, sidecars included | 10,000,000 |
 | `RAINCLOUD_ROW_GROUP_TARGET_BYTES` | memory guard: decoded Arrow bytes buffered for one row group | 512 MiB |
 | `RAINCLOUD_ROW_GROUP_PROBE_ROWS` | rows the Python Parquet writer samples to size its groups (must be > 0) | 262,144 |
+| `RAINCLOUD_PARQUET_PAGE_INDEX` | `1`: every Parquet writer writes a page index (ColumnIndex + OffsetIndex); `0`: none | unset (each writer's own: pyarrow and Hardwood none, arrow-rs and parquet-java one) |
+| `RAINCLOUD_PARQUET_PAGE_BYTES` | data page size target in every Parquet writer, each measuring a page its own way (`0`: no limit) | unset (each writer's own) |
+| `RAINCLOUD_PARQUET_PAGE_ROWS` | data page row limit in every Parquet writer (`0`: no limit) | unset (each writer's own) |
 | `RAINCLOUD_BATCH_ROWS` / `RAINCLOUD_BATCH_BYTES` | batch bounds in the streaming ingestion paths (memory only, NOT the row-group size) | 4096 rows / 16 MiB |
 | `RAINCLOUD_EXPORT_PRIORITY` | machine writer preference, e.g. `rs,py` | unset (`py, rs, java, cpp`) |
 | `RAINCLOUD_EXPORT_TIMEOUT` | ceiling on one export: an in-process writer (run in a child process) or a sidecar writer; hitting it records the format unavailable | 6 h (`0` disables) |

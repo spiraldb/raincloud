@@ -68,6 +68,7 @@ import dev.hardwood.reader.ParquetFileReader;
 import dev.raincloud.sidecar.common.BatchSource;
 import dev.raincloud.sidecar.common.CanonicalReader;
 import dev.raincloud.sidecar.common.LogicalCompare;
+import dev.raincloud.sidecar.common.ParquetKnobs;
 import dev.raincloud.sidecar.common.Verdict;
 
 /** The Arrow ⇆ Hardwood bridge: types, nested shapes, row groups, failure atomicity. */
@@ -319,6 +320,23 @@ class HardwoodIoTest {
             n.setSafe(i - from, i);
         }
         root.setRowCount(to - from);
+    }
+
+    @Test
+    void parquetKnobsHardwoodCannotHonourAreRefused() {
+        for (ParquetKnobs knobs : new ParquetKnobs[] {
+                new ParquetKnobs("zstd", false, null, null, null),
+                new ParquetKnobs("zstd", true, true, null, null),
+                new ParquetKnobs("zstd", true, null, null, 1000)}) {
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> HardwoodWriter.writerConfig(null, null, knobs));
+            assertTrue(e.getMessage().startsWith("parquet@hardwood cannot honour RAINCLOUD_PARQUET_"),
+                    e.getMessage());
+        }
+        // What it can: every codec, no page index, a page size.
+        for (String codec : ParquetKnobs.CODECS) {
+            HardwoodWriter.writerConfig(null, null, new ParquetKnobs(codec, true, false, 4096, null));
+        }
     }
 
     @Test

@@ -39,7 +39,9 @@ from raincloud._cache import sha256_file
 
 from ..discovery import VARIANT_EXT, has_variant
 from ..spec import (
+    ParquetOptions,
     display_path,
+    parquet_options,
     prepared_artifact,
     prepared_parquet,
     prepared_vortex,
@@ -47,7 +49,6 @@ from ..spec import (
     row_group_probe_rows,
     row_group_target_bytes,
     row_group_target_encoded_bytes,
-    spec_field,
 )
 from . import register
 from .base import Compliance, ExportResult, slug_from_canonical
@@ -118,8 +119,19 @@ def _groups(reader, row_group: int, byte_target: int):
         yield pending, None
 
 
+def _writer_options(options: ParquetOptions) -> dict:
+    """pyarrow's `ParquetWriter` arguments for `options`. An unset page knob
+    is left out, so pyarrow's own default applies."""
+    kwargs = {"compression": options.compression, "write_statistics": options.statistics}
+    for name, value in (("write_page_index", options.page_index), ("data_page_size", options.page_bytes),
+                        ("max_rows_per_page", options.page_rows)):
+        if value is not None:
+            kwargs[name] = value
+    return kwargs
+
+
 def _write_parquet(canonical: Path, dest: Path, row_group: int, byte_target: int,
-                   *, compression, stats) -> bool:
+                   *, options: ParquetOptions) -> bool:
     """Stream the canonical into `dest` in the groups `_groups` cuts.
 
     Returns whether the byte ceiling closed EVERY group but the tail before its
@@ -129,8 +141,7 @@ def _write_parquet(canonical: Path, dest: Path, row_group: int, byte_target: int
     byte_closed: list[bool] = []  # one flag per group, the tail left out
     with pa.ipc.open_file(str(canonical)) as reader:
         schema = reader.schema
-        with pq.ParquetWriter(dest, schema, compression=compression,
-                              write_statistics=stats) as writer:
+        with pq.ParquetWriter(dest, schema, **_writer_options(options)) as writer:
             for group, by_bytes in _groups(reader, row_group, byte_target):
                 if by_bytes is not None:
                     byte_closed.append(by_bytes)
@@ -140,7 +151,7 @@ def _write_parquet(canonical: Path, dest: Path, row_group: int, byte_target: int
     return bool(byte_closed) and all(byte_closed)
 
 
-def _probe_encoded(canonical: Path, want_rows: int, probe: Path, *, compression, stats) -> tuple[int, int]:
+def _probe_encoded(canonical: Path, want_rows: int, probe: Path, *, options: ParquetOptions) -> tuple[int, int]:
     """Encode the real write's FIRST group at `want_rows` rows/group as ONE row
     group at `probe`; return (rows, encoded). The decoded-byte ceiling or the
     end of the file can make it shorter, as they would the real group."""
@@ -151,8 +162,7 @@ def _probe_encoded(canonical: Path, want_rows: int, probe: Path, *, compression,
         return 0, 0
     try:
         table = pa.Table.from_batches(taken, schema=schema)
-        with pq.ParquetWriter(probe, schema, compression=compression,
-                              write_statistics=stats) as writer:
+        with pq.ParquetWriter(probe, schema, **_writer_options(options)) as writer:
             # One group of exactly this size. Left to its own default pyarrow
             # splits at ~1Mi rows, and the measurement would then describe a
             # group of THAT size -- useless, since dictionary and page overhead
@@ -165,7 +175,7 @@ def _probe_encoded(canonical: Path, want_rows: int, probe: Path, *, compression,
         probe.unlink(missing_ok=True)
 
 
-def _rows_for_encoded_target(canonical: Path, probe: Path, *, compression, stats, row_cap: int) -> int:
+def _rows_for_encoded_target(canonical: Path, probe: Path, *, options: ParquetOptions, row_cap: int) -> int:
     """Rows per group that land near the encoded target — arrow-rs, approximated.
 
     Iterated, because bytes-per-row is not constant in the group size: a small
@@ -173,15 +183,14 @@ def _rows_for_encoded_target(canonical: Path, probe: Path, *, compression, stats
     The probe file is written at `probe`, beside the destination.
     """
     target = row_group_target_encoded_bytes()
-    rows, encoded = _probe_encoded(canonical, row_group_probe_rows(), probe,
-                                   compression=compression, stats=stats)
+    rows, encoded = _probe_encoded(canonical, row_group_probe_rows(), probe, options=options)
     if not rows or not encoded:
         return row_cap
     want = min(max(1, int(target * rows / encoded)), row_cap)
     for _ in range(2):
         if want <= rows:
             break
-        rows2, encoded2 = _probe_encoded(canonical, want, probe, compression=compression, stats=stats)
+        rows2, encoded2 = _probe_encoded(canonical, want, probe, options=options)
         if not rows2 or not encoded2:
             break
         if rows2 < want:
@@ -230,12 +239,13 @@ class ParquetExporter:
         # multi-output transform. `spec` still supplies write.* opts + logging.
         slug = slug_from_canonical(canonical)
 
-        compression = spec_field(spec, "write.compression", "zstd")
+        # The recipe's compression and statistics, and the page knobs: the same
+        # options every Parquet lane is given (`spec.parquet_options`).
+        options = parquet_options(spec)
         # A CAP, not a target. arrow-rs's `max_row_group_row_count` and
         # parquet-java's `parquet.block.row.count.limit` are both effectively off
         # by default so that BYTES decide the group; absent here means uncapped.
         row_cap = row_group_cap(spec)
-        stats = spec_field(spec, "write.statistics", True)
 
         dest = dest or self.out_path(slug)
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -262,19 +272,16 @@ class ParquetExporter:
             schema = reader.schema
         try:
             row_group = _rows_for_encoded_target(
-                canonical, tmp.with_suffix(".probe"), compression=compression,
-                stats=stats, row_cap=row_cap,
+                canonical, tmp.with_suffix(".probe"), options=options, row_cap=row_cap,
             )
-            bytes_bound = _write_parquet(canonical, tmp, row_group, byte_target,
-                                         compression=compression, stats=stats)
+            bytes_bound = _write_parquet(canonical, tmp, row_group, byte_target, options=options)
             corrected = _corrected_rows(tmp, row_group, target_encoded, row_cap)
             # When the decoded-byte ceiling closed every group, more rows per
             # group are capped the same way and the second pass would rewrite
             # an identical file.
             if corrected is not None and not (bytes_bound and corrected > row_group):
                 print(f"  [row-groups] re-sizing {row_group:,} -> {corrected:,} rows/group")
-                _write_parquet(canonical, tmp, corrected, byte_target,
-                               compression=compression, stats=stats)
+                _write_parquet(canonical, tmp, corrected, byte_target, options=options)
             tmp.replace(dest)
         finally:
             tmp.unlink(missing_ok=True)

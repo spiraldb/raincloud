@@ -86,7 +86,19 @@ from pathlib import Path
 from raincloud._cache import EXT, sha256_file
 from raincloud._registry import SIDECAR_EXPORTERS
 
-from ..spec import display_path, output_format_dir, row_group_cap, spec_field
+from ..spec import (
+    PARQUET_COMPRESSION,
+    PARQUET_PAGE_BYTES,
+    PARQUET_PAGE_INDEX,
+    PARQUET_PAGE_ROWS,
+    PARQUET_STATISTICS,
+    display_path,
+    output_format_dir,
+    parquet_options,
+    parquet_page_options,
+    row_group_cap,
+    spec_field,
+)
 from . import register
 from .base import Compliance, ExportResult, slug_from_canonical
 from .bounded import export_timeout
@@ -164,18 +176,26 @@ class SidecarExporter:
         exe = self._discover()
         found = shutil.which(exe) if exe else None
         return {"sidecar": self.binary,
-                **({"sidecar_sha256": sha256_file(Path(found))[:16]} if found else {})}
+                **({"sidecar_sha256": sha256_file(Path(found))[:16]} if found else {}),
+                **(parquet_page_options().chosen() if self.format_id == "parquet" else {})}
 
     def _discover(self) -> str | None:
         """Resolve the reference-writer executable, or `None` if absent."""
         return os.environ.get(_env_var(self.cell_id)) or shutil.which(self.binary)
 
-    @staticmethod
-    def _child_env(spec: dict) -> dict[str, str]:
-        """raincloud's environment, with the recipe's row cap when it declares one."""
+    def _child_env(self, spec: dict) -> dict[str, str]:
+        """raincloud's environment, with the recipe's row cap when it declares one
+        and, for a Parquet writer, the Parquet options in the form the sidecars
+        read (`ParquetOptions.env`): the recipe's compression and statistics, and
+        each page knob only when it is set."""
         env = dict(os.environ)
         if spec_field(spec, "write.row_group_size_rows"):
             env["RAINCLOUD_ROW_GROUP_MAX_ROWS"] = str(row_group_cap(spec))
+        if self.format_id == "parquet":
+            for var in (PARQUET_COMPRESSION, PARQUET_STATISTICS, PARQUET_PAGE_INDEX, PARQUET_PAGE_BYTES,
+                        PARQUET_PAGE_ROWS):
+                env.pop(var, None)
+            env.update(parquet_options(spec).env())
         return env
 
     def _failure(self, dest: Path, reason: str, *, variant_faithful: bool = False) -> ExportResult:

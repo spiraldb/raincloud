@@ -32,7 +32,7 @@ def _entry(cfg, fmt):
 
 def _wrong_parquet(monkeypatch):
     """parquet@py writes a valid file holding other values than the canonical's."""
-    def write(canonical, dest, row_group, byte_target, *, compression, stats):
+    def write(canonical, dest, row_group, byte_target, *, options):
         with pa.ipc.open_file(str(canonical)) as reader:
             table = reader.read_all()
         pq.write_table(table.set_column(0, "x", pa.array([7] * table.num_rows)), dest)

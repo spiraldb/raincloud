@@ -199,7 +199,8 @@ _DISTRIBUTIONS = {"parquet@py": ("pyarrow",), "vortex@py": ("vortex-data", "pyar
 
 def writer_toolchain(exporter: Exporter) -> dict[str, str]:
     """The versions that decide what `exporter` can write: its libraries for an
-    in-process writer, the binary for a sidecar (`SidecarExporter.toolchain`)."""
+    in-process writer, the binary for a sidecar (`SidecarExporter.toolchain`),
+    and for a Parquet writer the page knobs that are set (`ParquetOptions.chosen`)."""
     import platform
     from importlib import metadata
 
@@ -211,6 +212,9 @@ def writer_toolchain(exporter: Exporter) -> dict[str, str]:
             versions[distribution] = metadata.version(distribution)
         except metadata.PackageNotFoundError:
             versions[distribution] = "not installed"
+    if exporter.cell_id == "parquet@py":
+        from ..spec import parquet_page_options
+        versions.update(parquet_page_options().chosen())
     return versions
 
 

@@ -78,13 +78,15 @@ An optional top-level `export_priority` sets a catalog-wide writer order, in the
   },
 
   /* Parquet writer settings, read when a writer derives <slug>.parquet from the
-     canonical Arrow spine (raincloud/pipeline/canonical.py). parquet@py
-     (raincloud/pipeline/export/) honours all three fields. The sidecar writers
-     (parquet@rs, parquet@java, parquet@hardwood) receive row_group_size_rows as
-     RAINCLOUD_ROW_GROUP_MAX_ROWS in their environment, so the recipe's cap wins
-     in every lane; they choose their own compression and statistics. v1
-     manifests also carried `output` and `page_index`; no writer read either,
-     and v2 rejects them. */
+     canonical Arrow spine (raincloud/pipeline/canonical.py). Every Parquet
+     writer honours all three fields: parquet@py reads them, and the sidecar
+     writers (parquet@rs, parquet@java, parquet@hardwood) receive them in their
+     environment (RAINCLOUD_ROW_GROUP_MAX_ROWS, RAINCLOUD_PARQUET_COMPRESSION,
+     RAINCLOUD_PARQUET_STATISTICS), so the recipe wins in every lane. A writer
+     whose library cannot do what is asked records Parquet unavailable. The page
+     layout is the install's RAINCLOUD_PARQUET_PAGE_* settings, not the
+     recipe's. v1 manifests also carried `output` and `page_index`; no writer
+     read either, and v2 rejects them. */
   "write": {
     "compression": "zstd",
     "row_group_size_rows": 10000000,    // a backstop row cap, not a target: groups are sized by encoded

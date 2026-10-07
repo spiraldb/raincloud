@@ -66,6 +66,7 @@ import dev.hardwood.writer.ColumnWriter;
 import dev.hardwood.writer.ParquetFileWriter;
 import dev.hardwood.writer.WriterConfig;
 import dev.raincloud.sidecar.common.Knobs;
+import dev.raincloud.sidecar.common.ParquetKnobs;
 import dev.raincloud.sidecar.common.VariantFidelity;
 
 /**
@@ -107,19 +108,67 @@ public final class HardwoodWriter {
      * than the other lanes'; there is no Hardwood setting that measures encoded bytes.</p>
      */
     public static WriterConfig writerConfig(String maxRows, String targetEncodedBytes) {
-        return WriterConfig.builder()
-                .codec(CompressionCodec.ZSTD)
-                .rowGroupTargetRows(Knobs.count(Knobs.MAX_ROWS, maxRows, Knobs.DEFAULT_MAX_ROWS, Long.MAX_VALUE))
-                .rowGroupBufferTargetBytes(Knobs.count(Knobs.TARGET_ENCODED_BYTES, targetEncodedBytes,
-                        Knobs.DEFAULT_TARGET_ENCODED_BYTES, Long.MAX_VALUE))
-                .build();
+        return writerConfig(maxRows, targetEncodedBytes, ParquetKnobs.DEFAULT);
     }
 
-    /** Stream the canonical into a zstd Parquet with the knobs from the environment. */
+    /**
+     * {@link #writerConfig(String, String)} with the Parquet options every lane is given.
+     *
+     * <p>Hardwood 1.1.0.Beta1's {@code WriterConfig} has a page size target but no page row
+     * limit, no statistics switch (it always writes column-chunk statistics) and writes no page
+     * index, so a knob asking for one of those is refused rather than written some other
+     * way.</p>
+     */
+    public static WriterConfig writerConfig(String maxRows, String targetEncodedBytes, ParquetKnobs knobs) {
+        if (!knobs.statistics()) {
+            throw ParquetKnobs.unsupported("parquet@hardwood", ParquetKnobs.STATISTICS, 0,
+                    "Hardwood always writes column-chunk statistics");
+        }
+        if (Boolean.TRUE.equals(knobs.pageIndex())) {
+            throw ParquetKnobs.unsupported("parquet@hardwood", ParquetKnobs.PAGE_INDEX, 1,
+                    "Hardwood writes no page index");
+        }
+        if (knobs.pageRows() != null) {
+            throw ParquetKnobs.unsupported("parquet@hardwood", ParquetKnobs.PAGE_ROWS, knobs.pageRows(),
+                    "Hardwood has no page row limit");
+        }
+        WriterConfig.Builder builder = WriterConfig.builder()
+                .codec(codec(knobs.compression()))
+                .rowGroupTargetRows(Knobs.count(Knobs.MAX_ROWS, maxRows, Knobs.DEFAULT_MAX_ROWS, Long.MAX_VALUE))
+                .rowGroupBufferTargetBytes(Knobs.count(Knobs.TARGET_ENCODED_BYTES, targetEncodedBytes,
+                        Knobs.DEFAULT_TARGET_ENCODED_BYTES, Long.MAX_VALUE));
+        if (knobs.pageBytes() != null) {
+            builder.pageTargetBytes(knobs.pageBytes());
+        }
+        return builder.build();
+    }
+
+    private static CompressionCodec codec(String codec) {
+        switch (codec) {
+            case "zstd":
+                return CompressionCodec.ZSTD;
+            case "snappy":
+                return CompressionCodec.SNAPPY;
+            case "gzip":
+                return CompressionCodec.GZIP;
+            case "lz4":
+                // pyarrow's "lz4" and arrow-rs's LZ4_RAW, not the deprecated Hadoop LZ4.
+                return CompressionCodec.LZ4_RAW;
+            case "brotli":
+                return CompressionCodec.BROTLI;
+            case "none":
+                return CompressionCodec.UNCOMPRESSED;
+            default:
+                throw new IllegalArgumentException("unknown codec " + codec);
+        }
+    }
+
+    /** Stream the canonical into a Parquet with the knobs from the environment. */
     public static void writeParquet(Path canonical, Path output, BufferAllocator allocator) throws IOException {
         // Resolved before touching the output, so a bad knob leaves nothing behind.
         writeParquet(canonical, output, allocator,
-                writerConfig(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES)));
+                writerConfig(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES),
+                        ParquetKnobs.fromEnv()));
     }
 
     /**

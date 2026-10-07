@@ -23,6 +23,7 @@ import org.apache.parquet.schema.Type;
 
 import dev.raincloud.sidecar.common.BatchSource;
 import dev.raincloud.sidecar.common.Knobs;
+import dev.raincloud.sidecar.common.ParquetKnobs;
 import dev.spiraldb.parquet.arrow.Compression;
 import dev.spiraldb.parquet.arrow.CoreCompressionCodecFactory;
 import dev.spiraldb.parquet.arrow.ParquetArrow;
@@ -76,15 +77,54 @@ public final class ParquetArrowIo {
      * rows in a group.</p>
      */
     static WriteOptions writeOptions(String maxRows, String targetEncodedBytes) {
-        return WriteOptions.builder()
-                .compression(Compression.ZSTD)
-                .maxRowGroupRows(rowGroupMaxRows(maxRows))
-                .targetRowGroupBytes(rowGroupTargetEncodedBytes(targetEncodedBytes))
-                .build();
+        return writeOptions(maxRows, targetEncodedBytes, ParquetKnobs.DEFAULT);
     }
 
     /**
-     * Streams the canonical Arrow IPC file straight into a zstd Parquet (no intermediate copy).
+     * {@link #writeOptions(String, String)} with the Parquet options every lane is given.
+     *
+     * <p>parquet-arrow-java has no LZ4 or Brotli codec, and no switch for the page index:
+     * parquet-java writes a ColumnIndex and OffsetIndex whenever statistics are on, so
+     * {@code RAINCLOUD_PARQUET_PAGE_INDEX=0} with statistics on is refused, as are those
+     * codecs, rather than written some other way.</p>
+     */
+    static WriteOptions writeOptions(String maxRows, String targetEncodedBytes, ParquetKnobs knobs) {
+        WriteOptions.Builder builder = WriteOptions.builder()
+                .compression(compression(knobs.compression()))
+                .statisticsEnabled(knobs.statistics())
+                .maxRowGroupRows(rowGroupMaxRows(maxRows))
+                .targetRowGroupBytes(rowGroupTargetEncodedBytes(targetEncodedBytes));
+        if (Boolean.FALSE.equals(knobs.pageIndex()) && knobs.statistics()) {
+            throw ParquetKnobs.unsupported("parquet@java", ParquetKnobs.PAGE_INDEX, 0,
+                    "parquet-java writes a page index whenever statistics are on");
+        }
+        if (knobs.pageBytes() != null) {
+            builder.pageSizeBytes(knobs.pageBytes());
+        }
+        if (knobs.pageRows() != null) {
+            builder.pageRowLimit(knobs.pageRows());
+        }
+        return builder.build();
+    }
+
+    private static Compression compression(String codec) {
+        switch (codec) {
+            case "zstd":
+                return Compression.ZSTD;
+            case "snappy":
+                return Compression.SNAPPY;
+            case "gzip":
+                return Compression.GZIP;
+            case "none":
+                return Compression.UNCOMPRESSED;
+            default:
+                throw ParquetKnobs.unsupported("parquet@java", ParquetKnobs.COMPRESSION, codec,
+                        "parquet-arrow-java writes only zstd, snappy, gzip or no compression");
+        }
+    }
+
+    /**
+     * Streams the canonical Arrow IPC file straight into a Parquet (no intermediate copy).
      *
      * <p>Atomic w.r.t. failure: any failed write — an exception such as {@link
      * dev.spiraldb.parquet.arrow.UnsupportedParquetTypeException} mid-stream, or an
@@ -95,7 +135,8 @@ public final class ParquetArrowIo {
             throws IOException {
         // Resolved before touching the output, so a bad knob leaves nothing behind.
         writeParquet(canonicalArrow, output, allocator,
-                writeOptions(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES)));
+                writeOptions(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES),
+                        ParquetKnobs.fromEnv()));
     }
 
     /** {@link #writeParquet(Path, Path, BufferAllocator)} with resolved options. */

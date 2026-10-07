@@ -152,6 +152,33 @@ read. A recipe's `write.row_group_size_rows` wins over
 so the build passes that cap to them as `RAINCLOUD_ROW_GROUP_MAX_ROWS` in their
 environment.
 
+The Parquet writers also share one set of write options
+(`raincloud/pipeline/spec.py::ParquetOptions`), which the build passes to a sidecar
+in this form:
+
+| variable | value | from |
+|---|---|---|
+| `RAINCLOUD_PARQUET_COMPRESSION` | `zstd`, `snappy`, `gzip`, `lz4` (LZ4_RAW), `brotli` or `none` | the recipe's `write.compression` |
+| `RAINCLOUD_PARQUET_STATISTICS` | `1` or `0` | the recipe's `write.statistics` |
+| `RAINCLOUD_PARQUET_PAGE_INDEX` | `1` or `0`: a ColumnIndex and OffsetIndex for every column chunk, or neither | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_BYTES` | data page size target, count grammar (`0`: no limit) | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_ROWS` | data page row limit, count grammar (`0`: no limit) | the install, only when set |
+
+An unset variable is the lane's library default (zstd and statistics on, for the first
+two). The switches read `1/true/yes/on` and `0/false/no/off` in any case, empty as
+unset, in every lane. A lane refuses, as a failed round-trip naming the variable, an
+option its library cannot honour:
+
+| | compression | statistics off | page index on | page index off | page bytes | page rows |
+|---|---|---|---|---|---|---|
+| parquet@py (pyarrow) | all | yes | yes | yes | yes | yes |
+| parquet@rs (arrow-rs) | all | yes | yes | yes | yes | yes, checked every 1,024 values |
+| parquet@java (parquet-arrow-java) | not `lz4` or `brotli` | yes | yes, with statistics | no, with statistics on | yes | yes |
+| parquet@hardwood (Hardwood 1.1.0.Beta1) | all | no | no | yes | yes | no |
+
+Each library measures a page its own way, so the same `RAINCLOUD_PARQUET_PAGE_BYTES`
+does not give identical pages in every lane.
+
 ## The Nimble lane
 
 Nimble has one implementation, Meta's C++ (facebookincubator/nimble), with no releases or

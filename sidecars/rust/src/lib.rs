@@ -246,6 +246,138 @@ impl RowGroupLimits {
     }
 }
 
+/// An on/off knob as every lane reads it (`spec._env_switch`): unset or empty
+/// -> `None`; otherwise 1/true/yes/on or 0/false/no/off, in any case.
+fn switch(var: &str, raw: Option<&OsStr>) -> Result<Option<bool>> {
+    let Some(raw) = raw else {
+        return Ok(None);
+    };
+    let Some(text) = raw.to_str() else {
+        bail!("{var}={raw:?} is not valid UTF-8; give 1 or 0");
+    };
+    match text
+        .trim_matches(is_knob_space)
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "" => Ok(None),
+        "1" | "true" | "yes" | "on" => Ok(Some(true)),
+        "0" | "false" | "no" | "off" => Ok(Some(false)),
+        _ => bail!("{var}='{text}' is not a switch; give 1 or 0 (true/false, yes/no, on/off)"),
+    }
+}
+
+/// The Parquet write options every Parquet lane is given the same way
+/// (`raincloud/pipeline/spec.py::ParquetOptions`). The sidecar never sees the
+/// recipe: `SidecarExporter` passes its `write.compression` and
+/// `write.statistics` as `RAINCLOUD_PARQUET_COMPRESSION` and
+/// `RAINCLOUD_PARQUET_STATISTICS`, and the page knobs only when they are set.
+/// An unset page knob leaves arrow-rs's own default: a page index, 1 MiB
+/// pages, 20,000 rows a page.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ParquetOptions {
+    pub compression: Compression,
+    pub statistics: bool,
+    /// A ColumnIndex and OffsetIndex for every column chunk.
+    pub page_index: Option<bool>,
+    /// Data page size target, in bytes.
+    pub page_bytes: Option<usize>,
+    /// Data page row limit.
+    pub page_rows: Option<usize>,
+}
+
+impl Default for ParquetOptions {
+    fn default() -> Self {
+        Self {
+            compression: Compression::ZSTD(ZstdLevel::default()),
+            statistics: true,
+            page_index: None,
+            page_bytes: None,
+            page_rows: None,
+        }
+    }
+}
+
+impl ParquetOptions {
+    pub fn from_env() -> Result<Self> {
+        Self::from_vars(|name| std::env::var_os(name))
+    }
+
+    /// [`Self::from_env`] over `var`, so a test need not touch the process
+    /// environment.
+    pub fn from_vars(var: impl Fn(&str) -> Option<std::ffi::OsString>) -> Result<Self> {
+        const COMPRESSION: &str = "RAINCLOUD_PARQUET_COMPRESSION";
+        const STATISTICS: &str = "RAINCLOUD_PARQUET_STATISTICS";
+        const PAGE_INDEX: &str = "RAINCLOUD_PARQUET_PAGE_INDEX";
+        const PAGE_BYTES: &str = "RAINCLOUD_PARQUET_PAGE_BYTES";
+        const PAGE_ROWS: &str = "RAINCLOUD_PARQUET_PAGE_ROWS";
+        let compression = match var(COMPRESSION) {
+            None => Self::default().compression,
+            Some(raw) => match raw.to_str().map(|s| s.trim_matches(is_knob_space)) {
+                Some("zstd") => Compression::ZSTD(ZstdLevel::default()),
+                Some("snappy") => Compression::SNAPPY,
+                Some("gzip") => Compression::GZIP(Default::default()),
+                // pyarrow's "lz4" and Hardwood's LZ4_RAW: the framing the format
+                // recommends, not the deprecated Hadoop LZ4.
+                Some("lz4") => Compression::LZ4_RAW,
+                Some("brotli") => Compression::BROTLI(Default::default()),
+                Some("none") => Compression::UNCOMPRESSED,
+                _ => bail!(
+                    "{COMPRESSION}={raw:?} is not one of zstd, snappy, gzip, lz4, brotli, none"
+                ),
+            },
+        };
+        let statistics = switch(STATISTICS, var(STATISTICS).as_deref())?.unwrap_or(true);
+        let page_index = switch(PAGE_INDEX, var(PAGE_INDEX).as_deref())?;
+        if page_index == Some(true) && !statistics {
+            bail!("{PAGE_INDEX}=1 asks for page statistics, but {STATISTICS} is 0");
+        }
+        // Unset is arrow-rs's default; empty or 0 is no limit, as in parquet@py.
+        let page = |name: &str| -> Result<Option<usize>> {
+            var(name)
+                .map(|raw| knob(name, Some(&raw), 0, (1 << 31) - 1))
+                .transpose()
+        };
+        Ok(Self {
+            compression,
+            statistics,
+            page_index,
+            page_bytes: page(PAGE_BYTES)?,
+            page_rows: page(PAGE_ROWS)?,
+        })
+    }
+
+    /// `builder` with these options, except compression, which the caller sets.
+    fn apply(
+        &self,
+        mut builder: parquet::file::properties::WriterPropertiesBuilder,
+    ) -> parquet::file::properties::WriterPropertiesBuilder {
+        use parquet::file::properties::EnabledStatistics;
+        if !self.statistics {
+            builder = builder.set_statistics_enabled(EnabledStatistics::None);
+        }
+        match self.page_index {
+            Some(true) => builder = builder.set_statistics_enabled(EnabledStatistics::Page),
+            // Neither index, as pyarrow writes without one: Chunk statistics alone
+            // still write an OffsetIndex.
+            Some(false) => {
+                if self.statistics {
+                    builder = builder.set_statistics_enabled(EnabledStatistics::Chunk);
+                }
+                builder = builder.set_offset_index_disabled(true);
+            }
+            None => {}
+        }
+        if let Some(bytes) = self.page_bytes {
+            builder = builder.set_data_page_size_limit(bytes);
+        }
+        if let Some(rows) = self.page_rows {
+            builder = builder.set_data_page_row_count_limit(rows);
+        }
+        builder
+    }
+}
+
 /// Rows handed to arrow-rs per `write` call.
 ///
 /// arrow-rs applies `max_row_group_bytes` by measuring the rows it has already
@@ -310,7 +442,22 @@ where
     Ok(())
 }
 
-/// Stream record batches into a Parquet file (zstd compression, arrow-rs).
+/// Stream record batches into a Parquet file (zstd compression, arrow-rs), with
+/// the default [`ParquetOptions`]; see [`write_parquet_with`].
+pub fn write_parquet<F, I>(
+    output: &Path,
+    schema: SchemaRef,
+    limits: RowGroupLimits,
+    open: F,
+) -> Result<()>
+where
+    F: Fn() -> Result<I>,
+    I: IntoIterator<Item = Result<RecordBatch>>,
+{
+    write_parquet_with(output, schema, limits, ParquetOptions::default(), open)
+}
+
+/// Stream record batches into a Parquet file with `options` (arrow-rs).
 ///
 /// `open` is called twice, since the batches are read twice rather than held:
 /// SF100 lineitem is ~100 GB decoded. Each call must replay the same rows in
@@ -326,11 +473,14 @@ where
 /// put TPC-H customer at 377 MiB encoded per group for a 128 MiB target.
 /// So the first pass encodes uncompressed into a sink, where arrow-rs's measure
 /// is the encoded size, and records where each group ends; the second writes
-/// the file with zstd and closes groups at those rows.
-pub fn write_parquet<F, I>(
+/// the file with `options.compression` and closes groups at those rows. Both
+/// passes write the same pages and statistics, so the planned encoded size is
+/// the file's.
+pub fn write_parquet_with<F, I>(
     output: &Path,
     schema: SchemaRef,
     limits: RowGroupLimits,
+    options: ParquetOptions,
     open: F,
 ) -> Result<()>
 where
@@ -351,7 +501,8 @@ where
     // smaller limit", and its 1Mi-row default would cap TPC-H lineitem at
     // ~63 MiB encoded, exactly as parquet-java ships its own row limit
     // effectively off so that bytes decide. The backstop stays.
-    let plan_props = WriterProperties::builder()
+    let plan_props = options
+        .apply(WriterProperties::builder())
         .set_compression(Compression::UNCOMPRESSED)
         .set_max_row_group_row_count(Some(limits.max_rows))
         .set_max_row_group_bytes(Some(limits.target_encoded_bytes))
@@ -373,8 +524,9 @@ where
     // a group.
     let file =
         File::create(output).with_context(|| format!("create parquet {}", output.display()))?;
-    let props = WriterProperties::builder()
-        .set_compression(Compression::ZSTD(ZstdLevel::default()))
+    let props = options
+        .apply(WriterProperties::builder())
+        .set_compression(options.compression)
         .set_max_row_group_row_count(None)
         .set_max_row_group_bytes(None)
         .build();
@@ -1993,6 +2145,99 @@ mod tests {
         // The dictionary encodes the value once; decoding makes 100 copies.
         assert!(group.column(0).uncompressed_size() < 10_000);
         assert!(decoded_bytes(group) >= 100_000, "{}", decoded_bytes(group));
+    }
+
+    fn options_from(pairs: &[(&str, &str)]) -> Result<ParquetOptions> {
+        let vars: std::collections::HashMap<String, std::ffi::OsString> = pairs
+            .iter()
+            .map(|(k, v)| (format!("RAINCLOUD_PARQUET_{k}"), (*v).into()))
+            .collect();
+        ParquetOptions::from_vars(|name| vars.get(name).cloned())
+    }
+
+    #[test]
+    fn parquet_options_read_as_the_python_lane_writes_them() {
+        assert_eq!(options_from(&[]).unwrap(), ParquetOptions::default());
+        let set = options_from(&[
+            ("COMPRESSION", "lz4"),
+            ("STATISTICS", "1"),
+            ("PAGE_INDEX", " On "),
+            ("PAGE_BYTES", "4096"),
+            ("PAGE_ROWS", "0"),
+        ])
+        .unwrap();
+        assert_eq!(set.compression, Compression::LZ4_RAW);
+        assert_eq!(set.page_index, Some(true));
+        assert_eq!(set.page_bytes, Some(4096));
+        // 0 is no limit, as in parquet@py.
+        assert_eq!(set.page_rows, Some((1 << 31) - 1));
+        assert_eq!(
+            options_from(&[("PAGE_INDEX", "")]).unwrap().page_index,
+            None
+        );
+        for (pairs, error) in [
+            (&[("PAGE_INDEX", "maybe")][..], "is not a switch"),
+            (&[("COMPRESSION", "lzo")][..], "is not one of"),
+            (&[("PAGE_BYTES", "1MiB")][..], "is not a number"),
+            (
+                &[("PAGE_INDEX", "1"), ("STATISTICS", "0")][..],
+                "asks for page statistics",
+            ),
+        ] {
+            let message = options_from(pairs).unwrap_err().to_string();
+            assert!(message.contains(error), "{pairs:?}: {message}");
+        }
+    }
+
+    #[test]
+    fn parquet_options_decide_the_page_index_and_the_pages() {
+        let schema = Arc::new(Schema::new(vec![Field::new("x", DataType::Int64, false)]));
+        let b = RecordBatch::try_new(
+            schema.clone(),
+            vec![Arc::new(arrow_array::Int64Array::from_iter_values(
+                0..50_000,
+            ))],
+        )
+        .unwrap();
+        let limits = RowGroupLimits {
+            target_encoded_bytes: 128 << 20,
+            max_rows: 10_000_000,
+        };
+        let scratch = Scratch::new("parquet-options");
+        let written = |name: &str, options: ParquetOptions| {
+            let output = scratch.path(name);
+            write_parquet_with(&output, schema.clone(), limits, options, || {
+                Ok(stream(vec![b.clone()]))
+            })
+            .unwrap();
+            let file = File::open(&output).unwrap();
+            let options = parquet::arrow::arrow_reader::ArrowReaderOptions::new()
+                .with_page_index_policy(parquet::file::metadata::PageIndexPolicy::Optional);
+            let reader =
+                ParquetRecordBatchReaderBuilder::try_new_with_options(file, options).unwrap();
+            let metadata = reader.metadata().clone();
+            let pages = metadata
+                .offset_index()
+                .map(|index| index[0][0].page_locations().len());
+            (metadata.column_index().is_some(), pages)
+        };
+        // arrow-rs's default: a page index, 20,000 rows a page.
+        assert_eq!(
+            written("default.parquet", ParquetOptions::default()),
+            (true, Some(3))
+        );
+        let rows = ParquetOptions {
+            page_rows: Some(1_000),
+            ..Default::default()
+        };
+        // arrow-rs checks the row limit once per 1,024-value write batch, so a
+        // 1,000-row limit gives 1,024-row pages.
+        assert_eq!(written("rows.parquet", rows), (true, Some(49)));
+        let without = ParquetOptions {
+            page_index: Some(false),
+            ..Default::default()
+        };
+        assert_eq!(written("without.parquet", without), (false, None));
     }
 
     #[test]

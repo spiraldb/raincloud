@@ -18,6 +18,7 @@ import re
 import sys
 import tempfile
 from contextlib import contextmanager
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -230,6 +231,100 @@ def row_group_probe_rows() -> int:
     if value is None:
         raise ValueError("RAINCLOUD_ROW_GROUP_PROBE_ROWS must be a positive row count; give a whole number >= 1")
     return value
+
+
+# Parquet write options every Parquet writer receives the same way. The page
+# knobs differ from the row-group knobs in one respect: UNSET means each
+# writer's own default, not a raincloud figure, because the four libraries'
+# defaults differ (arrow-rs and parquet-java write a page index, pyarrow and
+# Hardwood do not) and no one figure leaves every lane's files as they are.
+# Set, a knob reaches every lane, and a writer whose library cannot do what it
+# asks fails that export rather than writing something else.
+PARQUET_COMPRESSION = "RAINCLOUD_PARQUET_COMPRESSION"
+PARQUET_STATISTICS = "RAINCLOUD_PARQUET_STATISTICS"
+PARQUET_PAGE_INDEX = "RAINCLOUD_PARQUET_PAGE_INDEX"
+PARQUET_PAGE_BYTES = "RAINCLOUD_PARQUET_PAGE_BYTES"
+PARQUET_PAGE_ROWS = "RAINCLOUD_PARQUET_PAGE_ROWS"
+PARQUET_CODECS = ("zstd", "snappy", "gzip", "lz4", "brotli", "none")
+_PAGE_LIMIT = (1 << 31) - 1  # parquet-java and Hardwood take an int
+_TRUE, _FALSE = {"1", "true", "yes", "on"}, {"0", "false", "no", "off"}
+
+
+def _env_switch(var: str) -> bool | None:
+    """An on/off knob: None when unset or empty, else one of 1/true/yes/on or
+    0/false/no/off (any case); anything else raises, naming the variable."""
+    raw = os.environ.get(var)
+    value = (raw or "").strip(_ASCII_SPACE).lower()
+    if not value:
+        return None
+    if value in _TRUE | _FALSE:
+        return value in _TRUE
+    raise ValueError(f"{var}={raw!r} is not a switch; give 1 or 0 (true/false, yes/no, on/off), "
+                     "or leave it unset for each writer's own default")
+
+
+def _env_page_count(var: str) -> int | None:
+    """A page-size knob: None when unset (the writer's default); the count
+    grammar otherwise, where 0 or empty means no limit."""
+    if os.environ.get(var) is None:
+        return None
+    value = _env_count(var, 0.0, limit=_PAGE_LIMIT)
+    return _PAGE_LIMIT if value is None else value
+
+
+@dataclass(frozen=True)
+class ParquetOptions:
+    """What one dataset's Parquet file is written with, in every writer lane.
+
+    `compression` and `statistics` are the recipe's `write.compression` and
+    `write.statistics`. `page_index` (a ColumnIndex and OffsetIndex for every
+    column chunk), `page_bytes` (the data page size target) and `page_rows`
+    (the data page row limit) come from `RAINCLOUD_PARQUET_PAGE_INDEX`,
+    `_PAGE_BYTES` and `_PAGE_ROWS`; None leaves the writer's own default.
+    """
+    compression: str = "zstd"
+    statistics: bool = True
+    page_index: bool | None = None
+    page_bytes: int | None = None
+    page_rows: int | None = None
+
+    def chosen(self) -> dict[str, str]:
+        """The page knobs that are set, as a writer's toolchain records them: a
+        recorded failure is repeated only under the same options."""
+        return {name: str(value) for name, value in (
+            ("parquet_page_index", None if self.page_index is None else int(self.page_index)),
+            ("parquet_page_bytes", self.page_bytes), ("parquet_page_rows", self.page_rows))
+            if value is not None}
+
+    def env(self) -> dict[str, str]:
+        """The options as a sidecar writer reads them from its environment."""
+        env = {PARQUET_COMPRESSION: self.compression, PARQUET_STATISTICS: str(int(self.statistics))}
+        for var, value in ((PARQUET_PAGE_INDEX, self.page_index), (PARQUET_PAGE_BYTES, self.page_bytes),
+                           (PARQUET_PAGE_ROWS, self.page_rows)):
+            if value is not None:
+                env[var] = str(int(value))
+        return env
+
+
+def parquet_page_options() -> ParquetOptions:
+    """The page knobs from the environment, with the recipe fields at their defaults."""
+    return ParquetOptions(page_index=_env_switch(PARQUET_PAGE_INDEX),
+                          page_bytes=_env_page_count(PARQUET_PAGE_BYTES),
+                          page_rows=_env_page_count(PARQUET_PAGE_ROWS))
+
+
+def parquet_options(spec: dict) -> ParquetOptions:
+    """The Parquet write options for `spec`: its recipe's `write.compression`
+    and `write.statistics`, and the page knobs from the environment."""
+    compression = spec_field(spec, "write.compression", "zstd")
+    if compression not in PARQUET_CODECS:
+        raise ValueError(f"write.compression={compression!r} is not one of {', '.join(PARQUET_CODECS)}")
+    statistics = spec_field(spec, "write.statistics", True)
+    page = parquet_page_options()
+    if page.page_index and not statistics:
+        raise ValueError(f"{PARQUET_PAGE_INDEX}=1 asks for page statistics, but the recipe sets "
+                         "write.statistics to false")
+    return replace(page, compression=compression, statistics=bool(statistics))
 
 
 def max_decompressed_bytes() -> int | None:
