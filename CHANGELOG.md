@@ -16,7 +16,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   chunk, or none), `_PAGE_INDEX_COLUMNS` (page statistics only for the first N leaf
   columns), `_PAGE_BYTES`, `_PAGE_ROWS`, `_DICTIONARY`, `_DICTIONARY_PAGE_BYTES` and
   `_PAGE_CHECKSUMS`. The recipe's `write.compression` and `write.statistics` now reach the
-  three sidecar writers too, which used to pick their own. Unset, a setting leaves each
+  three sidecar writers too, which used to pick their own. `parquet@java` moves to
+  parquet-arrow-java 0.3.0, for a compression level, per-column statistics and LZ4_RAW,
+  and `parquet@hardwood` ships brotli4j, so every Parquet writer but `parquet@java`
+  writes Brotli. Unset, a setting leaves each
   library's default as before, so no file changes: pyarrow and Hardwood write no page
   index, arrow-rs and parquet-java write one; parquet-java and Hardwood write page
   checksums, the others do not. A set one is part of the writer's toolchain, so changing

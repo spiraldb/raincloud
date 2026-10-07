@@ -179,12 +179,12 @@ or none, or out of the codec's range) are refused for every lane before any writ
 A lane refuses, as a failed round-trip naming the variable, a setting its library
 cannot honour:
 
-| | py (pyarrow 24) | rs (arrow-rs 59.2) | java (parquet-arrow-java 0.2.0) | hardwood (1.1.0.Beta1) |
+| | py (pyarrow 24) | rs (arrow-rs 59.2) | java (parquet-arrow-java 0.3.0) | hardwood (1.1.0.Beta1) |
 |---|---|---|---|---|
-| codec | all | all | not `lz4` or `brotli` | all |
-| compression level | yes | yes | no | no |
+| codec | all | all | not `brotli` | all |
+| compression level | yes | yes | yes | no |
 | statistics off | yes | yes | yes | no |
-| statistics, first N columns | yes | yes | no | no |
+| statistics, first N columns | yes | yes | yes | no |
 | page index on | yes | yes | yes | no |
 | page index off | yes | yes | no, with statistics on | yes |
 | page index, first N columns | no: all or none | yes | no | no |
@@ -196,9 +196,8 @@ cannot honour:
 | page checksums off | yes (its default) | yes (always) | yes | no |
 
 Each library measures a page its own way, so the same `RAINCLOUD_PARQUET_PAGE_BYTES`
-does not give identical pages in every lane. The gaps in the java column that are
-parquet-arrow-java's (a compression level, per-column statistics, LZ4) can close in a
-later release of it; the page index ones are parquet-java's.
+does not give identical pages in every lane. The java column's page index gaps are
+parquet-java's: it writes a page index for every column that has statistics.
 
 The ORC, Avro and Vortex writers read their own settings the same way
 (`spec.FORMAT_SETTINGS`): the build passes each set one, in canonical form, under
@@ -349,8 +348,8 @@ writes no `ARROW:schema` footer. What it cannot carry is reported, never guessed
   zoned timestamps compare by instant.
 - The reader reports `INT96`, `INTERVAL`, a key-only map, a repeated field
   outside a `LIST` or `MAP`, and a layer layout it does not expect as a
-  comparator gap (`skip`). It bundles zstd, snappy and lz4 but not brotli, which
-  needs a per-platform native library; no raincloud writer uses it.
+  comparator gap (`skip`). It bundles zstd, snappy, lz4 and brotli (brotli4j, with
+  its native library for Linux and macOS on x86-64 and aarch64).
 - Hardwood 1.1.0.Beta1 fails to read a page header whose statistics are longer
   than its first 1 KiB read of the header: it raises "Malformed Parquet metadata"
   where it means to read further (fixed after the release by hardwood bdecd568,

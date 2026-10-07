@@ -190,6 +190,9 @@ class ParquetArrowIoTest {
         assertEquals(65536, options.dictionaryPageSizeBytes());
         assertFalse(options.pageChecksums());
         assertFalse(ParquetArrowIo.writeOptions(null, null, knobs("STATISTICS", "0")).statisticsEnabled());
+        WriteOptions leveled = ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION_LEVEL", "9"));
+        assertEquals(9, leveled.compressionLevel().getAsInt());
+        assertEquals(Compression.LZ4_RAW, ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION", "lz4")).compression());
         // Unset leaves parquet-arrow-java's defaults.
         WriteOptions defaults = WriteOptions.builder().build();
         WriteOptions unset = ParquetArrowIo.writeOptions(null, null, ParquetKnobs.DEFAULT);
@@ -201,9 +204,7 @@ class ParquetArrowIoTest {
     @Test
     void parquetKnobs_theLibraryCannotHonourAreRefused() {
         for (ParquetKnobs knobs : new ParquetKnobs[] {
-                knobs("COMPRESSION", "lz4"), knobs("COMPRESSION", "brotli"), knobs("PAGE_INDEX", "0"),
-                knobs("COMPRESSION_LEVEL", "3"), knobs("STATISTICS_COLUMNS", "10"),
-                knobs("PAGE_INDEX_COLUMNS", "10")}) {
+                knobs("COMPRESSION", "brotli"), knobs("PAGE_INDEX", "0"), knobs("PAGE_INDEX_COLUMNS", "10")}) {
             IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                     () -> ParquetArrowIo.writeOptions(null, null, knobs));
             assertTrue(e.getMessage().startsWith("parquet@java cannot honour RAINCLOUD_PARQUET_"), e.getMessage());

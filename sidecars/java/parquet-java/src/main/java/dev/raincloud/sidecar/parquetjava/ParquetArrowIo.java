@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.arrow.compression.CommonsCompressionFactory;
@@ -15,6 +16,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.ipc.ArrowFileReader;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.parquet.ParquetReadOptions;
+import org.apache.parquet.column.ColumnDescriptor;
 import org.apache.parquet.conf.PlainParquetConfiguration;
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.io.LocalInputFile;
@@ -24,6 +26,7 @@ import org.apache.parquet.schema.Type;
 import dev.raincloud.sidecar.common.BatchSource;
 import dev.raincloud.sidecar.common.Knobs;
 import dev.raincloud.sidecar.common.ParquetKnobs;
+import dev.spiraldb.parquet.arrow.ArrowSchemaToParquet;
 import dev.spiraldb.parquet.arrow.Compression;
 import dev.spiraldb.parquet.arrow.CoreCompressionCodecFactory;
 import dev.spiraldb.parquet.arrow.ParquetArrow;
@@ -83,20 +86,18 @@ public final class ParquetArrowIo {
     /**
      * {@link #writeOptions(String, String)} with the Parquet options every lane is given.
      *
-     * <p>parquet-arrow-java 0.2.0 has no compression level, no per-column statistics and no LZ4
-     * or Brotli codec, and parquet-java writes a page index for every column whenever statistics
-     * are on. A setting that needs any of those is refused rather than written another way.</p>
+     * <p>parquet-java writes a page index for every column whenever statistics are on, so
+     * leaving it out, or limiting it to some columns, is refused; so is Brotli, which
+     * parquet-arrow-java does not write. {@code RAINCLOUD_PARQUET_STATISTICS_COLUMNS} needs the
+     * file's leaf columns, so {@link #writeParquet(Path, Path, BufferAllocator)} applies it
+     * ({@link #limitStatistics}) once the canonical's schema is open.</p>
      */
     static WriteOptions writeOptions(String maxRows, String targetEncodedBytes, ParquetKnobs knobs) {
+        return optionsBuilder(maxRows, targetEncodedBytes, knobs).build();
+    }
+
+    private static WriteOptions.Builder optionsBuilder(String maxRows, String targetEncodedBytes, ParquetKnobs knobs) {
         String lane = "parquet@java";
-        if (knobs.compressionLevel() != null) {
-            throw ParquetKnobs.unsupported(lane, ParquetKnobs.COMPRESSION_LEVEL, knobs.compressionLevel(),
-                    "parquet-arrow-java has no compression level");
-        }
-        if (knobs.statisticsColumns() != null) {
-            throw ParquetKnobs.unsupported(lane, ParquetKnobs.STATISTICS_COLUMNS, knobs.statisticsColumns(),
-                    "parquet-arrow-java turns statistics on or off for every column");
-        }
         if (knobs.pageIndexColumns() != null) {
             throw ParquetKnobs.unsupported(lane, ParquetKnobs.PAGE_INDEX_COLUMNS, knobs.pageIndexColumns(),
                     "parquet-java writes a page index for every column that has statistics");
@@ -110,6 +111,9 @@ public final class ParquetArrowIo {
                 .statisticsEnabled(knobs.statistics())
                 .maxRowGroupRows(rowGroupMaxRows(maxRows))
                 .targetRowGroupBytes(rowGroupTargetEncodedBytes(targetEncodedBytes));
+        if (knobs.compressionLevel() != null) {
+            builder.compressionLevel(knobs.compressionLevel());
+        }
         if (knobs.pageBytes() != null) {
             builder.pageSizeBytes(knobs.pageBytes());
         }
@@ -125,7 +129,23 @@ public final class ParquetArrowIo {
         if (knobs.pageChecksums() != null) {
             builder.pageChecksums(knobs.pageChecksums());
         }
-        return builder.build();
+        return builder;
+    }
+
+    /** The write options for the canonical's schema. */
+    @FunctionalInterface
+    private interface OptionsFor {
+        WriteOptions apply(Schema schema) throws IOException;
+    }
+
+    /** Statistics off for every Parquet leaf column of {@code schema} past the first {@code columns}. */
+    static WriteOptions.Builder limitStatistics(WriteOptions.Builder builder, Schema schema, int columns)
+            throws IOException {
+        List<ColumnDescriptor> leaves = ArrowSchemaToParquet.toParquet(schema).getColumns();
+        for (int i = columns; i < leaves.size(); i++) {
+            builder.columnStatisticsEnabled(String.join(".", leaves.get(i).getPath()), false);
+        }
+        return builder;
     }
 
     private static Compression compression(String codec) {
@@ -138,9 +158,11 @@ public final class ParquetArrowIo {
                 return Compression.GZIP;
             case "none":
                 return Compression.UNCOMPRESSED;
+            case "lz4":
+                return Compression.LZ4_RAW;
             default:
                 throw ParquetKnobs.unsupported("parquet@java", ParquetKnobs.COMPRESSION, codec,
-                        "parquet-arrow-java writes only zstd, snappy, gzip or no compression");
+                        "parquet-arrow-java writes no brotli");
         }
     }
 
@@ -155,21 +177,29 @@ public final class ParquetArrowIo {
     public static void writeParquet(Path canonicalArrow, Path output, BufferAllocator allocator)
             throws IOException {
         // Resolved before touching the output, so a bad knob leaves nothing behind.
-        writeParquet(canonicalArrow, output, allocator,
-                writeOptions(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES),
-                        ParquetKnobs.fromEnv()));
+        ParquetKnobs knobs = ParquetKnobs.fromEnv();
+        WriteOptions.Builder options =
+                optionsBuilder(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES), knobs);
+        options.build();
+        writeParquet(canonicalArrow, output, allocator, schema -> knobs.statisticsColumns() == null
+                ? options.build() : limitStatistics(options, schema, knobs.statisticsColumns()).build());
     }
 
     /** {@link #writeParquet(Path, Path, BufferAllocator)} with resolved options. */
     static void writeParquet(Path canonicalArrow, Path output, BufferAllocator allocator, WriteOptions options)
             throws IOException {
+        writeParquet(canonicalArrow, output, allocator, schema -> options);
+    }
+
+    private static void writeParquet(Path canonicalArrow, Path output, BufferAllocator allocator,
+            OptionsFor optionsFor) throws IOException {
         Files.deleteIfExists(output); // parquet-arrow-java's writer is create-new
         boolean written = false;
         try (SeekableByteChannel channel = Files.newByteChannel(canonicalArrow, StandardOpenOption.READ);
                 ArrowFileReader input =
                         new ArrowFileReader(channel, allocator, CommonsCompressionFactory.INSTANCE)) {
             Schema schema = input.getVectorSchemaRoot().getSchema();
-            try (ParquetArrowWriter writer = ParquetArrow.writer(schema).options(options).build(output)) {
+            try (ParquetArrowWriter writer = ParquetArrow.writer(schema).options(optionsFor.apply(schema)).build(output)) {
                 writer.writeAll(input);
                 writer.finish();
             }

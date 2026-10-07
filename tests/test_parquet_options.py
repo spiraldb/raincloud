@@ -247,6 +247,10 @@ def _statistics(path) -> list[tuple[bool, bool]]:
     return [(group.column(c).is_stats_set, group.column(c).has_column_index) for c in range(group.num_columns)]
 
 
+def _codec(path) -> str:
+    return pq.ParquetFile(path).metadata.row_group(0).column(0).compression
+
+
 REFUSED = "refused"
 # Each setting, and what every writer does with it: REFUSED, or a check of the file.
 SETTINGS = {
@@ -254,7 +258,8 @@ SETTINGS = {
         {"RAINCLOUD_PARQUET_STATISTICS_COLUMNS": "1"},
         {"parquet@py": lambda f: [s for s, _ in _statistics(f)] == [True, False],
          "parquet@rs": lambda f: _statistics(f) == [(True, True), (False, False)],
-         "parquet@java": REFUSED, "parquet@hardwood": REFUSED}),
+         "parquet@java": lambda f: _statistics(f) == [(True, True), (False, False)],
+         "parquet@hardwood": REFUSED}),
     "page index for the first column": (
         {"RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS": "1"},
         {"parquet@rs": lambda f: _statistics(f) == [(True, True), (True, False)],
@@ -271,8 +276,9 @@ SETTINGS = {
          "parquet@hardwood": REFUSED}),
     "a zstd level": (
         {"RAINCLOUD_PARQUET_COMPRESSION_LEVEL": "19"},
-        {"parquet@py": lambda f: True, "parquet@rs": lambda f: True,
-         "parquet@java": REFUSED, "parquet@hardwood": REFUSED}),
+        {**dict.fromkeys(("parquet@py", "parquet@rs", "parquet@java"), lambda f: _codec(f) == "ZSTD"),
+         "parquet@hardwood": REFUSED}),
+
     "page checksums": (
         {"RAINCLOUD_PARQUET_PAGE_CHECKSUMS": "1"},
         {**dict.fromkeys(("parquet@py", "parquet@java", "parquet@hardwood"),
@@ -302,3 +308,21 @@ def test_each_setting_is_honoured_or_refused_by_every_writer(tmp_path, monkeypat
         return
     assert roundtrip is True, note
     assert expected[cell](dest), (setting, cell)
+
+
+@pytest.mark.parametrize("cell", CELLS)
+# pyarrow names the LZ4_RAW codec "LZ4" (it reads no Hadoop-framed LZ4 either).
+@pytest.mark.parametrize("codec, written", [("lz4", "LZ4"), ("gzip", "GZIP"), ("snappy", "SNAPPY"),
+                                            ("none", "UNCOMPRESSED"), ("brotli", "BROTLI")])
+def test_the_recipes_codec_reaches_every_writer(tmp_path, cell, codec, written):
+    roundtrip_note_dest = _write(tmp_path, cell, {"slug": "pages", "write": {"compression": codec, "statistics": True}})
+    if roundtrip_note_dest is None:
+        pytest.skip(f"{cell} not installed")
+    roundtrip, note, dest = roundtrip_note_dest
+    if (cell, codec) == ("parquet@java", "brotli"):
+        assert roundtrip is False and "parquet@java cannot honour RAINCLOUD_PARQUET_COMPRESSION=brotli" in note, note
+        return
+    assert roundtrip is True, note
+    assert _codec(dest) == written
+    # Another library decodes it: pyarrow reads every writer's file in every codec.
+    assert pq.read_table(dest).select(["x", "s"]).to_pydict() == TABLE.to_pydict()
