@@ -11,12 +11,12 @@ import pyarrow.parquet as pq
 import pytest
 
 from raincloud.pipeline.export import writer_toolchain
-from raincloud.pipeline.export.exporters import ParquetExporter
+from raincloud.pipeline.export.exporters import ParquetExporter, UnsupportedOption
 from raincloud.pipeline.export.sidecar import SidecarExporter
-from raincloud.pipeline.spec import ParquetOptions, parquet_options
+from raincloud.pipeline.spec import PARQUET_SETTING_VARS, ParquetOptions, parquet_options
 from tests._helpers import find_sidecar, write_ipc
 
-KNOBS = ("RAINCLOUD_PARQUET_PAGE_INDEX", "RAINCLOUD_PARQUET_PAGE_BYTES", "RAINCLOUD_PARQUET_PAGE_ROWS")
+KNOBS = PARQUET_SETTING_VARS
 SPEC = {"slug": "pages", "write": {"compression": "zstd", "statistics": True}}
 TABLE = pa.table({"x": pa.array(range(50_000), pa.int64()), "s": [f"v{i % 97}" for i in range(50_000)]})
 
@@ -27,17 +27,19 @@ def _unset(monkeypatch):
         monkeypatch.delenv(var, raising=False)
 
 
-def _data_pages(path) -> int:
-    """Data pages in the first column chunk, counted from the page headers."""
+def _data_pages(path, column: int = 0) -> list[dict]:
+    """The data page headers of one column chunk of the first row group, read
+    from the file: {thrift field id: value}, as parquet.thrift numbers them."""
     meta = pq.ParquetFile(path).metadata
-    column = meta.row_group(0).column(0)
+    chunk = meta.row_group(0).column(column)
     data = path.read_bytes()
-    start = column.dictionary_page_offset if column.has_dictionary_page else column.data_page_offset
-    pos, end, pages = start, start + column.total_compressed_size, 0
+    start = chunk.dictionary_page_offset if chunk.has_dictionary_page else chunk.data_page_offset
+    pos, end, pages = start, start + chunk.total_compressed_size, []
     while pos < end:
         header, pos = _thrift_struct(data, pos)
         pos += header[3]  # compressed_page_size
-        pages += header[1] in (0, 3)  # DATA_PAGE, DATA_PAGE_V2
+        if header[1] in (0, 3):  # DATA_PAGE, DATA_PAGE_V2
+            pages.append(header)
     return pages
 
 
@@ -102,7 +104,7 @@ def _layout(path) -> tuple[bool, int]:
     chunks = [meta.row_group(g).column(c) for g in range(meta.num_row_groups) for c in range(meta.num_columns)]
     indexed = {chunk.has_column_index and chunk.has_offset_index for chunk in chunks}
     assert len(indexed) == 1, "some column chunks have a page index and some do not"
-    return indexed.pop(), _data_pages(path)
+    return indexed.pop(), len(_data_pages(path))
 
 
 # ---- the options -----------------------------------------------------------------------
@@ -122,7 +124,7 @@ def test_set_knobs_are_read_once_and_passed_in_one_form(monkeypatch):
     monkeypatch.setenv("RAINCLOUD_PARQUET_PAGE_BYTES", "64e3")
     monkeypatch.setenv("RAINCLOUD_PARQUET_PAGE_ROWS", "0")
     options = parquet_options({"write": {"compression": "gzip", "statistics": True}})
-    assert options == ParquetOptions("gzip", True, True, 64_000, (1 << 31) - 1)
+    assert options == ParquetOptions("gzip", True, page_index=True, page_bytes=64_000, page_rows=(1 << 31) - 1)
     assert options.env() == {"RAINCLOUD_PARQUET_COMPRESSION": "gzip", "RAINCLOUD_PARQUET_STATISTICS": "1",
                              "RAINCLOUD_PARQUET_PAGE_INDEX": "1", "RAINCLOUD_PARQUET_PAGE_BYTES": "64000",
                              "RAINCLOUD_PARQUET_PAGE_ROWS": str((1 << 31) - 1)}
@@ -134,7 +136,14 @@ def test_set_knobs_are_read_once_and_passed_in_one_form(monkeypatch):
     ({"RAINCLOUD_PARQUET_PAGE_INDEX": "maybe"}, SPEC, "is not a switch"),
     ({"RAINCLOUD_PARQUET_PAGE_BYTES": "1MiB"}, SPEC, "is not a number"),
     ({"RAINCLOUD_PARQUET_PAGE_ROWS": "-1"}, SPEC, "is not a number"),
-    ({"RAINCLOUD_PARQUET_PAGE_INDEX": "1"}, {"write": {"statistics": False}}, "asks for page statistics"),
+    ({"RAINCLOUD_PARQUET_PAGE_INDEX": "1"}, {"write": {"statistics": False}}, "asks for statistics"),
+    ({"RAINCLOUD_PARQUET_STATISTICS_COLUMNS": "5"}, {"write": {"statistics": False}}, "asks for statistics"),
+    ({"RAINCLOUD_PARQUET_PAGE_INDEX": "0", "RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS": "5"}, SPEC,
+     "asks for a page index"),
+    ({"RAINCLOUD_PARQUET_COMPRESSION_LEVEL": "-1"}, SPEC, "is not a compression level"),
+    ({"RAINCLOUD_PARQUET_COMPRESSION_LEVEL": "23"}, SPEC, "outside zstd's levels 1..22"),
+    ({"RAINCLOUD_PARQUET_COMPRESSION_LEVEL": "1"}, {"write": {"compression": "snappy"}},
+     "snappy takes no compression level"),
     ({}, {"write": {"compression": "lzo"}}, "is not one of"),
 ])
 def test_a_malformed_option_is_refused_naming_it(monkeypatch, env, spec, error):
@@ -174,7 +183,10 @@ def _write(tmp_path, cell: str, spec: dict = SPEC):
         write_ipc(canonical, TABLE, max_chunksize=8192)
     dest = tmp_path / f"{cell.replace('@', '-')}.parquet"
     if cell == "parquet@py":
-        result = ParquetExporter().export(spec, canonical, dest=dest)
+        try:
+            result = ParquetExporter().export(spec, canonical, dest=dest)
+        except UnsupportedOption as refused:  # recorded unavailable when a build runs it
+            return False, str(refused), dest
     else:
         impl = cell.partition("@")[2]
         if not find_sidecar(cell):
@@ -227,3 +239,66 @@ def test_the_page_size_knob_reaches_every_writer(tmp_path, monkeypatch, cell):
     # More pages, not a figure: each library measures a page its own way (arrow-rs
     # sizes a dictionary-encoded page by its estimate, checked every 1,024 values).
     assert _layout(small)[1] > _layout(unset[2])[1], (cell, _layout(small), _layout(unset[2]))
+
+
+def _statistics(path) -> list[tuple[bool, bool]]:
+    """(chunk statistics, page index) per column of the first row group."""
+    group = pq.ParquetFile(path).metadata.row_group(0)
+    return [(group.column(c).is_stats_set, group.column(c).has_column_index) for c in range(group.num_columns)]
+
+
+REFUSED = "refused"
+# Each setting, and what every writer does with it: REFUSED, or a check of the file.
+SETTINGS = {
+    "statistics for the first column": (
+        {"RAINCLOUD_PARQUET_STATISTICS_COLUMNS": "1"},
+        {"parquet@py": lambda f: [s for s, _ in _statistics(f)] == [True, False],
+         "parquet@rs": lambda f: _statistics(f) == [(True, True), (False, False)],
+         "parquet@java": REFUSED, "parquet@hardwood": REFUSED}),
+    "page index for the first column": (
+        {"RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS": "1"},
+        {"parquet@rs": lambda f: _statistics(f) == [(True, True), (True, False)],
+         "parquet@py": REFUSED, "parquet@java": REFUSED, "parquet@hardwood": REFUSED}),
+    "no dictionaries": (
+        {"RAINCLOUD_PARQUET_DICTIONARY": "0"},
+        dict.fromkeys(CELLS, lambda f: not any(pq.ParquetFile(f).metadata.row_group(0).column(c).has_dictionary_page
+                                               for c in range(2)))),
+    "a small dictionary page": (
+        # 50,000 distinct int64s do not fit 1 KiB: the column falls back to PLAIN pages.
+        {"RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES": "1024"},
+        {**dict.fromkeys(("parquet@py", "parquet@rs", "parquet@java"),
+                         lambda f: any(page[5][2] == 0 for page in _data_pages(f) if 5 in page)),
+         "parquet@hardwood": REFUSED}),
+    "a zstd level": (
+        {"RAINCLOUD_PARQUET_COMPRESSION_LEVEL": "19"},
+        {"parquet@py": lambda f: True, "parquet@rs": lambda f: True,
+         "parquet@java": REFUSED, "parquet@hardwood": REFUSED}),
+    "page checksums": (
+        {"RAINCLOUD_PARQUET_PAGE_CHECKSUMS": "1"},
+        {**dict.fromkeys(("parquet@py", "parquet@java", "parquet@hardwood"),
+                         lambda f: all(4 in page for page in _data_pages(f))),
+         "parquet@rs": REFUSED}),
+    "no page checksums": (
+        {"RAINCLOUD_PARQUET_PAGE_CHECKSUMS": "0"},
+        {**dict.fromkeys(("parquet@py", "parquet@rs", "parquet@java"),
+                         lambda f: not any(4 in page for page in _data_pages(f))),
+         "parquet@hardwood": REFUSED}),
+}
+
+
+@pytest.mark.parametrize("cell", CELLS)
+@pytest.mark.parametrize("setting", SETTINGS)
+def test_each_setting_is_honoured_or_refused_by_every_writer(tmp_path, monkeypatch, setting, cell):
+    env, expected = SETTINGS[setting]
+    for var, value in env.items():
+        monkeypatch.setenv(var, value)
+    written = _write(tmp_path, cell)
+    if written is None:
+        pytest.skip(f"{cell} not installed")
+    roundtrip, note, dest = written
+    if expected[cell] is REFUSED:
+        assert roundtrip is False and f"{cell} cannot honour {next(iter(env))}=" in note, note
+        assert not dest.exists()
+        return
+    assert roundtrip is True, note
+    assert expected[cell](dest), (setting, cell)

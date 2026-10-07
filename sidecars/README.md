@@ -153,31 +153,52 @@ so the build passes that cap to them as `RAINCLOUD_ROW_GROUP_MAX_ROWS` in their
 environment.
 
 The Parquet writers also share one set of write options
-(`raincloud/pipeline/spec.py::ParquetOptions`), which the build passes to a sidecar
-in this form:
+(`raincloud/pipeline/spec.py::ParquetOptions`, which documents each), which the build
+passes to a sidecar in this form:
 
 | variable | value | from |
 |---|---|---|
 | `RAINCLOUD_PARQUET_COMPRESSION` | `zstd`, `snappy`, `gzip`, `lz4` (LZ4_RAW), `brotli` or `none` | the recipe's `write.compression` |
 | `RAINCLOUD_PARQUET_STATISTICS` | `1` or `0` | the recipe's `write.statistics` |
+| `RAINCLOUD_PARQUET_COMPRESSION_LEVEL` | a whole number in the codec's range: zstd 1-22, gzip 0-9, brotli 0-11 | the install, only when set |
+| `RAINCLOUD_PARQUET_STATISTICS_COLUMNS` | N: statistics only for the first N leaf columns | the install, only when set |
 | `RAINCLOUD_PARQUET_PAGE_INDEX` | `1` or `0`: a ColumnIndex and OffsetIndex for every column chunk, or neither | the install, only when set |
-| `RAINCLOUD_PARQUET_PAGE_BYTES` | data page size target, count grammar (`0`: no limit) | the install, only when set |
-| `RAINCLOUD_PARQUET_PAGE_ROWS` | data page row limit, count grammar (`0`: no limit) | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS` | N: page statistics only for the first N leaf columns, chunk statistics for all | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_BYTES` | data page size target | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_ROWS` | data page row limit | the install, only when set |
+| `RAINCLOUD_PARQUET_DICTIONARY` | `1` or `0`: dictionary encoding, or PLAIN | the install, only when set |
+| `RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES` | dictionary page size limit | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1` or `0`: a CRC in every page header, or none | the install, only when set |
 
 An unset variable is the lane's library default (zstd and statistics on, for the first
-two). The switches read `1/true/yes/on` and `0/false/no/off` in any case, empty as
-unset, in every lane. A lane refuses, as a failed round-trip naming the variable, an
-option its library cannot honour:
+two). Counts use the count grammar, `0` meaning no limit (every column, for the two
+column counts). Switches read `1/true/yes/on` and `0/false/no/off` in any case, empty as
+unset, in every lane. Settings that contradict each other or the recipe (a page index
+with statistics off; `PAGE_INDEX=0` with `PAGE_INDEX_COLUMNS`; a level for snappy, lz4
+or none, or out of the codec's range) are refused for every lane before any writer runs.
+A lane refuses, as a failed round-trip naming the variable, a setting its library
+cannot honour:
 
-| | compression | statistics off | page index on | page index off | page bytes | page rows |
-|---|---|---|---|---|---|---|
-| parquet@py (pyarrow) | all | yes | yes | yes | yes | yes |
-| parquet@rs (arrow-rs) | all | yes | yes | yes | yes | yes, checked every 1,024 values |
-| parquet@java (parquet-arrow-java) | not `lz4` or `brotli` | yes | yes, with statistics | no, with statistics on | yes | yes |
-| parquet@hardwood (Hardwood 1.1.0.Beta1) | all | no | no | yes | yes | no |
+| | py (pyarrow 24) | rs (arrow-rs 59.2) | java (parquet-arrow-java 0.2.0) | hardwood (1.1.0.Beta1) |
+|---|---|---|---|---|
+| codec | all | all | not `lz4` or `brotli` | all |
+| compression level | yes | yes | no | no |
+| statistics off | yes | yes | yes | no |
+| statistics, first N columns | yes | yes | no | no |
+| page index on | yes | yes | yes | no |
+| page index off | yes | yes | no, with statistics on | yes |
+| page index, first N columns | no: all or none | yes | no | no |
+| page bytes | yes | yes | yes | yes |
+| page rows | yes | yes, checked every 1,024 values | yes | no |
+| dictionary on / off | yes | yes | yes | yes (off is PLAIN) |
+| dictionary page bytes | yes | yes | yes | no |
+| page checksums on | yes | no | yes (its default) | yes (always) |
+| page checksums off | yes (its default) | yes (always) | yes | no |
 
 Each library measures a page its own way, so the same `RAINCLOUD_PARQUET_PAGE_BYTES`
-does not give identical pages in every lane.
+does not give identical pages in every lane. The gaps in the java column that are
+parquet-arrow-java's (a compression level, per-column statistics, LZ4) can close in a
+later release of it; the page index ones are parquet-java's.
 
 ## The Nimble lane
 

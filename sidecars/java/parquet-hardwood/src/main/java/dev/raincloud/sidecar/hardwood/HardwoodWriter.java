@@ -62,6 +62,7 @@ import dev.hardwood.metadata.RepetitionType;
 import dev.hardwood.metadata.SchemaElement;
 import dev.hardwood.schema.FileSchema;
 import dev.hardwood.writer.ColumnBatch;
+import dev.hardwood.writer.ColumnEncoding;
 import dev.hardwood.writer.ColumnWriter;
 import dev.hardwood.writer.ParquetFileWriter;
 import dev.hardwood.writer.WriterConfig;
@@ -114,23 +115,43 @@ public final class HardwoodWriter {
     /**
      * {@link #writerConfig(String, String)} with the Parquet options every lane is given.
      *
-     * <p>Hardwood 1.1.0.Beta1's {@code WriterConfig} has a page size target but no page row
-     * limit, no statistics switch (it always writes column-chunk statistics) and writes no page
-     * index, so a knob asking for one of those is refused rather than written some other
-     * way.</p>
+     * <p>Hardwood 1.1.0.Beta1's {@code WriterConfig} has a codec, a page size target and a
+     * per-column encoding, and nothing else these settings ask for: no compression level, no page
+     * row limit, no dictionary page size, no statistics switch (it always writes column-chunk
+     * statistics), no page index (it writes none) and no way to leave out page checksums (it
+     * always writes them). A setting that needs one of those is refused rather than written
+     * another way. Dictionaries off is {@code ColumnEncoding.PLAIN}, the encoding the other
+     * libraries fall back to.</p>
      */
     public static WriterConfig writerConfig(String maxRows, String targetEncodedBytes, ParquetKnobs knobs) {
-        if (!knobs.statistics()) {
-            throw ParquetKnobs.unsupported("parquet@hardwood", ParquetKnobs.STATISTICS, 0,
-                    "Hardwood always writes column-chunk statistics");
+        String lane = "parquet@hardwood";
+        if (knobs.compressionLevel() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.COMPRESSION_LEVEL, knobs.compressionLevel(),
+                    "Hardwood has no compression level");
         }
-        if (Boolean.TRUE.equals(knobs.pageIndex())) {
-            throw ParquetKnobs.unsupported("parquet@hardwood", ParquetKnobs.PAGE_INDEX, 1,
+        if (!knobs.statistics() || knobs.statisticsColumns() != null) {
+            throw ParquetKnobs.unsupported(lane,
+                    knobs.statistics() ? ParquetKnobs.STATISTICS_COLUMNS : ParquetKnobs.STATISTICS,
+                    knobs.statistics() ? knobs.statisticsColumns() : 0,
+                    "Hardwood always writes column-chunk statistics for every column");
+        }
+        if (Boolean.TRUE.equals(knobs.pageIndex()) || knobs.pageIndexColumns() != null) {
+            throw ParquetKnobs.unsupported(lane,
+                    knobs.pageIndexColumns() != null ? ParquetKnobs.PAGE_INDEX_COLUMNS : ParquetKnobs.PAGE_INDEX,
+                    knobs.pageIndexColumns() != null ? knobs.pageIndexColumns() : 1,
                     "Hardwood writes no page index");
         }
         if (knobs.pageRows() != null) {
-            throw ParquetKnobs.unsupported("parquet@hardwood", ParquetKnobs.PAGE_ROWS, knobs.pageRows(),
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.PAGE_ROWS, knobs.pageRows(),
                     "Hardwood has no page row limit");
+        }
+        if (knobs.dictionaryPageBytes() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.DICTIONARY_PAGE_BYTES, knobs.dictionaryPageBytes(),
+                    "Hardwood has no dictionary page size limit");
+        }
+        if (Boolean.FALSE.equals(knobs.pageChecksums())) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.PAGE_CHECKSUMS, 0,
+                    "Hardwood writes a checksum in every page header");
         }
         WriterConfig.Builder builder = WriterConfig.builder()
                 .codec(codec(knobs.compression()))
@@ -139,6 +160,9 @@ public final class HardwoodWriter {
                         Knobs.DEFAULT_TARGET_ENCODED_BYTES, Long.MAX_VALUE));
         if (knobs.pageBytes() != null) {
             builder.pageTargetBytes(knobs.pageBytes());
+        }
+        if (Boolean.FALSE.equals(knobs.dictionary())) {
+            builder.encoding(ColumnEncoding.PLAIN);
         }
         return builder.build();
     }

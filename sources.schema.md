@@ -83,9 +83,9 @@ An optional top-level `export_priority` sets a catalog-wide writer order, in the
      writers (parquet@rs, parquet@java, parquet@hardwood) receive them in their
      environment (RAINCLOUD_ROW_GROUP_MAX_ROWS, RAINCLOUD_PARQUET_COMPRESSION,
      RAINCLOUD_PARQUET_STATISTICS), so the recipe wins in every lane. A writer
-     whose library cannot do what is asked records Parquet unavailable. The page
-     layout is the install's RAINCLOUD_PARQUET_PAGE_* settings, not the
-     recipe's. v1 manifests also carried `output` and `page_index`; no writer
+     whose library cannot do what is asked records Parquet unavailable. The
+     compression level, page index, page layout, dictionaries and checksums are
+     the install's RAINCLOUD_PARQUET_* settings, not the recipe's. v1 manifests also carried `output` and `page_index`; no writer
      read either, and v2 rejects them. */
   "write": {
     "compression": "zstd",

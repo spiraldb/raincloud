@@ -268,22 +268,31 @@ fn switch(var: &str, raw: Option<&OsStr>) -> Result<Option<bool>> {
 }
 
 /// The Parquet write options every Parquet lane is given the same way
-/// (`raincloud/pipeline/spec.py::ParquetOptions`). The sidecar never sees the
-/// recipe: `SidecarExporter` passes its `write.compression` and
-/// `write.statistics` as `RAINCLOUD_PARQUET_COMPRESSION` and
-/// `RAINCLOUD_PARQUET_STATISTICS`, and the page knobs only when they are set.
-/// An unset page knob leaves arrow-rs's own default: a page index, 1 MiB
-/// pages, 20,000 rows a page.
+/// (`raincloud/pipeline/spec.py::ParquetOptions`, which documents each). The
+/// sidecar never sees the recipe: `SidecarExporter` passes its
+/// `write.compression` and `write.statistics` as `RAINCLOUD_PARQUET_COMPRESSION`
+/// and `RAINCLOUD_PARQUET_STATISTICS`, and each install setting only when it is
+/// set. Unset leaves arrow-rs's own default: a page index, 1 MiB pages, 20,000
+/// rows a page, dictionaries on, no page checksums.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ParquetOptions {
+    /// The codec, at `RAINCLOUD_PARQUET_COMPRESSION_LEVEL` when that is set.
     pub compression: Compression,
     pub statistics: bool,
-    /// A ColumnIndex and OffsetIndex for every column chunk.
+    /// Statistics only for the first N leaf columns.
+    pub statistics_columns: Option<usize>,
+    /// A ColumnIndex and OffsetIndex for every column chunk, or neither.
     pub page_index: Option<bool>,
+    /// Page statistics only for the first N leaf columns; every column keeps
+    /// its chunk statistics.
+    pub page_index_columns: Option<usize>,
     /// Data page size target, in bytes.
     pub page_bytes: Option<usize>,
     /// Data page row limit.
     pub page_rows: Option<usize>,
+    pub dictionary: Option<bool>,
+    /// Dictionary page size limit, in bytes.
+    pub dictionary_page_bytes: Option<usize>,
 }
 
 impl Default for ParquetOptions {
@@ -291,9 +300,13 @@ impl Default for ParquetOptions {
         Self {
             compression: Compression::ZSTD(ZstdLevel::default()),
             statistics: true,
+            statistics_columns: None,
             page_index: None,
+            page_index_columns: None,
             page_bytes: None,
             page_rows: None,
+            dictionary: None,
+            dictionary_page_bytes: None,
         }
     }
 }
@@ -307,50 +320,112 @@ impl ParquetOptions {
     /// environment.
     pub fn from_vars(var: impl Fn(&str) -> Option<std::ffi::OsString>) -> Result<Self> {
         const COMPRESSION: &str = "RAINCLOUD_PARQUET_COMPRESSION";
+        const LEVEL: &str = "RAINCLOUD_PARQUET_COMPRESSION_LEVEL";
         const STATISTICS: &str = "RAINCLOUD_PARQUET_STATISTICS";
+        const STATISTICS_COLUMNS: &str = "RAINCLOUD_PARQUET_STATISTICS_COLUMNS";
         const PAGE_INDEX: &str = "RAINCLOUD_PARQUET_PAGE_INDEX";
+        const PAGE_INDEX_COLUMNS: &str = "RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS";
         const PAGE_BYTES: &str = "RAINCLOUD_PARQUET_PAGE_BYTES";
         const PAGE_ROWS: &str = "RAINCLOUD_PARQUET_PAGE_ROWS";
-        let compression = match var(COMPRESSION) {
-            None => Self::default().compression,
-            Some(raw) => match raw.to_str().map(|s| s.trim_matches(is_knob_space)) {
-                Some("zstd") => Compression::ZSTD(ZstdLevel::default()),
-                Some("snappy") => Compression::SNAPPY,
-                Some("gzip") => Compression::GZIP(Default::default()),
-                // pyarrow's "lz4" and Hardwood's LZ4_RAW: the framing the format
-                // recommends, not the deprecated Hadoop LZ4.
-                Some("lz4") => Compression::LZ4_RAW,
-                Some("brotli") => Compression::BROTLI(Default::default()),
-                Some("none") => Compression::UNCOMPRESSED,
-                _ => bail!(
-                    "{COMPRESSION}={raw:?} is not one of zstd, snappy, gzip, lz4, brotli, none"
-                ),
-            },
-        };
-        let statistics = switch(STATISTICS, var(STATISTICS).as_deref())?.unwrap_or(true);
-        let page_index = switch(PAGE_INDEX, var(PAGE_INDEX).as_deref())?;
-        if page_index == Some(true) && !statistics {
-            bail!("{PAGE_INDEX}=1 asks for page statistics, but {STATISTICS} is 0");
-        }
+        const DICTIONARY: &str = "RAINCLOUD_PARQUET_DICTIONARY";
+        const DICTIONARY_PAGE_BYTES: &str = "RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES";
+        const PAGE_CHECKSUMS: &str = "RAINCLOUD_PARQUET_PAGE_CHECKSUMS";
+        let flag = |name: &str| switch(name, var(name).as_deref());
         // Unset is arrow-rs's default; empty or 0 is no limit, as in parquet@py.
-        let page = |name: &str| -> Result<Option<usize>> {
+        let count = |name: &str| -> Result<Option<usize>> {
             var(name)
                 .map(|raw| knob(name, Some(&raw), 0, (1 << 31) - 1))
                 .transpose()
         };
-        Ok(Self {
+        let level = match var(LEVEL) {
+            None => None,
+            Some(raw) => match raw.to_str().map(|s| s.trim_matches(is_knob_space)) {
+                Some("") => None,
+                Some(text) if text.bytes().all(|b| b.is_ascii_digit()) => Some(
+                    text.parse::<u32>()
+                        .with_context(|| format!("{LEVEL}='{text}' is too large"))?,
+                ),
+                _ => bail!(
+                    "{LEVEL}={raw:?} is not a compression level; give a whole number such as 3"
+                ),
+            },
+        };
+        let codec = match var(COMPRESSION) {
+            None => "zstd".to_string(),
+            Some(raw) => raw
+                .to_str()
+                .map(|s| s.trim_matches(is_knob_space).to_string())
+                .unwrap_or_default(),
+        };
+        let leveled = |name: &str, result: parquet::errors::Result<Compression>| {
+            result.map_err(|e| anyhow::anyhow!("{LEVEL}={} for {name}: {e}", level.unwrap()))
+        };
+        use parquet::basic::{BrotliLevel, GzipLevel};
+        let compression = match (codec.as_str(), level) {
+            ("zstd", None) => Compression::ZSTD(ZstdLevel::default()),
+            ("zstd", Some(l)) => leveled(
+                "zstd",
+                i32::try_from(l)
+                    .map_err(|_| parquet::errors::ParquetError::General("too large".into()))
+                    .and_then(ZstdLevel::try_new)
+                    .map(Compression::ZSTD),
+            )?,
+            ("gzip", None) => Compression::GZIP(Default::default()),
+            ("gzip", Some(l)) => leveled("gzip", GzipLevel::try_new(l).map(Compression::GZIP))?,
+            ("brotli", None) => Compression::BROTLI(Default::default()),
+            ("brotli", Some(l)) => {
+                leveled("brotli", BrotliLevel::try_new(l).map(Compression::BROTLI))?
+            }
+            ("snappy" | "lz4" | "none", Some(l)) => {
+                bail!("{LEVEL}={l}: {codec} takes no compression level")
+            }
+            ("snappy", None) => Compression::SNAPPY,
+            // pyarrow's "lz4" and Hardwood's LZ4_RAW: the framing the format
+            // recommends, not the deprecated Hadoop LZ4.
+            ("lz4", None) => Compression::LZ4_RAW,
+            ("none", None) => Compression::UNCOMPRESSED,
+            _ => {
+                bail!("{COMPRESSION}='{codec}' is not one of zstd, snappy, gzip, lz4, brotli, none")
+            }
+        };
+        let statistics = flag(STATISTICS)?.unwrap_or(true);
+        let options = Self {
             compression,
             statistics,
-            page_index,
-            page_bytes: page(PAGE_BYTES)?,
-            page_rows: page(PAGE_ROWS)?,
-        })
+            statistics_columns: count(STATISTICS_COLUMNS)?,
+            page_index: flag(PAGE_INDEX)?,
+            page_index_columns: count(PAGE_INDEX_COLUMNS)?,
+            page_bytes: count(PAGE_BYTES)?,
+            page_rows: count(PAGE_ROWS)?,
+            dictionary: flag(DICTIONARY)?,
+            dictionary_page_bytes: count(DICTIONARY_PAGE_BYTES)?,
+        };
+        if !statistics {
+            for (name, asked) in [
+                (PAGE_INDEX, options.page_index == Some(true)),
+                (STATISTICS_COLUMNS, options.statistics_columns.is_some()),
+                (PAGE_INDEX_COLUMNS, options.page_index_columns.is_some()),
+            ] {
+                if asked {
+                    bail!("{name} asks for statistics, but {STATISTICS} is 0");
+                }
+            }
+        }
+        if options.page_index == Some(false) && options.page_index_columns.is_some() {
+            bail!("{PAGE_INDEX_COLUMNS} asks for a page index, but {PAGE_INDEX} is 0");
+        }
+        if flag(PAGE_CHECKSUMS)? == Some(true) {
+            bail!("parquet@rs cannot honour {PAGE_CHECKSUMS}=1: arrow-rs writes no page checksums");
+        }
+        Ok(options)
     }
 
-    /// `builder` with these options, except compression, which the caller sets.
+    /// `builder` with these options for a file of `columns`, except
+    /// compression, which the caller sets.
     fn apply(
         &self,
         mut builder: parquet::file::properties::WriterPropertiesBuilder,
+        columns: &parquet::schema::types::SchemaDescriptor,
     ) -> parquet::file::properties::WriterPropertiesBuilder {
         use parquet::file::properties::EnabledStatistics;
         if !self.statistics {
@@ -368,11 +443,34 @@ impl ParquetOptions {
             }
             None => {}
         }
+        if self.statistics {
+            for (i, column) in columns.columns().iter().enumerate() {
+                let path = column.path().clone();
+                let level = if self.statistics_columns.is_some_and(|n| i >= n) {
+                    EnabledStatistics::None
+                } else if let Some(n) = self.page_index_columns {
+                    if i < n {
+                        EnabledStatistics::Page
+                    } else {
+                        EnabledStatistics::Chunk
+                    }
+                } else {
+                    continue;
+                };
+                builder = builder.set_column_statistics_enabled(path, level);
+            }
+        }
         if let Some(bytes) = self.page_bytes {
             builder = builder.set_data_page_size_limit(bytes);
         }
         if let Some(rows) = self.page_rows {
             builder = builder.set_data_page_row_count_limit(rows);
+        }
+        if let Some(enabled) = self.dictionary {
+            builder = builder.set_dictionary_enabled(enabled);
+        }
+        if let Some(bytes) = self.dictionary_page_bytes {
+            builder = builder.set_dictionary_page_size_limit(bytes);
         }
         builder
     }
@@ -501,8 +599,11 @@ where
     // smaller limit", and its 1Mi-row default would cap TPC-H lineitem at
     // ~63 MiB encoded, exactly as parquet-java ships its own row limit
     // effectively off so that bytes decide. The backstop stays.
+    let columns = parquet::arrow::ArrowSchemaConverter::new()
+        .convert(&schema)
+        .context("derive the Parquet schema")?;
     let plan_props = options
-        .apply(WriterProperties::builder())
+        .apply(WriterProperties::builder(), &columns)
         .set_compression(Compression::UNCOMPRESSED)
         .set_max_row_group_row_count(Some(limits.max_rows))
         .set_max_row_group_bytes(Some(limits.target_encoded_bytes))
@@ -525,7 +626,7 @@ where
     let file =
         File::create(output).with_context(|| format!("create parquet {}", output.display()))?;
     let props = options
-        .apply(WriterProperties::builder())
+        .apply(WriterProperties::builder(), &columns)
         .set_compression(options.compression)
         .set_max_row_group_row_count(None)
         .set_max_row_group_bytes(None)
@@ -2175,13 +2276,60 @@ mod tests {
             options_from(&[("PAGE_INDEX", "")]).unwrap().page_index,
             None
         );
+        let leveled = options_from(&[
+            ("COMPRESSION_LEVEL", "9"),
+            ("STATISTICS_COLUMNS", "100"),
+            ("PAGE_INDEX_COLUMNS", "10"),
+            ("DICTIONARY", "off"),
+            ("DICTIONARY_PAGE_BYTES", "65536"),
+            ("PAGE_CHECKSUMS", "0"),
+        ])
+        .unwrap();
+        assert_eq!(
+            leveled.compression,
+            Compression::ZSTD(ZstdLevel::try_new(9).unwrap())
+        );
+        assert_eq!(
+            (leveled.statistics_columns, leveled.page_index_columns),
+            (Some(100), Some(10))
+        );
+        assert_eq!(
+            (leveled.dictionary, leveled.dictionary_page_bytes),
+            (Some(false), Some(65_536))
+        );
+        let gzip = options_from(&[("COMPRESSION", "gzip"), ("COMPRESSION_LEVEL", "0")]).unwrap();
+        assert_eq!(
+            gzip.compression,
+            Compression::GZIP(parquet::basic::GzipLevel::try_new(0).unwrap())
+        );
         for (pairs, error) in [
             (&[("PAGE_INDEX", "maybe")][..], "is not a switch"),
             (&[("COMPRESSION", "lzo")][..], "is not one of"),
             (&[("PAGE_BYTES", "1MiB")][..], "is not a number"),
             (
                 &[("PAGE_INDEX", "1"), ("STATISTICS", "0")][..],
-                "asks for page statistics",
+                "asks for statistics",
+            ),
+            (
+                &[("STATISTICS_COLUMNS", "5"), ("STATISTICS", "0")][..],
+                "asks for statistics",
+            ),
+            (
+                &[("PAGE_INDEX", "0"), ("PAGE_INDEX_COLUMNS", "5")][..],
+                "asks for a page index",
+            ),
+            (
+                &[("COMPRESSION_LEVEL", "-1")][..],
+                "is not a compression level",
+            ),
+            (&[("COMPRESSION_LEVEL", "23")][..], "for zstd"),
+            (
+                &[("COMPRESSION", "snappy"), ("COMPRESSION_LEVEL", "1")][..],
+                "takes no compression level",
+            ),
+            (
+                &[("PAGE_CHECKSUMS", "1")][..],
+                "parquet@rs cannot honour RAINCLOUD_PARQUET_PAGE_CHECKSUMS=1",
             ),
         ] {
             let message = options_from(pairs).unwrap_err().to_string();

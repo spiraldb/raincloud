@@ -88,9 +88,7 @@ from raincloud._registry import SIDECAR_EXPORTERS
 
 from ..spec import (
     PARQUET_COMPRESSION,
-    PARQUET_PAGE_BYTES,
-    PARQUET_PAGE_INDEX,
-    PARQUET_PAGE_ROWS,
+    PARQUET_SETTING_VARS,
     PARQUET_STATISTICS,
     display_path,
     output_format_dir,
@@ -187,13 +185,12 @@ class SidecarExporter:
         """raincloud's environment, with the recipe's row cap when it declares one
         and, for a Parquet writer, the Parquet options in the form the sidecars
         read (`ParquetOptions.env`): the recipe's compression and statistics, and
-        each page knob only when it is set."""
+        each install setting only when it is set."""
         env = dict(os.environ)
         if spec_field(spec, "write.row_group_size_rows"):
             env["RAINCLOUD_ROW_GROUP_MAX_ROWS"] = str(row_group_cap(spec))
         if self.format_id == "parquet":
-            for var in (PARQUET_COMPRESSION, PARQUET_STATISTICS, PARQUET_PAGE_INDEX, PARQUET_PAGE_BYTES,
-                        PARQUET_PAGE_ROWS):
+            for var in (PARQUET_COMPRESSION, PARQUET_STATISTICS, *PARQUET_SETTING_VARS):
                 env.pop(var, None)
             env.update(parquet_options(spec).env())
         return env

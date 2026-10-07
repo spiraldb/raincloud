@@ -39,6 +39,7 @@ from raincloud._cache import sha256_file
 
 from ..discovery import VARIANT_EXT, has_variant
 from ..spec import (
+    PARQUET_PAGE_INDEX_COLUMNS,
     ParquetOptions,
     display_path,
     parquet_options,
@@ -119,12 +120,40 @@ def _groups(reader, row_group: int, byte_target: int):
         yield pending, None
 
 
-def _writer_options(options: ParquetOptions) -> dict:
-    """pyarrow's `ParquetWriter` arguments for `options`. An unset page knob
-    is left out, so pyarrow's own default applies."""
-    kwargs = {"compression": options.compression, "write_statistics": options.statistics}
-    for name, value in (("write_page_index", options.page_index), ("data_page_size", options.page_bytes),
-                        ("max_rows_per_page", options.page_rows)):
+class UnsupportedOption(ValueError):
+    """A write option this writer's library cannot honour: the export fails,
+    and the failure is recorded, rather than the file being written another way."""
+
+
+def _leaf_paths(schema: pa.Schema) -> list[str]:
+    """The Parquet leaf column paths pyarrow writes `schema` as, in order."""
+    sink = pa.BufferOutputStream()
+    pq.write_table(schema.empty_table(), sink)
+    written = pq.ParquetFile(pa.BufferReader(sink.getvalue())).schema
+    return [written.column(i).path for i in range(len(written))]
+
+
+def _writer_options(options: ParquetOptions, schema: pa.Schema) -> dict:
+    """pyarrow's `ParquetWriter` arguments for `options`. An unset setting is
+    left out, so pyarrow's own default applies.
+
+    pyarrow writes a page index for every column with statistics or for none,
+    so `page_index_columns` (page statistics for some columns, chunk statistics
+    for all) is refused.
+    """
+    if options.page_index_columns is not None:
+        raise UnsupportedOption(
+            f"parquet@py cannot honour {PARQUET_PAGE_INDEX_COLUMNS}={options.page_index_columns}: pyarrow "
+            "writes a page index for every column that has statistics, or for none")
+    statistics: bool | list[str] = options.statistics
+    if options.statistics and options.statistics_columns is not None:
+        statistics = _leaf_paths(schema)[:options.statistics_columns]
+    kwargs = {"compression": options.compression, "write_statistics": statistics}
+    for name, value in (("compression_level", options.compression_level),
+                        ("write_page_index", options.page_index), ("data_page_size", options.page_bytes),
+                        ("max_rows_per_page", options.page_rows), ("use_dictionary", options.dictionary),
+                        ("dictionary_pagesize_limit", options.dictionary_page_bytes),
+                        ("write_page_checksum", options.page_checksums)):
         if value is not None:
             kwargs[name] = value
     return kwargs
@@ -141,7 +170,7 @@ def _write_parquet(canonical: Path, dest: Path, row_group: int, byte_target: int
     byte_closed: list[bool] = []  # one flag per group, the tail left out
     with pa.ipc.open_file(str(canonical)) as reader:
         schema = reader.schema
-        with pq.ParquetWriter(dest, schema, **_writer_options(options)) as writer:
+        with pq.ParquetWriter(dest, schema, **_writer_options(options, schema)) as writer:
             for group, by_bytes in _groups(reader, row_group, byte_target):
                 if by_bytes is not None:
                     byte_closed.append(by_bytes)
@@ -162,7 +191,7 @@ def _probe_encoded(canonical: Path, want_rows: int, probe: Path, *, options: Par
         return 0, 0
     try:
         table = pa.Table.from_batches(taken, schema=schema)
-        with pq.ParquetWriter(probe, schema, **_writer_options(options)) as writer:
+        with pq.ParquetWriter(probe, schema, **_writer_options(options, schema)) as writer:
             # One group of exactly this size. Left to its own default pyarrow
             # splits at ~1Mi rows, and the measurement would then describe a
             # group of THAT size -- useless, since dictionary and page overhead

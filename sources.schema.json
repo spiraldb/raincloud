@@ -589,7 +589,7 @@
           "description": "schema_version 1 only (rejected in v2): never read by any writer."
         }
       },
-      "description": "Parquet writer settings, honoured by every Parquet writer. parquet@py reads them here; the sidecar writers (parquet@rs, parquet@java, parquet@hardwood) never see the recipe, so the build passes them in their environment: row_group_size_rows as RAINCLOUD_ROW_GROUP_MAX_ROWS (the recipe's cap wins in every lane), compression and statistics as RAINCLOUD_PARQUET_COMPRESSION and RAINCLOUD_PARQUET_STATISTICS. The page layout (page index, page size, rows per page) is the install's RAINCLOUD_PARQUET_PAGE_* settings, not the recipe's. A writer whose library cannot do what is asked (parquet@java has no lz4 or brotli; Hardwood cannot turn statistics off) records Parquet unavailable rather than writing something else."
+      "description": "Parquet writer settings, honoured by every Parquet writer. parquet@py reads them here; the sidecar writers (parquet@rs, parquet@java, parquet@hardwood) never see the recipe, so the build passes them in their environment: row_group_size_rows as RAINCLOUD_ROW_GROUP_MAX_ROWS (the recipe's cap wins in every lane), compression and statistics as RAINCLOUD_PARQUET_COMPRESSION and RAINCLOUD_PARQUET_STATISTICS. The compression level, page index, page layout, dictionaries and checksums are the install's RAINCLOUD_PARQUET_* settings, not the recipe's. A writer whose library cannot do what is asked (parquet@java has no lz4 or brotli; Hardwood cannot turn statistics off) records Parquet unavailable rather than writing something else."
     },
     "Expect": {
       "type": "object",

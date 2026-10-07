@@ -83,26 +83,47 @@ public final class ParquetArrowIo {
     /**
      * {@link #writeOptions(String, String)} with the Parquet options every lane is given.
      *
-     * <p>parquet-arrow-java has no LZ4 or Brotli codec, and no switch for the page index:
-     * parquet-java writes a ColumnIndex and OffsetIndex whenever statistics are on, so
-     * {@code RAINCLOUD_PARQUET_PAGE_INDEX=0} with statistics on is refused, as are those
-     * codecs, rather than written some other way.</p>
+     * <p>parquet-arrow-java 0.2.0 has no compression level, no per-column statistics and no LZ4
+     * or Brotli codec, and parquet-java writes a page index for every column whenever statistics
+     * are on. A setting that needs any of those is refused rather than written another way.</p>
      */
     static WriteOptions writeOptions(String maxRows, String targetEncodedBytes, ParquetKnobs knobs) {
+        String lane = "parquet@java";
+        if (knobs.compressionLevel() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.COMPRESSION_LEVEL, knobs.compressionLevel(),
+                    "parquet-arrow-java has no compression level");
+        }
+        if (knobs.statisticsColumns() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.STATISTICS_COLUMNS, knobs.statisticsColumns(),
+                    "parquet-arrow-java turns statistics on or off for every column");
+        }
+        if (knobs.pageIndexColumns() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.PAGE_INDEX_COLUMNS, knobs.pageIndexColumns(),
+                    "parquet-java writes a page index for every column that has statistics");
+        }
+        if (Boolean.FALSE.equals(knobs.pageIndex()) && knobs.statistics()) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.PAGE_INDEX, 0,
+                    "parquet-java writes a page index whenever statistics are on");
+        }
         WriteOptions.Builder builder = WriteOptions.builder()
                 .compression(compression(knobs.compression()))
                 .statisticsEnabled(knobs.statistics())
                 .maxRowGroupRows(rowGroupMaxRows(maxRows))
                 .targetRowGroupBytes(rowGroupTargetEncodedBytes(targetEncodedBytes));
-        if (Boolean.FALSE.equals(knobs.pageIndex()) && knobs.statistics()) {
-            throw ParquetKnobs.unsupported("parquet@java", ParquetKnobs.PAGE_INDEX, 0,
-                    "parquet-java writes a page index whenever statistics are on");
-        }
         if (knobs.pageBytes() != null) {
             builder.pageSizeBytes(knobs.pageBytes());
         }
         if (knobs.pageRows() != null) {
             builder.pageRowLimit(knobs.pageRows());
+        }
+        if (knobs.dictionary() != null) {
+            builder.parquetDictionaryEnabled(knobs.dictionary());
+        }
+        if (knobs.dictionaryPageBytes() != null) {
+            builder.dictionaryPageSizeBytes(knobs.dictionaryPageBytes());
+        }
+        if (knobs.pageChecksums() != null) {
+            builder.pageChecksums(knobs.pageChecksums());
         }
         return builder.build();
     }

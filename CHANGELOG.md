@@ -9,19 +9,20 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Added
 
-- **Parquet write options, the same in every writer.** `RAINCLOUD_PARQUET_PAGE_INDEX`
-  (`1`: a page index, ColumnIndex and OffsetIndex, for every column chunk; `0`: none),
-  `RAINCLOUD_PARQUET_PAGE_BYTES` (the data page size target) and
-  `RAINCLOUD_PARQUET_PAGE_ROWS` (the data page row limit) reach `parquet@py`, `parquet@rs`,
-  `parquet@java` and `parquet@hardwood` alike, and the recipe's `write.compression` and
-  `write.statistics` now reach the three sidecar writers too, which used to pick their
-  own. Unset, a page setting leaves each library's default as before: pyarrow and
-  Hardwood write no page index, arrow-rs and parquet-java write one. A set one is part of
-  the writer's toolchain, so changing it retries a recorded failure. A writer whose
-  library cannot do what is asked records Parquet unavailable rather than writing
-  something else: Hardwood 1.1.0.Beta1 writes no page index, has no page row limit and
-  cannot turn statistics off; parquet-java writes a page index whenever statistics are on;
-  parquet-arrow-java has no LZ4 or Brotli.
+- **Parquet write options, the same in every writer.** Install settings that reach
+  `parquet@py`, `parquet@rs`, `parquet@java` and `parquet@hardwood` alike:
+  `RAINCLOUD_PARQUET_COMPRESSION_LEVEL`, `_STATISTICS_COLUMNS` (statistics only for the
+  first N leaf columns), `_PAGE_INDEX` (a ColumnIndex and OffsetIndex for every column
+  chunk, or none), `_PAGE_INDEX_COLUMNS` (page statistics only for the first N leaf
+  columns), `_PAGE_BYTES`, `_PAGE_ROWS`, `_DICTIONARY`, `_DICTIONARY_PAGE_BYTES` and
+  `_PAGE_CHECKSUMS`. The recipe's `write.compression` and `write.statistics` now reach the
+  three sidecar writers too, which used to pick their own. Unset, a setting leaves each
+  library's default as before, so no file changes: pyarrow and Hardwood write no page
+  index, arrow-rs and parquet-java write one; parquet-java and Hardwood write page
+  checksums, the others do not. A set one is part of the writer's toolchain, so changing
+  it retries a recorded failure. A writer whose library cannot do what is asked records
+  Parquet unavailable rather than writing something else (`sidecars/README.md` tabulates
+  which writer honours what).
 
 - **ORC.** A dataset can be built as ORC (`formats = ["orc"]`, or
   `raincloud build --format orc`) and loaded with `format="orc"`; `auto` never picks

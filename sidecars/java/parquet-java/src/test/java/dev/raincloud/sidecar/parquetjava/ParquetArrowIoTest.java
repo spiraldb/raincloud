@@ -168,28 +168,42 @@ class ParquetArrowIoTest {
 
     // ---- Parquet options (their grammar is ParquetKnobsTest's, in conformance-common) ----
 
+    /** Options as the environment would give them: alternating setting names (after
+     * {@code RAINCLOUD_PARQUET_}) and values. */
+    private static ParquetKnobs knobs(String... pairs) {
+        java.util.Map<String, String> vars = new java.util.HashMap<>();
+        for (int i = 0; i < pairs.length; i += 2) {
+            vars.put("RAINCLOUD_PARQUET_" + pairs[i], pairs[i + 1]);
+        }
+        return ParquetKnobs.from(vars::get);
+    }
+
     @Test
     void parquetKnobs_reachTheWriter() {
-        WriteOptions options = ParquetArrowIo.writeOptions(null, null,
-                new ParquetKnobs("gzip", true, true, 4096, 1000));
+        WriteOptions options = ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION", "gzip",
+                "PAGE_BYTES", "4096", "PAGE_ROWS", "1000", "DICTIONARY", "0", "DICTIONARY_PAGE_BYTES", "65536",
+                "PAGE_CHECKSUMS", "0", "PAGE_INDEX", "1"));
         assertEquals(Compression.GZIP, options.compression());
         assertEquals(4096, options.pageSizeBytes());
         assertEquals(1000, options.pageRowLimit());
-        assertEquals(false, ParquetArrowIo.writeOptions(null, null,
-                new ParquetKnobs("zstd", false, null, null, null)).statisticsEnabled());
+        assertFalse(options.parquetDictionaryEnabled());
+        assertEquals(65536, options.dictionaryPageSizeBytes());
+        assertFalse(options.pageChecksums());
+        assertFalse(ParquetArrowIo.writeOptions(null, null, knobs("STATISTICS", "0")).statisticsEnabled());
         // Unset leaves parquet-arrow-java's defaults.
         WriteOptions defaults = WriteOptions.builder().build();
         WriteOptions unset = ParquetArrowIo.writeOptions(null, null, ParquetKnobs.DEFAULT);
         assertEquals(defaults.pageSizeBytes(), unset.pageSizeBytes());
         assertEquals(defaults.pageRowLimit(), unset.pageRowLimit());
+        assertEquals(defaults.pageChecksums(), unset.pageChecksums());
     }
 
     @Test
     void parquetKnobs_theLibraryCannotHonourAreRefused() {
         for (ParquetKnobs knobs : new ParquetKnobs[] {
-                new ParquetKnobs("lz4", true, null, null, null),
-                new ParquetKnobs("brotli", true, null, null, null),
-                new ParquetKnobs("zstd", true, false, null, null)}) {
+                knobs("COMPRESSION", "lz4"), knobs("COMPRESSION", "brotli"), knobs("PAGE_INDEX", "0"),
+                knobs("COMPRESSION_LEVEL", "3"), knobs("STATISTICS_COLUMNS", "10"),
+                knobs("PAGE_INDEX_COLUMNS", "10")}) {
             IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                     () -> ParquetArrowIo.writeOptions(null, null, knobs));
             assertTrue(e.getMessage().startsWith("parquet@java cannot honour RAINCLOUD_PARQUET_"), e.getMessage());
