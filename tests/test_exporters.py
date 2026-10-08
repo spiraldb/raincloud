@@ -37,7 +37,7 @@ def test_run_exporters_default_produces_parquet_and_vortex(tmp_path, monkeypatch
 
     results = run_exporters({"slug": slug}, canonical_path)
 
-    # Both default cells ran, tagged with their qualified ledger cell-ids.
+    # The install's formats (conftest: parquet, vortex), tagged with their qualified ledger cell-ids.
     assert {r.format_id for r in results} == {"parquet@py", "vortex@py"}
     for r in results:
         assert r.nbytes > 0 and len(r.sha256) == 64

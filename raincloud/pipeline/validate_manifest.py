@@ -49,7 +49,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from raincloud._formats import WRITERS, export_formats, priority_shape_error
+from raincloud._formats import EXPORTED_FORMATS, WRITERS, export_formats, priority_shape_error
 from raincloud.exceptions import CatalogError
 
 from .discovery import SHOWCASE_TIERS, TAG_VOCAB
@@ -59,7 +59,7 @@ from .spec import REPO_ROOT, _packaged_data, select_manifest
 # which skips an unknown name: in a manifest it is a typo that would fall
 # through to the next writer unnoticed. `canonical` writes only the Arrow
 # spine, so it is no export writer.
-EXPORT_WRITERS = {fmt: WRITERS[fmt] for fmt in ("parquet", "vortex")}
+EXPORT_WRITERS = {fmt: WRITERS[fmt] for fmt in EXPORTED_FORMATS}
 
 
 def _schema_path():
@@ -332,10 +332,10 @@ def _cross_checks(manifest: dict) -> tuple[list[str], list[str]]:
         # comes from export.priority.
         formats = (d.get("export") or {}).get("formats") or []  # a list: see _field_errors
         for fmt in formats:
-            if fmt not in ("parquet", "vortex"):
+            if fmt not in EXPORTED_FORMATS:
                 hint = " (name the format; export.priority picks the writer)" if isinstance(fmt, str) and "@" in fmt else ""
                 errors.append(f"{slug}: export.formats entry {fmt!r} is not an exported format "
-                              f"(parquet, vortex){hint}")
+                              f"({', '.join(EXPORTED_FORMATS)}){hint}")
         if d.get("derive"):
             continue
         fetch = d.get("fetch") or {}

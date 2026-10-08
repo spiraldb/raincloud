@@ -33,9 +33,12 @@ import dev.raincloud.sidecar.common.BatchSource;
 import dev.raincloud.sidecar.common.CanonicalReader;
 import dev.raincloud.sidecar.common.LogicalCompare;
 import dev.raincloud.sidecar.common.MaterializedTable;
+import dev.raincloud.sidecar.common.ParquetKnobs;
 import dev.raincloud.sidecar.common.Verdict;
+import dev.spiraldb.parquet.arrow.Compression;
 import dev.spiraldb.parquet.arrow.ParquetArrow;
 import dev.spiraldb.parquet.arrow.ParquetArrowReader;
+import dev.spiraldb.parquet.arrow.WriteOptions;
 
 /** Direct coverage for the Arrow⇆Parquet hop the {@code parquet@java} lane depends on. */
 class ParquetArrowIoTest {
@@ -161,5 +164,50 @@ class ParquetArrowIoTest {
         assertTrue(rowGroups(small) > 1, "a 4 KiB target left one row group");
         assertEquals(20, rowGroups(capped));
         assertEquals(20_000, rows(small));
+    }
+
+    // ---- Parquet options (their grammar is ParquetKnobsTest's, in conformance-common) ----
+
+    /** Options as the environment would give them: alternating setting names (after
+     * {@code RAINCLOUD_PARQUET_}) and values. */
+    private static ParquetKnobs knobs(String... pairs) {
+        java.util.Map<String, String> vars = new java.util.HashMap<>();
+        for (int i = 0; i < pairs.length; i += 2) {
+            vars.put("RAINCLOUD_PARQUET_" + pairs[i], pairs[i + 1]);
+        }
+        return ParquetKnobs.from(vars::get);
+    }
+
+    @Test
+    void parquetKnobs_reachTheWriter() {
+        WriteOptions options = ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION", "gzip",
+                "PAGE_BYTES", "4096", "PAGE_ROWS", "1000", "DICTIONARY", "0", "DICTIONARY_PAGE_BYTES", "65536",
+                "PAGE_CHECKSUMS", "0", "PAGE_INDEX", "1"));
+        assertEquals(Compression.GZIP, options.compression());
+        assertEquals(4096, options.pageSizeBytes());
+        assertEquals(1000, options.pageRowLimit());
+        assertFalse(options.parquetDictionaryEnabled());
+        assertEquals(65536, options.dictionaryPageSizeBytes());
+        assertFalse(options.pageChecksums());
+        assertFalse(ParquetArrowIo.writeOptions(null, null, knobs("STATISTICS", "0")).statisticsEnabled());
+        WriteOptions leveled = ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION_LEVEL", "9"));
+        assertEquals(9, leveled.compressionLevel().getAsInt());
+        assertEquals(Compression.LZ4_RAW, ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION", "lz4")).compression());
+        // Unset leaves parquet-arrow-java's defaults.
+        WriteOptions defaults = WriteOptions.builder().build();
+        WriteOptions unset = ParquetArrowIo.writeOptions(null, null, ParquetKnobs.DEFAULT);
+        assertEquals(defaults.pageSizeBytes(), unset.pageSizeBytes());
+        assertEquals(defaults.pageRowLimit(), unset.pageRowLimit());
+        assertEquals(defaults.pageChecksums(), unset.pageChecksums());
+    }
+
+    @Test
+    void parquetKnobs_theLibraryCannotHonourAreRefused() {
+        for (ParquetKnobs knobs : new ParquetKnobs[] {
+                knobs("COMPRESSION", "brotli"), knobs("PAGE_INDEX", "0"), knobs("PAGE_INDEX_COLUMNS", "10")}) {
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> ParquetArrowIo.writeOptions(null, null, knobs));
+            assertTrue(e.getMessage().startsWith("parquet@java cannot honour RAINCLOUD_PARQUET_"), e.getMessage());
+        }
     }
 }

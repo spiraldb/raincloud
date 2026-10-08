@@ -157,6 +157,15 @@ def vortex_batches(artifact: Path):
     return reader.schema, len(file), iter(reader)
 
 
+def orc_batches(artifact: Path):
+    """(schema, rows, batches) of an ORC file read with pyarrow (the Apache ORC
+    C++ library), one stripe at a time."""
+    import pyarrow.orc as orc
+
+    file = orc.ORCFile(str(artifact))
+    return file.schema, file.nrows, (file.read_stripe(i) for i in range(file.nstripes))
+
+
 @contextmanager
 def canonical_batches(canonical: Path):
     """(schema, rows, batches) of the canonical Arrow IPC file, one stored batch
@@ -284,6 +293,19 @@ class VortexPyReader:
     def read_conformance(self, artifact: Path, canonical: Path) -> Verdict:
         def _run() -> Verdict:
             return stream_verdict(self.reader_id, vortex_batches(artifact), canonical)
+
+        return _guarded(self.reader_id, _run)
+
+
+class PyarrowOrcReader:
+    """In-process `orc@py` reader — pyarrow's ORC stripes vs the canonical's batches, streamed."""
+
+    reader_id = "orc@py"
+    formats = {"orc"}
+
+    def read_conformance(self, artifact: Path, canonical: Path) -> Verdict:
+        def _run() -> Verdict:
+            return stream_verdict(self.reader_id, orc_batches(artifact), canonical)
 
         return _guarded(self.reader_id, _run)
 
@@ -449,8 +471,13 @@ def run_reader(
 # (via Hardwood) and `vortex@jni` (via vortex-jni).
 register_reader(PyarrowParquetReader())
 register_reader(VortexPyReader())
+register_reader(PyarrowOrcReader())
 register_reader(SidecarReader("parquet@rs", {"parquet"}, "raincloud-read-parquet-rs"))
 register_reader(SidecarReader("vortex@rs", {"vortex"}, "raincloud-read-vortex-rs"))
 register_reader(SidecarReader("parquet@java", {"parquet"}, "raincloud-read-parquet-java"))
 register_reader(SidecarReader("parquet@hardwood", {"parquet"}, "raincloud-read-parquet-hardwood"))
 register_reader(SidecarReader("vortex@jni", {"vortex"}, "raincloud-read-vortex-jni"))
+register_reader(SidecarReader("orc@rs", {"orc"}, "raincloud-read-orc-rs"))
+register_reader(SidecarReader("avro@rs", {"avro"}, "raincloud-read-avro-rs"))
+register_reader(SidecarReader("avro@java", {"avro"}, "raincloud-read-avro-java"))
+register_reader(SidecarReader("nimble@cpp", {"nimble"}, "raincloud-read-nimble-cpp"))

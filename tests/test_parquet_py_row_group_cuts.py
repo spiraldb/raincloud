@@ -6,6 +6,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from raincloud.pipeline.export import exporters as exporters_mod
+from raincloud.pipeline.spec import ParquetOptions
 from tests._helpers import write_ipc
 
 
@@ -26,7 +27,7 @@ def _cuts(canonical, row_group, byte_target):
 def test_parquet_py_cuts_groups_at_exactly_the_planned_row_across_batches(tmp_path):
     canonical = _canonical(tmp_path, [_ints(i, min(i + 700, 4500)) for i in range(0, 4500, 700)])
     out = tmp_path / "out.parquet"
-    assert exporters_mod._write_parquet(canonical, out, 1000, 1 << 40, compression="zstd", stats=True) is False
+    assert exporters_mod._write_parquet(canonical, out, 1000, 1 << 40, options=ParquetOptions()) is False
     meta = pq.ParquetFile(out).metadata
     assert [meta.row_group(i).num_rows for i in range(meta.num_row_groups)] == [1000] * 4 + [500]
     assert pq.read_table(out).column("x").to_pylist() == list(range(4500))
@@ -56,6 +57,6 @@ def test_empty_batches_never_make_an_empty_group_beside_real_ones(tmp_path):
 def test_the_probe_encodes_exactly_the_first_planned_group(tmp_path):
     canonical = _canonical(tmp_path, [_ints(i, i + 700) for i in range(0, 2800, 700)])
     rows, encoded = exporters_mod._probe_encoded(canonical, 1000, tmp_path / "probe.parquet",
-                                                 compression="zstd", stats=True)
+                                                 options=ParquetOptions())
     assert rows == 1000 and encoded > 0
     assert not (tmp_path / "probe.parquet").exists()

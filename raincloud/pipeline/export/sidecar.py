@@ -83,10 +83,18 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from raincloud._cache import sha256_file
+from raincloud._cache import EXT, sha256_file
 from raincloud._registry import SIDECAR_EXPORTERS
 
-from ..spec import display_path, output_format_dir, row_group_cap, spec_field
+from ..spec import (
+    chosen_settings,
+    display_path,
+    output_format_dir,
+    row_group_cap,
+    setting_vars,
+    sidecar_settings,
+    spec_field,
+)
 from . import register
 from .base import Compliance, ExportResult, slug_from_canonical
 from .bounded import export_timeout
@@ -148,7 +156,7 @@ class SidecarExporter:
         self.cell_id = cell_id
         self.format_id = format_id
         self.binary = binary
-        self.ext = ext or format_id
+        self.ext = ext or EXT[format_id]
 
     def unavailable(self) -> str | None:
         if self._discover() is not None:
@@ -164,18 +172,24 @@ class SidecarExporter:
         exe = self._discover()
         found = shutil.which(exe) if exe else None
         return {"sidecar": self.binary,
-                **({"sidecar_sha256": sha256_file(Path(found))[:16]} if found else {})}
+                **({"sidecar_sha256": sha256_file(Path(found))[:16]} if found else {}),
+                **chosen_settings(self.format_id)}
 
     def _discover(self) -> str | None:
         """Resolve the reference-writer executable, or `None` if absent."""
         return os.environ.get(_env_var(self.cell_id)) or shutil.which(self.binary)
 
-    @staticmethod
-    def _child_env(spec: dict) -> dict[str, str]:
-        """raincloud's environment, with the recipe's row cap when it declares one."""
+    def _child_env(self, spec: dict) -> dict[str, str]:
+        """raincloud's environment, with the recipe's row cap when it declares one
+        and the format's write settings in the one form every sidecar reads
+        (`spec.sidecar_settings`): for Parquet the recipe's compression and
+        statistics, and each install setting only when it is set."""
         env = dict(os.environ)
         if spec_field(spec, "write.row_group_size_rows"):
             env["RAINCLOUD_ROW_GROUP_MAX_ROWS"] = str(row_group_cap(spec))
+        for var in setting_vars(self.format_id):
+            env.pop(var, None)
+        env.update(sidecar_settings(self.format_id, spec))
         return env
 
     def _failure(self, dest: Path, reason: str, *, variant_faithful: bool = False) -> ExportResult:

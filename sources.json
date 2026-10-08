@@ -1561,12 +1561,6 @@
         "schema_hash": null,
         "notes": "100M upstream lines; the dumps wrap 16 records longer than 65,535 bytes onto two lines (files 5-7, 68, 82, 88, 94, 96, 97), which the handler rejoins: 99,999,984 records.",
         "row_stability": "static"
-      },
-      "export": {
-        "formats": [
-          "parquet",
-          "vortex"
-        ]
       }
     },
     {
@@ -10374,12 +10368,6 @@
         "notes": "Wikimedia refreshes the Kaggle dataset in place; the catalog records the count each build produced.",
         "row_stability": "mutable"
       },
-      "export": {
-        "formats": [
-          "parquet",
-          "vortex"
-        ]
-      },
       "tags": [
         "identifiers",
         "nested-json",
@@ -10494,12 +10482,6 @@
         "schema_hash": null,
         "notes": null,
         "row_stability": "static"
-      },
-      "export": {
-        "formats": [
-          "parquet",
-          "vortex"
-        ]
       },
       "tags": [
         "code-strings"
@@ -13985,12 +13967,6 @@
         "schema_hash": "8ec5b9f935df",
         "notes": null,
         "row_stability": "static"
-      },
-      "export": {
-        "formats": [
-          "parquet",
-          "vortex"
-        ]
       },
       "references": [
         {

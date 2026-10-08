@@ -27,6 +27,11 @@ _FAKE_SPEC = {
 }
 
 
+def _artifacts(tmp_path, paths):
+    """A `prepared_artifact` stand-in: `paths[fmt]`, else a file that never exists."""
+    return lambda slug, fmt, manifest=None: paths.get(fmt, tmp_path / f"missing.{fmt}")
+
+
 @pytest.fixture
 def patched_docs(tmp_path, monkeypatch):
     """Redirect docs.py I/O to tmp_path and stub the manifest + path helpers."""
@@ -42,7 +47,7 @@ def patched_docs(tmp_path, monkeypatch):
     # → forces the code through the missing-on-disk branch.
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: tmp_path / "missing.arrow.zstd")
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex", "arrow": tmp_path / "missing.arrow.zstd"}))
     return docs, tmp_path
 
 
@@ -59,7 +64,7 @@ def test_snapshot_preserves_absent_formats_individually(patched_docs, monkeypatc
     docs.SNAPSHOT_JSON.write_text(json.dumps({"schema_version": 1, "slugs": {"fake-slug": prior}}))
     table = pa.table({"new": [1, 2]})
     path = root / f"local.{present}"
-    monkeypatch.setattr(docs, f"prepared_{present}", lambda slug: path)
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(root, {present: path}))
     if present == "parquet":
         pq.write_table(table, path)
     else:
@@ -180,6 +185,7 @@ def test_datasets_md_falls_back_to_tracked_v1_snapshot(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex"}))
 
     docs.generate_datasets_md()
     row = _fake_slug_row((tmp_path / "datasets.md").read_text())
@@ -233,6 +239,7 @@ def test_datasets_md_v2_does_not_use_v1_snapshot(tmp_path, monkeypatch):
                         lambda: {"schema_version": 2, "datasets": [dict(_FAKE_SPEC)]})
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex"}))
 
     docs.generate_datasets_md()
     row = _fake_slug_row((tmp_path / "datasets.md").read_text())
@@ -266,6 +273,7 @@ def test_snapshot_captures_row_groups_for_built_slugs(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: fake_pq)
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": fake_pq, "vortex": tmp_path / "missing.vortex"}))
 
     docs.generate_snapshot(overwrite_missing=True)
 
@@ -297,7 +305,7 @@ def test_snapshot_captures_arrow_when_present(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: arrow)
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex", "arrow": arrow}))
 
     docs.generate_snapshot(overwrite_missing=True)
 
@@ -319,7 +327,7 @@ def test_snapshot_omits_arrow_keys_when_absent(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: tmp_path / "missing.arrow.zstd")
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex", "arrow": tmp_path / "missing.arrow.zstd"}))
 
     docs.generate_snapshot(overwrite_missing=True)
 
@@ -354,7 +362,7 @@ def test_snapshot_arrow_only_slug_written_on_default_regen(tmp_path, monkeypatch
     )
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: arrow)
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex", "arrow": arrow}))
 
     docs.generate_snapshot(overwrite_missing=False)
 

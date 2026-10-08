@@ -23,7 +23,8 @@ from pathlib import Path
 
 import fsspec
 
-from raincloud._cache import EXT, sha256_file
+from raincloud._cache import sha256_file
+from raincloud._formats import EXPORTED_FORMATS
 from raincloud._locking import locked
 from raincloud._resolve import artifact_key
 from raincloud._transport import filesystem_url
@@ -38,10 +39,10 @@ class PublishMismatch(Exception):
     """On-disk artifact sha256 disagrees with the snapshot."""
 
 
-# Every artifact format the loader can fetch (`_cache.EXT`). The canonical
-# .arrow.zstd leads because every exporter reads from it; it is published and
-# sha-gated like the export formats. A format absent on disk is skipped.
-_PUBLISH_FORMATS = ("arrow", *(f for f in EXT if f != "arrow"))
+# Every artifact format the loader can fetch. The canonical .arrow.zstd leads
+# because every exporter reads from it; it is published and sha-gated like the
+# export formats. A format absent on disk is skipped.
+_PUBLISH_FORMATS = ("arrow", *EXPORTED_FORMATS)
 
 
 def scrape_advisory_slugs(manifest, slugs):

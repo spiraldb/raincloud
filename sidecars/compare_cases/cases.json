@@ -1,0 +1,80 @@
+{
+ "_about": "Comparison rules every lane shares; see generate.py. Each case is <name>.got.arrow (column `c`, what a reader returned) and <name>.expected.arrow (the canonical).",
+ "cases": [
+  {
+   "name": "union-null-int-sparse",
+   "verdict": "equal"
+  },
+  {
+   "name": "union-null-int-dense",
+   "verdict": "equal"
+  },
+  {
+   "name": "union-int-null-order",
+   "verdict": "equal"
+  },
+  {
+   "name": "union-null-string",
+   "verdict": "equal"
+  },
+  {
+   "name": "union-null-int-values-differ",
+   "verdict": "differ"
+  },
+  {
+   "name": "union-null-int-nulls-differ",
+   "verdict": "differ"
+  },
+  {
+   "name": "union-inside-struct",
+   "verdict": "equal"
+  },
+  {
+   "name": "union-two-members-is-not-nullable",
+   "verdict": "differ"
+  },
+  {
+   "name": "tz-utc-vs-offset",
+   "verdict": "equal"
+  },
+  {
+   "name": "tz-other-zone-same-instants",
+   "verdict": "equal"
+  },
+  {
+   "name": "tz-etc-utc",
+   "verdict": "equal"
+  },
+  {
+   "name": "tz-same-zone-values-differ",
+   "verdict": "differ"
+  },
+  {
+   "name": "tz-naive-vs-zoned",
+   "verdict": "differ"
+  },
+  {
+   "name": "decimal-scale0-holds-uint64",
+   "verdict": "equal",
+   "gap": true
+  },
+  {
+   "name": "decimal-scale0-values-differ",
+   "verdict": "differ",
+   "gap": true
+  },
+  {
+   "name": "decimal-scale2-is-not-an-integer",
+   "verdict": "differ",
+   "gap": true
+  },
+  {
+   "name": "int-width",
+   "verdict": "equal"
+  },
+  {
+   "name": "string-view",
+   "verdict": "equal"
+  }
+ ]
+}

@@ -15,6 +15,8 @@ import json
 import pyarrow as pa
 import pytest
 
+from raincloud._formats import ALL_FORMATS
+
 
 @pytest.mark.parametrize("extra,formats", [
     ({"export": {"formats": []}}, {"arrow"}),
@@ -22,7 +24,7 @@ import pytest
     ({"export": {"formats": ["vortex"]}}, {"arrow", "vortex"}),
     ({"export": {"formats": ["parquet"], "priority": ["rs"]}}, {"arrow", "parquet"}),
     ({"export": {"formats": ["parquet"], "notes": "x"}}, {"arrow", "parquet"}),
-    ({}, {"arrow", "parquet", "vortex"}),
+    ({}, set(ALL_FORMATS)),
 ])
 def test_unbuilt_v2_catalog_uses_export_policy(extra, formats):
     from raincloud._catalog import Catalog
@@ -104,7 +106,7 @@ def test_catalog_recognizes_arrow_and_carries_version(tmp_path, monkeypatch):
     _catalog = _write_catalog(tmp_path, monkeypatch, snapshot, manifest)
     try:
         e = _catalog.load_catalog().entry("tiny")
-        assert set(e.formats) == {"parquet", "vortex", "arrow"}
+        assert set(e.formats) == set(ALL_FORMATS)
         assert e.formats["arrow"].sha256 == "cc" * 32
         assert e.formats["arrow"].nbytes == 90
         assert e.version == 2

@@ -3,11 +3,7 @@
 """Lightweight manifest export policy, shared by the loader and build pipeline."""
 from __future__ import annotations
 
-from ._registry import exporter_cells
-
-# Formats a dataset exports unless its spec says otherwise. Canonical Arrow is
-# not among them: it is what every exporter reads.
-DEFAULT_FORMATS = ("parquet", "vortex")
+from ._registry import FORMATS, exporter_cells
 
 # Which writer produces a format, when neither the spec, the catalog nor the
 # machine names one. Python first: it is always installed, so by default a
@@ -23,7 +19,10 @@ DEFAULT_FORMATS = ("parquet", "vortex")
 # RAINCLOUD_EXPORT_PRIORITY may name a writer this release does not ship. A
 # manifest is stricter: validate_manifest rejects a name with no export cell,
 # since there a typo would silently fall through to the next writer.
-DEFAULT_EXPORT_PRIORITY = ("py", "rs", "java", "canonical")
+#
+# `cpp` is Nimble's only writer (upstream's C++, `nimble@cpp`): every format has
+# a writer this order names, so a dataset needs no priority to export it.
+DEFAULT_EXPORT_PRIORITY = ("py", "rs", "java", "cpp", "canonical")
 
 
 def priority_shape_error(value, where: str) -> str | None:
@@ -112,21 +111,63 @@ def resolve_export_cell(fmt: str, priority, *, is_available) -> str | None:
 
 
 def export_formats(spec: dict, version: int = 2) -> list[str]:
-    """The formats `spec` exports, each written once, to `<fmt>/`.
+    """The formats `spec` offers, each written once, to `<fmt>/`.
 
-    In schema_version 2 `export.formats` is the only declaration: omitted, a
-    dataset exports DEFAULT_FORMATS. `convert.vortex` is the schema_version 1
-    opt-in. The schema and validate_manifest reject it in a v2 manifest, but
-    v2 catalogs released before that rule still carry it, and they must keep
-    reading: there a `convert.vortex: false` without `export.formats` still
-    means no Vortex.
+    In schema_version 2 a dataset offers every exported format unless
+    `export.formats` narrows the list. Which of them a build actually writes is
+    the install's choice (`build_formats`). `convert.vortex` is the
+    schema_version 1 opt-in. The schema and validate_manifest reject it in a v2
+    manifest, but v2 catalogs released before that rule still carry it, and
+    they must keep reading: there a `convert.vortex: false` without
+    `export.formats` still means no Vortex.
     """
     if version < 2:
         return ["parquet", "vortex"] if (spec.get("convert") or {}).get("vortex") else ["parquet"]
     requested = (spec.get("export") or {}).get("formats")
     if requested is None and (spec.get("convert") or {}).get("vortex") is False:
         return ["parquet"]
-    return list(requested) if requested is not None else list(DEFAULT_FORMATS)
+    return list(requested) if requested is not None else list(EXPORTED_FORMATS)
+
+
+def wanted_formats(config) -> tuple[str, ...]:
+    """The exported formats this install builds when none is asked for: its
+    `formats` setting, with `all` expanded."""
+    names = config.formats
+    return EXPORTED_FORMATS if "all" in names else tuple(f for f in EXPORTED_FORMATS if f in names)
+
+
+def build_formats(spec: dict, version: int, config, requested=None) -> list[str]:
+    """The exported formats a build of `spec` writes: `requested` when given
+    (`raincloud build --format`, or the format a load asked for), else the
+    install's `wanted_formats`, in either case only those the dataset offers.
+
+    A requested format the dataset does not offer raises ValueError. `arrow`
+    may be requested: it is written by every build, so it adds no export.
+    """
+    offered = export_formats(spec, version)
+    if requested is None and version < 2:
+        # A v1 catalog predates install formats: it builds what its recipe lists, as in 0.3.0.
+        return offered
+    if requested is None:
+        wanted = wanted_formats(config)
+        return [fmt for fmt in offered if fmt in wanted]
+    requested = [base_format(fmt) for fmt in requested]
+    missing = [fmt for fmt in requested if fmt != "arrow" and fmt not in offered]
+    if missing:
+        raise ValueError(f"{spec['slug']} does not offer {', '.join(missing)} "
+                         f"(it offers {', '.join(offered) or 'only its canonical Arrow'})")
+    return [fmt for fmt in offered if fmt in requested]
+
+
+def auto_formats(config, version: int = 2) -> tuple[str, ...]:
+    """What "auto" tries, in order, for this install: the AUTO_FORMATS it
+    builds, then the canonical Arrow, which every dataset has -- the file a
+    caller gets when none of those can be made (a writer measured unable).
+    A v1 catalog predates install formats and keeps 0.3.0's order."""
+    if version < 2:
+        return AUTO_FORMATS
+    wanted = wanted_formats(config)
+    return tuple(fmt for fmt in AUTO_FORMATS if fmt in wanted or fmt == "arrow")
 
 
 def export_cells(spec: dict, manifest: dict | None = None) -> list[str]:
@@ -206,6 +247,9 @@ def _writers() -> dict[str, tuple[str, ...]]:
     writers: dict[str, tuple[str, ...]] = {}
     for cell in exporter_cells():
         base, _, writer = cell.partition("@")
+        if base not in FORMATS or base == "arrow":
+            raise RuntimeError(f"exporter cell {cell!r} writes {base!r}, which _registry.FORMATS "
+                               f"does not declare as an exported format")
         writers[base] = (*writers.get(base, ()), writer)
     return {**writers, "arrow": ("canonical",)}
 
@@ -215,6 +259,8 @@ WRITERS = _writers()
 # artifact format: those plus the canonical Arrow they are all written from.
 EXPORTED_FORMATS = tuple(fmt for fmt in WRITERS if fmt != "arrow")
 ALL_FORMATS = (*EXPORTED_FORMATS, "arrow")
+# What "auto" tries, in order: the formats a caller need not name.
+AUTO_FORMATS = tuple(fmt for fmt, info in FORMATS.items() if info["auto"] and fmt in WRITERS)
 
 
 def base_format(fmt: str) -> str:
@@ -229,17 +275,18 @@ def split_cell(cell: str) -> tuple[str, str]:
     return base, writer
 
 
-def select_format(formats, requested: str = "auto") -> str:
-    """The format to open: `requested`, or the first present of vortex, parquet,
-    arrow for "auto". Each format is one file; which writer made it is recorded
-    in the catalog, not chosen here."""
+def select_format(formats, requested: str = "auto", order: tuple[str, ...] = AUTO_FORMATS) -> str:
+    """The format to open: `requested`, or for "auto" the first present of
+    `order` (by default AUTO_FORMATS: vortex, parquet, arrow; the loader passes
+    the install's `auto_formats`). Each format is one file; which writer made it
+    is recorded in the catalog, not chosen here."""
     from .exceptions import FormatUnavailable
     if "@" in requested:
         raise FormatUnavailable(
             f"format {requested!r}: a dataset has one file per format; ask for "
             f"{base_format(requested)!r} (`raincloud describe` shows which writer made it)"
         )
-    bases = ("vortex", "parquet", "arrow") if requested == "auto" else (requested,)
+    bases = order if requested == "auto" else (requested,)
     for base in bases:
         if base in formats:
             return base

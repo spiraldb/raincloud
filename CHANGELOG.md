@@ -5,6 +5,107 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-10-08
+
+The compliance ledger, `docs/v2/compliance.json`, is still 0.3.0's measurement: the ORC,
+Avro and Nimble writers and readers added here, and the encoder settings, are measured
+in a later release.
+
+### Added
+
+- **Parquet write options, the same in every writer.** Install settings that reach
+  `parquet@py`, `parquet@rs`, `parquet@java` and `parquet@hardwood` alike:
+  `RAINCLOUD_PARQUET_COMPRESSION_LEVEL`, `_STATISTICS_COLUMNS` (statistics only for the
+  first N leaf columns), `_PAGE_INDEX` (a ColumnIndex and OffsetIndex for every column
+  chunk, or none), `_PAGE_INDEX_COLUMNS` (page statistics only for the first N leaf
+  columns), `_PAGE_BYTES`, `_PAGE_ROWS`, `_DICTIONARY`, `_DICTIONARY_PAGE_BYTES` and
+  `_PAGE_CHECKSUMS`. The recipe's `write.compression` and `write.statistics` now reach the
+  three sidecar writers too, which used to pick their own. `parquet@java` moves to
+  parquet-arrow-java 0.3.0, for a compression level, per-column statistics and LZ4_RAW,
+  and `parquet@hardwood` ships brotli4j, so every Parquet writer but `parquet@java`
+  writes Brotli. Unset, a setting leaves each
+  library's default as before, so no file changes: pyarrow and Hardwood write no page
+  index, arrow-rs and parquet-java write one; parquet-java and Hardwood write page
+  checksums, the others do not. A set one is part of the writer's toolchain, so changing
+  it retries a recorded failure. A writer whose library cannot do what is asked records
+  Parquet unavailable rather than writing something else (`sidecars/README.md` tabulates
+  which writer honours what).
+
+- **ORC, Avro and Vortex write settings.** The same kind of install settings for the
+  other formats, given alike to every writer of the format and refused by a writer whose
+  library cannot honour them: `RAINCLOUD_ORC_COMPRESSION`, `_COMPRESSION_STRATEGY`,
+  `_STRIPE_BYTES`, `_COMPRESSION_BLOCK_BYTES`; `RAINCLOUD_AVRO_COMPRESSION` (every Avro
+  codec: `avro@rs` now builds arrow-avro's deflate, snappy, bzip2 and xz too, and
+  `avro@java` ships Avro's optional snappy-java 1.1.10.8 and xz 1.10), `_COMPRESSION_LEVEL`,
+  `_BLOCK_BYTES`; `RAINCLOUD_VORTEX_COMPACT`, `_ROW_BLOCK_ROWS`, `_DATA_BLOCK_BYTES`. Unset,
+  each writer writes what it did before.
+- **ORC.** A dataset can be built as ORC (`formats = ["orc"]`, or
+  `raincloud build --format orc`) and loaded with `format="orc"`; `auto` never picks
+  it. Two writers: `orc@py`, pyarrow's Apache ORC C++ library, and `orc@rs`,
+  orc-rust 0.9.0 in the Rust sidecar (`orc-write` / `orc-read`). Both write zstd.
+  Neither has a type converted for it: a column the library does not write
+  (unsigned integers and string views for pyarrow; anything beyond signed
+  integers, floats, strings, binary, booleans, dates and timestamps for orc-rust)
+  records ORC unavailable for that dataset, with the library's error.
+
+- **Avro.** A dataset can be built as an Avro object container file
+  (`formats = ["avro"]`, `--format avro`). Two writers, both sidecars: `avro@rs`,
+  arrow-avro 59.2 (`avro-write` / `avro-read`), and `avro@java`, Arrow Java 19.0.0's Avro
+  adapter (the new `avro-java` Gradle project). Both write zstandard and the same fixed
+  sync marker, so a rebuild gives the same bytes. pyarrow has no Avro support, so
+  `load(..., format="avro")` serves the file's `path()` and its readers raise
+  `MissingDependency`.
+- **Nimble.** A dataset can be built as a Nimble file (`formats = ["nimble"]`,
+  `--format nimble`) by `nimble@cpp`: upstream Nimble's C++ writer and reader, built from
+  source by `sidecars/nimble/build.sh` into `raincloud-export-nimble-cpp` /
+  `raincloud-read-nimble-cpp`, which link the Rust crate's new `nimble-ffi` member for the
+  sidecar contract and hand batches across in memory. Served by path. The built-in writer
+  order is `py, rs, java, cpp, canonical`.
+- **One comparison rule set for every lane.** Where equality turns on representation
+  rather than data, the Python, Rust and JVM comparators follow the cases in
+  `sidecars/compare_cases` (pairs of Arrow files and their verdicts, read by every
+  lane's tests): a union of exactly `null` and `T` is a nullable `T`; zoned timestamps
+  compare by instant, whatever zone labels them; an integer and a scale-0 decimal holding
+  the same values are equal.
+- **Generated groups build together.** A generated table is one of a group its generator
+  writes at once (every TPC-H table of a scale factor, say): building one builds the whole
+  group in the same formats, and its generator output is removed once the group has
+  built, unless `keep_raw` keeps it. `raincloud build --only` builds just the tables named.
+- A format raincloud only serves by path loads like any other: `path()` works and
+  `to_arrow()` / `batches()` / `dataset()` raise `MissingDependency`.
+
+### Changed
+
+- **Formats are opt-in, per install.** A build writes only Vortex unless the new
+  `formats` setting (`RAINCLOUD_FORMATS`; `"all"` for every format) or
+  `raincloud build --format` asks for more, and a load that names another format
+  builds just that one. `format="auto"` picks among the formats the install builds,
+  Vortex then Parquet, and falls back to the canonical Arrow when neither can be had.
+  Every dataset now offers every exported format; a recipe's `export.formats` only
+  narrows that. To keep 0.3.0's behaviour, set `formats = ["vortex", "parquet"]`.
+- **A build cleans up after itself.** Once a dataset's files are written, a
+  successful build removes its raw download and its canonical Arrow, unless the new
+  `keep_raw` / `keep_canonical` settings keep them. A canonical from which no other
+  format was written is the dataset's only file and stays. Generated datasets keep
+  their generator output, which a group of datasets shares. A shared store or a
+  maintainer's checkout sets `formats = "all"`, `keep_raw = true` and
+  `keep_canonical = true`.
+- `python -m raincloud.pipeline.export` without `--format`, and `run_exporters` /
+  `plan` without `formats`, write the install's formats, as a build does, instead of
+  every format the recipe lists.
+- **Both ORC lanes widen what ORC cannot hold**, always rather than by the data's range:
+  uint8 → int16, uint16 → int32, uint32 → int64, uint64 → decimal(20, 0), and view types
+  to their plain types. orc-rust writes no decimals, so a uint64 column is still
+  unavailable in `orc@rs`.
+- **`export.formats` is no longer part of a recipe's fingerprint**: an install chooses
+  what it builds, so which formats a dataset offers decides no file's bytes. The four
+  recipes that restated the old default drop the line; their fingerprints change once.
+- **v1 catalogs behave as in 0.3.0**: a build writes every format the recipe lists and
+  removes nothing, and `auto` keeps the vortex, parquet, arrow order.
+- Each artifact format is declared once, in `raincloud._registry.FORMATS`, and
+  everything that listed Parquet and Vortex by hand derives from it. A format with
+  no in-process reader raises `MissingDependency` instead of being opened as Vortex.
+
 ## [0.3.0] - 2026-09-28
 
 A breaking release: the pipeline's entry points, the default data locations and
@@ -882,6 +983,7 @@ This release bundles:
   this repository" button in the repo sidebar with BibTeX / APA / Chicago
   exports.
 
+[0.3.1]: https://github.com/spiraldb/raincloud/releases/tag/v0.3.1
 [0.3.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.3.0
 [0.2.1]: https://github.com/spiraldb/raincloud/releases/tag/v0.2.1
 [0.2.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.2.0

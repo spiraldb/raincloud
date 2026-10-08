@@ -372,7 +372,14 @@ def resolve(
             pinned = stack.enter_context(context.pinned(config)) if context else config
             try:
                 # The build log goes to stderr: stdout is the caller's (a path, or JSON).
-                subprocess.run([sys.executable, "-m", "raincloud.pipeline.build", slug], check=True,
+                # Only the format asked for: the install's other formats are
+                # its own choice to build, not this load's. A v1 catalog predates
+                # install formats and builds what its recipe lists, as in 0.3.0.
+                command = [sys.executable, "-m", "raincloud.pipeline.build", slug]
+                if entry.version >= 2:
+                    command += ["--format", fmt]
+                subprocess.run(command,
+                               check=True,
                                env=pinned.subprocess_env(), stdout=_stderr_fd())
             except (subprocess.CalledProcessError, OSError) as e:
                 # Honour the typed-error contract — callers catch RaincloudError,

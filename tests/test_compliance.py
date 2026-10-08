@@ -24,6 +24,7 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
+from raincloud._registry import PY_EXPORTERS, SIDECAR_EXPORTERS
 from raincloud.pipeline import compliance
 from raincloud.pipeline.export import run_reader
 from raincloud.pipeline.export.exporters import ParquetExporter, VortexExporter
@@ -344,14 +345,15 @@ def test_run_compliance_matrix_over_synthetic_slug(tmp_path, monkeypatch, capsys
 
     # In-process cells produced artifacts; the absent sidecars were skipped (no
     # RAINCLOUD_SIDECAR_* env override + the binary names are not on PATH here).
-    assert set(sc.artifact_cells()) == {"parquet@py", "vortex@py"}
+    assert set(sc.artifact_cells()) == set(PY_EXPORTERS)
     skipped = {c for c, _ in sc.skipped_cells}
-    assert skipped == {"parquet@rs", "parquet@java", "parquet@hardwood", "vortex@rs", "vortex@jni"}
+    assert skipped == set(SIDECAR_EXPORTERS)
 
     verdict_by = {(rr.artifact_cell, rr.reader_id): rr.verdict.status for rr in sc.read_results}
     # In-process readers over their own format -> pass.
     assert verdict_by[("parquet@py", "parquet@py")] == "pass"
     assert verdict_by[("vortex@py", "vortex@py")] == "pass"
+    assert verdict_by[("orc@py", "orc@py")] == "pass"
     # Cross-format -> na.
     assert verdict_by[("parquet@py", "vortex@py")] == "na"
     assert verdict_by[("vortex@py", "parquet@py")] == "na"
@@ -360,7 +362,7 @@ def test_run_compliance_matrix_over_synthetic_slug(tmp_path, monkeypatch, capsys
     assert verdict_by[("vortex@py", "vortex@jni")] == "skip"
 
     counts = sc.counts()
-    assert counts["pass"] == 2
+    assert counts["pass"] == len(PY_EXPORTERS)
     assert counts["fail"] == 0
     assert counts["skip"] >= 2 and counts["na"] >= 2
 

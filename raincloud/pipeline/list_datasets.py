@@ -56,7 +56,7 @@ import sys
 from typing import Any
 
 from raincloud._catalog import recorded_unavailable
-from raincloud._formats import vortex_cells, vortex_skip_reason
+from raincloud._formats import EXPORTED_FORMATS, vortex_cells, vortex_skip_reason
 from raincloud._suggest import hint
 from raincloud.exceptions import CatalogError
 
@@ -76,7 +76,7 @@ from .spec import (
     iter_datasets,
     load_manifest,
     outputs_root,
-    prepared_arrow,
+    prepared_artifact,
     prepared_parquet,
     prepared_vortex,
     spec_field,
@@ -227,8 +227,7 @@ def local_formats(spec: dict, manifest: dict) -> list[str]:
     """Formats of `spec` whose artifact is on this machine's disk, for the
     current schema_version. Presence only: `raincloud status` checks staleness."""
     slug = spec["slug"]
-    paths = {"arrow": prepared_arrow, "parquet": prepared_parquet, "vortex": prepared_vortex}
-    return [fmt for fmt, path in paths.items() if path(slug, manifest).is_file()]
+    return [fmt for fmt in ("arrow", *EXPORTED_FORMATS) if prepared_artifact(slug, fmt, manifest).is_file()]
 
 
 def _filter_state_from_args(args) -> FilterState:

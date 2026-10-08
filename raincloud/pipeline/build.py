@@ -22,6 +22,21 @@ worked, and an `[unavailable]` line, repeated in the summary, names it. Such a
 build exits 0; the loader then reports the format as unavailable, quoting the
 measurement, and the catalog shows it once a maintainer regenerates it.
 
+Which formats a build writes is the install's choice: its `formats` setting
+(only Vortex by default; `all` for every format the dataset offers), or the
+formats named with `--format`, which is how a load that needs one other file
+builds just that one. The canonical Arrow is written by every build; once the
+formats are written, a successful build removes it unless `keep_canonical` is
+set, `--format arrow` asked for it, or no format was written (it is then the
+dataset's only file: the one `load` serves when, say, the Vortex writer cannot
+make Vortex). It removes the raw download too, unless `keep_raw` is set.
+
+A generated dataset is one table of a group its generator writes at once (every
+TPC-H table of one scale factor, say), so building one builds the whole group:
+every table, in the same formats. Once a group has built, its generator output
+is removed too, unless `keep_raw` is set. `--only` builds just the tables named,
+and the generator output still goes: the rest would be generated again.
+
 A failure already measured is not repeated: when the measurement that applies
 (this install's build record at the recipe, else the catalog's) records the
 writer that would run now, with the same toolchain, reading the same canonical,
@@ -43,15 +58,19 @@ Examples:
     python -m raincloud.pipeline.build clickbench-hits
     python -m raincloud.pipeline.build uci-iris uci-wine-quality
     python -m raincloud.pipeline.build --all --strict   # CI mode
+    python -m raincloud.pipeline.build tpch-sf1-lineitem --format parquet --format orc
 """
 from __future__ import annotations
 
 import argparse
+import contextlib
 import shutil
 import sys
 import traceback
 
 from raincloud._cache import sha256_file
+from raincloud._formats import build_formats
+from raincloud.config import get_config
 from raincloud.exceptions import BuildToolingMissing
 
 from .canonical import write_canonical
@@ -67,6 +86,8 @@ from .spec import (
     display_path,
     load_manifest,
     prepared_arrow,
+    raw_downloads_root,
+    raw_slug_dir,
     recipe_scratch,
     workdir_root,
 )
@@ -76,7 +97,8 @@ from .validate import validate
 
 def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
              unavailable: list | None = None, skipped: list | None = None,
-             unverified: list | None = None, retry_errors: bool = False) -> bool:
+             unverified: list | None = None, retry_errors: bool = False,
+             formats: list[str] | None = None) -> bool:
     print("\n" + "=" * 72)
     print(f"  {spec['slug']}")
     print("=" * 72)
@@ -85,9 +107,22 @@ def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
         context = current()
         context.build_check(spec)
         outputs.preflight(spec["slug"])
+        config = get_config()
+        try:
+            exports = build_formats(spec, context.manifest["schema_version"], config, formats)
+        except ValueError as exc:
+            print(f"  FAILED: {exc}")
+            return False
+        if formats is None and "all" in config.formats:
+            # `all` is every format this machine can write: one with no
+            # installed writer is left out, said, rather than failing the build.
+            # A format named outright still fails below.
+            exports = [fmt for fmt in exports if _installed(spec, fmt)]
+        print(f"  formats: {', '.join(exports) or 'none'} (canonical Arrow "
+              f"{'kept' if _keeps_canonical(config, formats) else 'removed once they are written'})")
         # Fail in a second, not after the transform, when a format this
-        # dataset exports has no installed writer here.
-        plan(spec)
+        # build writes has no installed writer here.
+        plan(spec, exports)
         if spec.get("derive"):
             # A derived dataset's input is another dataset, not an upstream.
             # Its options arrive through a context variable: `hydrate.main`
@@ -128,6 +163,7 @@ def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
         for canonical in canonicals:
             record_build({slug_from_canonical(canonical): {
                 "arrow": (sha256_file(canonical), canonical.stat().st_size)}})
+        written = {}
         for canonical in canonicals:
             slug = slug_from_canonical(canonical)
             def note(failure, recorded, slug=slug):
@@ -142,8 +178,11 @@ def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
                     unverified.append((slug, result.format_id, why))
             # A planned writer's failure is recorded and the build goes on; one
             # already measured with this writer and toolchain is skipped.
-            run_exporters(spec, canonical, retry_errors=retry_errors, on_skip=skip,
-                          **recorders(slug, note, on_unverified=unchecked))
+            written[canonical] = run_exporters(spec, canonical, exports, retry_errors=retry_errors,
+                                               on_skip=skip, **recorders(slug, note, on_unverified=unchecked))
+        if context.manifest["schema_version"] >= 2:
+            # A v1 catalog builds as in 0.3.0, keeping what it was made from.
+            _clean(spec, written, config, formats)
         if clean_workdir:
             wd = workdir_root() / spec["slug"]
             if wd.exists():
@@ -177,6 +216,126 @@ def _run_one(spec: dict, outputs, *, strict: bool, clean_workdir: bool = False,
         return False
 
 
+def _installed(spec: dict, fmt: str) -> bool:
+    try:
+        plan(spec, [fmt])
+    except BuildToolingMissing as exc:
+        print(f"  [skip] {fmt}: {exc}")
+        return False
+    return True
+
+
+def _keeps_canonical(config, formats) -> bool:
+    return config.keep_canonical or "arrow" in (formats or ())
+
+
+def _clean(spec: dict, written: dict, config, formats) -> None:
+    """Remove what a successful build was made from, unless the install keeps it.
+
+    `written` maps each canonical to the exports written from it. A canonical
+    from which nothing was written is the dataset's only file and stays. The
+    raw download goes unless `keep_raw`; a generated dataset's generator
+    output is shared by its group and stays.
+    """
+    if not _keeps_canonical(config, formats):
+        for canonical, results in written.items():
+            if not results:
+                print(f"  [keep] {display_path(canonical)}: no other format was written, so it is "
+                      f"the dataset's file")
+            elif canonical.is_file():
+                canonical.unlink()
+                with contextlib.suppress(OSError):
+                    canonical.parent.rmdir()  # `arrow/`, when nothing else is in it
+                print(f"  [clean] removed {display_path(canonical)} (set keep_canonical to keep it)")
+    fetch_type = (spec.get("fetch") or {}).get("type")
+    if config.keep_raw or spec.get("derive") or fetch_type == "generated":
+        return
+    raw = raw_slug_dir(spec["slug"], spec)
+    if raw.exists():
+        try:
+            shutil.rmtree(raw)
+        except OSError as e:
+            print(f"  [clean] could not remove {display_path(raw)}: {e}", file=sys.stderr)
+            return
+        print(f"  [clean] removed {display_path(raw)} (set keep_raw to keep it)")
+    # A recipe generation lives under `<slug>/.recipes/`; drop what it leaves empty.
+    root = raw_downloads_root()
+    for parent in raw.parents:
+        if parent == root or root not in parent.parents:
+            break
+        try:
+            parent.rmdir()
+        except OSError:
+            break
+
+
+def _generation(spec: dict) -> str | None:
+    """The key of the generator group `spec` is a table of, or None."""
+    from raincloud._generated import generation_key
+    fetch = spec.get("fetch") or {}
+    return generation_key(fetch) if fetch.get("type") == "generated" and not spec.get("derive") else None
+
+
+def _with_groups(selected: list[dict], manifest: dict) -> list[dict]:
+    """`selected` with every other table of each generator group it names, in
+    manifest order after the first table selected from that group."""
+    chosen = {spec["slug"] for spec in selected}
+    members: dict[str, list[dict]] = {}
+    for spec in manifest["datasets"]:
+        key = _generation(spec)
+        if key is not None:
+            members.setdefault(key, []).append(spec)
+    out, seen = [], set()
+    for spec in selected:
+        if spec["slug"] in seen:
+            continue
+        out.append(spec)
+        seen.add(spec["slug"])
+        key = _generation(spec)
+        added = [m for m in members.get(key, []) if m["slug"] not in chosen and m["slug"] not in seen]
+        if added:
+            print(f"[group] {spec['slug']}: building its generator group too: "
+                  + ", ".join(m["slug"] for m in added))
+        out += added
+        seen.update(m["slug"] for m in added)
+    return out
+
+
+def _clean_generated(selected: list[dict], built: dict[str, bool]) -> None:
+    """Remove the generator output of each group whose tables in this run all
+    built, unless `keep_raw` keeps it."""
+    from .generate import group_root
+    from .lifecycle import operation_lock
+
+    if get_config().keep_raw:
+        return
+    groups: dict[str, list[dict]] = {}
+    for spec in selected:
+        key = _generation(spec)
+        if key is not None:
+            groups.setdefault(key, []).append(spec)
+    for specs in groups.values():
+        if not all(built.get(spec["slug"]) for spec in specs):
+            continue
+        root = group_root(specs[0]["fetch"])
+        if not root.exists():
+            continue
+        with operation_lock(resources=True):
+            try:
+                shutil.rmtree(root)
+            except OSError as e:
+                print(f"  [clean] could not remove {display_path(root)}: {e}", file=sys.stderr)
+            else:
+                print(f"  [clean] removed {display_path(root)}, the generator output of "
+                      f"{', '.join(spec['slug'] for spec in specs)} (set keep_raw to keep it)")
+
+
+def _formats_arg(values: list[str] | None) -> list[str] | None:
+    if not values:
+        return None
+    return [name.strip() for value in values for name in value.split(",") if name.strip()]
+
+
 def _main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="raincloud build", allow_abbrev=False)
     ap.add_argument("slugs", nargs="*", help="specific slugs to build")
@@ -189,6 +348,11 @@ def _main(argv: list[str] | None = None) -> int:
                     help="after each successful build, remove the selected recipe's scratch directory "
                          "so large decompressed intermediates (e.g. Public BI bz2→csv) "
                          "don't accumulate during batch runs")
+    ap.add_argument("--format", action="append", dest="formats", metavar="FORMAT",
+                    help="write this format instead of the install's `formats` setting (repeatable, or "
+                         "comma-separated); `arrow` keeps the canonical Arrow")
+    ap.add_argument("--only", action="store_true",
+                    help="build only the generated tables named, not the rest of their generator's group")
     ap.add_argument("--retry-errors", action="store_true",
                     help="attempt a format even when its writer, with this toolchain, already failed to "
                          "write it at this recipe (skipped by default; see `[skip]` lines)")
@@ -200,18 +364,33 @@ def _main(argv: list[str] | None = None) -> int:
         ap.error(str(exc))
     # Every name is checked before any work: a typo is an error with a
     # did-you-mean, never a silently smaller build.
-    selected = select_or_exit(ap, load_manifest(), args.slugs, all_=args.all, verb="build")
+    manifest = load_manifest()
+    selected = select_or_exit(ap, manifest, args.slugs, all_=args.all, verb="build")
+    if manifest["schema_version"] >= 2 and not args.only:
+        selected = _with_groups(selected, manifest)
+    formats = _formats_arg(args.formats)
+    if formats is not None:
+        from raincloud._formats import ALL_FORMATS
+        from raincloud._suggest import hint
+        for name in formats:
+            if name not in ALL_FORMATS:
+                ap.error("--format: " + hint(name, list(ALL_FORMATS), noun="format"))
 
     ok = failed = 0
     unavailable: list = []
     skipped: list = []
     unverified: list = []
+    built: dict[str, bool] = {}
     for spec in selected:
-        if run_one(spec, strict=args.strict, clean_workdir=args.clean_workdir, unavailable=unavailable,
-                   skipped=skipped, unverified=unverified, retry_errors=args.retry_errors):
+        built[spec["slug"]] = run_one(spec, strict=args.strict, clean_workdir=args.clean_workdir,
+                                      unavailable=unavailable, skipped=skipped, unverified=unverified,
+                                      retry_errors=args.retry_errors, formats=formats)
+        if built[spec["slug"]]:
             ok += 1
         else:
             failed += 1
+    if manifest["schema_version"] >= 2:
+        _clean_generated(selected, built)
     print(f"\nsummary: ok={ok}  failed/skipped={failed}"
           + (f"  unavailable={len(unavailable)}" if unavailable else "")
           + (f"  known failures not retried={len(skipped)}" if skipped else "")
@@ -231,13 +410,15 @@ def _main(argv: list[str] | None = None) -> int:
 
 
 def run_one(spec: dict, *, strict: bool, clean_workdir: bool = False, unavailable: list | None = None,
-            skipped: list | None = None, unverified: list | None = None, retry_errors: bool = False) -> bool:
+            skipped: list | None = None, unverified: list | None = None, retry_errors: bool = False,
+            formats: list[str] | None = None) -> bool:
     """Build one dataset; True when it built. A format its planned writer could
     not produce is appended to `unavailable` as (slug, export.Unavailable); one
     skipped as an already-measured failure, to `skipped` as (slug,
     export.Skipped). `retry_errors` attempts those instead. A file promoted
     without its writer verifying it reads back (a sidecar's `roundtrip: null`)
-    is appended to `unverified` as (slug, writer cell, its reason)."""
+    is appended to `unverified` as (slug, writer cell, its reason). `formats`
+    replaces the install's `formats` setting for this build (`--format`)."""
     from .lifecycle import operation_lock
 
     with operation_lock(resources=True):
@@ -246,7 +427,7 @@ def run_one(spec: dict, *, strict: bool, clean_workdir: bool = False, unavailabl
             with build_outputs(spec) as outputs:
                 return _run_one(spec, outputs, strict=strict, clean_workdir=clean_workdir,
                                 unavailable=unavailable, skipped=skipped, unverified=unverified,
-                                retry_errors=retry_errors)
+                                retry_errors=retry_errors, formats=formats)
 
 
 def main(argv: list[str] | None = None):

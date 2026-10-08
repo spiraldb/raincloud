@@ -54,12 +54,38 @@ GENERATORS: dict[str, str] = {
     "tpcgen-rs-tpch": "tpch:RustTPCH",
 }
 
+# Artifact formats. Each is one file per dataset, `<fmt>/<slug>.<ext>`,
+# whichever writer made it; `arrow` is the canonical every exporter reads.
+#   ext             the file extension; part of the native-client path contract.
+#   auto            whether `load(slug)` with no format may pick it. Those that
+#                   may are tried in declaration order; any other format opens
+#                   only when asked for by name.
+#   reader          the module whose presence means this install reads the
+#                   format in-process, or None when raincloud only serves the
+#                   file's path to a reader the caller brings.
+#   implementation  that reader, as `raincloud describe --readers` names it.
+#   extra           the raincloud extra that installs the reader, if any.
+# Every exporter cell's format must be declared here; `_formats` checks at import.
+FORMATS: dict[str, dict] = {
+    "vortex": {"ext": "vortex", "auto": True, "reader": "vortex",
+               "implementation": "vortex-python", "extra": "vortex"},
+    "parquet": {"ext": "parquet", "auto": True, "reader": "pyarrow", "implementation": "pyarrow"},
+    "arrow": {"ext": "arrow.zstd", "auto": True, "reader": "pyarrow", "implementation": "pyarrow"},
+    # pyarrow's ORC support is a compiled extension some builds leave out.
+    "orc": {"ext": "orc", "auto": False, "reader": "pyarrow._orc", "implementation": "pyarrow"},
+    # pyarrow reads no Avro: the loader serves the file's path.
+    "avro": {"ext": "avro", "auto": False, "reader": None, "implementation": None},
+    # Nimble is C++ only: served by path.
+    "nimble": {"ext": "nimble", "auto": False, "reader": None, "implementation": None},
+}
+
 # In-process exporter cells, as "<module>:<class>" under `raincloud.pipeline.export`.
 # The built-in priority's first choice; the class carries its own `cell_id`, and
 # the key here must match it.
 PY_EXPORTERS: dict[str, str] = {
     "parquet@py": "exporters:ParquetExporter",
     "vortex@py": "exporters:VortexExporter",
+    "orc@py": "exporters:OrcExporter",
 }
 
 # Opt-in exporter cells that shell out to a PATH-discovered reference writer,
@@ -73,6 +99,10 @@ SIDECAR_EXPORTERS: dict[str, tuple[str, str]] = {
     "parquet@hardwood": ("parquet", "raincloud-export-parquet-hardwood"),
     "vortex@rs": ("vortex", "raincloud-export-vortex-rs"),
     "vortex@jni": ("vortex", "raincloud-export-vortex-jni"),
+    "orc@rs": ("orc", "raincloud-export-orc-rs"),
+    "avro@rs": ("avro", "raincloud-export-avro-rs"),
+    "avro@java": ("avro", "raincloud-export-avro-java"),
+    "nimble@cpp": ("nimble", "raincloud-export-nimble-cpp"),
 }
 
 # Custom fetchers, as "<module>:<attr>" under `raincloud.pipeline`. A recipe

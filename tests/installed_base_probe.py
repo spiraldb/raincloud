@@ -53,7 +53,9 @@ assert settings.data_dir == root / "hdd"
 assert settings.scratch_dir == root / "scratch"
 # Metadata stays lazy even though the catalog advertises an unavailable reader.
 handle = raincloud.load("tiny", config=config)
-assert handle.format == "parquet"
+# auto picks among the formats the install builds (only Vortex by default), then the
+# canonical Arrow: a base install has no Vortex reader, so it is the Arrow file.
+assert handle.format == "arrow", handle.format
 assert not (root / "hdd").exists()
 try:
     raincloud.load("tiny", format="vortex", config=config)

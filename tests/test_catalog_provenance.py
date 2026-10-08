@@ -91,7 +91,7 @@ def test_streaming_template_builds_canonical_and_exports(tmp_path, monkeypatch):
     manifest.write_text(json.dumps({"schema_version": 2, "datasets": [spec]}))
     cfg = raincloud.resolve_config(manifest=manifest, data_dir=tmp_path / "hdd", scratch_dir=tmp_path / "scratch")
     with operation(cfg):
-        assert run_one(spec, strict=True)
+        assert run_one(spec, strict=True, formats=["parquet", "arrow"])
     ds = raincloud.load("template-probe", format="arrow", config=cfg, offline=True)
     assert ds.to_arrow().to_pydict() == {"x": [1, 2], "s": ["a", "b"]}
     assert raincloud.load("template-probe", format="parquet", config=cfg, offline=True).to_arrow().equals(ds.to_arrow())

@@ -128,13 +128,24 @@ raincloud.load("uci-iris", build=True)
 raincloud load uci-iris --build
 ```
 
-**Which format you get.** A dataset can have Arrow IPC, Parquet and Vortex files.
-`format="auto"`, the default, picks Vortex, then Parquet, then Arrow, among the
-formats you have a reader for. The base install reads Arrow and Parquet; `[vortex]`
-adds Vortex, and `[build]` includes it. Installing either one therefore changes what
-`auto` returns, down to the Arrow types: Vortex returns some string columns as
-`string_view`. Name the format when that matters:
-`raincloud.load("uci-iris", format="parquet")`.
+**Which format you get.** A dataset can have Arrow IPC, Parquet, Vortex, ORC, Avro and
+Nimble files (Avro and Nimble are served by path: raincloud has no Python reader for them).
+An install builds only Vortex unless it opts into more: the `formats` setting
+(`formats = ["vortex", "parquet"]` in the config file, `RAINCLOUD_FORMATS`, or
+`"all"`) names what a build writes, and a load that names another format builds just
+that one. `format="auto"`, the default, picks Vortex, then Parquet, among the formats
+the install builds and you have a reader for, and falls back to the canonical Arrow
+when neither can be had (for a dataset whose Vortex writer is measured unable to write
+it, say). The base install reads Arrow and Parquet; `[vortex]` adds Vortex, and
+`[build]` includes it. Installing either one therefore changes what `auto` returns,
+down to the Arrow types: Vortex returns some string columns as `string_view`. Name the
+format when that matters: `raincloud.load("uci-iris", format="parquet")`.
+
+A build removes what it was made from once the dataset's files are written: the raw
+download and the canonical Arrow. Set `keep_raw` and `keep_canonical` (or
+`RAINCLOUD_KEEP_RAW=1`, `RAINCLOUD_KEEP_CANONICAL=1`) to keep them, as a shared store
+or a maintainer does; a later request for another format then needs no fetch. A
+canonical that is the dataset's only file is always kept.
 
 Other extras: `[s3]` and `[http]` add mirror transports, `[pandas]` backs `.to_pandas()`.
 
@@ -265,6 +276,32 @@ writes the setting, and `raincloud config show` prints what is in effect.
 
 Some datasets are large: single datasets can run for hours, and a full catalog build
 is measured in days. Build what you need.
+
+**Encoder settings.** Each format's writers take the same settings from the environment:
+for Parquet a page index (ColumnIndex and OffsetIndex) on every column or only the first N,
+statistics for only the first N columns, the compression level, page size and rows,
+dictionaries and page checksums; for ORC and Avro the codec, level and block sizes; for
+Vortex compact encodings. Unset, each writer library's default applies, which is how the
+catalog's files are written: pyarrow, the default Parquet writer, writes no page index. To
+build a dataset's Parquet with one:
+
+```bash
+RAINCLOUD_PARQUET_PAGE_INDEX=1 raincloud build uci-iris --format parquet
+```
+
+```python
+import os, raincloud
+os.environ["RAINCLOUD_PARQUET_PAGE_INDEX"] = "1"   # before the build runs
+ds = raincloud.load("uci-iris", format="parquet", build=True)
+```
+
+A setting applies to files this install writes; a file already on disk or on a mirror is
+served as it is, and `build=True` builds only what is missing, so rebuild (or re-export
+from a kept canonical, `python -m raincloud.pipeline.export uci-iris --format parquet`) to
+rewrite one. A writer that cannot do what a setting asks refuses it, and the format is
+recorded unavailable with the reason. Every setting, its default, and which writer honours
+it: the `RAINCLOUD_PARQUET_*`, `_ORC_*`, `_AVRO_*` and `_VORTEX_*` rows of
+[AGENTS.md](AGENTS.md#data-locations) and [`sidecars/README.md`](sidecars/README.md).
 
 A build does not fail because one format's writer cannot handle a dataset. Every
 export is bounded by `RAINCLOUD_EXPORT_TIMEOUT` (default 6 h; `0` disables it); a

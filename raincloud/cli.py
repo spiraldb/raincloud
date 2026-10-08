@@ -17,6 +17,8 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from . import __version__, _open, describe
+from ._cache import EXT
+from ._formats import AUTO_FORMATS
 from ._locking import atomic_write, creation_mode
 from .config import config_path, resolve_config, use_config
 from .exceptions import BuildToolingMissing, HydratedDatasetWarning, RaincloudError
@@ -34,6 +36,9 @@ _INIT_TEMPLATE = """\
 # cache_dir = "~/.cache/raincloud"  # mirror downloads (default: data_dir)
 # scratch_dir = "/tmp/raincloud"    # build scratch space
 # mirror = "s3://bucket/prefix"     # a store to fetch prepared files from
+# formats = ["vortex", "parquet"]   # formats a build writes (default: vortex; "all")
+# keep_raw = true                   # keep raw downloads after a build
+# keep_canonical = true             # keep the canonical Arrow after a build
 """
 
 
@@ -120,7 +125,7 @@ def _overview(settings) -> str:
 
           raincloud list [WORD...]     find datasets, e.g. `raincloud list tpch lineitem`
           raincloud describe SLUG      what a dataset is: rows, columns, formats, license
-          raincloud load SLUG          print the path to its file (--format vortex|parquet|arrow)
+          raincloud load SLUG          print the path to its file (--format {'|'.join(EXT)})
           raincloud build SLUG         prepare a dataset on this machine (needs raincloud[build])
           raincloud browse             browse interactively (needs raincloud[tui])
 
@@ -219,7 +224,8 @@ def main(argv: list[str] | None = None) -> int:
     def resolution(sub):
         sub.add_argument("slug", nargs="?", help="dataset name; `raincloud list` finds them")
         sub.add_argument("-f", "--format", default="auto",
-                         help="vortex, parquet or arrow; auto (the default) picks the first prepared, in that order")
+                         help=f"{', '.join(EXT)}; auto (the default) picks the first prepared of "
+                              f"{', '.join(AUTO_FORMATS)}, in that order")
         sub.add_argument("--readers", metavar="FORMATS",
                          help="comma-separated formats the caller decodes itself (native readers); "
                               "auto chooses among these")
@@ -377,7 +383,6 @@ def _catalog_text(action: str, result, settings) -> str:
 def _readers(value: str | None) -> set[str] | None:
     if value is None:
         return None
-    from ._cache import EXT
     from ._suggest import hint
     names = {part.strip().lower() for part in value.split(",") if part.strip()}
     for name in names - set(EXT):

@@ -3,15 +3,19 @@
 
 //! Shared machinery for raincloud's Rust sidecar binaries.
 //!
-//! Four `[[bin]]` targets implement raincloud's fixed sidecar CLI contracts
+//! The `[[bin]]` targets implement raincloud's fixed sidecar CLI contracts
 //! (see `raincloud/pipeline/export/sidecar.py` for WRITE and
 //! `raincloud/pipeline/export/readers.py` for READ):
 //!
-//! * `parquet-write` / `vortex-write` — read the canonical Arrow IPC file, write
-//!   the target format, then SELF-VERIFY (re-read, compare) and emit
-//!   `{"roundtrip", "variant_faithful", "note"}`.
-//! * `parquet-read` / `vortex-read` — read an artifact, compare to the canonical
-//!   with LOGICAL equality, emit `{"status", "note", "detail"}`.
+//! * `parquet-write` / `vortex-write` / `orc-write` / `avro-write` — read the
+//!   canonical Arrow IPC file, write the target format, then SELF-VERIFY
+//!   (re-read, compare) and emit `{"roundtrip", "variant_faithful", "note"}`.
+//! * `parquet-read` / `vortex-read` / `orc-read` / `avro-read` — read an
+//!   artifact, compare to the canonical with LOGICAL equality, emit
+//!   `{"status", "note", "detail"}`.
+//!
+//! The `nimble-ffi` member exposes the same contract to the nimble@cpp
+//! binaries (`sidecars/nimble`), which are C++ and link it.
 //!
 //! Every lane streams: both sides are read batch by batch and compared window
 //! by window, so memory does not grow with the table. Any failure, a panic
@@ -38,6 +42,10 @@ use std::sync::Arc;
 
 use anyhow::{bail, Context, Result};
 use arrow_array::{Array, RecordBatch, RecordBatchReader};
+use arrow_avro::compression::CompressionCodec;
+use arrow_avro::reader::ReaderBuilder as AvroReaderBuilder;
+use arrow_avro::writer::format::AvroOcfFormat;
+use arrow_avro::writer::WriterBuilder as AvroWriterBuilder;
 use arrow_ipc::reader::FileReader;
 use arrow_schema::{DataType, Field, Fields, Schema, SchemaRef};
 use parquet::arrow::arrow_reader::{
@@ -57,6 +65,18 @@ use vortex::io::runtime::BlockingRuntime;
 use vortex::io::session::RuntimeSessionExt;
 use vortex::session::VortexSession;
 use vortex::VortexSessionDefault;
+
+/// The write settings of the other formats (`spec.FORMAT_SETTINGS`).
+const ORC_COMPRESSION: &str = "RAINCLOUD_ORC_COMPRESSION";
+const ORC_COMPRESSION_STRATEGY: &str = "RAINCLOUD_ORC_COMPRESSION_STRATEGY";
+const ORC_STRIPE_BYTES: &str = "RAINCLOUD_ORC_STRIPE_BYTES";
+const ORC_COMPRESSION_BLOCK_BYTES: &str = "RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES";
+const AVRO_COMPRESSION: &str = "RAINCLOUD_AVRO_COMPRESSION";
+const AVRO_COMPRESSION_LEVEL: &str = "RAINCLOUD_AVRO_COMPRESSION_LEVEL";
+const AVRO_BLOCK_BYTES: &str = "RAINCLOUD_AVRO_BLOCK_BYTES";
+const VORTEX_COMPACT: &str = "RAINCLOUD_VORTEX_COMPACT";
+const VORTEX_ROW_BLOCK_ROWS: &str = "RAINCLOUD_VORTEX_ROW_BLOCK_ROWS";
+const VORTEX_DATA_BLOCK_BYTES: &str = "RAINCLOUD_VORTEX_DATA_BLOCK_BYTES";
 
 /// raincloud's top-level VARIANT marker (see `discovery._is_variant_field`).
 const VARIANT_MARKER: &str = "__variant_type";
@@ -238,6 +258,276 @@ impl RowGroupLimits {
     }
 }
 
+/// An on/off knob as every lane reads it (`spec._env_switch`): unset or empty
+/// -> `None`; otherwise 1/true/yes/on or 0/false/no/off, in any case.
+fn switch(var: &str, raw: Option<&OsStr>) -> Result<Option<bool>> {
+    let Some(raw) = raw else {
+        return Ok(None);
+    };
+    let Some(text) = raw.to_str() else {
+        bail!("{var}={raw:?} is not valid UTF-8; give 1 or 0");
+    };
+    match text
+        .trim_matches(is_knob_space)
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "" => Ok(None),
+        "1" | "true" | "yes" | "on" => Ok(Some(true)),
+        "0" | "false" | "no" | "off" => Ok(Some(false)),
+        _ => bail!("{var}='{text}' is not a switch; give 1 or 0 (true/false, yes/no, on/off)"),
+    }
+}
+
+/// A setting that names one of `choices` (`spec._env_choice`): unset or empty
+/// -> `None`; otherwise one of them, in any case.
+fn choice(var: &str, choices: &[&'static str]) -> Result<Option<&'static str>> {
+    let Some(raw) = std::env::var_os(var) else {
+        return Ok(None);
+    };
+    let text = raw
+        .to_str()
+        .map(|s| s.trim_matches(is_knob_space).to_ascii_lowercase());
+    match text.as_deref() {
+        Some("") => Ok(None),
+        Some(value) => match choices.iter().find(|c| **c == value) {
+            Some(found) => Ok(Some(found)),
+            None => bail!("{var}={raw:?} is not one of {}", choices.join(", ")),
+        },
+        None => bail!("{var}={raw:?} is not valid UTF-8"),
+    }
+}
+
+/// A size or count setting from the environment, as [`ParquetOptions`] reads
+/// its own: unset -> `None` (the library's default); empty or 0 -> no limit.
+fn setting_count(var: &str) -> Result<Option<usize>> {
+    std::env::var_os(var)
+        .map(|raw| knob(var, Some(&raw), 0, (1 << 31) - 1))
+        .transpose()
+}
+
+/// Refuse a set setting this lane's library has no way to honour.
+fn refuse_set<T: std::fmt::Display>(
+    lane: &str,
+    var: &str,
+    value: Option<T>,
+    why: &str,
+) -> Result<()> {
+    match value {
+        Some(value) => bail!("{lane} cannot honour {var}={value}: {why}"),
+        None => Ok(()),
+    }
+}
+
+/// The Parquet write options every Parquet lane is given the same way
+/// (`raincloud/pipeline/spec.py::ParquetOptions`, which documents each). The
+/// sidecar never sees the recipe: `SidecarExporter` passes its
+/// `write.compression` and `write.statistics` as `RAINCLOUD_PARQUET_COMPRESSION`
+/// and `RAINCLOUD_PARQUET_STATISTICS`, and each install setting only when it is
+/// set. Unset leaves arrow-rs's own default: a page index, 1 MiB pages, 20,000
+/// rows a page, dictionaries on, no page checksums.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ParquetOptions {
+    /// The codec, at `RAINCLOUD_PARQUET_COMPRESSION_LEVEL` when that is set.
+    pub compression: Compression,
+    pub statistics: bool,
+    /// Statistics only for the first N leaf columns.
+    pub statistics_columns: Option<usize>,
+    /// A ColumnIndex and OffsetIndex for every column chunk, or neither.
+    pub page_index: Option<bool>,
+    /// Page statistics only for the first N leaf columns; every column keeps
+    /// its chunk statistics.
+    pub page_index_columns: Option<usize>,
+    /// Data page size target, in bytes.
+    pub page_bytes: Option<usize>,
+    /// Data page row limit.
+    pub page_rows: Option<usize>,
+    pub dictionary: Option<bool>,
+    /// Dictionary page size limit, in bytes.
+    pub dictionary_page_bytes: Option<usize>,
+}
+
+impl Default for ParquetOptions {
+    fn default() -> Self {
+        Self {
+            compression: Compression::ZSTD(ZstdLevel::default()),
+            statistics: true,
+            statistics_columns: None,
+            page_index: None,
+            page_index_columns: None,
+            page_bytes: None,
+            page_rows: None,
+            dictionary: None,
+            dictionary_page_bytes: None,
+        }
+    }
+}
+
+impl ParquetOptions {
+    pub fn from_env() -> Result<Self> {
+        Self::from_vars(|name| std::env::var_os(name))
+    }
+
+    /// [`Self::from_env`] over `var`, so a test need not touch the process
+    /// environment.
+    pub fn from_vars(var: impl Fn(&str) -> Option<std::ffi::OsString>) -> Result<Self> {
+        const COMPRESSION: &str = "RAINCLOUD_PARQUET_COMPRESSION";
+        const LEVEL: &str = "RAINCLOUD_PARQUET_COMPRESSION_LEVEL";
+        const STATISTICS: &str = "RAINCLOUD_PARQUET_STATISTICS";
+        const STATISTICS_COLUMNS: &str = "RAINCLOUD_PARQUET_STATISTICS_COLUMNS";
+        const PAGE_INDEX: &str = "RAINCLOUD_PARQUET_PAGE_INDEX";
+        const PAGE_INDEX_COLUMNS: &str = "RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS";
+        const PAGE_BYTES: &str = "RAINCLOUD_PARQUET_PAGE_BYTES";
+        const PAGE_ROWS: &str = "RAINCLOUD_PARQUET_PAGE_ROWS";
+        const DICTIONARY: &str = "RAINCLOUD_PARQUET_DICTIONARY";
+        const DICTIONARY_PAGE_BYTES: &str = "RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES";
+        const PAGE_CHECKSUMS: &str = "RAINCLOUD_PARQUET_PAGE_CHECKSUMS";
+        let flag = |name: &str| switch(name, var(name).as_deref());
+        // Unset is arrow-rs's default; empty or 0 is no limit, as in parquet@py.
+        let count = |name: &str| -> Result<Option<usize>> {
+            var(name)
+                .map(|raw| knob(name, Some(&raw), 0, (1 << 31) - 1))
+                .transpose()
+        };
+        let level = match var(LEVEL) {
+            None => None,
+            Some(raw) => match raw.to_str().map(|s| s.trim_matches(is_knob_space)) {
+                Some("") => None,
+                Some(text) if text.bytes().all(|b| b.is_ascii_digit()) => Some(
+                    text.parse::<u32>()
+                        .with_context(|| format!("{LEVEL}='{text}' is too large"))?,
+                ),
+                _ => bail!(
+                    "{LEVEL}={raw:?} is not a compression level; give a whole number such as 3"
+                ),
+            },
+        };
+        let codec = match var(COMPRESSION) {
+            None => "zstd".to_string(),
+            Some(raw) => raw
+                .to_str()
+                .map(|s| s.trim_matches(is_knob_space).to_string())
+                .unwrap_or_default(),
+        };
+        let leveled = |name: &str, result: parquet::errors::Result<Compression>| {
+            result.map_err(|e| anyhow::anyhow!("{LEVEL}={} for {name}: {e}", level.unwrap()))
+        };
+        use parquet::basic::{BrotliLevel, GzipLevel};
+        let compression = match (codec.as_str(), level) {
+            ("zstd", None) => Compression::ZSTD(ZstdLevel::default()),
+            ("zstd", Some(l)) => leveled(
+                "zstd",
+                i32::try_from(l)
+                    .map_err(|_| parquet::errors::ParquetError::General("too large".into()))
+                    .and_then(ZstdLevel::try_new)
+                    .map(Compression::ZSTD),
+            )?,
+            ("gzip", None) => Compression::GZIP(Default::default()),
+            ("gzip", Some(l)) => leveled("gzip", GzipLevel::try_new(l).map(Compression::GZIP))?,
+            ("brotli", None) => Compression::BROTLI(Default::default()),
+            ("brotli", Some(l)) => {
+                leveled("brotli", BrotliLevel::try_new(l).map(Compression::BROTLI))?
+            }
+            ("snappy" | "lz4" | "none", Some(l)) => {
+                bail!("{LEVEL}={l}: {codec} takes no compression level")
+            }
+            ("snappy", None) => Compression::SNAPPY,
+            // pyarrow's "lz4" and Hardwood's LZ4_RAW: the framing the format
+            // recommends, not the deprecated Hadoop LZ4.
+            ("lz4", None) => Compression::LZ4_RAW,
+            ("none", None) => Compression::UNCOMPRESSED,
+            _ => {
+                bail!("{COMPRESSION}='{codec}' is not one of zstd, snappy, gzip, lz4, brotli, none")
+            }
+        };
+        let statistics = flag(STATISTICS)?.unwrap_or(true);
+        let options = Self {
+            compression,
+            statistics,
+            statistics_columns: count(STATISTICS_COLUMNS)?,
+            page_index: flag(PAGE_INDEX)?,
+            page_index_columns: count(PAGE_INDEX_COLUMNS)?,
+            page_bytes: count(PAGE_BYTES)?,
+            page_rows: count(PAGE_ROWS)?,
+            dictionary: flag(DICTIONARY)?,
+            dictionary_page_bytes: count(DICTIONARY_PAGE_BYTES)?,
+        };
+        if !statistics {
+            for (name, asked) in [
+                (PAGE_INDEX, options.page_index == Some(true)),
+                (STATISTICS_COLUMNS, options.statistics_columns.is_some()),
+                (PAGE_INDEX_COLUMNS, options.page_index_columns.is_some()),
+            ] {
+                if asked {
+                    bail!("{name} asks for statistics, but {STATISTICS} is 0");
+                }
+            }
+        }
+        if options.page_index == Some(false) && options.page_index_columns.is_some() {
+            bail!("{PAGE_INDEX_COLUMNS} asks for a page index, but {PAGE_INDEX} is 0");
+        }
+        if flag(PAGE_CHECKSUMS)? == Some(true) {
+            bail!("parquet@rs cannot honour {PAGE_CHECKSUMS}=1: arrow-rs writes no page checksums");
+        }
+        Ok(options)
+    }
+
+    /// `builder` with these options for a file of `columns`, except
+    /// compression, which the caller sets.
+    fn apply(
+        &self,
+        mut builder: parquet::file::properties::WriterPropertiesBuilder,
+        columns: &parquet::schema::types::SchemaDescriptor,
+    ) -> parquet::file::properties::WriterPropertiesBuilder {
+        use parquet::file::properties::EnabledStatistics;
+        if !self.statistics {
+            builder = builder.set_statistics_enabled(EnabledStatistics::None);
+        }
+        match self.page_index {
+            Some(true) => builder = builder.set_statistics_enabled(EnabledStatistics::Page),
+            // Neither index, as pyarrow writes without one: Chunk statistics alone
+            // still write an OffsetIndex.
+            Some(false) => {
+                if self.statistics {
+                    builder = builder.set_statistics_enabled(EnabledStatistics::Chunk);
+                }
+                builder = builder.set_offset_index_disabled(true);
+            }
+            None => {}
+        }
+        if self.statistics {
+            for (i, column) in columns.columns().iter().enumerate() {
+                let path = column.path().clone();
+                let level = if self.statistics_columns.is_some_and(|n| i >= n) {
+                    EnabledStatistics::None
+                } else if let Some(n) = self.page_index_columns {
+                    if i < n {
+                        EnabledStatistics::Page
+                    } else {
+                        EnabledStatistics::Chunk
+                    }
+                } else {
+                    continue;
+                };
+                builder = builder.set_column_statistics_enabled(path, level);
+            }
+        }
+        if let Some(bytes) = self.page_bytes {
+            builder = builder.set_data_page_size_limit(bytes);
+        }
+        if let Some(rows) = self.page_rows {
+            builder = builder.set_data_page_row_count_limit(rows);
+        }
+        if let Some(enabled) = self.dictionary {
+            builder = builder.set_dictionary_enabled(enabled);
+        }
+        if let Some(bytes) = self.dictionary_page_bytes {
+            builder = builder.set_dictionary_page_size_limit(bytes);
+        }
+        builder
+    }
+}
+
 /// Rows handed to arrow-rs per `write` call.
 ///
 /// arrow-rs applies `max_row_group_bytes` by measuring the rows it has already
@@ -302,7 +592,22 @@ where
     Ok(())
 }
 
-/// Stream record batches into a Parquet file (zstd compression, arrow-rs).
+/// Stream record batches into a Parquet file (zstd compression, arrow-rs), with
+/// the default [`ParquetOptions`]; see [`write_parquet_with`].
+pub fn write_parquet<F, I>(
+    output: &Path,
+    schema: SchemaRef,
+    limits: RowGroupLimits,
+    open: F,
+) -> Result<()>
+where
+    F: Fn() -> Result<I>,
+    I: IntoIterator<Item = Result<RecordBatch>>,
+{
+    write_parquet_with(output, schema, limits, ParquetOptions::default(), open)
+}
+
+/// Stream record batches into a Parquet file with `options` (arrow-rs).
 ///
 /// `open` is called twice, since the batches are read twice rather than held:
 /// SF100 lineitem is ~100 GB decoded. Each call must replay the same rows in
@@ -318,11 +623,14 @@ where
 /// put TPC-H customer at 377 MiB encoded per group for a 128 MiB target.
 /// So the first pass encodes uncompressed into a sink, where arrow-rs's measure
 /// is the encoded size, and records where each group ends; the second writes
-/// the file with zstd and closes groups at those rows.
-pub fn write_parquet<F, I>(
+/// the file with `options.compression` and closes groups at those rows. Both
+/// passes write the same pages and statistics, so the planned encoded size is
+/// the file's.
+pub fn write_parquet_with<F, I>(
     output: &Path,
     schema: SchemaRef,
     limits: RowGroupLimits,
+    options: ParquetOptions,
     open: F,
 ) -> Result<()>
 where
@@ -343,7 +651,11 @@ where
     // smaller limit", and its 1Mi-row default would cap TPC-H lineitem at
     // ~63 MiB encoded, exactly as parquet-java ships its own row limit
     // effectively off so that bytes decide. The backstop stays.
-    let plan_props = WriterProperties::builder()
+    let columns = parquet::arrow::ArrowSchemaConverter::new()
+        .convert(&schema)
+        .context("derive the Parquet schema")?;
+    let plan_props = options
+        .apply(WriterProperties::builder(), &columns)
         .set_compression(Compression::UNCOMPRESSED)
         .set_max_row_group_row_count(Some(limits.max_rows))
         .set_max_row_group_bytes(Some(limits.target_encoded_bytes))
@@ -365,8 +677,9 @@ where
     // a group.
     let file =
         File::create(output).with_context(|| format!("create parquet {}", output.display()))?;
-    let props = WriterProperties::builder()
-        .set_compression(Compression::ZSTD(ZstdLevel::default()))
+    let props = options
+        .apply(WriterProperties::builder(), &columns)
+        .set_compression(options.compression)
         .set_max_row_group_row_count(None)
         .set_max_row_group_bytes(None)
         .build();
@@ -586,7 +899,9 @@ fn vortex_storage_schema(schema: &Schema) -> SchemaRef {
 }
 
 /// Stream the canonical into a `.vortex` file with Vortex's default write
-/// strategy — chunking, statistics and compression — and the schema
+/// strategy — chunking, statistics and compression — unless a Vortex write
+/// setting asks otherwise (`RAINCLOUD_VORTEX_COMPACT`, `_ROW_BLOCK_ROWS`,
+/// `_DATA_BLOCK_BYTES`), and the schema
 /// [`vortex_storage_schema`] gives, as `vortex@py` (`vortex.io.write`) does,
 /// so the artifact is the one a build would publish, not merely one that
 /// round-trips.
@@ -609,8 +924,34 @@ pub fn write_vortex(output: &Path, canonical: &Path) -> Result<()> {
         let mut file = tokio::fs::File::create(output)
             .await
             .with_context(|| format!("create vortex {}", output.display()))?;
-        session
-            .write_options()
+        // The Vortex write settings (`spec.FORMAT_SETTINGS["vortex"]`). Unset is the
+        // default strategy; set, the strategy vortex@py builds, BtrBlocks limited to
+        // the encodings the session's editions allow, compact on request.
+        let compact = switch(VORTEX_COMPACT, std::env::var_os(VORTEX_COMPACT).as_deref())?;
+        let row_block_rows = setting_count(VORTEX_ROW_BLOCK_ROWS)?;
+        let data_block_bytes = setting_count(VORTEX_DATA_BLOCK_BYTES)?;
+        let mut options = session.write_options();
+        if compact.is_some() || row_block_rows.is_some() || data_block_bytes.is_some() {
+            use vortex::editions::{ComponentKind, EditionSessionExt};
+            let allowed = session
+                .enabled_component_ids(ComponentKind::Array)
+                .into_iter()
+                .collect();
+            let mut compressor = vortex::compressor::BtrBlocksCompressorBuilder::default();
+            if compact == Some(true) {
+                compressor = compressor.with_compact();
+            }
+            let mut strategy = vortex::file::WriteStrategyBuilder::default()
+                .with_btrblocks_builder(compressor.retain_allowed_encodings(&allowed));
+            if let Some(rows) = row_block_rows {
+                strategy = strategy.with_row_block_size(rows);
+            }
+            if let Some(bytes) = data_block_bytes {
+                strategy = strategy.with_data_block_target_bytes(Some(bytes as u64));
+            }
+            options = options.with_strategy(strategy.build());
+        }
+        options
             .write(&mut file, stream)
             .await
             .context("write vortex file")?;
@@ -660,6 +1001,290 @@ pub fn open_vortex(input: &Path) -> Result<(SchemaRef, VortexBatches)> {
 // ---------------------------------------------------------------------------
 // Logical comparison + variant detection
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// ORC (orc-rust)
+// ---------------------------------------------------------------------------
+
+/// `data_type` as the ORC lane stores it: ORC has no unsigned integers or view
+/// types, so the lane deliberately expands them, losslessly, before any writer
+/// sees them: UInt8/16/32 to the next wider signed integer, UInt64 to
+/// Decimal128(20, 0), and views to their plain equivalents, at any depth.
+fn orc_storage_type(data_type: &DataType) -> DataType {
+    let field = |f: &Arc<Field>| {
+        Arc::new(
+            f.as_ref()
+                .clone()
+                .with_data_type(orc_storage_type(f.data_type())),
+        )
+    };
+    match data_type {
+        DataType::UInt8 => DataType::Int16,
+        DataType::UInt16 => DataType::Int32,
+        DataType::UInt32 => DataType::Int64,
+        DataType::UInt64 => DataType::Decimal128(20, 0),
+        DataType::Utf8View => DataType::Utf8,
+        DataType::BinaryView => DataType::Binary,
+        DataType::List(f) => DataType::List(field(f)),
+        DataType::LargeList(f) => DataType::LargeList(field(f)),
+        DataType::FixedSizeList(f, n) => DataType::FixedSizeList(field(f), *n),
+        DataType::Map(f, sorted) => DataType::Map(field(f), *sorted),
+        DataType::Struct(fields) => DataType::Struct(fields.iter().map(field).collect()),
+        other => other.clone(),
+    }
+}
+
+/// Write `output` from the canonical with orc-rust's `ArrowWriter` and the ORC
+/// write settings: unset, zstd, since the API makes the caller pick a codec (its
+/// default is none), and its own default stripe and compression block sizes. Columns are first expanded to
+/// [`orc_storage_type`]. orc-rust panics on a type it does not write
+/// (`unimplemented!("unsupported datatype")`) -- 0.9.0 writes no decimal, so a
+/// uint64 column fails here (measured); [`run_writer`] reports that panic as
+/// the write's failure.
+pub fn write_orc(output: &Path, canonical: &Path) -> Result<()> {
+    let (canonical_schema, reader) = open_canonical(canonical)?;
+    let schema = Arc::new(Schema::new_with_metadata(
+        canonical_schema
+            .fields()
+            .iter()
+            .map(|f| {
+                f.as_ref()
+                    .clone()
+                    .with_data_type(orc_storage_type(f.data_type()))
+            })
+            .collect::<Vec<_>>(),
+        canonical_schema.metadata().clone(),
+    ));
+    // The ORC write settings (`spec.FORMAT_SETTINGS["orc"]`); unset, zstd.
+    use orc_rust::compression::CompressionType;
+    refuse_set(
+        "orc@rs",
+        ORC_COMPRESSION_STRATEGY,
+        choice(ORC_COMPRESSION_STRATEGY, &["speed", "compression"])?,
+        "orc-rust has no compression strategy",
+    )?;
+    let mut builder = orc_rust::ArrowWriterBuilder::new(
+        File::create(output).with_context(|| format!("create {}", output.display()))?,
+        schema.clone(),
+    );
+    let codec = choice(ORC_COMPRESSION, &["zstd", "snappy", "zlib", "lz4", "none"])?;
+    builder = match codec.unwrap_or("zstd") {
+        "zstd" => builder.with_compression(CompressionType::Zstd),
+        "snappy" => builder.with_compression(CompressionType::Snappy),
+        "zlib" => builder.with_compression(CompressionType::Zlib),
+        "lz4" => builder.with_compression(CompressionType::Lz4),
+        _ => builder,
+    };
+    if let Some(bytes) = setting_count(ORC_STRIPE_BYTES)? {
+        builder = builder.with_stripe_byte_size(bytes);
+    }
+    if let Some(bytes) = setting_count(ORC_COMPRESSION_BLOCK_BYTES)? {
+        builder = builder.with_compression_block_size(bytes);
+    }
+    let mut writer = builder
+        .try_build()
+        .context("orc-rust: start the ORC file")?;
+    for batch in canonical_batches(reader) {
+        let batch = batch?;
+        let columns = batch
+            .columns()
+            .iter()
+            .zip(schema.fields())
+            .map(|(column, field)| arrow_cast::cast(column, field.data_type()))
+            .collect::<std::result::Result<Vec<_>, _>>()
+            .context("expand the canonical to ORC's types")?;
+        writer
+            .write(&RecordBatch::try_new(schema.clone(), columns)?)
+            .context("orc-rust: write a record batch")?;
+    }
+    writer.close().context("orc-rust: finish the ORC file")
+}
+
+/// Open an ORC file with orc-rust's `ArrowReader`, in the batches it yields.
+pub fn open_orc(input: &Path) -> Result<(SchemaRef, impl Iterator<Item = Result<RecordBatch>>)> {
+    let file = File::open(input).with_context(|| format!("open {}", input.display()))?;
+    let reader = orc_rust::ArrowReaderBuilder::try_new(file)
+        .with_context(|| format!("orc-rust: read the ORC footer of {}", input.display()))?
+        .build();
+    let schema = reader.schema();
+    Ok((
+        schema,
+        reader.map(|b| b.context("orc-rust: read a record batch")),
+    ))
+}
+
+// ---------------------------------------------------------------------------
+// Avro (arrow-avro)
+// ---------------------------------------------------------------------------
+
+/// The sync marker of every Avro file raincloud writes. An object container
+/// file separates its blocks with a 16-byte marker the writer chooses, and
+/// arrow-avro draws it at random, so the same canonical would give a file with
+/// a different sha256 on every build. The Java lane writes the same marker.
+pub const AVRO_SYNC_MARKER: &[u8; 16] = b"raincloud-avro01";
+
+/// Replace the random sync marker `drawn` with [`AVRO_SYNC_MARKER`] in the
+/// object container file at `path`, in place: after the header and after each
+/// block, each checked to be `drawn` first. Nothing else in the file changes.
+///
+/// arrow-avro offers no way to choose the marker: `AvroOcfFormat` draws it,
+/// and the `AvroFormat` trait a caller could implement instead must write the
+/// header itself, whose schema JSON arrow-avro builds with a crate-private
+/// option. Rewriting the marker keeps every other byte arrow-avro's.
+fn fix_sync_marker(path: &Path, drawn: &[u8; 16]) -> Result<()> {
+    use std::io::{BufReader, Read, Seek, SeekFrom, Write};
+
+    struct Counted<R> {
+        inner: R,
+        at: u64,
+    }
+    impl<R: Read> Counted<R> {
+        fn bytes(&mut self, n: u64) -> Result<Vec<u8>> {
+            let mut buf = vec![0; n as usize];
+            self.inner.read_exact(&mut buf)?;
+            self.at += n;
+            Ok(buf)
+        }
+        /// An Avro `long` (zig-zag varint), or None at a clean end of file.
+        fn long(&mut self) -> Result<Option<i64>> {
+            let (mut n, mut shift) = (0u64, 0);
+            loop {
+                let mut byte = [0u8];
+                if self.inner.read(&mut byte)? == 0 {
+                    if shift == 0 {
+                        return Ok(None);
+                    }
+                    bail!("truncated Avro long");
+                }
+                self.at += 1;
+                n |= u64::from(byte[0] & 0x7f) << shift;
+                if byte[0] & 0x80 == 0 {
+                    return Ok(Some((n >> 1) as i64 ^ -((n & 1) as i64)));
+                }
+                shift += 7;
+            }
+        }
+        fn need(&mut self) -> Result<i64> {
+            self.long()?.context("unexpected end of the Avro file")
+        }
+        fn marker(&mut self, drawn: &[u8; 16], markers: &mut Vec<u64>) -> Result<()> {
+            let at = self.at;
+            if self.bytes(16)? != drawn {
+                bail!("no sync marker at byte {at}");
+            }
+            markers.push(at);
+            Ok(())
+        }
+    }
+
+    let mut file = Counted {
+        inner: BufReader::new(File::open(path)?),
+        at: 0,
+    };
+    let mut markers = Vec::new();
+    if file.bytes(4)? != b"Obj\x01" {
+        bail!("not an Avro object container file");
+    }
+    // The header's metadata map: blocks of key/value pairs, ending with 0.
+    loop {
+        let mut count = file.need()?;
+        if count == 0 {
+            break;
+        }
+        if count < 0 {
+            count = -count;
+            file.need()?; // the block's byte size
+        }
+        for _ in 0..2 * count {
+            let len = file.need()?;
+            file.bytes(len as u64)?;
+        }
+    }
+    file.marker(drawn, &mut markers)?;
+    // Data blocks: a row count, a byte size, the bytes, the marker.
+    while file.long()?.is_some() {
+        let size = file.need()?;
+        file.bytes(size as u64)?;
+        file.marker(drawn, &mut markers)?;
+    }
+    let mut out = std::fs::OpenOptions::new().write(true).open(path)?;
+    for at in markers {
+        out.seek(SeekFrom::Start(at))?;
+        out.write_all(AVRO_SYNC_MARKER)?;
+    }
+    out.sync_all()?;
+    Ok(())
+}
+
+/// Write `output` from the canonical with arrow-avro's `AvroWriter`: the Avro
+/// write settings' codec (unset, zstd), one block per canonical batch, then [`AVRO_SYNC_MARKER`] in place of its random
+/// sync marker, for a reproducible file. A type arrow-avro does not write is
+/// its error; nothing here converts a column.
+pub fn write_avro(output: &Path, canonical: &Path) -> Result<()> {
+    let (schema, reader) = open_canonical(canonical)?;
+    // The Avro write settings (`spec.FORMAT_SETTINGS["avro"]`); unset, zstd.
+    let level = std::env::var_os(AVRO_COMPRESSION_LEVEL)
+        .and_then(|raw| {
+            raw.to_str()
+                .map(|s| s.trim_matches(is_knob_space).to_string())
+        })
+        .filter(|s| !s.is_empty());
+    refuse_set(
+        "avro@rs",
+        AVRO_COMPRESSION_LEVEL,
+        level,
+        "arrow-avro has no compression level",
+    )?;
+    refuse_set(
+        "avro@rs",
+        AVRO_BLOCK_BYTES,
+        setting_count(AVRO_BLOCK_BYTES)?,
+        "arrow-avro writes one block per batch, with no block size",
+    )?;
+    let codec = match choice(
+        AVRO_COMPRESSION,
+        &["zstd", "deflate", "snappy", "bzip2", "xz", "none"],
+    )?
+    .unwrap_or("zstd")
+    {
+        "zstd" => Some(CompressionCodec::ZStandard),
+        "deflate" => Some(CompressionCodec::Deflate),
+        "snappy" => Some(CompressionCodec::Snappy),
+        "bzip2" => Some(CompressionCodec::Bzip2),
+        "xz" => Some(CompressionCodec::Xz),
+        _ => None,
+    };
+    let file = File::create(output).with_context(|| format!("create {}", output.display()))?;
+    let mut writer = AvroWriterBuilder::new(schema.as_ref().clone())
+        .with_compression(codec)
+        .build::<_, AvroOcfFormat>(std::io::BufWriter::new(file))
+        .context("arrow-avro: start the Avro file")?;
+    let drawn = *writer.sync_marker().context("arrow-avro: no sync marker")?;
+    for batch in canonical_batches(reader) {
+        writer
+            .write(&batch?)
+            .context("arrow-avro: write a record batch")?;
+    }
+    writer
+        .finish()
+        .context("arrow-avro: finish the Avro file")?;
+    drop(writer);
+    fix_sync_marker(output, &drawn).context("set the Avro sync marker")
+}
+
+/// Open an Avro object container file with arrow-avro's `Reader`, in the
+/// batches it yields.
+pub fn open_avro(input: &Path) -> Result<(SchemaRef, impl Iterator<Item = Result<RecordBatch>>)> {
+    let file = File::open(input).with_context(|| format!("open {}", input.display()))?;
+    let reader = AvroReaderBuilder::new()
+        .build(std::io::BufReader::new(file))
+        .with_context(|| format!("arrow-avro: read the Avro header of {}", input.display()))?;
+    let schema = reader.schema();
+    Ok((
+        schema,
+        reader.map(|b| b.context("arrow-avro: read a record batch")),
+    ))
+}
 
 /// True if any top-level field carries raincloud's VARIANT marker.
 pub fn has_variant(schema: &Schema) -> bool {
@@ -733,7 +1358,9 @@ pub fn parquet_variant_loss(
 
 // Check schema before values: reversible casts of empty/null arrays can erase
 // incompatible types and struct children. Representation widths, dictionary
-// indices, list element names and metadata are intentionally not identities.
+// indices, list element names and metadata are intentionally not identities;
+// nor are a null|T union's spelling of a nullable T, a timestamp's zone label,
+// or a scale-0 decimal's spelling of an integer (sidecars/compare_cases).
 fn compatible_fields(got: &Fields, expected: &Fields) -> bool {
     got.len() == expected.len()
         && got
@@ -742,8 +1369,118 @@ fn compatible_fields(got: &Fields, expected: &Fields) -> bool {
             .all(|(g, e)| g.name() == e.name() && compatible(g.data_type(), e.data_type()))
 }
 
+/// The type id and field of `T` in a union of exactly `null` and `T`, else
+/// None: such a union is how some readers spell a nullable `T` (Avro's
+/// `["null", T]`).
+fn nullable_member(data_type: &DataType) -> Option<(i8, &Arc<Field>)> {
+    let DataType::Union(fields, _) = data_type else {
+        return None;
+    };
+    let mut members = fields
+        .iter()
+        .filter(|(_, f)| f.data_type() != &DataType::Null);
+    match (fields.len(), members.next(), members.next()) {
+        (2, Some(member), None) => Some(member),
+        _ => None,
+    }
+}
+
+fn has_nullable_union(data_type: &DataType) -> bool {
+    use DataType::*;
+    nullable_member(data_type).is_some()
+        || match data_type {
+            Struct(fields) => fields.iter().any(|f| has_nullable_union(f.data_type())),
+            List(f)
+            | LargeList(f)
+            | ListView(f)
+            | LargeListView(f)
+            | FixedSizeList(f, _)
+            | Map(f, _) => has_nullable_union(f.data_type()),
+            _ => false,
+        }
+}
+
+/// `array` with every union of `null` and `T` replaced by the nullable `T` it
+/// spells, at any depth of struct, list and map: a row selecting the null
+/// member is null, any other is the `T` member's value (a sparse member at the
+/// row, a dense one at its offset).
+fn without_nullable_unions(
+    array: &arrow_array::ArrayRef,
+) -> Result<arrow_array::ArrayRef, arrow_schema::ArrowError> {
+    use DataType::*;
+    if !has_nullable_union(array.data_type()) {
+        return Ok(Arc::clone(array));
+    }
+    if let Some((code, _)) = nullable_member(array.data_type()) {
+        let union = array
+            .as_any()
+            .downcast_ref::<arrow_array::UnionArray>()
+            .expect("a union type is a UnionArray");
+        let picks: arrow_array::UInt32Array = (0..union.len())
+            .map(|i| (union.type_id(i) == code).then(|| union.value_offset(i) as u32))
+            .collect();
+        let picked = arrow_select::take::take(union.child(code).as_ref(), &picks, None)?;
+        return without_nullable_unions(&picked);
+    }
+    let data = array.to_data();
+    let children = data
+        .child_data()
+        .iter()
+        .map(|c| without_nullable_unions(&arrow_array::make_array(c.clone())).map(|a| a.to_data()))
+        .collect::<Result<Vec<_>, _>>()?;
+    // A field that held the union now holds nulls for its null member.
+    let field = |f: &Arc<Field>, child: &DataType| {
+        let nullable = f.is_nullable() || nullable_member(f.data_type()).is_some();
+        Arc::new(
+            f.as_ref()
+                .clone()
+                .with_data_type(child.clone())
+                .with_nullable(nullable),
+        )
+    };
+    let child = |i: usize| children[i].data_type();
+    let dtype = match array.data_type() {
+        Struct(fields) => Struct(
+            fields
+                .iter()
+                .enumerate()
+                .map(|(i, f)| field(f, child(i)))
+                .collect(),
+        ),
+        List(f) => List(field(f, child(0))),
+        LargeList(f) => LargeList(field(f, child(0))),
+        ListView(f) => ListView(field(f, child(0))),
+        LargeListView(f) => LargeListView(field(f, child(0))),
+        FixedSizeList(f, n) => FixedSizeList(field(f, child(0)), *n),
+        Map(f, sorted) => Map(field(f, child(0)), *sorted),
+        _ => unreachable!("has_nullable_union covers these containers only"),
+    };
+    Ok(arrow_array::make_array(
+        data.into_builder()
+            .data_type(dtype)
+            .child_data(children)
+            .build()?,
+    ))
+}
+
+/// A decimal holding integers: scale 0.
+fn is_integral_decimal(data_type: &DataType) -> bool {
+    use DataType::*;
+    matches!(
+        data_type,
+        Decimal32(_, 0) | Decimal64(_, 0) | Decimal128(_, 0) | Decimal256(_, 0)
+    )
+}
+
 fn compatible(got: &DataType, expected: &DataType) -> bool {
     use DataType::*;
+    // A null|T union is a nullable T, on either side.
+    if let Some((_, member)) = nullable_member(got) {
+        return compatible(member.data_type(), expected);
+    }
+    if let Some((_, member)) = nullable_member(expected) {
+        return compatible(got, member.data_type());
+    }
     match (got, expected) {
         (Dictionary(_, value), other) | (other, Dictionary(_, value)) => compatible(value, other),
         (Struct(g), Struct(e)) => compatible_fields(g, e),
@@ -761,7 +1498,13 @@ fn compatible(got: &DataType, expected: &DataType) -> bool {
                 })
         }
         (RunEndEncoded(_, g), RunEndEncoded(_, e)) => compatible(g.data_type(), e.data_type()),
-        (Timestamp(_, g), Timestamp(_, e)) => g == e,
+        // A zone labels UTC instants; it is not data. Naive and zoned differ in kind.
+        (Timestamp(_, g), Timestamp(_, e)) => g.is_some() == e.is_some(),
+        _ if (got.is_integer() && is_integral_decimal(expected))
+            || (is_integral_decimal(got) && expected.is_integer()) =>
+        {
+            true
+        }
         (FixedSizeBinary(g), FixedSizeBinary(e)) if g != e => false,
         (Utf8 | LargeUtf8 | Utf8View, Utf8 | LargeUtf8 | Utf8View)
         | (
@@ -875,8 +1618,9 @@ fn normalize(
 ///
 /// Returns `(matches, detail)` — `detail` is a human-readable mismatch reason
 /// when `!matches`, else empty. Row count, names and recursive logical schema
-/// compatibility first, then each column is cast losslessly to the canonical type
-/// (identity when types already match) and compared at the `ArrayData` level. `ArrayData` equality ignores
+/// compatibility first, then each column, with null|T unions read as nullable T,
+/// is cast losslessly to the canonical type (identity when types already match)
+/// and compared at the `ArrayData` level. `ArrayData` equality ignores
 /// field metadata, so a dropped VARIANT annotation does not fail the round-trip.
 fn logical_eq(got: &RecordBatch, expected: &RecordBatch) -> (bool, String) {
     if got.num_rows() != expected.num_rows() {
@@ -942,6 +1686,19 @@ fn logical_eq(got: &RecordBatch, expected: &RecordBatch) -> (bool, String) {
                 ),
             );
         }
+        let (g, e) = match (without_nullable_unions(g), without_nullable_unions(e)) {
+            (Ok(g), Ok(e)) => (g, e),
+            (Err(err), _) | (_, Err(err)) => {
+                return (
+                    false,
+                    format!(
+                        "column {:?}: cannot read a null|T union as T: {err}",
+                        exp_names[i]
+                    ),
+                );
+            }
+        };
+        let (g, e) = (&g, &e);
         let g_cast = if g.data_type() == e.data_type() {
             Arc::clone(g)
         } else {
@@ -1411,6 +2168,33 @@ mod tests {
     }
 
     #[test]
+    fn comparisons_follow_the_shared_cases() {
+        // The same pairs pytest and JUnit read; Rust takes no `gap`.
+        let table: serde_json::Value =
+            serde_json::from_str(include_str!("../../compare_cases/cases.json")).unwrap();
+        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../compare_cases");
+        for case in table["cases"].as_array().unwrap() {
+            let name = case["name"].as_str().unwrap();
+            let (got_schema, got) = open_canonical(&dir.join(format!("{name}.got.arrow"))).unwrap();
+            let (expected_schema, expected) =
+                open_canonical(&dir.join(format!("{name}.expected.arrow"))).unwrap();
+            let (equal, detail) = logical_eq_stream(
+                &got_schema,
+                canonical_batches(got),
+                &expected_schema,
+                canonical_batches(expected),
+            )
+            .unwrap();
+            let verdict = if equal { "equal" } else { "differ" };
+            assert_eq!(
+                verdict,
+                case["verdict"].as_str().unwrap(),
+                "{name}: {detail}"
+            );
+        }
+    }
+
+    #[test]
     fn normalize_bridges_fixed_size_forms() {
         let opts = arrow_cast::CastOptions {
             safe: false,
@@ -1600,6 +2384,146 @@ mod tests {
         assert!(decoded_bytes(group) >= 100_000, "{}", decoded_bytes(group));
     }
 
+    fn options_from(pairs: &[(&str, &str)]) -> Result<ParquetOptions> {
+        let vars: std::collections::HashMap<String, std::ffi::OsString> = pairs
+            .iter()
+            .map(|(k, v)| (format!("RAINCLOUD_PARQUET_{k}"), (*v).into()))
+            .collect();
+        ParquetOptions::from_vars(|name| vars.get(name).cloned())
+    }
+
+    #[test]
+    fn parquet_options_read_as_the_python_lane_writes_them() {
+        assert_eq!(options_from(&[]).unwrap(), ParquetOptions::default());
+        let set = options_from(&[
+            ("COMPRESSION", "lz4"),
+            ("STATISTICS", "1"),
+            ("PAGE_INDEX", " On "),
+            ("PAGE_BYTES", "4096"),
+            ("PAGE_ROWS", "0"),
+        ])
+        .unwrap();
+        assert_eq!(set.compression, Compression::LZ4_RAW);
+        assert_eq!(set.page_index, Some(true));
+        assert_eq!(set.page_bytes, Some(4096));
+        // 0 is no limit, as in parquet@py.
+        assert_eq!(set.page_rows, Some((1 << 31) - 1));
+        assert_eq!(
+            options_from(&[("PAGE_INDEX", "")]).unwrap().page_index,
+            None
+        );
+        let leveled = options_from(&[
+            ("COMPRESSION_LEVEL", "9"),
+            ("STATISTICS_COLUMNS", "100"),
+            ("PAGE_INDEX_COLUMNS", "10"),
+            ("DICTIONARY", "off"),
+            ("DICTIONARY_PAGE_BYTES", "65536"),
+            ("PAGE_CHECKSUMS", "0"),
+        ])
+        .unwrap();
+        assert_eq!(
+            leveled.compression,
+            Compression::ZSTD(ZstdLevel::try_new(9).unwrap())
+        );
+        assert_eq!(
+            (leveled.statistics_columns, leveled.page_index_columns),
+            (Some(100), Some(10))
+        );
+        assert_eq!(
+            (leveled.dictionary, leveled.dictionary_page_bytes),
+            (Some(false), Some(65_536))
+        );
+        let gzip = options_from(&[("COMPRESSION", "gzip"), ("COMPRESSION_LEVEL", "0")]).unwrap();
+        assert_eq!(
+            gzip.compression,
+            Compression::GZIP(parquet::basic::GzipLevel::try_new(0).unwrap())
+        );
+        for (pairs, error) in [
+            (&[("PAGE_INDEX", "maybe")][..], "is not a switch"),
+            (&[("COMPRESSION", "lzo")][..], "is not one of"),
+            (&[("PAGE_BYTES", "1MiB")][..], "is not a number"),
+            (
+                &[("PAGE_INDEX", "1"), ("STATISTICS", "0")][..],
+                "asks for statistics",
+            ),
+            (
+                &[("STATISTICS_COLUMNS", "5"), ("STATISTICS", "0")][..],
+                "asks for statistics",
+            ),
+            (
+                &[("PAGE_INDEX", "0"), ("PAGE_INDEX_COLUMNS", "5")][..],
+                "asks for a page index",
+            ),
+            (
+                &[("COMPRESSION_LEVEL", "-1")][..],
+                "is not a compression level",
+            ),
+            (&[("COMPRESSION_LEVEL", "23")][..], "for zstd"),
+            (
+                &[("COMPRESSION", "snappy"), ("COMPRESSION_LEVEL", "1")][..],
+                "takes no compression level",
+            ),
+            (
+                &[("PAGE_CHECKSUMS", "1")][..],
+                "parquet@rs cannot honour RAINCLOUD_PARQUET_PAGE_CHECKSUMS=1",
+            ),
+        ] {
+            let message = options_from(pairs).unwrap_err().to_string();
+            assert!(message.contains(error), "{pairs:?}: {message}");
+        }
+    }
+
+    #[test]
+    fn parquet_options_decide_the_page_index_and_the_pages() {
+        let schema = Arc::new(Schema::new(vec![Field::new("x", DataType::Int64, false)]));
+        let b = RecordBatch::try_new(
+            schema.clone(),
+            vec![Arc::new(arrow_array::Int64Array::from_iter_values(
+                0..50_000,
+            ))],
+        )
+        .unwrap();
+        let limits = RowGroupLimits {
+            target_encoded_bytes: 128 << 20,
+            max_rows: 10_000_000,
+        };
+        let scratch = Scratch::new("parquet-options");
+        let written = |name: &str, options: ParquetOptions| {
+            let output = scratch.path(name);
+            write_parquet_with(&output, schema.clone(), limits, options, || {
+                Ok(stream(vec![b.clone()]))
+            })
+            .unwrap();
+            let file = File::open(&output).unwrap();
+            let options = parquet::arrow::arrow_reader::ArrowReaderOptions::new()
+                .with_page_index_policy(parquet::file::metadata::PageIndexPolicy::Optional);
+            let reader =
+                ParquetRecordBatchReaderBuilder::try_new_with_options(file, options).unwrap();
+            let metadata = reader.metadata().clone();
+            let pages = metadata
+                .offset_index()
+                .map(|index| index[0][0].page_locations().len());
+            (metadata.column_index().is_some(), pages)
+        };
+        // arrow-rs's default: a page index, 20,000 rows a page.
+        assert_eq!(
+            written("default.parquet", ParquetOptions::default()),
+            (true, Some(3))
+        );
+        let rows = ParquetOptions {
+            page_rows: Some(1_000),
+            ..Default::default()
+        };
+        // arrow-rs checks the row limit once per 1,024-value write batch, so a
+        // 1,000-row limit gives 1,024-row pages.
+        assert_eq!(written("rows.parquet", rows), (true, Some(49)));
+        let without = ParquetOptions {
+            page_index: Some(false),
+            ..Default::default()
+        };
+        assert_eq!(written("without.parquet", without), (false, None));
+    }
+
     #[test]
     fn seconds_times_and_timestamps_are_written_as_milliseconds() {
         use arrow_array::{Time32SecondArray, TimestampSecondArray};
@@ -1716,6 +2640,149 @@ mod tests {
         vortex_round_trip(&scratch, &schema, &[]);
         let scratch = Scratch::new("vortex-zero-rows");
         vortex_round_trip(&scratch, &schema, &[RecordBatch::new_empty(schema.clone())]);
+    }
+
+    #[test]
+    fn orc_writes_and_reads_back_across_batches() {
+        let schema = mixed_schema();
+        let batch = |xs: Vec<i64>| {
+            let s: Vec<Option<String>> = xs
+                .iter()
+                .map(|x| (x % 3 != 0).then(|| format!("v{x}")))
+                .collect();
+            RecordBatch::try_new(
+                schema.clone(),
+                vec![
+                    Arc::new(Int64Array::from(xs)),
+                    Arc::new(StringArray::from(s)),
+                ],
+            )
+            .unwrap()
+        };
+        let scratch = Scratch::new("orc");
+        let source = scratch.canonical(
+            "source.arrow",
+            &schema,
+            &[batch((0..1000).collect()), batch((1000..5000).collect())],
+        );
+        let output = scratch.path("out.orc");
+        write_orc(&output, &source).unwrap();
+        let (got_schema, got) = open_orc(&output).unwrap();
+        let (_, expected) = open_canonical(&source).unwrap();
+        assert_eq!(
+            logical_eq_stream(&got_schema, got, &schema, canonical_batches(expected)).unwrap(),
+            (true, String::new())
+        );
+    }
+
+    #[test]
+    fn orc_expands_unsigned_columns_to_wider_signed_ones() {
+        let schema = Arc::new(Schema::new(vec![
+            Field::new("a", DataType::UInt8, true),
+            Field::new("b", DataType::UInt32, true),
+        ]));
+        let b = RecordBatch::try_new(
+            schema.clone(),
+            vec![
+                Arc::new(arrow_array::UInt8Array::from(vec![
+                    Some(0),
+                    None,
+                    Some(255),
+                ])),
+                Arc::new(arrow_array::UInt32Array::from(vec![
+                    Some(0),
+                    Some(u32::MAX),
+                    None,
+                ])),
+            ],
+        )
+        .unwrap();
+        let scratch = Scratch::new("orc-unsigned");
+        let source = scratch.canonical("source.arrow", &schema, &[b]);
+        let output = scratch.path("out.orc");
+        write_orc(&output, &source).unwrap();
+        let (got_schema, got) = open_orc(&output).unwrap();
+        let types: Vec<_> = got_schema.fields().iter().map(|f| f.data_type()).collect();
+        assert_eq!(types, [&DataType::Int16, &DataType::Int64]);
+        let (_, expected) = open_canonical(&source).unwrap();
+        assert_eq!(
+            logical_eq_stream(&got_schema, got, &schema, canonical_batches(expected)).unwrap(),
+            (true, String::new())
+        );
+    }
+
+    #[test]
+    fn orc_rust_panicking_on_a_uint64_column_is_an_error() {
+        // Expanded to Decimal128(20, 0), which orc-rust 0.9.0 does not write.
+        let schema = Arc::new(Schema::new(vec![Field::new("u", DataType::UInt64, true)]));
+        let b = RecordBatch::try_new(
+            schema.clone(),
+            vec![Arc::new(arrow_array::UInt64Array::from(vec![1, u64::MAX]))],
+        )
+        .unwrap();
+        let scratch = Scratch::new("orc-uint64");
+        let source = scratch.canonical("source.arrow", &schema, &[b]);
+        let output = scratch.path("out.orc");
+        let err = unwound(|| write_orc(&output, &source)).unwrap_err();
+        assert!(
+            format!("{err:#}").contains("unsupported datatype"),
+            "{err:#}"
+        );
+    }
+
+    #[test]
+    fn avro_changes_only_the_sync_marker() {
+        let schema = mixed_schema();
+        let batch = |xs: Vec<i64>| {
+            let s: Vec<Option<String>> = xs
+                .iter()
+                .map(|x| (x % 3 != 0).then(|| format!("v{x}")))
+                .collect();
+            RecordBatch::try_new(
+                schema.clone(),
+                vec![
+                    Arc::new(Int64Array::from(xs)),
+                    Arc::new(StringArray::from(s)),
+                ],
+            )
+            .unwrap()
+        };
+        let scratch = Scratch::new("avro");
+        let batches = [batch((0..1000).collect()), batch((1000..3000).collect())];
+        let source = scratch.canonical("source.arrow", &schema, &batches);
+        let output = scratch.path("out.avro");
+        write_avro(&output, &source).unwrap();
+        let ours = std::fs::read(&output).unwrap();
+
+        // What arrow-avro writes on its own, with its marker swapped for ours.
+        let mut w = AvroWriterBuilder::new(schema.as_ref().clone())
+            .with_compression(Some(CompressionCodec::ZStandard))
+            .build::<_, AvroOcfFormat>(Vec::new())
+            .unwrap();
+        let drawn = *w.sync_marker().unwrap();
+        for b in &batches {
+            w.write(b).unwrap();
+        }
+        w.finish().unwrap();
+        let mut theirs = w.into_inner();
+        let mut at = 0;
+        while let Some(i) = theirs[at..].windows(16).position(|w| w == drawn) {
+            theirs[at + i..at + i + 16].copy_from_slice(AVRO_SYNC_MARKER);
+            at += i + 16;
+        }
+        assert_eq!(ours, theirs);
+        // After the header and after each of the two blocks.
+        assert_eq!(
+            ours.windows(16).filter(|w| w == AVRO_SYNC_MARKER).count(),
+            3
+        );
+        let (got_schema, got) = open_avro(&output).unwrap();
+        let (_, expected) = open_canonical(&source).unwrap();
+        assert!(
+            logical_eq_stream(&got_schema, got, &schema, canonical_batches(expected))
+                .unwrap()
+                .0
+        );
     }
 
     #[test]

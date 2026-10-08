@@ -31,13 +31,18 @@ dependencies {
 
     // Hardwood's BOM pins its optional codec libraries, which a consumer must declare to
     // get them: zstd (this lane writes zstd), and snappy/lz4 so the reader opens Parquet
-    // other writers compress that way (pyarrow's default is snappy). Brotli is not bundled:
-    // it needs a per-platform native artifact, and no raincloud writer produces it.
+    // other writers compress that way (pyarrow's default is snappy), and brotli4j, with its
+    // native library for the platforms raincloud builds on, since RAINCLOUD_PARQUET_COMPRESSION
+    // can ask for Brotli.
     implementation(platform("dev.hardwood:hardwood-bom:$hardwoodVersion"))
     implementation("dev.hardwood:hardwood-core")
     runtimeOnly("com.github.luben:zstd-jni")
     runtimeOnly("org.xerial.snappy:snappy-java")
     runtimeOnly("at.yawk.lz4:lz4-java")
+    runtimeOnly("com.aayushatharva.brotli4j:brotli4j")
+    for (platform in listOf("linux-x86_64", "linux-aarch64", "osx-x86_64", "osx-aarch64")) {
+        runtimeOnly("com.aayushatharva.brotli4j:native-$platform:1.23.0")
+    }
 
     // Off-heap allocator impl for the Arrow side + silence Arrow's SLF4J warning.
     runtimeOnly("org.apache.arrow:arrow-memory-netty:$arrowVersion")

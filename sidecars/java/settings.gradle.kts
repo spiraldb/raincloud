@@ -18,6 +18,7 @@ include("conformance-common")
 include("vortex-jni-reader")
 include("parquet-java")
 include("parquet-hardwood")
+include("avro-java")
 
 // parquet-arrow-java (git submodule) supplies the Hadoop-free Arrow⇆Parquet bridge the
 // parquet@java lane hops through (arrow → parquet-arrow-java → parquet-java). Consumed as a

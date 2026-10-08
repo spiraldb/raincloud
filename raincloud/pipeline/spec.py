@@ -18,6 +18,7 @@ import re
 import sys
 import tempfile
 from contextlib import contextmanager
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Iterator
 
@@ -230,6 +231,265 @@ def row_group_probe_rows() -> int:
     if value is None:
         raise ValueError("RAINCLOUD_ROW_GROUP_PROBE_ROWS must be a positive row count; give a whole number >= 1")
     return value
+
+
+# Parquet write options every Parquet writer receives the same way. The install
+# settings differ from the row-group knobs in one respect: UNSET means each
+# writer's own default, not a raincloud figure, because the four libraries'
+# defaults differ (arrow-rs and parquet-java write a page index, pyarrow and
+# Hardwood do not) and no one figure leaves every lane's files as they are.
+# Set, a setting reaches every lane, and a writer whose library cannot do what
+# it asks fails that export rather than writing something else.
+PARQUET_COMPRESSION = "RAINCLOUD_PARQUET_COMPRESSION"
+PARQUET_STATISTICS = "RAINCLOUD_PARQUET_STATISTICS"
+PARQUET_COMPRESSION_LEVEL = "RAINCLOUD_PARQUET_COMPRESSION_LEVEL"
+PARQUET_STATISTICS_COLUMNS = "RAINCLOUD_PARQUET_STATISTICS_COLUMNS"
+PARQUET_PAGE_INDEX = "RAINCLOUD_PARQUET_PAGE_INDEX"
+PARQUET_PAGE_INDEX_COLUMNS = "RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS"
+PARQUET_PAGE_BYTES = "RAINCLOUD_PARQUET_PAGE_BYTES"
+PARQUET_PAGE_ROWS = "RAINCLOUD_PARQUET_PAGE_ROWS"
+PARQUET_DICTIONARY = "RAINCLOUD_PARQUET_DICTIONARY"
+PARQUET_DICTIONARY_PAGE_BYTES = "RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES"
+PARQUET_PAGE_CHECKSUMS = "RAINCLOUD_PARQUET_PAGE_CHECKSUMS"
+PARQUET_CODECS = ("zstd", "snappy", "gzip", "lz4", "brotli", "none")
+# The levels a codec takes, in every lane that sets one (arrow-rs's ranges).
+CODEC_LEVELS = {"zstd": range(1, 23), "gzip": range(0, 10), "brotli": range(0, 12)}
+_COUNT_LIMIT = (1 << 31) - 1  # parquet-java and Hardwood take an int
+_TRUE, _FALSE = {"1", "true", "yes", "on"}, {"0", "false", "no", "off"}
+
+
+def _env_switch(var: str) -> bool | None:
+    """An on/off setting: None when unset or empty, else one of 1/true/yes/on
+    or 0/false/no/off (any case); anything else raises, naming the variable."""
+    raw = os.environ.get(var)
+    value = (raw or "").strip(_ASCII_SPACE).lower()
+    if not value:
+        return None
+    if value in _TRUE | _FALSE:
+        return value in _TRUE
+    raise ValueError(f"{var}={raw!r} is not a switch; give 1 or 0 (true/false, yes/no, on/off), "
+                     "or leave it unset for each writer's own default")
+
+
+def _env_limit(var: str) -> int | None:
+    """A size or count setting: None when unset (the writer's default); the
+    count grammar otherwise, where 0 or empty means no limit."""
+    if os.environ.get(var) is None:
+        return None
+    value = _env_count(var, 0.0, limit=_COUNT_LIMIT)
+    return _COUNT_LIMIT if value is None else value
+
+
+def _env_level(var: str) -> int | None:
+    """A compression level: None when unset or empty, else plain ASCII digits."""
+    raw = os.environ.get(var)
+    value = (raw or "").strip(_ASCII_SPACE)
+    if not value:
+        return None
+    if not value.isascii() or not value.isdigit():
+        raise ValueError(f"{var}={raw!r} is not a compression level; give a whole number such as 3")
+    return int(value)
+
+
+def check_level(var: str, codec: str, level: int | None, levels: dict[str, range]) -> None:
+    """Refuse a level the codec does not take, in every lane alike."""
+    if level is None:
+        return
+    allowed = levels.get(codec)
+    if allowed is None:
+        raise ValueError(f"{var}={level}: {codec} takes no compression level")
+    if level not in allowed:
+        raise ValueError(f"{var}={level} is outside {codec}'s levels {allowed.start}..{allowed.stop - 1}")
+
+
+# (field, variable, reader): every install setting, declared once. The
+# toolchain key is the field prefixed with "parquet_".
+_PARQUET_SETTINGS = (
+    ("compression_level", PARQUET_COMPRESSION_LEVEL, _env_level),
+    ("statistics_columns", PARQUET_STATISTICS_COLUMNS, _env_limit),
+    ("page_index", PARQUET_PAGE_INDEX, _env_switch),
+    ("page_index_columns", PARQUET_PAGE_INDEX_COLUMNS, _env_limit),
+    ("page_bytes", PARQUET_PAGE_BYTES, _env_limit),
+    ("page_rows", PARQUET_PAGE_ROWS, _env_limit),
+    ("dictionary", PARQUET_DICTIONARY, _env_switch),
+    ("dictionary_page_bytes", PARQUET_DICTIONARY_PAGE_BYTES, _env_limit),
+    ("page_checksums", PARQUET_PAGE_CHECKSUMS, _env_switch),
+)
+PARQUET_SETTING_VARS = tuple(var for _, var, _ in _PARQUET_SETTINGS)
+
+
+@dataclass(frozen=True)
+class ParquetOptions:
+    """What one dataset's Parquet file is written with, in every writer lane.
+
+    `compression` and `statistics` are the recipe's `write.compression` and
+    `write.statistics`. The rest are install settings (`_PARQUET_SETTINGS`);
+    None leaves the writer's own default:
+
+    - `compression_level`: the codec's level (zstd 1-22, gzip 0-9, brotli 0-11);
+    - `statistics_columns`: statistics only for the first N leaf columns;
+    - `page_index`: a ColumnIndex and OffsetIndex for every column chunk, or none;
+    - `page_index_columns`: page statistics (the ColumnIndex) only for the
+      first N leaf columns, every column keeping its chunk statistics;
+    - `page_bytes` / `page_rows`: the data page size target and row limit;
+    - `dictionary`: dictionary encoding on or off;
+    - `dictionary_page_bytes`: the dictionary page size limit;
+    - `page_checksums`: a CRC in every page header, or none.
+
+    A count of `_COUNT_LIMIT` is no limit (`0` in the environment).
+    """
+    compression: str = "zstd"
+    statistics: bool = True
+    compression_level: int | None = None
+    statistics_columns: int | None = None
+    page_index: bool | None = None
+    page_index_columns: int | None = None
+    page_bytes: int | None = None
+    page_rows: int | None = None
+    dictionary: bool | None = None
+    dictionary_page_bytes: int | None = None
+    page_checksums: bool | None = None
+
+    def _set(self):
+        for field, var, _ in _PARQUET_SETTINGS:
+            value = getattr(self, field)
+            if value is not None:
+                yield field, var, str(int(value))
+
+    def chosen(self) -> dict[str, str]:
+        """The settings that are set, as a writer's toolchain records them: a
+        recorded failure is repeated only under the same options."""
+        return {f"parquet_{field}": value for field, _, value in self._set()}
+
+    def env(self) -> dict[str, str]:
+        """The options as a sidecar writer reads them from its environment."""
+        return {PARQUET_COMPRESSION: self.compression, PARQUET_STATISTICS: str(int(self.statistics)),
+                **{var: value for _, var, value in self._set()}}
+
+
+def parquet_page_options() -> ParquetOptions:
+    """The install settings from the environment, with the recipe fields at
+    their defaults."""
+    return ParquetOptions(**{field: read(var) for field, var, read in _PARQUET_SETTINGS})
+
+
+def parquet_options(spec: dict) -> ParquetOptions:
+    """The Parquet write options for `spec`: its recipe's `write.compression`
+    and `write.statistics`, and the install settings from the environment.
+    Settings that contradict each other, or the recipe, are refused here, for
+    every lane at once."""
+    compression = spec_field(spec, "write.compression", "zstd")
+    if compression not in PARQUET_CODECS:
+        raise ValueError(f"write.compression={compression!r} is not one of {', '.join(PARQUET_CODECS)}")
+    statistics = bool(spec_field(spec, "write.statistics", True))
+    options = replace(parquet_page_options(), compression=compression, statistics=statistics)
+    check_level(PARQUET_COMPRESSION_LEVEL, compression, options.compression_level, CODEC_LEVELS)
+    if not statistics:
+        for var, value in ((PARQUET_PAGE_INDEX, options.page_index and 1),
+                           (PARQUET_STATISTICS_COLUMNS, options.statistics_columns),
+                           (PARQUET_PAGE_INDEX_COLUMNS, options.page_index_columns)):
+            if value:
+                raise ValueError(f"{var}={value} asks for statistics, but the recipe sets "
+                                 "write.statistics to false")
+    if options.page_index is False and options.page_index_columns is not None:
+        raise ValueError(f"{PARQUET_PAGE_INDEX_COLUMNS}={options.page_index_columns} asks for a page index, "
+                         f"but {PARQUET_PAGE_INDEX}=0")
+    return options
+
+
+# Write settings for the other exported formats, declared and read like the
+# Parquet ones (above): one list per format, every writer of the format given
+# the same values, and a writer whose library cannot honour a set one refusing
+# it. These formats have no recipe fields, so an unset codec is what raincloud
+# has always written, zstd; any other unset setting is the library's default.
+ORC_COMPRESSION = "RAINCLOUD_ORC_COMPRESSION"
+ORC_COMPRESSION_STRATEGY = "RAINCLOUD_ORC_COMPRESSION_STRATEGY"
+ORC_STRIPE_BYTES = "RAINCLOUD_ORC_STRIPE_BYTES"
+ORC_COMPRESSION_BLOCK_BYTES = "RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES"
+AVRO_COMPRESSION = "RAINCLOUD_AVRO_COMPRESSION"
+AVRO_COMPRESSION_LEVEL = "RAINCLOUD_AVRO_COMPRESSION_LEVEL"
+AVRO_BLOCK_BYTES = "RAINCLOUD_AVRO_BLOCK_BYTES"
+VORTEX_COMPACT = "RAINCLOUD_VORTEX_COMPACT"
+VORTEX_ROW_BLOCK_ROWS = "RAINCLOUD_VORTEX_ROW_BLOCK_ROWS"
+VORTEX_DATA_BLOCK_BYTES = "RAINCLOUD_VORTEX_DATA_BLOCK_BYTES"
+ORC_CODECS = ("zstd", "snappy", "zlib", "lz4", "none")
+AVRO_CODECS = ("zstd", "deflate", "snappy", "bzip2", "xz", "none")
+AVRO_CODEC_LEVELS = {"zstd": range(1, 23), "deflate": range(0, 10), "xz": range(0, 10)}
+
+
+def _env_choice(*choices: str):
+    """A reader for a setting that names one of `choices`: None when unset or empty."""
+    def read(var: str) -> str | None:
+        raw = os.environ.get(var)
+        value = (raw or "").strip(_ASCII_SPACE).lower()
+        if not value:
+            return None
+        if value not in choices:
+            raise ValueError(f"{var}={raw!r} is not one of {', '.join(choices)}")
+        return value
+    return read
+
+
+# (field, variable, reader) per format, as `_PARQUET_SETTINGS`.
+FORMAT_SETTINGS = {
+    "orc": (
+        ("compression", ORC_COMPRESSION, _env_choice(*ORC_CODECS)),
+        ("compression_strategy", ORC_COMPRESSION_STRATEGY, _env_choice("speed", "compression")),
+        ("stripe_bytes", ORC_STRIPE_BYTES, _env_limit),
+        ("compression_block_bytes", ORC_COMPRESSION_BLOCK_BYTES, _env_limit),
+    ),
+    "avro": (
+        ("compression", AVRO_COMPRESSION, _env_choice(*AVRO_CODECS)),
+        ("compression_level", AVRO_COMPRESSION_LEVEL, _env_level),
+        ("block_bytes", AVRO_BLOCK_BYTES, _env_limit),
+    ),
+    "vortex": (
+        ("compact", VORTEX_COMPACT, _env_switch),
+        ("row_block_rows", VORTEX_ROW_BLOCK_ROWS, _env_limit),
+        ("data_block_bytes", VORTEX_DATA_BLOCK_BYTES, _env_limit),
+    ),
+}
+
+
+def write_settings(fmt: str) -> dict[str, Any]:
+    """`fmt`'s install write settings from the environment, None where unset:
+    the values every writer of the format is given. Not Parquet's, which also
+    take the recipe (`parquet_options`)."""
+    settings = {field: read(var) for field, var, read in FORMAT_SETTINGS.get(fmt, ())}
+    if fmt == "avro":
+        check_level(AVRO_COMPRESSION_LEVEL, settings["compression"] or "zstd", settings["compression_level"],
+                    AVRO_CODEC_LEVELS)
+    return settings
+
+
+def _canonical(value) -> str:
+    return str(int(value)) if isinstance(value, bool | int) else str(value)
+
+
+def setting_vars(fmt: str) -> tuple[str, ...]:
+    """Every environment variable a writer of `fmt` reads its settings from."""
+    if fmt == "parquet":
+        return (PARQUET_COMPRESSION, PARQUET_STATISTICS, *PARQUET_SETTING_VARS)
+    return tuple(var for _, var, _ in FORMAT_SETTINGS.get(fmt, ()))
+
+
+def chosen_settings(fmt: str) -> dict[str, str]:
+    """The install settings of `fmt` that are set, as a writer's toolchain
+    records them, keyed `<fmt>_<setting>`."""
+    if fmt == "parquet":
+        return parquet_page_options().chosen()
+    return {f"{fmt}_{field}": _canonical(value) for field, value in write_settings(fmt).items()
+            if value is not None}
+
+
+def sidecar_settings(fmt: str, spec: dict) -> dict[str, str]:
+    """`fmt`'s settings as a sidecar writer reads them: each set one in one
+    canonical form (`1`/`0`, a whole number, a lower-case name)."""
+    if fmt == "parquet":
+        return parquet_options(spec).env()
+    settings = write_settings(fmt)
+    return {var: _canonical(settings[field]) for field, var, _ in FORMAT_SETTINGS.get(fmt, ())
+            if settings[field] is not None}
 
 
 def max_decompressed_bytes() -> int | None:
@@ -501,6 +761,13 @@ def output_format_dir(slug: str, fmt: str = "parquet",
     same logical dataset without filename collisions.
     """
     return outputs_root(manifest) / slug / fmt
+
+
+def prepared_artifact(slug: str, fmt: str, manifest: dict | None = None) -> Path:
+    """outputs/v{n}/<slug>/<fmt>/<slug>.<ext> — the dataset's one file of an
+    artifact format (`_registry.FORMATS`), whichever writer made it."""
+    from raincloud._cache import EXT
+    return output_format_dir(slug, fmt, manifest) / f"{slug}.{EXT[fmt]}"
 
 
 def prepared_parquet(slug: str, manifest: dict | None = None) -> Path:

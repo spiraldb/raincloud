@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Raincloud Maintainers
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "raincloud-nimble-ffi"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "The nimble@cpp lane's sidecar contract, as a static library the C++ binaries in sidecars/nimble link."
+
+[lib]
+name = "raincloud_nimble_ffi"
+path = "src/lib.rs"
+crate-type = ["staticlib"]
+
+[dependencies]
+raincloud-sidecars = { path = ".." }
+# Pinned with the sidecar crate's arrow (=59.2); `ffi` is the C stream interface.
+arrow-array = { version = "=59.2", features = ["ffi"] }
+anyhow = "1"
+clap = { version = "4.5", features = ["derive"] }

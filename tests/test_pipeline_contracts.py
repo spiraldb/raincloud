@@ -24,13 +24,18 @@ from raincloud.pipeline.export import ReadResult, Verdict, compare, get_exporter
 from raincloud.pipeline.export import exporters as exporters_mod
 from raincloud.pipeline.export.__main__ import main as export_main
 from raincloud.pipeline.lifecycle import BuildOutputs, build_outputs, operation_lock
-from raincloud.pipeline.spec import prepared_arrow, prepared_parquet, prepared_vortex
+from raincloud.pipeline.spec import ParquetOptions, prepared_arrow, prepared_parquet, prepared_vortex
 from raincloud.pipeline.validate import validate
 
 TINY = {"slug": "tiny", "export": {"formats": ["parquet", "vortex"]}}
 HYDRATED = {"slug": "tiny-hydrated", "advisory": "a test fixture's pages",
             "derive": {"from": "tiny", "hydrate": {"columns": {"url": {"into": "content", "type": "binary"}}}}}
 TABLE = pa.table({"x": [1, 2], "url": ["https://example.test/a", None]})
+
+
+def _artifacts(tmp_path, paths):
+    """A `prepared_artifact` stand-in: `paths[fmt]`, else a file that never exists."""
+    return lambda slug, fmt, manifest=None: paths.get(fmt, tmp_path / f"missing.{fmt}")
 
 
 def _catalog(tmp_path, name, datasets, slugs=None):
@@ -60,7 +65,9 @@ def stages(monkeypatch):
 
 @pytest.fixture
 def store(tmp_path, stages):
-    cfg = _catalog(tmp_path, "contracts", [TINY, HYDRATED, {"slug": "other", "export": {"formats": ["parquet"]}}])
+    # `other` has a recipe of its own (offered formats are not part of one).
+    other = {"slug": "other", "export": {"formats": ["parquet"]}, "expect": {"rows": 7}}
+    cfg = _catalog(tmp_path, "contracts", [TINY, HYDRATED, other])
     with operation(cfg):
         assert build.run_one(TINY, strict=False)
         yield cfg
@@ -464,7 +471,7 @@ def _docs_env(tmp_path, monkeypatch, version):
     monkeypatch.setattr(docs, "load_manifest", lambda: {"schema_version": version, "datasets": [{"slug": "kept"}]})
     monkeypatch.setattr(docs, "prepared_parquet", lambda slug: tmp_path / "missing.parquet")
     monkeypatch.setattr(docs, "prepared_vortex", lambda slug: tmp_path / "missing.vortex")
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: tmp_path / "missing.arrow.zstd")
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"parquet": tmp_path / "missing.parquet", "vortex": tmp_path / "missing.vortex", "arrow": tmp_path / "missing.arrow.zstd"}))
     monkeypatch.setenv("RAINCLOUD_HOME", str(tmp_path / "home"))
     (tmp_path / "docs" / f"v{version}").mkdir(parents=True)
 
@@ -507,14 +514,14 @@ def test_row_group_second_pass_rules(tmp_path):
     canonical_path = _canonical_file(tmp_path, table, 100)
     out = tmp_path / "out.parquet"
     # Rows closed every group: not byte-bound.
-    assert exporters_mod._write_parquet(canonical_path, out, 1000, 1 << 40, compression="zstd", stats=True) is False
+    assert exporters_mod._write_parquet(canonical_path, out, 1000, 1 << 40, options=ParquetOptions()) is False
     assert pq.ParquetFile(out).metadata.num_row_groups == 4
     # The decoded-byte ceiling closed the groups first.
-    assert exporters_mod._write_parquet(canonical_path, out, 4000, 1000, compression="zstd", stats=True) is True
+    assert exporters_mod._write_parquet(canonical_path, out, 4000, 1000, options=ParquetOptions()) is True
     one = tmp_path / "one.parquet"
     pq.write_table(table, one)
     assert exporters_mod._corrected_rows(one, 4000, 10, 1 << 30) is None  # < 2 groups
-    exporters_mod._write_parquet(canonical_path, out, 1000, 1 << 40, compression="zstd", stats=True)
+    exporters_mod._write_parquet(canonical_path, out, 1000, 1 << 40, options=ParquetOptions())
     median = sorted(pq.ParquetFile(out).metadata.row_group(i).total_byte_size for i in range(4))[2]
     assert exporters_mod._corrected_rows(out, 1000, median, 1 << 30) is None  # on target
     assert exporters_mod._corrected_rows(out, 1000, median * 2, 1 << 30) == pytest.approx(2000, rel=0.02)
@@ -526,10 +533,10 @@ def test_probe_converges_on_a_uniform_table(tmp_path, monkeypatch):
     canonical_path = _canonical_file(tmp_path, table, 10_000)
     probe = tmp_path / "probe.parquet"
     monkeypatch.setenv("RAINCLOUD_ROW_GROUP_PROBE_ROWS", "10000")
-    rows, encoded = exporters_mod._probe_encoded(canonical_path, 200_000, probe, compression="zstd", stats=True)
+    rows, encoded = exporters_mod._probe_encoded(canonical_path, 200_000, probe, options=ParquetOptions())
     monkeypatch.setenv("RAINCLOUD_ROW_GROUP_TARGET_ENCODED_BYTES", str(encoded // 4))
-    want = exporters_mod._rows_for_encoded_target(canonical_path, probe, compression="zstd",
-                                                  stats=True, row_cap=1 << 30)
+    want = exporters_mod._rows_for_encoded_target(canonical_path, probe, options=ParquetOptions(),
+                                                  row_cap=1 << 30)
     assert 0.5 * rows / 4 < want < 2 * rows / 4
     assert not probe.exists()
 
@@ -795,8 +802,8 @@ def test_a_byte_heavy_region_does_not_cancel_the_second_pass(tmp_path):
     canonical_path = _canonical_file(tmp_path, table, 100)
     out = tmp_path / "out.parquet"
     # The ceiling closes the heavy region's groups; the light ones close on rows.
-    assert exporters_mod._write_parquet(canonical_path, out, 1000, 100_000, compression="zstd", stats=True) is False
-    assert exporters_mod._write_parquet(canonical_path, out, 1000, 1000, compression="zstd", stats=True) is True
+    assert exporters_mod._write_parquet(canonical_path, out, 1000, 100_000, options=ParquetOptions()) is False
+    assert exporters_mod._write_parquet(canonical_path, out, 1000, 1000, options=ParquetOptions()) is True
 
 
 def test_a_nested_dictionary_larger_than_the_target_does_not_split_to_single_rows():
@@ -827,7 +834,7 @@ def test_snapshot_regen_describes_a_multi_batch_ipc_canonical(tmp_path, monkeypa
     with pa.ipc.new_file(arrow, table.schema, options=pa.ipc.IpcWriteOptions(compression="zstd")) as writer:
         for batch in table.to_batches(3):
             writer.write_batch(batch)
-    monkeypatch.setattr(docs, "prepared_arrow", lambda slug: arrow)
+    monkeypatch.setattr(docs, "prepared_artifact", _artifacts(tmp_path, {"arrow": arrow}))
     dest = tmp_path / "out.json"
     docs.generate_snapshot(destination=dest)
     entry = json.loads(dest.read_text())["slugs"]["kept"]

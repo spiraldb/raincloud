@@ -32,6 +32,7 @@ import dev.raincloud.sidecar.common.BatchSource;
 import dev.raincloud.sidecar.common.CanonicalReader;
 import dev.raincloud.sidecar.common.LogicalCompare;
 import dev.raincloud.sidecar.common.Verdict;
+import dev.raincloud.sidecar.common.WriteSettings;
 import dev.raincloud.sidecar.common.WriterMain;
 import dev.vortex.api.Session;
 import dev.vortex.api.VortexWriter;
@@ -85,8 +86,27 @@ public final class ConformanceWriter {
                 ConformanceWriter::writeVortex, verify, t -> false);
     }
 
+    /**
+     * The Vortex write settings ({@code spec.FORMAT_SETTINGS["vortex"]}) this lane cannot honour:
+     * vortex-jni 0.86.1's writer takes only object-store options, no write strategy, so compact
+     * encodings and block sizes are refused rather than written with the defaults.
+     */
+    static void refuseSettings(java.util.function.Function<String, String> env) {
+        String compact = "RAINCLOUD_VORTEX_COMPACT";
+        if (Boolean.TRUE.equals(WriteSettings.toggle(compact, env.apply(compact)))) {
+            throw WriteSettings.unsupported(CELL, compact, 1, "vortex-jni has no write strategy");
+        }
+        for (String var : new String[] {"RAINCLOUD_VORTEX_ROW_BLOCK_ROWS", "RAINCLOUD_VORTEX_DATA_BLOCK_BYTES"}) {
+            Integer value = WriteSettings.count(var, env.apply(var));
+            if (value != null) {
+                throw WriteSettings.unsupported(CELL, var, value, "vortex-jni has no block size setting");
+            }
+        }
+    }
+
     /** Stream the canonical into {@code output}; a failed write removes what it left. */
     static void writeVortex(Path canonical, Path output, BufferAllocator allocator) throws IOException {
+        refuseSettings(System::getenv);
         Files.deleteIfExists(output);
         NativeLoader.loadJni();
         boolean written = false;

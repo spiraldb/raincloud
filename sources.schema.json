@@ -589,7 +589,7 @@
           "description": "schema_version 1 only (rejected in v2): never read by any writer."
         }
       },
-      "description": "Parquet writer settings. parquet@py honours all three of compression, row_group_size_rows and statistics. The sidecar writers (parquet@rs, parquet@java, parquet@hardwood) receive row_group_size_rows as RAINCLOUD_ROW_GROUP_MAX_ROWS in their environment, so the recipe's row cap wins in every lane; they choose their own compression and statistics."
+      "description": "Parquet writer settings, honoured by every Parquet writer. parquet@py reads them here; the sidecar writers (parquet@rs, parquet@java, parquet@hardwood) never see the recipe, so the build passes them in their environment: row_group_size_rows as RAINCLOUD_ROW_GROUP_MAX_ROWS (the recipe's cap wins in every lane), compression and statistics as RAINCLOUD_PARQUET_COMPRESSION and RAINCLOUD_PARQUET_STATISTICS. The compression level, page index, page layout, dictionaries and checksums are the install's RAINCLOUD_PARQUET_* settings, not the recipe's. A writer whose library cannot do what is asked (parquet@java has no lz4 or brotli; Hardwood cannot turn statistics off) records Parquet unavailable rather than writing something else."
     },
     "Expect": {
       "type": "object",
@@ -702,7 +702,7 @@
     },
     "Export": {
       "type": "object",
-      "description": "Per-slug export policy (v2): which formats to materialise from the canonical Arrow spine beyond the always-produced `arrow/<slug>.arrow.zstd`, and which writer makes them. Each format is one file, `<format>/<slug>.<ext>`, whichever writer made it; the catalog records the writer beside the file's sha256. In a v2 manifest this is the only declaration of a dataset's formats; omitted, it exports parquet and vortex.",
+      "description": "Per-slug export policy (v2): which formats to materialise from the canonical Arrow spine beyond the always-produced `arrow/<slug>.arrow.zstd`, and which writer makes them. Each format is one file, `<format>/<slug>.<ext>`, whichever writer made it; the catalog records the writer beside the file's sha256. A dataset offers every exported format unless `formats` narrows the list; which of them a build writes is the install's `formats` setting (only vortex by default).",
       "additionalProperties": false,
       "properties": {
         "formats": {
@@ -710,11 +710,14 @@
           "items": {
             "enum": [
               "parquet",
-              "vortex"
+              "vortex",
+              "orc",
+              "avro",
+              "nimble"
             ]
           },
           "uniqueItems": true,
-          "description": "Formats the dataset wants. Replaces the default [\"parquet\", \"vortex\"]; [] produces only canonical Arrow. Never `arrow` (the canonical every exporter reads) and never a writer-qualified name — the writer comes from `priority`. A format the planned writer cannot produce for this dataset is not declared here: the build measures the failure and records it, and the catalog shows the format as unavailable with that measurement."
+          "description": "Formats the dataset offers, narrowing the default of every exported format; [] offers only canonical Arrow. Which offered formats a build writes is the install's choice (its `formats` setting). Never `arrow` (the canonical every exporter reads) and never a writer-qualified name — the writer comes from `priority`. A format the planned writer cannot produce for this dataset is not declared here: the build measures the failure and records it, and the catalog shows the format as unavailable with that measurement."
         },
         "priority": {
           "$ref": "#/$defs/WriterPriority",
@@ -786,7 +789,10 @@
           "propertyNames": {
             "enum": [
               "parquet",
-              "vortex"
+              "vortex",
+              "orc",
+              "avro",
+              "nimble"
             ]
           },
           "additionalProperties": {

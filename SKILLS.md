@@ -15,6 +15,7 @@ Prereqs: Python 3.11+ and [uv](https://docs.astral.sh/uv/). A bare `uv sync --in
 - [Validating `sources.json`](#validating-sourcesjson) — schema + cross-checks
 - [Adding a new dataset](#adding-a-new-dataset)
 - [Emitting a Vortex file alongside the Parquet](#emitting-a-vortex-file-alongside-the-parquet)
+- [Writing files with chosen encoder settings](#writing-files-with-chosen-encoder-settings) — Parquet page index, codecs, levels
 - [Adding a Kaggle dataset gated behind ToS acceptance](#adding-a-kaggle-dataset-gated-behind-tos-acceptance)
 - [Adding a new transform handler](#adding-a-new-transform-handler)
 - [Writing a streaming handler](#writing-a-streaming-handler)
@@ -198,7 +199,7 @@ The companion [`sources.schema.md`](sources.schema.md) is the human-friendly ref
 
 Vortex (https://github.com/spiraldb/vortex) is one of the default exports: under `schema_version` 2 a dataset exports `vortex/<slug>.vortex` from its canonical Arrow file, beside `parquet/<slug>.parquet`.
 
-1. `export.formats` is the only declaration of which formats a dataset wants. Without it, the defaults export Parquet and Vortex. A deliberate policy may leave Vortex out (`"export": {"formats": ["parquet"]}`, with `notes` if the reason is worth keeping). Do **not** leave it out because the Vortex writer fails on the data: keep it listed and let the build measure that. (`convert.vortex` is v1-only; v2 validation rejects it.)
+1. `export.formats` is the only declaration of which formats a dataset offers. Without it, a dataset offers every exported format, and a build writes the ones the install's `formats` setting names (only Vortex by default; `all`, or `RAINCLOUD_FORMATS=vortex,parquet`, for more). A deliberate policy may leave Vortex out (`"export": {"formats": ["parquet"]}`, with `notes` if the reason is worth keeping). Do **not** leave it out because the Vortex writer fails on the data: keep it listed and let the build measure that. (`convert.vortex` is v1-only; v2 validation rejects it.)
 
 2. Build all requested exports, or refresh only the Vortex file from the canonical already on disk:
 
@@ -216,6 +217,44 @@ Datasets without a Vortex file, with the measured reason (or the policy note) fo
 Other format-level caveats:
   - VARIANT columns surface as their shredded struct in Vortex (the VARIANT logical annotation isn't preserved), which can make a `.vortex` file much larger than the Parquet on heavily nested data such as Open Library.
   - Expect per-file overhead to dominate on very small datasets — the Vortex/Parquet size ratio can exceed 1.0 below a few MB.
+
+## Writing files with chosen encoder settings
+
+Encoder settings are install settings in the environment, given alike to every writer of a
+format: for Parquet the page index, statistics, compression level, page size and rows,
+dictionaries and page checksums (`RAINCLOUD_PARQUET_*`); the ORC and Avro codec, level and
+block sizes (`RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`); Vortex compact encodings and block sizes
+(`RAINCLOUD_VORTEX_*`). Every variable and its default is in
+[AGENTS.md "Data locations"](AGENTS.md#data-locations); which writer honours which is in
+[`sidecars/README.md`](sidecars/README.md). The `/raincloud-write-settings` skill walks
+through it.
+
+1. Unset, each writer library's own default applies, and that is what every published
+   file was written with. pyarrow, the default Parquet writer, writes no page index unless
+   asked.
+
+2. Set what you want and write the file again. A setting changes only files this install
+   writes; `raincloud load` serves a file already on disk, in the store or on a mirror as
+   it is.
+
+    ```bash
+    export RAINCLOUD_PARQUET_PAGE_INDEX=1                # a page index on every column
+    # export RAINCLOUD_PARQUET_STATISTICS_COLUMNS=100    # or: statistics only for the first 100 leaf columns
+    python -m raincloud.pipeline.export <slug> --format parquet   # the canonical is on disk
+    python -m raincloud.pipeline.build <slug> --format parquet    # otherwise
+    ```
+
+3. A writer whose library cannot do what a setting asks refuses it: the format is recorded
+   unavailable with `<writer> cannot honour <VARIABLE>=<value>: <why>`, and the build goes
+   on with the formats that worked. pyarrow cannot put a page index on only the first N
+   columns (`RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS`); arrow-rs can, so name it:
+   `export --format parquet@rs`, or for a build `RAINCLOUD_EXPORT_PRIORITY=rs,py`.
+   Settings that contradict each other or the recipe are refused before any writer runs.
+
+4. The file now differs from the catalog's. The build record keeps its sha256 and the
+   writer's toolchain, which includes every setting that was set, so a recorded failure is
+   retried when a setting changes. Check a Parquet file's page index with
+   `pq.ParquetFile(path).metadata.row_group(0).column(0).has_column_index`.
 
 ## Adding a Kaggle dataset gated behind ToS acceptance
 

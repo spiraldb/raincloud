@@ -14,6 +14,7 @@ from raincloud import _formats
 from raincloud._bundle import build_requirements, validate_documents
 from raincloud._formats import (
     DEFAULT_EXPORT_PRIORITY,
+    EXPORTED_FORMATS,
     WRITERS,
     buildable_formats,
     export_cells,
@@ -86,9 +87,10 @@ def test_priority_rejects_a_bad_shape():
 
 def test_export_cells_per_format():
     s = {"export": {"priority": {"parquet": ["rs", "py"]}}}
-    assert export_cells(s) == ["parquet@rs", "vortex@py"]
-    assert export_cells({"export": {"priority": ["java", "py"]}}) == ["parquet@java", "vortex@py"]
-    assert export_cells({}, {"schema_version": 2, "export_priority": {"vortex": ["rs"]}}) == ["parquet@py", "vortex@rs"]
+    assert export_cells(s) == ["parquet@rs", "vortex@py", "orc@py", "avro@rs", "nimble@cpp"]
+    assert export_cells({"export": {"priority": ["java", "py"]}}) == ["parquet@java", "vortex@py", "orc@py", "avro@java", "nimble@cpp"]
+    assert export_cells({}, {"schema_version": 2, "export_priority": {"vortex": ["rs"]}}) == \
+        ["parquet@py", "vortex@rs", "orc@py", "avro@rs", "nimble@cpp"]
 
 
 def test_resolve_export_cell_skips_uninstalled_and_unknown():
@@ -110,13 +112,13 @@ def test_sf100_specs_prefer_rs_for_parquet_only():
     assert len(sf100) == 32
     for d in sf100:
         assert d["export"]["priority"] == {"parquet": ["rs", "py"]}, d["slug"]
-        assert export_cells(d, m) == ["parquet@rs", "vortex@py"]
+        assert export_cells(d, m) == ["parquet@rs", "vortex@py", "orc@py", "avro@rs", "nimble@cpp"]
 
 
 # ---------- export.formats is the one v2 declaration ----------
 
 def test_v2_reads_export_formats_only():
-    assert export_formats({}) == ["parquet", "vortex"]
+    assert export_formats({}) == list(EXPORTED_FORMATS)
     assert export_formats({"export": {"formats": ["parquet"]}}) == ["parquet"]
     assert vortex_cells({"export": {"formats": ["parquet"]}}, 2) == []
     assert buildable_formats({"export": {"formats": []}}, 2) == {"arrow"}
@@ -363,7 +365,19 @@ def test_released_v2_catalog_with_convert_still_reads():
         {"slug": "old-default", "convert": {"vortex": True}}]}
     make_bundle(encode(manifest), encode({"schema_version": 2, "slugs": {}}), "released")
     assert export_formats(manifest["datasets"][0], 2) == ["parquet"]
-    assert export_formats(manifest["datasets"][1], 2) == ["parquet", "vortex"]
+    assert export_formats(manifest["datasets"][1], 2) == list(EXPORTED_FORMATS)
+
+
+def test_offered_formats_are_not_part_of_the_recipe():
+    """Since formats are the install's choice, `export.formats` decides no
+    file's bytes; an `export` emptied without it fingerprints like none."""
+    from raincloud._bundle import recipe_hash
+    base = {"slug": "x", "fetch": {"type": "http"}}
+    narrowed = {**base, "export": {"formats": ["parquet"]}}
+    assert recipe_hash(narrowed, 2, specs=None) == recipe_hash(base, 2, specs=None)
+    prioritised = {**base, "export": {"priority": ["rs", "py"]}}
+    assert (recipe_hash({**base, "export": {"formats": ["vortex"], "priority": ["rs", "py"]}}, 2, specs=None)
+            == recipe_hash(prioritised, 2, specs=None) != recipe_hash(base, 2, specs=None))
 
 
 def test_recipe_keys_only_grow():
@@ -398,10 +412,40 @@ def test_empty_priority_is_refused_everywhere():
 
 
 def test_a_priority_naming_no_writer_for_a_format_falls_back_to_the_default():
-    assert export_cells({"export": {"priority": ["java"]}}) == ["parquet@java", "vortex@py"]
+    assert export_cells({"export": {"priority": ["java"]}}) == ["parquet@java", "vortex@py", "orc@py", "avro@java", "nimble@cpp"]
 
 
 def test_format_sets_derive_from_the_writers():
     from raincloud._formats import ALL_FORMATS, EXPORTED_FORMATS
-    assert set(EXPORTED_FORMATS) == {base for base in WRITERS if base != "arrow"} == {"parquet", "vortex"}
+    assert set(EXPORTED_FORMATS) == {base for base in WRITERS if base != "arrow"} == {"parquet", "vortex", "orc", "avro", "nimble"}
     assert set(ALL_FORMATS) == set(WRITERS)
+
+
+def test_the_built_in_order_names_a_writer_for_every_format():
+    """A dataset with no priority still exports every format it offers."""
+    from raincloud._formats import EXPORTED_FORMATS
+    for fmt in EXPORTED_FORMATS:
+        assert set(WRITERS[fmt]) & set(DEFAULT_EXPORT_PRIORITY), fmt
+
+
+def test_every_artifact_format_is_declared_once():
+    """A format is declared in `_registry.FORMATS`; the extension map, reader
+    capabilities and `auto` order are derived from it, never restated."""
+    from raincloud._cache import EXT
+    from raincloud._formats import ALL_FORMATS, AUTO_FORMATS
+    from raincloud._readers import reader_capabilities
+    from raincloud._registry import FORMATS
+    assert set(ALL_FORMATS) <= set(FORMATS)
+    assert set(EXT) == set(reader_capabilities()) == set(FORMATS)
+    assert AUTO_FORMATS == ("vortex", "parquet", "arrow")
+
+
+def test_the_schema_names_exactly_the_exported_formats():
+    """sources.schema.json cannot import the registry, so this is its gate: a
+    format added to (or removed from) the registry must be added to the schema's
+    `export.formats` and `export.priority` enums too."""
+    from raincloud._formats import EXPORTED_FORMATS
+    defs = SCHEMA["$defs"]
+    assert defs["Export"]["properties"]["formats"]["items"]["enum"] == list(EXPORTED_FORMATS)
+    by_format = next(option for option in defs["WriterPriority"]["oneOf"] if option.get("type") == "object")
+    assert by_format["propertyNames"]["enum"] == list(EXPORTED_FORMATS)

@@ -24,7 +24,8 @@ dependencies {
     api("org.apache.arrow:arrow-compression:$arrowVersion")
     api("org.apache.arrow:arrow-memory-core:$arrowVersion")
 
-    // The knob grammar is tested against the shared sidecars/knob_cases.json, hence Jackson.
+    // The knob grammar and comparator are tested against the shared sidecars/knob_cases.json
+    // and sidecars/compare_cases/cases.json, hence Jackson.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     testImplementation(platform("org.junit:junit-bom:$junitVersion"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -38,6 +39,7 @@ java {
 }
 
 val knobCases = rootDir.resolve("../knob_cases.json")
+val compareCases = rootDir.resolve("../compare_cases")
 
 tasks.test {
     useJUnitPlatform()
@@ -45,4 +47,6 @@ tasks.test {
     jvmArgs("--add-opens=java.base/java.nio=ALL-UNNAMED")
     inputs.file(knobCases)
     systemProperty("raincloud.knobCases", knobCases.absolutePath)
+    inputs.dir(compareCases)
+    systemProperty("raincloud.compareCases", compareCases.absolutePath)
 }

@@ -18,14 +18,14 @@ import time
 import uuid
 from pathlib import Path
 
+from ._registry import FORMATS
 from .exceptions import ChecksumMismatch
 
-# Format -> on-disk file extension. Identity for parquet/vortex, but kept as a
-# map precisely so a format whose extension differs from its name slots in
-# without touching call sites. `arrow` -> `arrow.zstd` is the live example: an
-# Arrow IPC file whose buffers are zstd-compressed inside the IPC format (there
-# is no outer zstd frame). The suffix is part of the native-client path contract.
-EXT = {"parquet": "parquet", "vortex": "vortex", "arrow": "arrow.zstd"}
+# Format -> on-disk file extension, from `_registry.FORMATS`. `arrow` ->
+# `arrow.zstd` is an Arrow IPC file whose buffers are zstd-compressed inside the
+# IPC format (there is no outer zstd frame). The suffix is part of the
+# native-client path contract.
+EXT = {fmt: info["ext"] for fmt, info in FORMATS.items()}
 
 # A rollback copy another process left this long ago is an orphan of a crash
 # (SIGKILL, OOM) mid-publish; nothing else would ever remove it.

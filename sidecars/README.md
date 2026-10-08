@@ -7,15 +7,15 @@ these programs during ordinary reads.
 
 ## Which writer a build uses
 
-A dataset has one file per format; `export.formats` says which formats, never
-which writer. For each format a build takes the first writer that is installed,
+A dataset has one file per format; the install's `formats` setting says which
+formats a build writes, never which writer. For each format a build takes the first writer that is installed,
 from the first of these that names one:
 
 1. the recipe's `export.priority` (a list for every format, or a map such as
    `{"parquet": ["rs", "py"]}`),
 2. the catalog's `export_priority`,
 3. `RAINCLOUD_EXPORT_PRIORITY` (e.g. `rs,py`),
-4. the built-in order `py, rs, java, canonical` (`canonical` writes only the
+4. the built-in order `py, rs, java, cpp, canonical` (`canonical` writes only the
    canonical Arrow IPC file, so it is the last resort for the `arrow` format).
 
 A writer that is not installed falls through to the next one in that order, so a
@@ -44,7 +44,44 @@ export RAINCLOUD_SIDECAR_PARQUET_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/parquet-writ
 export RAINCLOUD_READER_PARQUET_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/parquet-read"
 export RAINCLOUD_SIDECAR_VORTEX_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/vortex-write"
 export RAINCLOUD_READER_VORTEX_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/vortex-read"
+export RAINCLOUD_SIDECAR_ORC_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/orc-write"
+export RAINCLOUD_READER_ORC_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/orc-read"
+export RAINCLOUD_SIDECAR_AVRO_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/avro-write"
+export RAINCLOUD_READER_AVRO_RS="$RAINCLOUD_TOOLS_ROOT/rust/bin/avro-read"
 ```
+
+The ORC lane (`orc@rs`) is orc-rust, pinned exactly in `sidecars/rust/Cargo.toml`.
+It writes zstd with orc-rust's default stripe size, and panics on a type it does
+not write (anything but signed integers, floats, strings, binary, booleans,
+`date32` and timestamps); the panic is its report, and the build records ORC
+unavailable for that dataset. The Python lane (`orc@py`, pyarrow's Apache ORC C++
+library) needs no sidecar.
+
+Avro has two lanes and no Python one (pyarrow reads and writes no Avro): `avro@rs`,
+arrow-avro (released with arrow-rs, pinned with it), and `avro@java`, Arrow Java's own Avro
+adapter over Apache Avro's Java implementation (the `avro-java` project). Both write a
+zstandard object container file, one block per canonical batch (Rust) or Avro's own
+block size (Java), with the same fixed sync marker, `raincloud-avro01`: each library
+otherwise draws one at random, so a rebuild would change the file's sha256. Avro Java
+takes the marker as an argument; arrow-avro offers no way to choose it, so the Rust lane
+overwrites the marker it drew in place, after the header and after each block, leaving
+every other byte arrow-avro's. Nothing converts a column for either library. Arrow
+Java 19.0.0's adapter reads with its legacy mapping (the only one its public API
+offers), which decodes a nullable Avro field into a sparse union of `null` and the
+value type; every comparator reads such a union as the nullable column it spells.
+
+Where equality turns on representation rather than data, the three comparators share
+one rule set, declared once in [`compare_cases/`](compare_cases/): pairs of Arrow files
+and the verdict each must get, which every lane's tests read (`generate.py` writes
+them). A union of exactly `null` and `T` is a nullable `T`; zoned timestamps compare by
+instant whatever zone labels them (naive and zoned differ); an integer and a scale-0
+decimal holding the same values are equal.
+
+Both ORC lanes widen what ORC cannot hold before writing, always rather than by the
+data's range, so a dataset's ORC schema never changes with its values: uint8 → int16,
+uint16 → int32, uint32 → int64, uint64 → decimal(20, 0), and view types to their plain
+types. The comparators read each back as the canonical's type. orc-rust 0.9.0 writes
+no decimals, so a uint64 column is still unavailable in `orc@rs`.
 
 Build Java distributions with JDK 17 and the pinned submodule. The
 parquet-hardwood project builds on Java 21, because Hardwood's jar targets it. If a
@@ -54,7 +91,7 @@ which may download it:
 ```bash
 git submodule update --init --recursive
 bash sidecars/java/gradlew -p sidecars/java :parquet-java:installDist \
-    :parquet-hardwood:installDist :vortex-jni-reader:installDist
+    :parquet-hardwood:installDist :vortex-jni-reader:installDist :avro-java:installDist
 ```
 
 Copy each complete directory from the corresponding project's `build/install/`
@@ -69,6 +106,8 @@ these environment variables at the copied launchers:
 | `RAINCLOUD_READER_PARQUET_HARDWOOD` | `raincloud-export-parquet-hardwood` | `bin/raincloud-read-parquet-hardwood` |
 | `RAINCLOUD_SIDECAR_VORTEX_JNI` | `raincloud-read-vortex-jni` | `bin/raincloud-export-vortex-jni` |
 | `RAINCLOUD_READER_VORTEX_JNI` | `raincloud-read-vortex-jni` | `bin/raincloud-read-vortex-jni` |
+| `RAINCLOUD_SIDECAR_AVRO_JAVA` | `raincloud-export-avro-java` | `bin/raincloud-export-avro-java` |
+| `RAINCLOUD_READER_AVRO_JAVA` | `raincloud-export-avro-java` | `bin/raincloud-read-avro-java` |
 
 The `vortex-jni-reader` project holds the `vortex@jni` writer as well as its
 reader, so its one distribution carries both launchers.
@@ -113,6 +152,97 @@ read. A recipe's `write.row_group_size_rows` wins over
 so the build passes that cap to them as `RAINCLOUD_ROW_GROUP_MAX_ROWS` in their
 environment.
 
+The Parquet writers also share one set of write options
+(`raincloud/pipeline/spec.py::ParquetOptions`, which documents each), which the build
+passes to a sidecar in this form:
+
+| variable | value | from |
+|---|---|---|
+| `RAINCLOUD_PARQUET_COMPRESSION` | `zstd`, `snappy`, `gzip`, `lz4` (LZ4_RAW), `brotli` or `none` | the recipe's `write.compression` |
+| `RAINCLOUD_PARQUET_STATISTICS` | `1` or `0` | the recipe's `write.statistics` |
+| `RAINCLOUD_PARQUET_COMPRESSION_LEVEL` | a whole number in the codec's range: zstd 1-22, gzip 0-9, brotli 0-11 | the install, only when set |
+| `RAINCLOUD_PARQUET_STATISTICS_COLUMNS` | N: statistics only for the first N leaf columns | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_INDEX` | `1` or `0`: a ColumnIndex and OffsetIndex for every column chunk, or neither | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS` | N: page statistics only for the first N leaf columns, chunk statistics for all | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_BYTES` | data page size target | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_ROWS` | data page row limit | the install, only when set |
+| `RAINCLOUD_PARQUET_DICTIONARY` | `1` or `0`: dictionary encoding, or PLAIN | the install, only when set |
+| `RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES` | dictionary page size limit | the install, only when set |
+| `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1` or `0`: a CRC in every page header, or none | the install, only when set |
+
+An unset variable is the lane's library default (zstd and statistics on, for the first
+two). Counts use the count grammar, `0` meaning no limit (every column, for the two
+column counts). Switches read `1/true/yes/on` and `0/false/no/off` in any case, empty as
+unset, in every lane. Settings that contradict each other or the recipe (a page index
+with statistics off; `PAGE_INDEX=0` with `PAGE_INDEX_COLUMNS`; a level for snappy, lz4
+or none, or out of the codec's range) are refused for every lane before any writer runs.
+A lane refuses, as a failed round-trip naming the variable, a setting its library
+cannot honour:
+
+| | py (pyarrow 24) | rs (arrow-rs 59.2) | java (parquet-arrow-java 0.3.0) | hardwood (1.1.0.Beta1) |
+|---|---|---|---|---|
+| codec | all | all | not `brotli` | all |
+| compression level | yes | yes | yes | no |
+| statistics off | yes | yes | yes | no |
+| statistics, first N columns | yes | yes | yes | no |
+| page index on | yes | yes | yes | no |
+| page index off | yes | yes | no, with statistics on | yes |
+| page index, first N columns | no: all or none | yes | no | no |
+| page bytes | yes | yes | yes | yes |
+| page rows | yes | yes, checked every 1,024 values | yes | no |
+| dictionary on / off | yes | yes | yes | yes (off is PLAIN) |
+| dictionary page bytes | yes | yes | yes | no |
+| page checksums on | yes | no | yes (its default) | yes (always) |
+| page checksums off | yes (its default) | yes (always) | yes | no |
+
+Each library measures a page its own way, so the same `RAINCLOUD_PARQUET_PAGE_BYTES`
+does not give identical pages in every lane. The java column's page index gaps are
+parquet-java's: it writes a page index for every column that has statistics.
+
+The ORC, Avro and Vortex writers read their own settings the same way
+(`spec.FORMAT_SETTINGS`): the build passes each set one, in canonical form, under
+the name in `AGENTS.md`'s table, and a lane refuses what its library cannot do. With
+none set, every lane writes exactly what it wrote before (the codec is zstd).
+
+| setting | honoured by | refused by |
+|---|---|---|
+| `RAINCLOUD_ORC_COMPRESSION` (zstd, snappy, zlib, lz4, none) | orc@py, orc@rs | |
+| `RAINCLOUD_ORC_COMPRESSION_STRATEGY` | orc@py | orc@rs (no strategy) |
+| `RAINCLOUD_ORC_STRIPE_BYTES` | orc@py, orc@rs (each measures a stripe its own way) | |
+| `RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES` | orc@py (multiples of 64 KiB only), orc@rs | |
+| `RAINCLOUD_AVRO_COMPRESSION` (zstd, deflate, snappy, bzip2, xz, none) | avro@rs, avro@java | |
+| `RAINCLOUD_AVRO_COMPRESSION_LEVEL` | avro@java | avro@rs (arrow-avro has no level) |
+| `RAINCLOUD_AVRO_BLOCK_BYTES` | avro@java (Avro's sync interval) | avro@rs (one block per batch) |
+| `RAINCLOUD_VORTEX_COMPACT` | vortex@py, vortex@rs (BtrBlocks compact, within the session's editions) | vortex@jni (no write strategy) |
+| `RAINCLOUD_VORTEX_ROW_BLOCK_ROWS`, `_DATA_BLOCK_BYTES` | vortex@rs | vortex@py, vortex@jni (no block settings) |
+
+## The Nimble lane
+
+Nimble has one implementation, Meta's C++ (facebookincubator/nimble), with no releases or
+packages, so `nimble@cpp` is built from source. [`sidecars/nimble/build.sh`](nimble/build.sh)
+builds the lane's two binaries, `raincloud-export-nimble-cpp` and `raincloud-read-nimble-cpp`,
+inside a Nimble checkout at a pinned commit: upstream plus build fixes for a
+current Linux toolchain (a host `liburing.h` that Folly mistakes for its own, GCC 16's
+`<cstdint>`, two Velox libraries a minimal build links but never declares), kept on the
+`raincloud` branch of a Nimble fork, [mprammer/nimble](https://github.com/mprammer/nimble).
+A cold build needs the network, about 4 GB on disk and several minutes, so CI does not
+build it and records the lane as absent.
+
+```bash
+git clone --branch raincloud --recurse-submodules https://github.com/mprammer/nimble /path/to/nimble
+RAINCLOUD_NIMBLE_SRC=/path/to/nimble sidecars/nimble/build.sh /srv/raincloud-tools/nimble
+export RAINCLOUD_SIDECAR_NIMBLE_CPP=/srv/raincloud-tools/nimble/bin/raincloud-export-nimble-cpp
+export RAINCLOUD_READER_NIMBLE_CPP=/srv/raincloud-tools/nimble/bin/raincloud-read-nimble-cpp
+```
+
+The binaries are C++ over upstream Nimble's `VeloxWriter` (default options) and
+`VeloxReader` (the file read as the type it records), and they link `nimble-ffi`, a
+member of the Rust crate, which runs the sidecar contract as every Rust lane does: it
+reads the canonical with arrow-rs, hands its batches to the writer in memory through the
+Arrow C stream interface, takes the read-back the same way, compares and reports. Velox's
+own Arrow bridge imports and exports the batches; nothing converts a column. The build
+links both halves against the host's libzstd, so the binary carries one zstd.
+
 ## How each lane judges a round trip
 
 All three comparators check column names and nested shape first, then values. A
@@ -126,14 +256,17 @@ representation changes they can judge:
 | integer width or signedness | pass if the values are exact | pass if the values are exact | pass if exact (BigInteger) |
 | float width (incl. half) | pass only if reversible | pass only if reversible | compares decoded values bitwise, so the same pass/fail |
 | timestamp unit, same timezone | pass if the instant survives | pass if the instant survives | compares the instant: pass or fail |
-| timestamp timezone changed or dropped | fail | fail | fail |
+| timestamp timezone relabelled (both zoned) | pass if the instants match | pass if the instants match | pass if the instants match |
+| timestamp timezone dropped or added | fail | fail | fail |
 | decimal precision/scale | reversible cast | reversible cast | skip (gap) |
+| integer ↔ scale-0 decimal | pass if the values are exact | pass if the values are exact | pass if exact |
 | date32 / date64 | reversible cast | reversible cast | skip (gap) |
 | time32 / time64, duration unit | reversible cast | reversible cast | skip (gap) |
 | dictionary ↔ plain, top level | pass | pass | decoded to values, then compared |
 | dictionary inside a nested column | pass | pass | skip (gap) |
 | struct with duplicate child names | compared | compared | skip (gap) |
-| union ↔ non-union | fail | fail | skip (gap) |
+| union of `null` and `T` ↔ `T` | compared as `T` | compared as `T` | compared as `T` |
+| any other union ↔ non-union | fail | fail | fail |
 | fixed-size ↔ variable binary/list | reversible cast | reversible cast | compared by value |
 
 A JVM `skip` means the JVM lane is unmeasured for that cell, never that the
@@ -213,12 +346,12 @@ writes no `ARROW:schema` footer. What it cannot carry is reported, never guessed
   `"unsupported type"`, no file. SECOND
   times and date64 are written (as MILLIS and days) but read back in another unit,
   a comparator gap, so the round trip is unmeasured. A timezone other than UTC
-  cannot be kept: Parquet records only "adjusted to UTC", so the self-verify
-  fails as a timezone change.
+  is not kept (Parquet records only "adjusted to UTC"), but the instants are, and
+  zoned timestamps compare by instant.
 - The reader reports `INT96`, `INTERVAL`, a key-only map, a repeated field
   outside a `LIST` or `MAP`, and a layer layout it does not expect as a
-  comparator gap (`skip`). It bundles zstd, snappy and lz4 but not brotli, which
-  needs a per-platform native library; no raincloud writer uses it.
+  comparator gap (`skip`). It bundles zstd, snappy, lz4 and brotli (brotli4j, with
+  its native library for Linux and macOS on x86-64 and aarch64).
 - Hardwood 1.1.0.Beta1 fails to read a page header whose statistics are longer
   than its first 1 KiB read of the header: it raises "Malformed Parquet metadata"
   where it means to read further (fixed after the release by hardwood bdecd568,

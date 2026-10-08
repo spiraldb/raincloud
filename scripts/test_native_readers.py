@@ -72,9 +72,11 @@ def main():
     no_vortex_target = target / "no-vortex"
     run(["cargo", "build", *client, "--no-default-features", "--target-dir", no_vortex_target])
     run(["cargo", "build", "--locked", "--manifest-path", "sidecars/rust/Cargo.toml",
-         "--bin", "parquet-read", "--bin", "vortex-read", "--bin", "parquet-write", "--bin", "vortex-write"])
+         "--bin", "parquet-read", "--bin", "vortex-read", "--bin", "parquet-write", "--bin", "vortex-write",
+         "--bin", "orc-read", "--bin", "orc-write", "--bin", "avro-read", "--bin", "avro-write"])
     lib = target / "debug"
-    for binary in ("parquet-read", "vortex-read", "parquet-write", "vortex-write"):
+    for binary in ("parquet-read", "vortex-read", "parquet-write", "vortex-write", "orc-read", "orc-write",
+                   "avro-read", "avro-write"):
         if not os.access(lib / binary, os.X_OK):
             raise RuntimeError(f"required conformance reader is not executable: {lib / binary}")
     if not env.get("JAVA_HOME") and shutil.which("java"):
@@ -82,11 +84,13 @@ def main():
     # parquet-hardwood builds on a Java 21 toolchain (Gradle provisions one if none is
     # installed); its launchers default to that JDK when JAVA_HOME names an older one.
     run(["bash", "sidecars/java/gradlew", "-p", "sidecars/java", ":parquet-java:installDist",
-         ":parquet-hardwood:installDist", ":vortex-jni-reader:installDist", "--no-daemon"])
+         ":parquet-hardwood:installDist", ":vortex-jni-reader:installDist", ":avro-java:installDist",
+         "--no-daemon"])
     install = root / "sidecars/java"
     parquet_java = install / "parquet-java/build/install/raincloud-export-parquet-java/bin"
     hardwood = install / "parquet-hardwood/build/install/raincloud-export-parquet-hardwood/bin"
     vortex_jni = install / "vortex-jni-reader/build/install/raincloud-read-vortex-jni/bin"
+    avro_java = install / "avro-java/build/install/raincloud-export-avro-java/bin"
     env.update(
         RAINCLOUD_SIDECAR_VORTEX_RS=str(lib / "vortex-write"),
         RAINCLOUD_SIDECAR_PARQUET_JAVA=str(parquet_java / "raincloud-export-parquet-java"),
@@ -95,6 +99,8 @@ def main():
         RAINCLOUD_READER_PARQUET_HARDWOOD=str(hardwood / "raincloud-read-parquet-hardwood"),
         RAINCLOUD_SIDECAR_VORTEX_JNI=str(vortex_jni / "raincloud-export-vortex-jni"),
         RAINCLOUD_READER_VORTEX_JNI=str(vortex_jni / "raincloud-read-vortex-jni"),
+        RAINCLOUD_SIDECAR_AVRO_JAVA=str(avro_java / "raincloud-export-avro-java"),
+        RAINCLOUD_READER_AVRO_JAVA=str(avro_java / "raincloud-read-avro-java"),
     )
     (root / ".tmp").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="raincloud-reader-", dir=root / ".tmp") as temp:
@@ -111,7 +117,12 @@ def main():
                    RAINCLOUD_NATIVE_LIBRARY_NO_VORTEX=str(no_vortex_target / "debug/libraincloud_reader.so"),
                    RAINCLOUD_READER_PARQUET_RS=str(lib / "parquet-read"),
                    RAINCLOUD_SIDECAR_PARQUET_RS=str(lib / "parquet-write"),
-                   RAINCLOUD_READER_VORTEX_RS=str(lib / "vortex-read"))
+                   RAINCLOUD_READER_VORTEX_RS=str(lib / "vortex-read"),
+                   RAINCLOUD_SIDECAR_ORC_RS=str(lib / "orc-write"),
+                   RAINCLOUD_READER_ORC_RS=str(lib / "orc-read"),
+                   RAINCLOUD_SIDECAR_AVRO_RS=str(lib / "avro-write"),
+                   # nimble@cpp is built by sidecars/nimble/build.sh, not here: absent.
+                   RAINCLOUD_READER_AVRO_RS=str(lib / "avro-read"))
         run(["cargo", "test", *client])
         run(["cargo", "test", *client, "--no-default-features", "--target-dir", no_vortex_target])
         run([sys.executable, "-m", "pytest", *PYTEST_MODULES, "-q"])

@@ -88,8 +88,17 @@ every output format is derived from it by an exporter.
 | transform | `transform.py` | `transform.*` | in-memory `(slug, Table)` |
 | write_canonical | `canonical.py` | transform output | `outputs/v{n}/<slug>/arrow/<slug>.arrow.zstd` |
 | validate | `validate.py` | `expect.*` | hashes canonical schema, checks rows; `[WARN]` unless `--strict` |
-| run_exporters | `export/` | `export.formats`, `export.priority` | `parquet/`, `vortex/` under `outputs/v{n}/<slug>/`; the build record |
+| run_exporters | `export/` | the install's `formats`, `export.priority` | `<fmt>/` under `outputs/v{n}/<slug>/`; the build record |
 | hydrate *(named builds only)* | `hydrate.py` | `derive.hydrate` | a `<parent>-hydrated` dataset — outbound HTTP, safety-filter gated |
+
+**Formats are opt-in, per install.** A dataset offers every exported format (a recipe's
+`export.formats` can only narrow that); a build writes the install's `formats` setting —
+only Vortex by default — or what `--format` names, and then removes the raw download and
+the canonical unless `keep_raw` / `keep_canonical` are set (a canonical from which no
+format was written stays: it is the dataset's file). Maintaining the catalog wants
+everything, so a maintainer's config (or environment) sets `formats = "all"`,
+`keep_raw = true` and `keep_canonical = true`; without them a checkout build deletes the
+raw bytes a re-run would reuse.
 
 `run_exporters` is also invokable on its own, which is the whole job whenever a
 change touches only the export stage (row-group sizing, a codec, a new cell) —
@@ -127,7 +136,7 @@ reject it in a v2 manifest, while a released v2 catalog that still carries
 `convert.vortex: false` (and no `export.formats`) keeps reading as Parquet-only. A
 format is one file whichever writer makes it. The writer is the first *installed* one
 in `export.priority`, looked up in the spec, then the catalog's `export_priority`, then
-`RAINCLOUD_EXPORT_PRIORITY`, then the built-in `py, rs, java`. The spec and catalog
+`RAINCLOUD_EXPORT_PRIORITY`, then the built-in `py, rs, java, cpp`. The spec and catalog
 levels take a list, which applies to every format and so must name a writer for each
 one the dataset exports, or a map from format to list (`{"parquet": ["rs", "py"]}`);
 a format the map leaves out falls through to the next level. The machine level is a
@@ -135,6 +144,20 @@ list. The build record, and after regeneration the catalog, records the writer a
 `<fmt>_writer`. Sidecar cells (`parquet@rs`, `parquet@java`, `parquet@hardwood`,
 `vortex@rs`, `vortex@jni`) run only where their binary is installed. Compliance
 measures every writer in scratch, never over the dataset's file.
+
+Every Parquet writer is given one set of options (`spec.parquet_options`): the recipe's
+`write.compression`, `write.statistics` and row cap, and the install's
+`RAINCLOUD_PARQUET_*` settings in the table below (compression level, statistics and the
+page index for all or the first N columns, page size and rows, dictionaries, page
+checksums). An unset setting leaves each library's own default, which differ (pyarrow
+writes no page index; arrow-rs and parquet-java do). A set one reaches every writer and
+becomes part of its toolchain, and a writer whose library cannot do what it asks fails
+that export as a measurement rather than writing something else; `sidecars/README.md`
+tabulates which writer honours what, and the `/raincloud-write-settings` skill is the
+procedure (a setting changes only files this install writes, so an existing file must be
+re-exported or rebuilt to gain it). ORC, Avro and Vortex have the same kind of settings
+(`spec.FORMAT_SETTINGS`, `RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`, `RAINCLOUD_VORTEX_*`), read
+and refused the same way; their codec, unset, is the zstd raincloud has always written.
 
 `export.formats` lists the formats a dataset wants. When the planned writer cannot
 produce one for the dataset -- it raises, dies, reports a failed round-trip, or exceeds
@@ -237,6 +260,9 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_MIRROR` | a private artifact store readers fall back to (`s3://` needs `[s3]`, `https://` needs `[http]`) | unset |
 | `RAINCLOUD_OFFLINE` | `1`: read only local files; never contact the mirror | unset |
 | `RAINCLOUD_RETRY_ERRORS` | `1`: a build attempts a format whose writer, with this toolchain, already failed at the recipe (as `--retry-errors`) | unset |
+| `RAINCLOUD_FORMATS` | formats a build writes, e.g. `vortex,parquet`, or `all` (as `--format` for one build) | `vortex` |
+| `RAINCLOUD_KEEP_RAW` | `1`: a successful build keeps the raw download (generated datasets always keep their generator output) | unset (removed) |
+| `RAINCLOUD_KEEP_CANONICAL` | `1`: a successful build keeps the canonical Arrow (kept anyway when no other format was written) | unset (removed) |
 | `RAINCLOUD_CONFIG` / `RAINCLOUD_NO_CONFIG` | select or disable the config file | unset |
 | `RAINCLOUD_SETTINGS` | settings JSON the CLI reads with `--settings-env`; how native readers pass options | unset |
 | `RAINCLOUD_DUCKDB_MEMORY_LIMIT` | DuckDB memory ceiling, applied by `raincloud.duckdb_connect` | DuckDB default (~80% RAM) |
@@ -250,8 +276,27 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_ROW_GROUP_MAX_ROWS` | row cap per group, used only when a spec omits `write.row_group_size_rows`; a spec's cap wins in every writer, sidecars included | 10,000,000 |
 | `RAINCLOUD_ROW_GROUP_TARGET_BYTES` | memory guard: decoded Arrow bytes buffered for one row group | 512 MiB |
 | `RAINCLOUD_ROW_GROUP_PROBE_ROWS` | rows the Python Parquet writer samples to size its groups (must be > 0) | 262,144 |
+| `RAINCLOUD_PARQUET_COMPRESSION_LEVEL` | the recipe's codec at this level in every Parquet writer (zstd 1-22, gzip 0-9, brotli 0-11) | unset (each writer's own) |
+| `RAINCLOUD_PARQUET_STATISTICS_COLUMNS` | statistics (chunk and page) only for the first N leaf columns (`0`: every column) | unset (each writer's own: every column) |
+| `RAINCLOUD_PARQUET_PAGE_INDEX` | `1`: every Parquet writer writes a page index (ColumnIndex + OffsetIndex); `0`: none | unset (each writer's own: pyarrow and Hardwood none, arrow-rs and parquet-java one) |
+| `RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS` | page statistics only for the first N leaf columns, chunk statistics for every column (`0`: every column) | unset (each writer's own) |
+| `RAINCLOUD_PARQUET_PAGE_BYTES` | data page size target in every Parquet writer, each measuring a page its own way (`0`: no limit) | unset (each writer's own) |
+| `RAINCLOUD_PARQUET_PAGE_ROWS` | data page row limit in every Parquet writer (`0`: no limit) | unset (each writer's own) |
+| `RAINCLOUD_PARQUET_DICTIONARY` | `0`: no dictionary encoding (PLAIN); `1`: dictionaries | unset (each writer's own: on) |
+| `RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES` | dictionary page size limit, past which a column falls back to PLAIN (`0`: no limit) | unset (each writer's own) |
+| `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1`: a CRC in every page header; `0`: none | unset (each writer's own: parquet-java and Hardwood write them, pyarrow and arrow-rs do not) |
+| `RAINCLOUD_ORC_COMPRESSION` | ORC codec in every ORC writer: `zstd`, `snappy`, `zlib`, `lz4`, `none` | unset (zstd, as always) |
+| `RAINCLOUD_ORC_COMPRESSION_STRATEGY` | `speed` or `compression` (ORC C++ only; orc-rust refuses) | unset (each writer's own) |
+| `RAINCLOUD_ORC_STRIPE_BYTES` | ORC stripe size target, measured encoded and compressed | unset (each writer's own) |
+| `RAINCLOUD_ORC_COMPRESSION_BLOCK_BYTES` | ORC compression block size (ORC C++ takes only multiples of 64 KiB) | unset (each writer's own) |
+| `RAINCLOUD_AVRO_COMPRESSION` | Avro codec in every Avro writer: `zstd`, `deflate`, `snappy`, `bzip2`, `xz`, `none` | unset (zstd, as always) |
+| `RAINCLOUD_AVRO_COMPRESSION_LEVEL` | level for zstd (1-22), deflate or xz (0-9); Avro Java only, arrow-avro refuses | unset (each writer's own) |
+| `RAINCLOUD_AVRO_BLOCK_BYTES` | Avro block (sync interval) size; Avro Java only, arrow-avro refuses | unset (each writer's own) |
+| `RAINCLOUD_VORTEX_COMPACT` | `1`: BtrBlocks' compact encodings (vortex@py and vortex@rs; vortex@jni refuses) | unset (each writer's own: default) |
+| `RAINCLOUD_VORTEX_ROW_BLOCK_ROWS` | Vortex row block size (vortex@rs only) | unset (each writer's own) |
+| `RAINCLOUD_VORTEX_DATA_BLOCK_BYTES` | Vortex data block size target (vortex@rs only) | unset (each writer's own) |
 | `RAINCLOUD_BATCH_ROWS` / `RAINCLOUD_BATCH_BYTES` | batch bounds in the streaming ingestion paths (memory only, NOT the row-group size) | 4096 rows / 16 MiB |
-| `RAINCLOUD_EXPORT_PRIORITY` | machine writer preference, e.g. `rs,py` | unset (`py, rs, java`) |
+| `RAINCLOUD_EXPORT_PRIORITY` | machine writer preference, e.g. `rs,py` | unset (`py, rs, java, cpp`) |
 | `RAINCLOUD_EXPORT_TIMEOUT` | ceiling on one export: an in-process writer (run in a child process) or a sidecar writer; hitting it records the format unavailable | 6 h (`0` disables) |
 | `RAINCLOUD_EXPORT_MEMORY` | ceiling on one in-process export's resident memory (bytes); the parent stops a writer over it and records the format unavailable | half of physical memory (`0` disables) |
 | `RAINCLOUD_SIDECAR_TIMEOUT` | ceiling on one sidecar reader call (sidecar writers use `RAINCLOUD_EXPORT_TIMEOUT`) | 30 min (`0` disables) |

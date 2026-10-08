@@ -2015,7 +2015,7 @@ checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 
 [[package]]
 name = "raincloud-reader"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "arrow-array",
  "arrow-ipc",

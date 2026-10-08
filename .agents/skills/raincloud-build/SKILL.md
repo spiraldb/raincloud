@@ -1,7 +1,7 @@
 ---
 name: raincloud-build
 description: Run the full Raincloud pipeline (fetch → extract → parse → transform → canonical Arrow → validate → exports) for one or more dataset slugs. Use when the user asks to build a dataset, rebuild a slug, or process a batch.
-argument-hint: <slug>... | --all  [--strict] [--clean-workdir] [--retry-errors]
+argument-hint: <slug>... | --all  [--format FORMAT] [--only] [--strict] [--clean-workdir] [--retry-errors]
 disable-model-invocation: true
 allowed-tools: Bash(python -m raincloud.pipeline.build *)
 ---
@@ -20,6 +20,10 @@ Modifiers:
 - `--strict` — make validation drift an error. By default, row-count mismatches are warnings; use that default for first builds with estimated counts.
 - `--clean-workdir` — clear the selected `.recipes/<recipe-hash>/<slug>/` scratch directory after each successful build. Essential for large batch runs (Public BI decompressed CSVs can hit ~100 GB).
 - `--retry-errors` — attempt a format even when its writer, with this toolchain, already failed to write it at this recipe (see below). Without it that format is skipped.
+- `--format FORMAT` (repeatable or comma-separated) — write these formats instead of the install's `formats` setting (only `vortex` by default; `parquet`, `orc`, `avro`, `nimble`, or `arrow` to keep the canonical). Only the format is taken: a writer suffix (`parquet@rs`) is dropped, and the writer comes from `export.priority`.
+- `--only` — for a generated table, build its whole group but keep only the tables named.
+
+Encoder settings — a Parquet page index, statistics for the first N columns, a compression level, dictionaries, page checksums, ORC/Avro codecs, Vortex compact encodings — are environment settings every writer of the format reads (`RAINCLOUD_PARQUET_*`, `RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`, `RAINCLOUD_VORTEX_*`); unset is each library's default. Pass them in the build's environment; see `/raincloud-write-settings` for what each does, which writer refuses which, and how to check the result.
 
 Before running:
 - **Confirm with the user** before triggering anything non-trivial. JSONBench 100M ≈ 6 h, Wikipedia Structured Contents → ~70 GB parquet, OSM Germany ~45 min per kind. Small (<100 MB) parquets are fine without asking. (See [AGENTS.md "Confirm before rebuilding"](../../context/AGENTS.md#confirm-before-rebuilding).)

@@ -363,6 +363,21 @@ def test_agents_row_group_defaults_match_the_code(monkeypatch):
         assert row.rstrip(" |").endswith(spelled), row
 
 
+def test_agents_parquet_settings_default_to_each_writers_own(monkeypatch):
+    from raincloud.pipeline import spec
+    table = (ROOT / "AGENTS.md").read_text()
+    for var in spec.PARQUET_SETTING_VARS:
+        monkeypatch.delenv(var, raising=False)
+        row = next(line for line in table.splitlines() if line.startswith(f"| `{var}`"))
+        assert "unset (each writer's own" in row, row
+    assert spec.parquet_page_options().chosen() == {}
+    for settings in spec.FORMAT_SETTINGS.values():
+        for _, var, _ in settings:
+            monkeypatch.delenv(var, raising=False)
+            row = next(line for line in table.splitlines() if line.startswith(f"| `{var}`"))
+            assert "unset (" in row, row
+
+
 def test_hydrate_bypass_disables_every_layer_as_documented():
     """HYDRATING.md: the scheme allowlist and blocked_hosts_extra apply unless
     the two-flag bypass is active, and the bypass disables every layer."""

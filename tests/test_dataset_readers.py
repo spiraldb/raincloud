@@ -7,6 +7,7 @@ import pyarrow as pa
 import pytest
 
 import raincloud
+from raincloud._formats import ALL_FORMATS
 from raincloud.exceptions import ArtifactNotFound, FormatUnavailable
 from tests.reader_fixture import create
 
@@ -30,7 +31,7 @@ def test_streaming_projection_and_early_close(prepared, fmt):
     with ds.batches(batch_size=1) as batches:
         assert next(batches).num_rows == 1
     assert ds.schema.names == table.schema.names
-    assert len(ds.artifacts) == 3
+    assert len(ds.artifacts) == len(ALL_FORMATS)
 
 
 def test_explicit_format_never_falls_back(prepared):

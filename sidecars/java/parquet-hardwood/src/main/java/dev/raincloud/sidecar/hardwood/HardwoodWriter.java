@@ -62,10 +62,12 @@ import dev.hardwood.metadata.RepetitionType;
 import dev.hardwood.metadata.SchemaElement;
 import dev.hardwood.schema.FileSchema;
 import dev.hardwood.writer.ColumnBatch;
+import dev.hardwood.writer.ColumnEncoding;
 import dev.hardwood.writer.ColumnWriter;
 import dev.hardwood.writer.ParquetFileWriter;
 import dev.hardwood.writer.WriterConfig;
 import dev.raincloud.sidecar.common.Knobs;
+import dev.raincloud.sidecar.common.ParquetKnobs;
 import dev.raincloud.sidecar.common.VariantFidelity;
 
 /**
@@ -107,19 +109,90 @@ public final class HardwoodWriter {
      * than the other lanes'; there is no Hardwood setting that measures encoded bytes.</p>
      */
     public static WriterConfig writerConfig(String maxRows, String targetEncodedBytes) {
-        return WriterConfig.builder()
-                .codec(CompressionCodec.ZSTD)
-                .rowGroupTargetRows(Knobs.count(Knobs.MAX_ROWS, maxRows, Knobs.DEFAULT_MAX_ROWS, Long.MAX_VALUE))
-                .rowGroupBufferTargetBytes(Knobs.count(Knobs.TARGET_ENCODED_BYTES, targetEncodedBytes,
-                        Knobs.DEFAULT_TARGET_ENCODED_BYTES, Long.MAX_VALUE))
-                .build();
+        return writerConfig(maxRows, targetEncodedBytes, ParquetKnobs.DEFAULT);
     }
 
-    /** Stream the canonical into a zstd Parquet with the knobs from the environment. */
+    /**
+     * {@link #writerConfig(String, String)} with the Parquet options every lane is given.
+     *
+     * <p>Hardwood 1.1.0.Beta1's {@code WriterConfig} has a codec, a page size target and a
+     * per-column encoding, and nothing else these settings ask for: no compression level, no page
+     * row limit, no dictionary page size, no statistics switch (it always writes column-chunk
+     * statistics), no page index (it writes none) and no way to leave out page checksums (it
+     * always writes them). A setting that needs one of those is refused rather than written
+     * another way. Dictionaries off is {@code ColumnEncoding.PLAIN}, the encoding the other
+     * libraries fall back to.</p>
+     */
+    public static WriterConfig writerConfig(String maxRows, String targetEncodedBytes, ParquetKnobs knobs) {
+        String lane = "parquet@hardwood";
+        if (knobs.compressionLevel() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.COMPRESSION_LEVEL, knobs.compressionLevel(),
+                    "Hardwood has no compression level");
+        }
+        if (!knobs.statistics() || knobs.statisticsColumns() != null) {
+            throw ParquetKnobs.unsupported(lane,
+                    knobs.statistics() ? ParquetKnobs.STATISTICS_COLUMNS : ParquetKnobs.STATISTICS,
+                    knobs.statistics() ? knobs.statisticsColumns() : 0,
+                    "Hardwood always writes column-chunk statistics for every column");
+        }
+        if (Boolean.TRUE.equals(knobs.pageIndex()) || knobs.pageIndexColumns() != null) {
+            throw ParquetKnobs.unsupported(lane,
+                    knobs.pageIndexColumns() != null ? ParquetKnobs.PAGE_INDEX_COLUMNS : ParquetKnobs.PAGE_INDEX,
+                    knobs.pageIndexColumns() != null ? knobs.pageIndexColumns() : 1,
+                    "Hardwood writes no page index");
+        }
+        if (knobs.pageRows() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.PAGE_ROWS, knobs.pageRows(),
+                    "Hardwood has no page row limit");
+        }
+        if (knobs.dictionaryPageBytes() != null) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.DICTIONARY_PAGE_BYTES, knobs.dictionaryPageBytes(),
+                    "Hardwood has no dictionary page size limit");
+        }
+        if (Boolean.FALSE.equals(knobs.pageChecksums())) {
+            throw ParquetKnobs.unsupported(lane, ParquetKnobs.PAGE_CHECKSUMS, 0,
+                    "Hardwood writes a checksum in every page header");
+        }
+        WriterConfig.Builder builder = WriterConfig.builder()
+                .codec(codec(knobs.compression()))
+                .rowGroupTargetRows(Knobs.count(Knobs.MAX_ROWS, maxRows, Knobs.DEFAULT_MAX_ROWS, Long.MAX_VALUE))
+                .rowGroupBufferTargetBytes(Knobs.count(Knobs.TARGET_ENCODED_BYTES, targetEncodedBytes,
+                        Knobs.DEFAULT_TARGET_ENCODED_BYTES, Long.MAX_VALUE));
+        if (knobs.pageBytes() != null) {
+            builder.pageTargetBytes(knobs.pageBytes());
+        }
+        if (Boolean.FALSE.equals(knobs.dictionary())) {
+            builder.encoding(ColumnEncoding.PLAIN);
+        }
+        return builder.build();
+    }
+
+    private static CompressionCodec codec(String codec) {
+        switch (codec) {
+            case "zstd":
+                return CompressionCodec.ZSTD;
+            case "snappy":
+                return CompressionCodec.SNAPPY;
+            case "gzip":
+                return CompressionCodec.GZIP;
+            case "lz4":
+                // pyarrow's "lz4" and arrow-rs's LZ4_RAW, not the deprecated Hadoop LZ4.
+                return CompressionCodec.LZ4_RAW;
+            case "brotli":
+                return CompressionCodec.BROTLI;
+            case "none":
+                return CompressionCodec.UNCOMPRESSED;
+            default:
+                throw new IllegalArgumentException("unknown codec " + codec);
+        }
+    }
+
+    /** Stream the canonical into a Parquet with the knobs from the environment. */
     public static void writeParquet(Path canonical, Path output, BufferAllocator allocator) throws IOException {
         // Resolved before touching the output, so a bad knob leaves nothing behind.
         writeParquet(canonical, output, allocator,
-                writerConfig(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES)));
+                writerConfig(System.getenv(Knobs.MAX_ROWS), System.getenv(Knobs.TARGET_ENCODED_BYTES),
+                        ParquetKnobs.fromEnv()));
     }
 
     /**

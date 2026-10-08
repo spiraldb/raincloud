@@ -72,6 +72,7 @@ def _isolate_loader_cache(tmp_path, monkeypatch):
 
     Points the loader cache at a per-test tmp dir so no test can read or write
     the developer's real ~/.cache/raincloud (the loader's cache_root() default),
+    pins the build settings most tests assume (below),
     and clears the catalog lru_cache around each test so a snapshot/manifest set
     by one test never leaks into the next. Tests that need a specific cache
     location just set RAINCLOUD_CACHE again — a later monkeypatch.setenv wins.
@@ -79,6 +80,12 @@ def _isolate_loader_cache(tmp_path, monkeypatch):
     monkeypatch.setenv("RAINCLOUD_CATALOG_DIR", str(tmp_path / "_catalogs"))
     monkeypatch.setenv("RAINCLOUD_NO_CONFIG", "1")
     monkeypatch.setenv("RAINCLOUD_CACHE", str(tmp_path / "_loader_cache"))
+    # Most tests exercise the pipeline over a dataset's Parquet and Vortex with
+    # everything kept; the opt-in defaults (Vortex only, nothing kept) have
+    # tests of their own, which clear these.
+    monkeypatch.setenv("RAINCLOUD_FORMATS", "parquet,vortex")
+    monkeypatch.setenv("RAINCLOUD_KEEP_RAW", "1")
+    monkeypatch.setenv("RAINCLOUD_KEEP_CANONICAL", "1")
 
     def _clear():
         try:

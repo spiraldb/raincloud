@@ -21,7 +21,10 @@ this install's build nor the catalog's file, whose exports could not be recorded
 at all (`records.check_canonical`). A cell named with `--format` whose writer is
 not installed fails the slug.
 
-A planned writer (a spec's formats, or a bare `--format vortex`) that cannot
+Without `--format` it writes the formats a build would: the install's
+`formats` setting (only Vortex by default), among those the dataset offers.
+
+A planned writer (one of those formats, or a bare `--format vortex`) that cannot
 produce its file -- it raises, dies, reports a failed round-trip or exceeds
 `RAINCLOUD_EXPORT_TIMEOUT` -- is recorded as that format's "unavailable"
 measurement (`records.record_unavailable`), as in a build. Without `--format`
@@ -48,6 +51,9 @@ import argparse
 import sys
 from pathlib import Path
 
+from raincloud._formats import build_formats
+from raincloud.config import get_config
+
 from ..lifecycle import maintenance
 from ..selection import select_or_exit
 from ..spec import check_env_knobs, display_path, load_manifest, prepared_arrow
@@ -64,7 +70,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="export every dataset except hydrated ones, which are exported by name")
     ap.add_argument("--format", action="append", metavar="FORMAT", dest="formats",
                     help="export only this format (parquet), or this format by a named "
-                         "writer (parquet@rs); repeatable. Overrides the spec's export.formats. "
+                         "writer (parquet@rs); repeatable. Overrides the install's `formats` setting. "
                          "Either way the file is <fmt>/<slug>.<ext>.")
     ap.add_argument("--dry-run", action="store_true",
                     help="list what would be exported and exit")
@@ -78,11 +84,11 @@ def main(argv: list[str] | None = None) -> int:
         ap.error(str(exc))
 
     if args.formats:
-        from raincloud._formats import WRITERS
+        from raincloud._formats import EXPORTED_FORMATS
         for cell in args.formats:  # fail before touching anything
             if "@" not in cell:
-                if cell not in WRITERS or cell == "arrow":
-                    ap.error(f"no exported format {cell!r}; formats: parquet, vortex")
+                if cell not in EXPORTED_FORMATS:
+                    ap.error(f"no exported format {cell!r}; formats: {', '.join(EXPORTED_FORMATS)}")
                 continue
             try:
                 get_exporter(cell)
@@ -103,14 +109,17 @@ def main(argv: list[str] | None = None) -> int:
         try:
             # Refuse a stale or unknown canonical before planning anything.
             status = check_canonical(canonical)
-            cells = plan(spec, args.formats)
+            formats = args.formats
+            if formats is None:
+                formats = build_formats(spec, load_manifest()["schema_version"], get_config())
+            cells = plan(spec, formats)
             if args.dry_run:
                 print(f"  would export {slug} from {display_path(canonical)}: {', '.join(cells)}")
                 n_exported += 1
                 continue
-            # A --format request replaces the spec's own list for this run only.
+            # A --format request replaces the install's formats for this run only.
             failed, skipped = [], []
-            results = export_from_canonical(spec, canonical, args.formats, status=status,
+            results = export_from_canonical(spec, canonical, formats, status=status,
                                             on_unavailable=lambda failure, recorded: failed.append(failure),
                                             on_skip=skipped.append, retry_errors=args.retry_errors)
         except (KeyboardInterrupt, SystemExit):

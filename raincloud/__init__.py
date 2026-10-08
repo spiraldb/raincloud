@@ -12,8 +12,9 @@ from ._cache import EXT
 from ._catalog import load_catalog
 from ._catalog import unverified as _catalog_unverified
 from ._duckdb import duckdb_connect
-from ._formats import select_format
-from ._readers import reader_capabilities, require_reader
+from ._formats import auto_formats, select_format
+from ._readers import open_batches, open_dataset, reader_capabilities, require_reader
+from ._registry import FORMATS
 from .config import Config, get_config, resolve_config
 from .exceptions import (  # noqa: F401
     ArtifactNotFound,
@@ -39,7 +40,7 @@ from .exceptions import (  # noqa: F401
 # and `clients/java/build.gradle.kts` reads it directly. `clients/rust/Cargo.toml`
 # and `CITATION.cff` are hand-bumped copies: bump them with this literal, and
 # tests/test_loader_package.py::test_version_mirrors_agree fails if they disagree.
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 _DEFAULT_FORMAT = "auto"
 # Spellings people type for a format, suggested (never silently substituted).
@@ -222,32 +223,9 @@ class Dataset:
         import pyarrow as pa
         with ExitStack() as stack:
             def open_reader(path):
-                if fmt == "parquet":
-                    import pyarrow.parquet as pq
-                    source = stack.enter_context(pa.OSFile(str(path), "r"))
-                    reader = stack.enter_context(pq.ParquetFile(source))
-                    schema = reader.schema_arrow
-                    if columns is not None:
-                        _check_columns(schema, columns, fmt, self.slug)
-                        schema = reader.read_row_groups([], columns=columns).schema
-                    native = reader.iter_batches(batch_size=batch_size, columns=columns)
-                elif fmt == "arrow":
-                    source = stack.enter_context(pa.memory_map(str(path), "r"))
-                    reader = pa.ipc.open_file(source)
-                    schema = reader.schema
-                    if columns is not None:
-                        _check_columns(schema, columns, fmt, self.slug)
-                        schema = pa.schema([schema.field(c) for c in columns], metadata=schema.metadata)
-                    native = (reader.get_batch(i) if columns is None else reader.get_batch(i).select(columns)
-                              for i in range(reader.num_record_batches))
-                else:
-                    import vortex
-                    file = vortex.open(str(path))
-                    if columns is not None:
-                        _check_columns(file.dtype.to_arrow_schema(), columns, fmt, self.slug)
-                    # Projection is pushed into the scan: unrequested columns are never read.
-                    reader = stack.enter_context(file.to_arrow(projection=columns, batch_size=batch_size))
-                    schema, native = reader.schema, reader
+                schema, native = open_batches(
+                    fmt, path, stack, columns=columns, batch_size=batch_size,
+                    check_columns=lambda found: _check_columns(found, columns, fmt, self.slug))
 
                 def chunks():
                     with _decoding(path, fmt):
@@ -341,23 +319,7 @@ class Dataset:
         """
         fmt = self.format
         require_reader(fmt)
-        import pyarrow as pa
-        import pyarrow.dataset as pads
-
-        def open_dataset(path):
-            if fmt == "vortex":
-                import vortex
-                return vortex.open(str(path)).to_dataset()
-            if fmt == "parquet":
-                file_format, source = pads.ParquetFileFormat(), pa.OSFile(str(path), "r")
-            else:
-                file_format, source = pads.IpcFileFormat(), pa.memory_map(str(path), "r")
-            # A fragment over the open file, not the path: the dataset keeps
-            # reading this generation for as long as it lives.
-            fragment = file_format.make_fragment(source)
-            return pads.FileSystemDataset([fragment], fragment.physical_schema, file_format)
-
-        return self._acquire(self.format, open_dataset)
+        return self._acquire(fmt, lambda path: open_dataset(fmt, path))
 
     def to_pandas(self):
         try:
@@ -378,6 +340,8 @@ def _choose_format(entry, requested: str, readable: bool, readers: set[str] | No
     path to native readers that bring their own) every recorded format counts.
     `readers`, when given, is the set "auto" chooses among instead.
 
+    "auto" tries the install's `auto_formats`: the formats it builds (only
+    Vortex by default), in vortex, parquet order, then the canonical Arrow.
     "auto" also skips a format a build measured unavailable at this recipe
     (`_resolve.measured_unavailable`); asking for one outright raises
     FormatUnavailable quoting that measurement, unless `build` allows a new
@@ -414,10 +378,13 @@ def _choose_format(entry, requested: str, readable: bool, readers: set[str] | No
                 raise MissingDependency(f"{entry.slug} is prepared only as {', '.join(sorted(formats))}: {exc}") from None
         formats = usable
     try:
-        fmt = select_format(formats, fmt)
+        fmt = select_format(formats, fmt, auto_formats(config, entry.version))
     except FormatUnavailable as exc:
         raise FormatUnavailable(f"{entry.slug}: {exc}") from None
-    if readable:
+    # A format raincloud reads in-process must be readable here; one it only
+    # serves by path (`_registry.FORMATS` declares no reader) loads for its
+    # `path()`, and its readers raise MissingDependency saying so.
+    if readable and FORMATS[fmt]["reader"] is not None:
         require_reader(fmt, import_native=False)
     return fmt
 

@@ -10,7 +10,7 @@ use std::process::ExitCode;
 use clap::Parser;
 use raincloud_sidecars::{
     canonical_batches, logical_eq_stream, open_canonical, open_parquet, parquet_variant_loss,
-    run_writer, variant_columns, write_parquet, RowGroupLimits,
+    run_writer, variant_columns, write_parquet_with, ParquetOptions, RowGroupLimits,
 };
 
 #[derive(Parser)]
@@ -33,10 +33,11 @@ fn main() -> ExitCode {
         // Knobs first, so a malformed one fails before this run writes any
         // output. (Any error removes `--output`, whoever wrote it.)
         let limits = RowGroupLimits::from_env()?;
+        let options = ParquetOptions::from_env()?;
         // Streamed end to end: the canonical is re-read rather than held, since a
         // large one (SF100 lineitem, ~100 GB decoded) does not fit in memory.
         let (schema, _) = open_canonical(&args.input)?;
-        write_parquet(&args.output, schema.clone(), limits, || {
+        write_parquet_with(&args.output, schema.clone(), limits, options, || {
             Ok(canonical_batches(open_canonical(&args.input)?.1))
         })?;
 

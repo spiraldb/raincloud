@@ -68,6 +68,7 @@ import dev.hardwood.reader.ParquetFileReader;
 import dev.raincloud.sidecar.common.BatchSource;
 import dev.raincloud.sidecar.common.CanonicalReader;
 import dev.raincloud.sidecar.common.LogicalCompare;
+import dev.raincloud.sidecar.common.ParquetKnobs;
 import dev.raincloud.sidecar.common.Verdict;
 
 /** The Arrow ⇆ Hardwood bridge: types, nested shapes, row groups, failure atomicity. */
@@ -319,6 +320,35 @@ class HardwoodIoTest {
             n.setSafe(i - from, i);
         }
         root.setRowCount(to - from);
+    }
+
+    /** Options as the environment would give them: alternating setting names (after
+     * {@code RAINCLOUD_PARQUET_}) and values. */
+    private static ParquetKnobs knobs(String... pairs) {
+        java.util.Map<String, String> vars = new java.util.HashMap<>();
+        for (int i = 0; i < pairs.length; i += 2) {
+            vars.put("RAINCLOUD_PARQUET_" + pairs[i], pairs[i + 1]);
+        }
+        return ParquetKnobs.from(vars::get);
+    }
+
+    @Test
+    void parquetKnobsHardwoodCannotHonourAreRefused() {
+        for (ParquetKnobs knobs : new ParquetKnobs[] {
+                knobs("STATISTICS", "0"), knobs("PAGE_INDEX", "1"), knobs("PAGE_ROWS", "1000"),
+                knobs("COMPRESSION_LEVEL", "3"), knobs("STATISTICS_COLUMNS", "10"),
+                knobs("PAGE_INDEX_COLUMNS", "10"), knobs("DICTIONARY_PAGE_BYTES", "65536"),
+                knobs("PAGE_CHECKSUMS", "0")}) {
+            IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> HardwoodWriter.writerConfig(null, null, knobs));
+            assertTrue(e.getMessage().startsWith("parquet@hardwood cannot honour RAINCLOUD_PARQUET_"),
+                    e.getMessage());
+        }
+        // What it can: every codec, no page index, a page size, dictionaries off, checksums on.
+        for (String codec : ParquetKnobs.CODECS) {
+            HardwoodWriter.writerConfig(null, null, knobs("COMPRESSION", codec, "PAGE_INDEX", "0",
+                    "PAGE_BYTES", "4096", "DICTIONARY", "0", "PAGE_CHECKSUMS", "1"));
+        }
     }
 
     @Test

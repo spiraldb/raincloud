@@ -30,7 +30,7 @@ dependencies {
 
     // Composite-build substituted from ./parquet-arrow-java (see settings.gradle.kts),
     // so the submodule commit is the pin and this version is nominal.
-    implementation("dev.spiraldb.parquet.arrow:parquet-arrow-core:0.2.0")
+    implementation("dev.spiraldb.parquet.arrow:parquet-arrow-core:0.3.0")
 
     // Off-heap allocator impl for reading the canonical + silence SLF4J.
     runtimeOnly("org.apache.arrow:arrow-memory-netty:$arrowVersion")

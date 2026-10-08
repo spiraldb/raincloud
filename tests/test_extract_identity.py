@@ -47,8 +47,9 @@ def test_extract_cli_catalog_collision_repeat_and_build_cleanup(tmp_path):
     manifests = [manifest(tmp_path, [item], f"catalog{i}")
                  for i, item in enumerate((first, second))]
     config = tmp_path / "config.toml"
+    # Raw bytes are kept: the test counts them across recipes.
     config.write_text('[raincloud]\ndata_dir = "data"\nscratch_dir = "scratch"\n'
-                      'catalog_dir = "catalogs"\n')
+                      'catalog_dir = "catalogs"\nkeep_raw = true\n')
     env = {k: v for k, v in os.environ.items() if not k.startswith("RAINCLOUD_")}
     env["RAINCLOUD_CONFIG"] = str(config)
 
