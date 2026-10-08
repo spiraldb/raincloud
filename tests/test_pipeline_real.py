@@ -32,6 +32,7 @@ def test_real_build_via_load(tmp_path, slug, expected_rows):
     # Assert the actual public read resolves the artifact produced by the child
     # builder inside this store; ambient machine configuration cannot redirect it.
     assert ds.path().is_relative_to(cfg.data_dir)
-    parquet = next(a["key"] for a in ds.artifacts if a["format"] == "parquet" and a["writer"] == "py")
-    assert (cfg.data_dir / parquet).is_file()
+    # The build wrote the format the load asked for: auto, on an install that builds
+    # only Vortex (the default), with every extra installed.
+    assert ds.format == "vortex" and ds.path().is_file()
     assert not cfg.cache_dir.exists()

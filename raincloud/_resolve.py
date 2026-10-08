@@ -373,8 +373,12 @@ def resolve(
             try:
                 # The build log goes to stderr: stdout is the caller's (a path, or JSON).
                 # Only the format asked for: the install's other formats are
-                # its own choice to build, not this load's.
-                subprocess.run([sys.executable, "-m", "raincloud.pipeline.build", slug, "--format", fmt],
+                # its own choice to build, not this load's. A v1 catalog predates
+                # install formats and builds what its recipe lists, as in 0.3.0.
+                command = [sys.executable, "-m", "raincloud.pipeline.build", slug]
+                if entry.version >= 2:
+                    command += ["--format", fmt]
+                subprocess.run(command,
                                check=True,
                                env=pinned.subprocess_env(), stdout=_stderr_fd())
             except (subprocess.CalledProcessError, OSError) as e:
