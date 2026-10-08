@@ -223,11 +223,13 @@ packages, so `nimble@cpp` is built from source. [`sidecars/nimble/build.sh`](nim
 builds the lane's two binaries, `raincloud-export-nimble-cpp` and `raincloud-read-nimble-cpp`,
 inside a Nimble checkout at a pinned commit: upstream plus build fixes for a
 current Linux toolchain (a host `liburing.h` that Folly mistakes for its own, GCC 16's
-`<cstdint>`, two Velox libraries a minimal build links but never declares), kept on a branch
-of a Nimble fork. A cold build needs the network, about 4 GB on disk and several minutes, so
-CI does not build it and records the lane as absent.
+`<cstdint>`, two Velox libraries a minimal build links but never declares), kept on the
+`raincloud` branch of a Nimble fork, [mprammer/nimble](https://github.com/mprammer/nimble).
+A cold build needs the network, about 4 GB on disk and several minutes, so CI does not
+build it and records the lane as absent.
 
 ```bash
+git clone --branch raincloud --recurse-submodules https://github.com/mprammer/nimble /path/to/nimble
 RAINCLOUD_NIMBLE_SRC=/path/to/nimble sidecars/nimble/build.sh /srv/raincloud-tools/nimble
 export RAINCLOUD_SIDECAR_NIMBLE_CPP=/srv/raincloud-tools/nimble/bin/raincloud-export-nimble-cpp
 export RAINCLOUD_READER_NIMBLE_CPP=/srv/raincloud-tools/nimble/bin/raincloud-read-nimble-cpp

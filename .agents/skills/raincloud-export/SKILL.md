@@ -1,7 +1,7 @@
 ---
 name: raincloud-export
-description: Re-derive a dataset's Parquet and/or Vortex files from the canonical Arrow file already on disk, without refetching or re-transforming. Use when a change touches only the export stage (row-group sizing, a codec, a Vortex upgrade) or to refresh one format.
-argument-hint: <slug>... | --all  [--format parquet|vortex|parquet@rs|...] [--dry-run] [--retry-errors]
+description: Re-derive a dataset's Parquet, Vortex, ORC, Avro or Nimble files from the canonical Arrow file already on disk, without refetching or re-transforming. Use when a change touches only the export stage (row-group sizing, a codec, an encoder setting such as a Parquet page index, a writer upgrade) or to refresh one format.
+argument-hint: <slug>... | --all  [--format parquet|vortex|orc|avro|nimble|parquet@rs|...] [--dry-run] [--retry-errors]
 disable-model-invocation: true
 allowed-tools: Bash(python -m raincloud.pipeline.export *)
 ---
@@ -17,9 +17,10 @@ Selection (one required):
 - `--all` — every dataset. Hours of work on a full store; confirm first.
 
 Modifiers:
-- `--format FORMAT` (repeatable) — export only this format, replacing the spec's `export.formats` for this run: `parquet` or `vortex`. The writer is chosen by `export.priority` as in a build. It overrides a dataset whose policy leaves the format out, so check `python -m raincloud.pipeline.list_datasets --no-vortex --json` before forcing Vortex.
+- `--format FORMAT` (repeatable) — export only this format, replacing the install's formats for this run: `parquet`, `vortex`, `orc`, `avro` or `nimble`. The writer is chosen by `export.priority` as in a build. It overrides a dataset whose policy leaves the format out, so check `python -m raincloud.pipeline.list_datasets --no-vortex --json` before forcing Vortex.
 - `--format parquet@rs` (or another `<format>@<writer>`) — use that writer for this run. The file is still `parquet/<slug>.parquet`, but its bytes and sha256 change, so it no longer matches the catalog until a maintainer regenerates it. Confirm before doing this to datasets others read.
 - `--dry-run` — list what would be exported and exit.
+- Encoder settings come from the environment (`RAINCLOUD_PARQUET_PAGE_INDEX=1`, `RAINCLOUD_PARQUET_STATISTICS_COLUMNS=100`, `RAINCLOUD_PARQUET_COMPRESSION_LEVEL=9`, ...): this is the cheapest way to rewrite a file with them, since the canonical is the input. A writer that cannot honour a set one refuses (`[unavailable]`, `<writer> cannot honour <VARIABLE>=...`); name another with `--format <fmt>@<writer>`. See `/raincloud-write-settings`.
 - `--retry-errors` — attempt a format even when its writer, with this toolchain, already failed to write it at this recipe (see below).
 
 Behavior:

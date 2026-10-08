@@ -12,7 +12,8 @@
 #
 #   RAINCLOUD_NIMBLE_SRC=<nimble checkout> sidecars/nimble/build.sh <ROOT>
 #
-# RAINCLOUD_NIMBLE_SRC is a clone of the Nimble fork at `nimble_pin`, with its submodules
+# RAINCLOUD_NIMBLE_SRC is a clone of the Nimble fork (https://github.com/mprammer/nimble, branch
+# `raincloud`) at `nimble_pin`, with its submodules
 # initialized; it is never edited. ROOT holds everything the build creates (about 4 GB) and
 # must be on a disk, not tmpfs, and outside the repository and the checkout:
 #

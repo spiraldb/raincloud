@@ -153,7 +153,9 @@ checksums). An unset setting leaves each library's own default, which differ (py
 writes no page index; arrow-rs and parquet-java do). A set one reaches every writer and
 becomes part of its toolchain, and a writer whose library cannot do what it asks fails
 that export as a measurement rather than writing something else; `sidecars/README.md`
-tabulates which writer honours what. ORC, Avro and Vortex have the same kind of settings
+tabulates which writer honours what, and the `/raincloud-write-settings` skill is the
+procedure (a setting changes only files this install writes, so an existing file must be
+re-exported or rebuilt to gain it). ORC, Avro and Vortex have the same kind of settings
 (`spec.FORMAT_SETTINGS`, `RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`, `RAINCLOUD_VORTEX_*`), read
 and refused the same way; their codec, unset, is the zstd raincloud has always written.
 

@@ -1,7 +1,7 @@
 ---
 name: raincloud-load
 description: Read prepared Raincloud artifacts, inspect catalog metadata, or load batches from local storage or a configured mirror.
-argument-hint: <slug> [--format auto|arrow|parquet|vortex]
+argument-hint: <slug> [--format auto|arrow|parquet|vortex|orc|avro|nimble]
 disable-model-invocation: true
 allowed-tools: Bash(python -m raincloud describe *), Bash(python -m raincloud list *), Bash(python -m raincloud load *), Bash(python -m raincloud config show), Bash(python -m raincloud capabilities), Bash(python examples/use_loader.py *)
 ---
@@ -37,7 +37,13 @@ resolve the artifact as needed. `.to_arrow()` materializes the whole table.
 selected format for any engine (DuckDB, Polars, pyarrow). `.to_vortex()` requires
 `[vortex]` and a Vortex artifact. `.path()`, `.batches()`, `.to_arrow()` and
 `.dataset()` retain the selected artifact; `.to_vortex()` resolves the dataset's
-Vortex file. Each format is one file; `describe` shows which writer made it.
+Vortex file. Each format is one file; `describe` shows which writer made it. ORC reads
+through pyarrow; Avro and Nimble are served by `.path()` only.
+
+A load serves the file it finds. Encoder settings (a Parquet page index, compression
+level, ...) apply only when this install writes a file, so a file already on disk, in
+the store or on a mirror is served as it was written, and `--build` builds only a file
+that is missing. To get one written with settings, see `/raincloud-write-settings`.
 
 Use `raincloud capabilities` for installed reader modules and `raincloud config
 show` for effective paths. Optional TOML settings and environment overrides share

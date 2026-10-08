@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.3.1] - 2026-10-08
+
+The compliance ledger, `docs/v2/compliance.json`, is still 0.3.0's measurement: the ORC,
+Avro and Nimble writers and readers added here, and the encoder settings, are measured
+in a later release.
 
 ### Added
 
@@ -979,6 +983,7 @@ This release bundles:
   this repository" button in the repo sidebar with BibTeX / APA / Chicago
   exports.
 
+[0.3.1]: https://github.com/spiraldb/raincloud/releases/tag/v0.3.1
 [0.3.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.3.0
 [0.2.1]: https://github.com/spiraldb/raincloud/releases/tag/v0.2.1
 [0.2.0]: https://github.com/spiraldb/raincloud/releases/tag/v0.2.0

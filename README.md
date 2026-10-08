@@ -277,6 +277,32 @@ writes the setting, and `raincloud config show` prints what is in effect.
 Some datasets are large: single datasets can run for hours, and a full catalog build
 is measured in days. Build what you need.
 
+**Encoder settings.** Each format's writers take the same settings from the environment:
+for Parquet a page index (ColumnIndex and OffsetIndex) on every column or only the first N,
+statistics for only the first N columns, the compression level, page size and rows,
+dictionaries and page checksums; for ORC and Avro the codec, level and block sizes; for
+Vortex compact encodings. Unset, each writer library's default applies, which is how the
+catalog's files are written: pyarrow, the default Parquet writer, writes no page index. To
+build a dataset's Parquet with one:
+
+```bash
+RAINCLOUD_PARQUET_PAGE_INDEX=1 raincloud build uci-iris --format parquet
+```
+
+```python
+import os, raincloud
+os.environ["RAINCLOUD_PARQUET_PAGE_INDEX"] = "1"   # before the build runs
+ds = raincloud.load("uci-iris", format="parquet", build=True)
+```
+
+A setting applies to files this install writes; a file already on disk or on a mirror is
+served as it is, and `build=True` builds only what is missing, so rebuild (or re-export
+from a kept canonical, `python -m raincloud.pipeline.export uci-iris --format parquet`) to
+rewrite one. A writer that cannot do what a setting asks refuses it, and the format is
+recorded unavailable with the reason. Every setting, its default, and which writer honours
+it: the `RAINCLOUD_PARQUET_*`, `_ORC_*`, `_AVRO_*` and `_VORTEX_*` rows of
+[AGENTS.md](AGENTS.md#data-locations) and [`sidecars/README.md`](sidecars/README.md).
+
 A build does not fail because one format's writer cannot handle a dataset. Every
 export is bounded by `RAINCLOUD_EXPORT_TIMEOUT` (default 6 h; `0` disables it); a
 writer that raises, crashes, reports a failed round-trip or runs out of time leaves
