@@ -1,3 +1,5 @@
+<!-- Sign off each commit with git commit -s; see CONTRIBUTING.md#developer-certificate-of-origin-dco. -->
+
 ## Summary
 <!-- What changed and why. 1–3 bullets is plenty. -->
 

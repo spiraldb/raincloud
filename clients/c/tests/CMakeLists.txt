@@ -16,6 +16,6 @@ if(ARROW_INCLUDE AND ARROW_LIBRARY)
     IMPORTED_LOCATION "${ARROW_LIBRARY}"
     INTERFACE_INCLUDE_DIRECTORIES "${ARROW_INCLUDE}")
   add_executable(read-cpp read.cpp)
-  target_compile_features(read-cpp PRIVATE cxx_std_17)
+  target_compile_features(read-cpp PRIVATE cxx_std_20)
   target_link_libraries(read-cpp PRIVATE raincloud::reader consumer_arrow)
 endif()

@@ -131,7 +131,7 @@ def main():
         arrow_dir = Path(pa.get_library_dirs()[0])
         arrow_lib = sorted(arrow_dir.glob("libarrow.so*"), key=lambda p: len(p.name))[0]
         run(["cc", "-std=c11", "-Wall", "-Wextra", "-Werror", "clients/c/tests/read.c", f"-I{include}", f"-L{lib}", "-lraincloud_reader", f"-Wl,-rpath,{lib}", "-o", temp / "read-c"])
-        run(["c++", "-std=c++17", "-Wall", "-Wextra", "-Werror", "clients/c/tests/read.cpp", f"-I{include}", "-isystem", pa.get_include(), f"-L{lib}", "-lraincloud_reader", f"-Wl,-rpath,{lib}", arrow_lib, f"-Wl,-rpath,{arrow_dir}", "-o", temp / "read-cpp"])
+        run(["c++", "-std=c++20", "-Wall", "-Wextra", "-Werror", "clients/c/tests/read.cpp", f"-I{include}", "-isystem", pa.get_include(), f"-L{lib}", "-lraincloud_reader", f"-Wl,-rpath,{lib}", arrow_lib, f"-Wl,-rpath,{arrow_dir}", "-o", temp / "read-cpp"])
         for exe in ("read-c", "read-cpp"):
             run([temp / exe, temp / "options.json", missing], env={**env, "PATH": "/nonexistent"})
 
