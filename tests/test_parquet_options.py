@@ -227,6 +227,19 @@ def test_no_page_index_is_written_on_request_or_refused(tmp_path, monkeypatch, c
     assert _layout(dest)[0] is False
 
 
+def test_parquet_py_writes_a_page_index_and_page_checksums_when_unset(tmp_path):
+    roundtrip, note, dest = _write(tmp_path, "parquet@py")
+    assert roundtrip is True, note
+    assert _layout(dest)[0] is True
+    assert all(4 in page for page in _data_pages(dest))  # crc
+    # A page index is page statistics: with the recipe's statistics off there is none.
+    (tmp_path / "bare").mkdir()
+    bare = {**SPEC, "write": {**SPEC["write"], "statistics": False}}
+    roundtrip, note, dest = _write(tmp_path / "bare", "parquet@py", bare)
+    assert roundtrip is True, note
+    assert _layout(dest)[0] is False
+
+
 @pytest.mark.parametrize("cell", CELLS)
 def test_the_page_size_knob_reaches_every_writer(tmp_path, monkeypatch, cell):
     unset = _write(tmp_path, cell)

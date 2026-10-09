@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **`parquet@py` writes a page index and page checksums by default.** With
+  `RAINCLOUD_PARQUET_PAGE_INDEX` and `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` unset, pyarrow
+  now writes a ColumnIndex and OffsetIndex for every column chunk (when the recipe's
+  `write.statistics` is on) and a CRC in every page header, as parquet-java does, where
+  pyarrow's own default writes neither. Readers can prune pages by their statistics
+  without a sidecar writer. Set either to `0` for the old files. Every Parquet artifact
+  `parquet@py` writes changes bytes and checksums.
+
 ## [0.3.1] - 2026-10-08
 
 The compliance ledger, `docs/v2/compliance.json`, is still 0.3.0's measurement: the ORC,

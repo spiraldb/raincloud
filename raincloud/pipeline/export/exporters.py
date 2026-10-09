@@ -138,7 +138,9 @@ def _leaf_paths(schema: pa.Schema) -> list[str]:
 
 def _writer_options(options: ParquetOptions, schema: pa.Schema) -> dict:
     """pyarrow's `ParquetWriter` arguments for `options`. An unset setting is
-    left out, so pyarrow's own default applies.
+    left out, so pyarrow's own default applies, except two: unset, a page index
+    (when statistics are on) and page checksums are written, as parquet-java
+    writes them, where pyarrow writes neither.
 
     pyarrow writes a page index for every column with statistics or for none,
     so `page_index_columns` (page statistics for some columns, chunk statistics
@@ -151,12 +153,14 @@ def _writer_options(options: ParquetOptions, schema: pa.Schema) -> dict:
     statistics: bool | list[str] = options.statistics
     if options.statistics and options.statistics_columns is not None:
         statistics = _leaf_paths(schema)[:options.statistics_columns]
-    kwargs = {"compression": options.compression, "write_statistics": statistics}
+    page_index = options.statistics if options.page_index is None else options.page_index
+    page_checksums = True if options.page_checksums is None else options.page_checksums
+    kwargs = {"compression": options.compression, "write_statistics": statistics,
+              "write_page_index": page_index, "write_page_checksum": page_checksums}
     for name, value in (("compression_level", options.compression_level),
-                        ("write_page_index", options.page_index), ("data_page_size", options.page_bytes),
+                        ("data_page_size", options.page_bytes),
                         ("max_rows_per_page", options.page_rows), ("use_dictionary", options.dictionary),
-                        ("dictionary_pagesize_limit", options.dictionary_page_bytes),
-                        ("write_page_checksum", options.page_checksums)):
+                        ("dictionary_pagesize_limit", options.dictionary_page_bytes)):
         if value is not None:
             kwargs[name] = value
     return kwargs
