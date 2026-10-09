@@ -193,12 +193,12 @@ class ParquetArrowIoTest {
         WriteOptions leveled = ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION_LEVEL", "9"));
         assertEquals(9, leveled.compressionLevel().getAsInt());
         assertEquals(Compression.LZ4_RAW, ParquetArrowIo.writeOptions(null, null, knobs("COMPRESSION", "lz4")).compression());
-        // Unset leaves parquet-arrow-java's defaults.
+        // Page sizes remain the library's defaults; checksums default on in Raincloud.
         WriteOptions defaults = WriteOptions.builder().build();
         WriteOptions unset = ParquetArrowIo.writeOptions(null, null, ParquetKnobs.DEFAULT);
         assertEquals(defaults.pageSizeBytes(), unset.pageSizeBytes());
         assertEquals(defaults.pageRowLimit(), unset.pageRowLimit());
-        assertEquals(defaults.pageChecksums(), unset.pageChecksums());
+        assertTrue(unset.pageChecksums());
     }
 
     @Test

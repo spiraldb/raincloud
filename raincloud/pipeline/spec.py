@@ -234,13 +234,11 @@ def row_group_probe_rows() -> int:
 
 
 # Parquet write options every Parquet writer receives the same way. The install
-# settings differ from the row-group knobs in one respect: UNSET means each
-# writer's own default, not a raincloud figure, because the four libraries'
-# defaults differ (arrow-rs and parquet-java write a page index, Hardwood does
-# not) and no one figure leaves every lane's files as they are. The exception is
-# parquet@py, which writes a page index and page checksums when unset, as
-# parquet-java does (`exporters._writer_options`); pyarrow's own default writes
-# neither.
+# settings retain None when unset so each lane can apply the defaults its
+# library supports: page indexes and checksums on, except Hardwood cannot
+# write indexes and arrow-rs cannot write checksums. Other unset options use
+# the library's defaults. Resolving those here would turn an unsupported
+# default into an explicit request that the lane must refuse.
 # Set, a setting reaches every lane, and a writer whose library cannot do what
 # it asks fails that export rather than writing something else.
 PARQUET_COMPRESSION = "RAINCLOUD_PARQUET_COMPRESSION"
@@ -327,7 +325,8 @@ class ParquetOptions:
 
     `compression` and `statistics` are the recipe's `write.compression` and
     `write.statistics`. The rest are install settings (`_PARQUET_SETTINGS`);
-    None leaves the writer's own default:
+    None leaves the lane's default (page indexes and checksums on where supported,
+    other options at the library's defaults):
 
     - `compression_level`: the codec's level (zstd 1-22, gzip 0-9, brotli 0-11);
     - `statistics_columns`: statistics only for the first N leaf columns;

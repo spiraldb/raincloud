@@ -281,10 +281,12 @@ is measured in days. Build what you need.
 for Parquet a page index (ColumnIndex and OffsetIndex) on every column or only the first N,
 statistics for only the first N columns, the compression level, page size and rows,
 dictionaries and page checksums; for ORC and Avro the codec, level and block sizes; for
-Vortex compact encodings. Unset, each writer library's default applies, with one
-exception: pyarrow, the default Parquet writer, writes a page index and page checksums,
-as parquet-java does, though pyarrow's own default writes neither. To build a dataset's
-Parquet without them:
+Vortex compact encodings. Parquet page indexes and checksums default on wherever the
+writer supports them: pyarrow and parquet-java write both, arrow-rs writes indexes
+but cannot write checksums, and Hardwood writes checksums but cannot write indexes.
+Page statistics require the recipe's statistics to be enabled. Other unset settings
+use each library's defaults. To build a dataset's Parquet without indexes or checksums
+using the default pyarrow writer:
 
 ```bash
 RAINCLOUD_PARQUET_PAGE_INDEX=0 RAINCLOUD_PARQUET_PAGE_CHECKSUMS=0 raincloud build uci-iris --format parquet
@@ -293,6 +295,7 @@ RAINCLOUD_PARQUET_PAGE_INDEX=0 RAINCLOUD_PARQUET_PAGE_CHECKSUMS=0 raincloud buil
 ```python
 import os, raincloud
 os.environ["RAINCLOUD_PARQUET_PAGE_INDEX"] = "0"   # before the build runs
+os.environ["RAINCLOUD_PARQUET_PAGE_CHECKSUMS"] = "0"
 ds = raincloud.load("uci-iris", format="parquet", build=True)
 ```
 

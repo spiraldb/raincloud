@@ -84,6 +84,7 @@ jobs:
 
       - name: Verify Java lanes against shared fidelity fixtures
         env:
+          RAINCLOUD_SIDECAR_PARQUET_JAVA: ${{ github.workspace }}/sidecars/java/parquet-java/build/install/raincloud-export-parquet-java/bin/raincloud-export-parquet-java
           RAINCLOUD_READER_PARQUET_JAVA: ${{ github.workspace }}/sidecars/java/parquet-java/build/install/raincloud-export-parquet-java/bin/raincloud-read-parquet-java
           RAINCLOUD_SIDECAR_PARQUET_HARDWOOD: ${{ github.workspace }}/sidecars/java/parquet-hardwood/build/install/raincloud-export-parquet-hardwood/bin/raincloud-export-parquet-hardwood
           RAINCLOUD_READER_PARQUET_HARDWOOD: ${{ github.workspace }}/sidecars/java/parquet-hardwood/build/install/raincloud-export-parquet-hardwood/bin/raincloud-read-parquet-hardwood
@@ -91,7 +92,7 @@ jobs:
           RAINCLOUD_READER_VORTEX_JNI: ${{ github.workspace }}/sidecars/java/vortex-jni-reader/build/install/raincloud-read-vortex-jni/bin/raincloud-read-vortex-jni
           RAINCLOUD_SIDECAR_AVRO_JAVA: ${{ github.workspace }}/sidecars/java/avro-java/build/install/raincloud-export-avro-java/bin/raincloud-export-avro-java
           RAINCLOUD_READER_AVRO_JAVA: ${{ github.workspace }}/sidecars/java/avro-java/build/install/raincloud-export-avro-java/bin/raincloud-read-avro-java
-        run: uv run --no-sync pytest -q tests/test_reader_fidelity.py tests/test_java_reader_schema_compare.py tests/test_jvm_sidecar_lanes.py
+        run: uv run --no-sync pytest -q tests/test_reader_fidelity.py tests/test_java_reader_schema_compare.py tests/test_jvm_sidecar_lanes.py tests/test_parquet_options.py
 
   wheel:
     runs-on: ubuntu-latest
