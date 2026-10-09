@@ -281,17 +281,18 @@ is measured in days. Build what you need.
 for Parquet a page index (ColumnIndex and OffsetIndex) on every column or only the first N,
 statistics for only the first N columns, the compression level, page size and rows,
 dictionaries and page checksums; for ORC and Avro the codec, level and block sizes; for
-Vortex compact encodings. Unset, each writer library's default applies, which is how the
-catalog's files are written: pyarrow, the default Parquet writer, writes no page index. To
-build a dataset's Parquet with one:
+Vortex compact encodings. Unset, each writer library's default applies, with one
+exception: pyarrow, the default Parquet writer, writes a page index and page checksums,
+as parquet-java does, though pyarrow's own default writes neither. To build a dataset's
+Parquet without them:
 
 ```bash
-RAINCLOUD_PARQUET_PAGE_INDEX=1 raincloud build uci-iris --format parquet
+RAINCLOUD_PARQUET_PAGE_INDEX=0 RAINCLOUD_PARQUET_PAGE_CHECKSUMS=0 raincloud build uci-iris --format parquet
 ```
 
 ```python
 import os, raincloud
-os.environ["RAINCLOUD_PARQUET_PAGE_INDEX"] = "1"   # before the build runs
+os.environ["RAINCLOUD_PARQUET_PAGE_INDEX"] = "0"   # before the build runs
 ds = raincloud.load("uci-iris", format="parquet", build=True)
 ```
 

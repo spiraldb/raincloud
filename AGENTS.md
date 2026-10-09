@@ -149,8 +149,9 @@ Every Parquet writer is given one set of options (`spec.parquet_options`): the r
 `write.compression`, `write.statistics` and row cap, and the install's
 `RAINCLOUD_PARQUET_*` settings in the table below (compression level, statistics and the
 page index for all or the first N columns, page size and rows, dictionaries, page
-checksums). An unset setting leaves each library's own default, which differ (pyarrow
-writes no page index; arrow-rs and parquet-java do). A set one reaches every writer and
+checksums). An unset setting leaves each library's own default, which differ, except
+that `parquet@py` writes a page index (when statistics are on) and page checksums, as
+parquet-java does, where pyarrow's own default writes neither. A set one reaches every writer and
 becomes part of its toolchain, and a writer whose library cannot do what it asks fails
 that export as a measurement rather than writing something else; `sidecars/README.md`
 tabulates which writer honours what, and the `/raincloud-write-settings` skill is the
@@ -278,13 +279,13 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_ROW_GROUP_PROBE_ROWS` | rows the Python Parquet writer samples to size its groups (must be > 0) | 262,144 |
 | `RAINCLOUD_PARQUET_COMPRESSION_LEVEL` | the recipe's codec at this level in every Parquet writer (zstd 1-22, gzip 0-9, brotli 0-11) | unset (each writer's own) |
 | `RAINCLOUD_PARQUET_STATISTICS_COLUMNS` | statistics (chunk and page) only for the first N leaf columns (`0`: every column) | unset (each writer's own: every column) |
-| `RAINCLOUD_PARQUET_PAGE_INDEX` | `1`: every Parquet writer writes a page index (ColumnIndex + OffsetIndex); `0`: none | unset (each writer's own: pyarrow and Hardwood none, arrow-rs and parquet-java one) |
+| `RAINCLOUD_PARQUET_PAGE_INDEX` | `1`: every Parquet writer writes a page index (ColumnIndex + OffsetIndex); `0`: none | unset (each writer's own: pyarrow (raincloud's default for `parquet@py`), arrow-rs and parquet-java one, Hardwood none) |
 | `RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS` | page statistics only for the first N leaf columns, chunk statistics for every column (`0`: every column) | unset (each writer's own) |
 | `RAINCLOUD_PARQUET_PAGE_BYTES` | data page size target in every Parquet writer, each measuring a page its own way (`0`: no limit) | unset (each writer's own) |
 | `RAINCLOUD_PARQUET_PAGE_ROWS` | data page row limit in every Parquet writer (`0`: no limit) | unset (each writer's own) |
 | `RAINCLOUD_PARQUET_DICTIONARY` | `0`: no dictionary encoding (PLAIN); `1`: dictionaries | unset (each writer's own: on) |
 | `RAINCLOUD_PARQUET_DICTIONARY_PAGE_BYTES` | dictionary page size limit, past which a column falls back to PLAIN (`0`: no limit) | unset (each writer's own) |
-| `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1`: a CRC in every page header; `0`: none | unset (each writer's own: parquet-java and Hardwood write them, pyarrow and arrow-rs do not) |
+| `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1`: a CRC in every page header; `0`: none | unset (each writer's own: pyarrow (raincloud's default for `parquet@py`), parquet-java and Hardwood write them, arrow-rs does not) |
 | `RAINCLOUD_ORC_COMPRESSION` | ORC codec in every ORC writer: `zstd`, `snappy`, `zlib`, `lz4`, `none` | unset (zstd, as always) |
 | `RAINCLOUD_ORC_COMPRESSION_STRATEGY` | `speed` or `compression` (ORC C++ only; orc-rust refuses) | unset (each writer's own) |
 | `RAINCLOUD_ORC_STRIPE_BYTES` | ORC stripe size target, measured encoded and compressed | unset (each writer's own) |

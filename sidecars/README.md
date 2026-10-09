@@ -171,7 +171,8 @@ passes to a sidecar in this form:
 | `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1` or `0`: a CRC in every page header, or none | the install, only when set |
 
 An unset variable is the lane's library default (zstd and statistics on, for the first
-two). Counts use the count grammar, `0` meaning no limit (every column, for the two
+two), except that `parquet@py` writes a page index and page checksums when the two are
+unset, though pyarrow's own default writes neither. Counts use the count grammar, `0` meaning no limit (every column, for the two
 column counts). Switches read `1/true/yes/on` and `0/false/no/off` in any case, empty as
 unset, in every lane. Settings that contradict each other or the recipe (a page index
 with statistics off; `PAGE_INDEX=0` with `PAGE_INDEX_COLUMNS`; a level for snappy, lz4
@@ -185,15 +186,15 @@ cannot honour:
 | compression level | yes | yes | yes | no |
 | statistics off | yes | yes | yes | no |
 | statistics, first N columns | yes | yes | yes | no |
-| page index on | yes | yes | yes | no |
+| page index on | yes (raincloud's default) | yes | yes | no |
 | page index off | yes | yes | no, with statistics on | yes |
 | page index, first N columns | no: all or none | yes | no | no |
 | page bytes | yes | yes | yes | yes |
 | page rows | yes | yes, checked every 1,024 values | yes | no |
 | dictionary on / off | yes | yes | yes | yes (off is PLAIN) |
 | dictionary page bytes | yes | yes | yes | no |
-| page checksums on | yes | no | yes (its default) | yes (always) |
-| page checksums off | yes (its default) | yes (always) | yes | no |
+| page checksums on | yes (raincloud's default) | no | yes (its default) | yes (always) |
+| page checksums off | yes | yes (always) | yes | no |
 
 Each library measures a page its own way, so the same `RAINCLOUD_PARQUET_PAGE_BYTES`
 does not give identical pages in every lane. The java column's page index gaps are
