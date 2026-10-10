@@ -23,9 +23,12 @@ func compareRecords(got pqarrow.RecordReader, expected *ipc.FileReader) error {
 		if got.Schema().Field(i).Name != f.Name {
 			return fmt.Errorf("column names differ")
 		}
+		if !compatibleTypes(got.Schema().Field(i).Type, f.Type) {
+			return fmt.Errorf("column %q has incompatible types", f.Name)
+		}
 	}
 	var actual arrow.RecordBatch
-	var offset, rows int64
+	var offset int64
 	next := func() bool {
 		for got.Next() {
 			actual = got.RecordBatch()
@@ -42,7 +45,6 @@ func compareRecords(got pqarrow.RecordReader, expected *ipc.FileReader) error {
 		if err != nil {
 			return err
 		}
-		rows += batch.NumRows()
 		err = func() error {
 			defer batch.Release()
 			for start := int64(0); start < batch.NumRows(); {
@@ -77,19 +79,15 @@ func compareRecords(got pqarrow.RecordReader, expected *ipc.FileReader) error {
 	if actual != nil && offset < actual.NumRows() || next() {
 		return fmt.Errorf("row count differs")
 	}
-	if rows == 0 {
-		for i, f := range expected.Schema().Fields() {
-			if !emptyTypesEqual(got.Schema().Field(i).Type, f.Type) {
-				return fmt.Errorf("empty column %q has incompatible types", f.Name)
-			}
-		}
-	}
 	return got.Err()
 }
 
 // A safe cast alone permits lossy float narrowing and int->bool. Require the
 // reverse cast to recover the original values, including float sign bits.
 func logicalEqual(a, b arrow.Array) bool {
+	if !compatibleTypes(a.DataType(), b.DataType()) {
+		return false
+	}
 	if ext, ok := a.(array.ExtensionArray); ok {
 		a = ext.Storage()
 	}
@@ -118,7 +116,7 @@ type listArray interface {
 	ListValues() arrow.Array
 }
 
-// Ignore payload under null parents; preserve signed zero and accept NaNs at
+// Ignore payload under null parents; preserve signed zero and NaN payloads at
 // every nesting level. Arrow's approximate comparator collapses signed zero.
 func exactEqual(a, b arrow.Array) bool {
 	if a.Len() != b.Len() || a.NullN() != b.NullN() {
@@ -138,7 +136,7 @@ func exactEqual(a, b arrow.Array) bool {
 				continue
 			}
 			x, y := left.Value(i), right.Value(i)
-			if x.Uint16() != y.Uint16() && !(math.IsNaN(float64(x.Float32())) && math.IsNaN(float64(y.Float32()))) {
+			if x.Uint16() != y.Uint16() {
 				return false
 			}
 		}
@@ -156,7 +154,7 @@ func exactEqual(a, b arrow.Array) bool {
 				continue
 			}
 			x, y := left.Value(i), right.Value(i)
-			if math.Float64bits(x) != math.Float64bits(y) && !(math.IsNaN(x) && math.IsNaN(y)) {
+			if math.Float64bits(x) != math.Float64bits(y) {
 				return false
 			}
 		}
@@ -174,7 +172,7 @@ func exactEqual(a, b arrow.Array) bool {
 				continue
 			}
 			x, y := left.Value(i), right.Value(i)
-			if math.Float32bits(x) != math.Float32bits(y) && !(math.IsNaN(float64(x)) && math.IsNaN(float64(y))) {
+			if math.Float32bits(x) != math.Float32bits(y) {
 				return false
 			}
 		}
@@ -252,9 +250,9 @@ func exactEqual(a, b arrow.Array) bool {
 	}
 }
 
-// Empty files still have a schema. Reversible casts of empty arrays alone
-// would incorrectly accept unrelated types such as string and integer.
-func emptyTypesEqual(a, b arrow.DataType) bool {
+// Match the logical families in export/compare.py independently of values.
+// Empty arrays and null containers must satisfy the same schema contract.
+func compatibleTypes(a, b arrow.DataType) bool {
 	if ext, ok := a.(arrow.ExtensionType); ok {
 		a = ext.StorageType()
 	}
@@ -265,12 +263,67 @@ func emptyTypesEqual(a, b arrow.DataType) bool {
 		return true
 	}
 	if d, ok := a.(*arrow.DictionaryType); ok {
-		return emptyTypesEqual(d.ValueType, b)
+		return compatibleTypes(d.ValueType, b)
 	}
 	if d, ok := b.(*arrow.DictionaryType); ok {
-		return emptyTypesEqual(a, d.ValueType)
+		return compatibleTypes(a, d.ValueType)
+	}
+	if left, ok := a.(*arrow.StructType); ok {
+		right, ok := b.(*arrow.StructType)
+		return ok && compatibleFields(left.Fields(), right.Fields())
+	}
+	if left, ok := a.(*arrow.MapType); ok {
+		right, ok := b.(*arrow.MapType)
+		return ok && compatibleFields([]arrow.Field{left.KeyField(), left.ItemField()}, []arrow.Field{right.KeyField(), right.ItemField()})
+	}
+	lists := func(t arrow.Type) bool {
+		return t == arrow.LIST || t == arrow.LARGE_LIST || t == arrow.FIXED_SIZE_LIST || t == arrow.LIST_VIEW || t == arrow.LARGE_LIST_VIEW
+	}
+	if lists(a.ID()) && lists(b.ID()) {
+		if left, ok := a.(*arrow.FixedSizeListType); ok {
+			if right, ok := b.(*arrow.FixedSizeListType); ok && left.Len() != right.Len() {
+				return false
+			}
+		}
+		return compatibleTypes(a.(interface{ Elem() arrow.DataType }).Elem(), b.(interface{ Elem() arrow.DataType }).Elem())
+	}
+	if left, ok := a.(*arrow.TimestampType); ok {
+		right, ok := b.(*arrow.TimestampType)
+		return ok && (left.TimeZone == "") == (right.TimeZone == "")
+	}
+	if left, ok := a.(arrow.DecimalType); ok && arrow.IsInteger(b.ID()) {
+		return left.GetScale() == 0
+	}
+	if right, ok := b.(arrow.DecimalType); ok && arrow.IsInteger(a.ID()) {
+		return right.GetScale() == 0
+	}
+	if left, ok := a.(*arrow.FixedSizeBinaryType); ok {
+		if right, ok := b.(*arrow.FixedSizeBinaryType); ok && left.ByteWidth != right.ByteWidth {
+			return false
+		}
 	}
 	strings := func(t arrow.Type) bool { return t == arrow.STRING || t == arrow.LARGE_STRING || t == arrow.STRING_VIEW }
-	binary := func(t arrow.Type) bool { return t == arrow.BINARY || t == arrow.LARGE_BINARY || t == arrow.BINARY_VIEW }
-	return strings(a.ID()) && strings(b.ID()) || binary(a.ID()) && binary(b.ID())
+	binary := func(t arrow.Type) bool {
+		return t == arrow.BINARY || t == arrow.LARGE_BINARY || t == arrow.BINARY_VIEW || t == arrow.FIXED_SIZE_BINARY
+	}
+	date := func(t arrow.Type) bool { return t == arrow.DATE32 || t == arrow.DATE64 }
+	time := func(t arrow.Type) bool { return t == arrow.TIME32 || t == arrow.TIME64 }
+	for _, family := range []func(arrow.Type) bool{arrow.IsInteger, arrow.IsFloating, arrow.IsDecimal, strings, binary, date, time} {
+		if family(a.ID()) && family(b.ID()) {
+			return true
+		}
+	}
+	return a.ID() == arrow.DURATION && b.ID() == arrow.DURATION
+}
+
+func compatibleFields(a, b []arrow.Field) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i].Name != b[i].Name || !compatibleTypes(a[i].Type, b[i].Type) {
+			return false
+		}
+	}
+	return true
 }

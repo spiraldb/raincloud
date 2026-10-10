@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Apache Arrow Go writes the canonical IPC, not a converted intermediate."""
 import json
+import struct
 import subprocess
 
 import pyarrow as pa
@@ -82,3 +83,45 @@ def test_go_preserves_native_variant(tmp_path, null_row):
     assert result.compliance.roundtrip is True, result.compliance
     assert result.compliance.variant_faithful is True
     assert "Variant(" in str(pq.ParquetFile(result.out_path).schema)
+
+
+@pytest.mark.parametrize("got,expected,status", [
+    (pa.array(["123"]), pa.array([123]), "fail"),
+    (pa.array([1]), pa.array([True]), "fail"),
+    (pa.array([None], pa.string()), pa.array([None], pa.int64()), "fail"),
+    (pa.array([0], pa.timestamp("us")), pa.array([0], pa.timestamp("us", "UTC")), "fail"),
+    (pa.array([[]], pa.list_(pa.struct([("a", pa.int32())]))),
+     pa.array([[]], pa.list_(pa.struct([("b", pa.int32())]))), "fail"),
+    (pa.array([], pa.int32()), pa.array([], pa.int64()), "pass"),
+    (pa.array([], pa.binary(4)), pa.array([], pa.binary()), "pass"),
+    (pa.array([], pa.list_(pa.int32(), 2)), pa.array([], pa.large_list(pa.int64())), "pass"),
+    (pa.array([], pa.list_(pa.int32(), 2)), pa.array([], pa.list_(pa.int32(), 3)), "fail"),
+    (pa.array([struct.unpack("d", struct.pack("Q", 0x7ff8000000000001))[0]]),
+     pa.array([struct.unpack("d", struct.pack("Q", 0x7ff8000000000002))[0]]), "fail"),
+])
+def test_go_schema_and_float_fidelity(tmp_path, got, expected, status):
+    sidecar("parquet@go", "read")
+    canonical = write_ipc(tmp_path / "c.arrow.zstd", pa.table({"x": expected}))
+    artifact = tmp_path / "a.parquet"
+    pq.write_table(pa.table({"x": got}), artifact)
+    result = get_reader("parquet@go").read_conformance(artifact, canonical)
+    assert result.status == status, result
+
+
+@pytest.mark.parametrize("dictionary", [False, True])
+def test_go_decoded_guard_counts_skewed_slice_values(tmp_path, monkeypatch, dictionary):
+    sidecar("parquet@go")
+    monkeypatch.setenv("RAINCLOUD_ROW_GROUP_TARGET_BYTES", str(4 << 20))
+    monkeypatch.setenv("RAINCLOUD_ROW_GROUP_TARGET_ENCODED_BYTES", "0")
+    monkeypatch.setenv("RAINCLOUD_PARQUET_DICTIONARY", "0")
+    table = pa.table({"x": ["x" * 1024] * 8192 + [""] * 57344})
+    if dictionary:
+        table = pa.table({"x": table["x"].dictionary_encode()})
+    canonical = write_ipc(tmp_path / "skewed.arrow.zstd", table)
+    result = get_exporter("parquet@go").export({"slug": "skewed"}, canonical, tmp_path / "skewed.parquet")
+    assert result.compliance.roundtrip is True, result.compliance
+    file = pq.ParquetFile(result.out_path)
+    assert file.read().equals(table)
+    # The writer checks after each 1024-row slice, allowing at most one slice of overshoot.
+    assert max(file.read_row_group(i).cast(pa.schema([("x", pa.string())])).nbytes
+               for i in range(file.num_row_groups)) < (5 << 20)

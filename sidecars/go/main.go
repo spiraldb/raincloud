@@ -17,7 +17,6 @@ import (
 	"github.com/apache/arrow-go/v18/arrow"
 	"github.com/apache/arrow-go/v18/arrow/ipc"
 	"github.com/apache/arrow-go/v18/arrow/memory"
-	"github.com/apache/arrow-go/v18/arrow/util"
 	"github.com/apache/arrow-go/v18/parquet"
 	"github.com/apache/arrow-go/v18/parquet/compress"
 	"github.com/apache/arrow-go/v18/parquet/file"
@@ -202,7 +201,9 @@ func write(input, output string) error {
 				n := min(cap-rows, batch.NumRows()-offset, 1024)
 				part := batch.NewSlice(offset, offset+n)
 				err := writer.WriteBuffered(part)
-				bytes += util.TotalRecordSize(part) * n / max(batch.NumRows(), 1)
+				for _, col := range part.Columns() {
+					bytes += decodedSize(col)
+				}
 				part.Release()
 				if err != nil {
 					return err
