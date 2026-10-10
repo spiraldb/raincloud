@@ -75,6 +75,8 @@ FORMATS: dict[str, dict] = {
     "orc": {"ext": "orc", "auto": False, "reader": "pyarrow._orc", "implementation": "pyarrow"},
     # pyarrow reads no Avro: the loader serves the file's path.
     "avro": {"ext": "avro", "auto": False, "reader": None, "implementation": None},
+    "lance": {"ext": "lance", "auto": False, "reader": "lance",
+              "implementation": "lance-python", "extra": "lance"},
     # Nimble is C++ only: served by path.
     "nimble": {"ext": "nimble", "auto": False, "reader": None, "implementation": None},
 }
@@ -86,6 +88,7 @@ PY_EXPORTERS: dict[str, str] = {
     "parquet@py": "exporters:ParquetExporter",
     "vortex@py": "exporters:VortexExporter",
     "orc@py": "exporters:OrcExporter",
+    "lance@py": "exporters:LanceExporter",
 }
 
 # Opt-in exporter cells that shell out to a PATH-discovered reference writer,

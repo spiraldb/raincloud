@@ -7,6 +7,14 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- `lance@py`: single-file Lance 2.2 artifacts using optional `raincloud[lance]`
+  (`pylance` 13.0.0), with streamed canonical input, bounded read-back verification,
+  projected loader batches, and file-version and buffer-budget settings. Explicit
+  page-size limits are refused because the structural encoder ignores that option.
+  Exports spawn a fresh process because Lance is not fork-safe.
+
 ### Changed
 
 - **`parquet@py` writes a page index and page checksums by default.** With

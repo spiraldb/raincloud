@@ -40,6 +40,8 @@ raincloud = "raincloud.cli:main"
 # Exact: the Vortex file format is still versioned by its writer, and the
 # snapshot's checksums are recorded against this one.
 vortex = ["vortex-data==0.86.1"]
+# Single-file Lance artifacts, with reproducible writer provenance.
+lance = ["pylance==13.0.0"]
 s3 = ["s3fs>=2024.0"]
 http = ["aiohttp>=3.9"]
 pandas = ["pandas>=2.0"]
@@ -61,7 +63,7 @@ huggingface = ["huggingface-hub>=0.25"]
 tui = ["textual>=0.80"]
 dev = ["pytest>=8.0", "ruff>=0.13"]
 all = [
-    "raincloud[s3,http,pandas,build,osm,sas,excel,archives,generated,kaggle,huggingface,tui]",
+    "raincloud[s3,http,pandas,build,lance,osm,sas,excel,archives,generated,kaggle,huggingface,tui]",
 ]
 
 [tool.ruff]

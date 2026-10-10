@@ -276,3 +276,10 @@ A hydrated dataset derives from another entry instead of an upstream, so it carr
 
 Its recipe folds in the parent's, so rebuilding the parent makes it stale. See
 [`HYDRATING.md`](HYDRATING.md).
+
+`export.formats` may include `lance`: one single-file Lance artifact at
+`lance/<slug>.lance`, written by `lance@py` with the optional `[lance]` extra.
+As with other formats, `export.priority` may name its writer (`py`) and the
+install chooses whether to export it. This is a data file, not a Lance dataset
+directory. The writer's file-version and page settings are install settings;
+see the [settings table](AGENTS.md#data-locations).

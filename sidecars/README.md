@@ -407,3 +407,21 @@ Upgrade their pins together and re-measure supported cells; a package version
 change alone is not evidence of conformance. Preserve skipped and unsupported
 lanes in the results. Software updates do not move stored data or refresh an
 active catalog revision.
+
+## Single-file Lance
+
+`lance@py` is in-process and installed by `raincloud[lance]`; it does not need a
+sidecar binary. It uses `lance.file.LanceFileWriter` / `LanceFileReader` from
+pylance 13.0.0, stores a single `.lance` file, and supports file formats 2.1 and
+2.2 (default 2.2). Every export and read-back runs in a spawned, bounded process.
+
+| setting | `lance@py` |
+|---|---|
+| `RAINCLOUD_LANCE_FILE_VERSION` | `2.1` or `2.2` |
+| `RAINCLOUD_LANCE_DATA_CACHE_BYTES` | total buffer budget, split across columns; unset is 8 MiB per column |
+| `RAINCLOUD_LANCE_PAGE_BYTES` | refused: the structural encoder ignores `max_page_bytes` |
+
+The buffer budget affects when pages are flushed. It is not a hard bound on the
+size of one value. VARIANT storage structs can survive, but the writer does not
+claim a Parquet VARIANT logical annotation. Unsupported types are measurements,
+not permanent format exclusions in the manifest.

@@ -157,7 +157,7 @@ becomes part of its toolchain, and a writer whose library cannot do what it asks
 that export as a measurement rather than writing something else; `sidecars/README.md`
 tabulates which writer honours what, and the `/raincloud-write-settings` skill is the
 procedure (a setting changes only files this install writes, so an existing file must be
-re-exported or rebuilt to gain it). ORC, Avro and Vortex have the same kind of settings
+re-exported or rebuilt to gain it). ORC, Avro, Lance and Vortex have the same kind of settings
 (`spec.FORMAT_SETTINGS`, `RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`, `RAINCLOUD_VORTEX_*`), read
 and refused the same way; their codec, unset, is the zstd raincloud has always written.
 
@@ -179,6 +179,11 @@ Run an unattended build as a systemd unit with `OOMPolicy=continue`: the default
 `stop` ends the whole unit when the kernel kills one process in it. `export` without `--format` behaves like the build;
 with a bare `--format vortex` it records the failure and exits 1, and a named cell's
 failure (`--format vortex@rs`) exits 1 and records nothing.
+
+Lance (`lance@py`, optional `[lance]`) writes one `.lance` data file, not a Lance
+dataset directory. Its exporter uses a spawned process, including on Linux, because
+Lance is not fork-safe. The loader supports projected batches and `to_arrow()`;
+`dataset()` has no lazy single-file adapter and raises `UnsupportedType`.
 
 Every writer reads back what it writes before its file is promoted. An in-process
 writer reads its file with the same format's in-process reader and compares it to the
@@ -294,6 +299,9 @@ its own `outputs/` rather than a machine's shared store.
 | `RAINCLOUD_AVRO_COMPRESSION` | Avro codec in every Avro writer: `zstd`, `deflate`, `snappy`, `bzip2`, `xz`, `none` | unset (zstd, as always) |
 | `RAINCLOUD_AVRO_COMPRESSION_LEVEL` | level for zstd (1-22), deflate or xz (0-9); Avro Java only, arrow-avro refuses | unset (each writer's own) |
 | `RAINCLOUD_AVRO_BLOCK_BYTES` | Avro block (sync interval) size; Avro Java only, arrow-avro refuses | unset (each writer's own) |
+| `RAINCLOUD_LANCE_FILE_VERSION` | single-file Lance format version (`2.1` or `2.2`) | unset (2.2) |
+| `RAINCLOUD_LANCE_PAGE_BYTES` | Lance page byte limit; `lance@py` refuses it because the structural encoder ignores this option | unset (no page limit requested) |
+| `RAINCLOUD_LANCE_DATA_CACHE_BYTES` | Lance total column buffer budget (`0`: no configured limit) | unset (library default: 8 MiB per top-level column) |
 | `RAINCLOUD_VORTEX_COMPACT` | `1`: BtrBlocks' compact encodings (vortex@py and vortex@rs; vortex@jni refuses) | unset (each writer's own: default) |
 | `RAINCLOUD_VORTEX_ROW_BLOCK_ROWS` | Vortex row block size (vortex@rs only) | unset (each writer's own) |
 | `RAINCLOUD_VORTEX_DATA_BLOCK_BYTES` | Vortex data block size target (vortex@rs only) | unset (each writer's own) |
