@@ -38,7 +38,7 @@ PYTEST_MODULES = (
     "tests/test_client_boundaries.py", "tests/test_export_conformance.py",
     "tests/test_rust_sidecars.py", "tests/test_native_protocol.py", "tests/test_jvm_sidecar_lanes.py",
     "tests/test_parquet_variant_sidecars.py", "tests/test_parquet_java_list_naming.py",
-    "tests/test_variant_storage_nullability.py",
+    "tests/test_variant_storage_nullability.py", "tests/test_parquet_options.py",
 )
 
 LIBRARY = "libraincloud_reader.so"

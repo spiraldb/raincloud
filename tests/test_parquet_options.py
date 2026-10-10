@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2026 Raincloud Maintainers
 # SPDX-License-Identifier: Apache-2.0
 """The Parquet write options: one set (`spec.ParquetOptions`) given the same way
-to every Parquet writer, each page knob leaving the writer's own default when
-unset, and a writer that cannot do what a set knob asks failing rather than
+to every Parquet writer, page indexes and checksums on by default where supported,
+and a writer that cannot do what a set knob asks failing rather than
 writing something else."""
 from __future__ import annotations
 
@@ -27,20 +27,23 @@ def _unset(monkeypatch):
         monkeypatch.delenv(var, raising=False)
 
 
-def _data_pages(path, column: int = 0) -> list[dict]:
-    """The data page headers of one column chunk of the first row group, read
+def _pages(path, column: int = 0, row_group: int = 0) -> list[dict]:
+    """The page headers of one column chunk, including its dictionary, read
     from the file: {thrift field id: value}, as parquet.thrift numbers them."""
     meta = pq.ParquetFile(path).metadata
-    chunk = meta.row_group(0).column(column)
+    chunk = meta.row_group(row_group).column(column)
     data = path.read_bytes()
     start = chunk.dictionary_page_offset if chunk.has_dictionary_page else chunk.data_page_offset
     pos, end, pages = start, start + chunk.total_compressed_size, []
     while pos < end:
         header, pos = _thrift_struct(data, pos)
         pos += header[3]  # compressed_page_size
-        if header[1] in (0, 3):  # DATA_PAGE, DATA_PAGE_V2
-            pages.append(header)
+        pages.append(header)
     return pages
+
+
+def _data_pages(path, column: int = 0) -> list[dict]:
+    return [page for page in _pages(path, column) if page[1] in (0, 3)]  # DATA_PAGE, DATA_PAGE_V2
 
 
 def _thrift_struct(data: bytes, pos: int) -> tuple[dict, int]:
@@ -227,17 +230,44 @@ def test_no_page_index_is_written_on_request_or_refused(tmp_path, monkeypatch, c
     assert _layout(dest)[0] is False
 
 
-def test_parquet_py_writes_a_page_index_and_page_checksums_when_unset(tmp_path):
-    roundtrip, note, dest = _write(tmp_path, "parquet@py")
+@pytest.mark.parametrize("cell", CELLS)
+def test_page_indexes_and_checksums_default_on_where_supported(tmp_path, cell):
+    written = _write(tmp_path, cell)
+    if written is None:
+        pytest.skip(f"{cell} not installed")
+    roundtrip, note, dest = written
     assert roundtrip is True, note
-    assert _layout(dest)[0] is True
-    assert all(4 in page for page in _data_pages(dest))  # crc
-    # A page index is page statistics: with the recipe's statistics off there is none.
-    (tmp_path / "bare").mkdir()
+    meta = pq.ParquetFile(dest).metadata
+    for g in range(meta.num_row_groups):
+        for c in range(meta.num_columns):
+            chunk = meta.row_group(g).column(c)
+            assert chunk.has_column_index == (cell != "parquet@hardwood")
+            assert chunk.has_offset_index == (cell != "parquet@hardwood")
+            pages = _pages(dest, c, g)
+            assert pages
+            assert all((4 in page) == (cell != "parquet@rs") for page in pages)  # crc
+
+
+@pytest.mark.parametrize("cell", CELLS)
+def test_default_page_index_respects_statistics_off(tmp_path, cell):
     bare = {**SPEC, "write": {**SPEC["write"], "statistics": False}}
-    roundtrip, note, dest = _write(tmp_path / "bare", "parquet@py", bare)
+    written = _write(tmp_path, cell, bare)
+    if written is None:
+        pytest.skip(f"{cell} not installed")
+    roundtrip, note, dest = written
+    if cell == "parquet@hardwood":
+        assert roundtrip is False and "cannot honour RAINCLOUD_PARQUET_STATISTICS=0" in note, note
+        assert not dest.exists()
+        return
     assert roundtrip is True, note
-    assert _layout(dest)[0] is False
+    meta = pq.ParquetFile(dest).metadata
+    for g in range(meta.num_row_groups):
+        for c in range(meta.num_columns):
+            chunk = meta.row_group(g).column(c)
+            assert not chunk.is_stats_set
+            assert not chunk.has_column_index
+            if cell != "parquet@java":  # parquet-java may keep the positional OffsetIndex.
+                assert not chunk.has_offset_index
 
 
 @pytest.mark.parametrize("cell", CELLS)

@@ -324,8 +324,9 @@ fn refuse_set<T: std::fmt::Display>(
 /// sidecar never sees the recipe: `SidecarExporter` passes its
 /// `write.compression` and `write.statistics` as `RAINCLOUD_PARQUET_COMPRESSION`
 /// and `RAINCLOUD_PARQUET_STATISTICS`, and each install setting only when it is
-/// set. Unset leaves arrow-rs's own default: a page index, 1 MiB pages, 20,000
-/// rows a page, dictionaries on, no page checksums.
+/// set. A page index defaults on when statistics are enabled. Other unset
+/// settings leave arrow-rs's defaults: 1 MiB pages, 20,000 rows a page,
+/// dictionaries on. This arrow-rs version cannot write page checksums.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct ParquetOptions {
     /// The codec, at `RAINCLOUD_PARQUET_COMPRESSION_LEVEL` when that is set.
@@ -480,21 +481,18 @@ impl ParquetOptions {
         columns: &parquet::schema::types::SchemaDescriptor,
     ) -> parquet::file::properties::WriterPropertiesBuilder {
         use parquet::file::properties::EnabledStatistics;
-        if !self.statistics {
-            builder = builder.set_statistics_enabled(EnabledStatistics::None);
-        }
-        match self.page_index {
-            Some(true) => builder = builder.set_statistics_enabled(EnabledStatistics::Page),
-            // Neither index, as pyarrow writes without one: Chunk statistics alone
-            // still write an OffsetIndex.
-            Some(false) => {
-                if self.statistics {
-                    builder = builder.set_statistics_enabled(EnabledStatistics::Chunk);
-                }
-                builder = builder.set_offset_index_disabled(true);
-            }
-            None => {}
-        }
+        let page_index = self.page_index.unwrap_or(self.statistics);
+        builder = builder
+            .set_statistics_enabled(if !self.statistics {
+                EnabledStatistics::None
+            } else if page_index {
+                EnabledStatistics::Page
+            } else {
+                EnabledStatistics::Chunk
+            })
+            // Neither index when disabled: chunk statistics alone still write
+            // an OffsetIndex. Match parquet@py when statistics are off too.
+            .set_offset_index_disabled(!page_index);
         if self.statistics {
             for (i, column) in columns.columns().iter().enumerate() {
                 let path = column.path().clone();
@@ -2522,6 +2520,14 @@ mod tests {
             ..Default::default()
         };
         assert_eq!(written("without.parquet", without), (false, None));
+        let no_statistics = ParquetOptions {
+            statistics: false,
+            ..Default::default()
+        };
+        assert_eq!(
+            written("no-statistics.parquet", no_statistics),
+            (false, None)
+        );
     }
 
     #[test]

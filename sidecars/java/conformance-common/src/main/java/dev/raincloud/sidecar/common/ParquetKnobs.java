@@ -11,7 +11,8 @@ import java.util.function.Function;
  * {@code ParquetOptions} in the Rust lane). The sidecar never sees the recipe:
  * {@code SidecarExporter} passes its {@code write.compression} and {@code write.statistics} as
  * {@link #COMPRESSION} and {@link #STATISTICS}, and each install setting only when it is set. An
- * unset setting ({@code null} here) leaves the writer library's own default; a lane whose library
+ * unset setting ({@code null} here) leaves the lane's default: page indexes and checksums are
+ * enabled where supported, other settings use the library's defaults. A lane whose library
  * cannot do what a set one asks refuses it ({@link #unsupported}) rather than writing something
  * else. A count of {@link #NO_LIMIT} is no limit ({@code 0} in the environment).
  */
@@ -34,7 +35,7 @@ public record ParquetKnobs(String compression, Integer compressionLevel, boolean
     /** What 0 (no limit) means for a count. */
     public static final int NO_LIMIT = WriteSettings.NO_LIMIT;
 
-    /** Every option unset: zstd, statistics on, each library's own defaults. */
+    /** Every option unset: zstd, statistics on, each lane's defaults. */
     public static final ParquetKnobs DEFAULT = new ParquetKnobs("zstd", null, true, null, null, null, null, null,
             null, null, null);
 

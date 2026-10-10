@@ -109,6 +109,7 @@ public final class ParquetArrowIo {
         WriteOptions.Builder builder = WriteOptions.builder()
                 .compression(compression(knobs.compression()))
                 .statisticsEnabled(knobs.statistics())
+                .pageChecksums(knobs.pageChecksums() == null || knobs.pageChecksums())
                 .maxRowGroupRows(rowGroupMaxRows(maxRows))
                 .targetRowGroupBytes(rowGroupTargetEncodedBytes(targetEncodedBytes));
         if (knobs.compressionLevel() != null) {
@@ -125,9 +126,6 @@ public final class ParquetArrowIo {
         }
         if (knobs.dictionaryPageBytes() != null) {
             builder.dictionaryPageSizeBytes(knobs.dictionaryPageBytes());
-        }
-        if (knobs.pageChecksums() != null) {
-            builder.pageChecksums(knobs.pageChecksums());
         }
         return builder;
     }
