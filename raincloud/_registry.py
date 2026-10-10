@@ -94,6 +94,7 @@ PY_EXPORTERS: dict[str, str] = {
 # class serves all of them, so the whole cell is data — which is why these are
 # declared rather than written out as five near-identical registrations.
 SIDECAR_EXPORTERS: dict[str, tuple[str, str]] = {
+    "parquet@go": ("parquet", "raincloud-export-parquet-go"),
     "parquet@rs": ("parquet", "raincloud-export-parquet-rs"),
     "parquet@java": ("parquet", "raincloud-export-parquet-java"),
     "parquet@hardwood": ("parquet", "raincloud-export-parquet-hardwood"),

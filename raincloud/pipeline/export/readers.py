@@ -472,6 +472,7 @@ def run_reader(
 register_reader(PyarrowParquetReader())
 register_reader(VortexPyReader())
 register_reader(PyarrowOrcReader())
+register_reader(SidecarReader("parquet@go", {"parquet"}, "raincloud-read-parquet-go"))
 register_reader(SidecarReader("parquet@rs", {"parquet"}, "raincloud-read-parquet-rs"))
 register_reader(SidecarReader("vortex@rs", {"vortex"}, "raincloud-read-vortex-rs"))
 register_reader(SidecarReader("parquet@java", {"parquet"}, "raincloud-read-parquet-java"))

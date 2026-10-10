@@ -340,3 +340,10 @@ are the upstream licenses; the catalog records them but does not grant them.
 - [`SKILLS.md`](SKILLS.md) — task-by-task procedures
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`SECURITY.md`](SECURITY.md) · [`DISCLAIMER.md`](DISCLAIMER.md)
 - [`CITATION.cff`](CITATION.cff) — how to cite this work
+
+### Apache Arrow Go Parquet writer
+
+The optional `parquet@go` sidecar writes and verifies Parquet with Apache Arrow Go's
+`pqarrow`. It accepts the shared writer settings, enables page indexes with
+statistics, and refuses page-checksum and exact page-row-limit requests. See
+[the build instructions and option matrix](sidecars/README.md#apache-arrow-go).

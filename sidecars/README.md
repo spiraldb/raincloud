@@ -171,7 +171,7 @@ passes to a sidecar in this form:
 | `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` | `1` or `0`: a CRC in every page header, or none | the install, only when set |
 
 Page indexes and checksums default on wherever the pinned writer supports them:
-`parquet@py` and `parquet@java` write both, `parquet@rs` writes indexes but cannot write
+`parquet@py` and `parquet@java` write both, `parquet@rs` and `parquet@go` write indexes but cannot write
 checksums, and `parquet@hardwood` writes checksums but cannot write indexes. Page
 statistics require the recipe's statistics to be enabled. Other unset variables use
 the library's defaults (zstd and statistics on, for the first two). Counts use the
@@ -183,21 +183,21 @@ or none, or out of the codec's range) are refused for every lane before any writ
 A lane refuses, as a failed round-trip naming the variable, a setting its library
 cannot honour:
 
-| | py (pyarrow 24) | rs (arrow-rs 59.2) | java (parquet-arrow-java 0.3.0) | hardwood (1.1.0.Beta1) |
-|---|---|---|---|---|
-| codec | all | all | not `brotli` | all |
-| compression level | yes | yes | yes | no |
-| statistics off | yes | yes | yes | no |
-| statistics, first N columns | yes | yes | yes | no |
-| page index on | yes (default) | yes (default) | yes (default) | no |
-| page index off | yes | yes | no, with statistics on | yes |
-| page index, first N columns | no: all or none | yes | no | no |
-| page bytes | yes | yes | yes | yes |
-| page rows | yes | yes, checked every 1,024 values | yes | no |
-| dictionary on / off | yes | yes | yes | yes (off is PLAIN) |
-| dictionary page bytes | yes | yes | yes | no |
-| page checksums on | yes (default) | no | yes (default) | yes (always) |
-| page checksums off | yes | yes (always) | yes | no |
+| | py (pyarrow 24) | rs (arrow-rs 59.2) | java (parquet-arrow-java 0.3.0) | hardwood (1.1.0.Beta1) | go (Apache Arrow Go 18.8.0) |
+|---|---|---|---|---| --- |
+| codec | all | all | not `brotli` | all | all |
+| compression level | yes | yes | yes | no | yes |
+| statistics off | yes | yes | yes | no | yes |
+| statistics, first N columns | yes | yes | yes | no | yes |
+| page index on | yes (default) | yes (default) | yes (default) | no | yes (default) |
+| page index off | yes | yes | no, with statistics on | yes | yes |
+| page index, first N columns | no: all or none | yes | no | no | yes |
+| page bytes | yes | yes | yes | yes | yes |
+| page rows | yes | yes, checked every 1,024 values | yes | no | no |
+| dictionary on / off | yes | yes | yes | yes (off is PLAIN) | yes |
+| dictionary page bytes | yes | yes | yes | no | yes |
+| page checksums on | yes (default) | no | yes (default) | yes (always) | no |
+| page checksums off | yes | yes (always) | yes | no | yes (always) |
 
 Each library measures a page its own way, so the same `RAINCLOUD_PARQUET_PAGE_BYTES`
 does not give identical pages in every lane. The java column's page index gaps are
@@ -407,3 +407,32 @@ Upgrade their pins together and re-measure supported cells; a package version
 change alone is not evidence of conformance. Preserve skipped and unsupported
 lanes in the results. Software updates do not move stored data or refresh an
 active catalog revision.
+
+## Apache Arrow Go
+
+`parquet@go` uses Apache Arrow Go's `parquet/pqarrow` (18.8.0), which streams
+Arrow IPC record batches directly into its pure-Go Parquet writer. It is a
+different implementation from `github.com/parquet-go/parquet-go`.
+
+```bash
+cd sidecars/go
+go build -o raincloud-parquet-go .
+# Both contracts are served by the same binary (--canonical selects read mode).
+export RAINCLOUD_SIDECAR_PARQUET_GO="$PWD/raincloud-parquet-go"
+export RAINCLOUD_READER_PARQUET_GO="$PWD/raincloud-parquet-go"
+cd ../..
+python -m raincloud.pipeline.export <slug> --format parquet@go
+```
+
+For PATH discovery, install the binary as both `raincloud-export-parquet-go` and
+`raincloud-read-parquet-go`. Use `export.priority: {"parquet": ["go", "py"]}`
+to prefer it. It reads its own output through pqarrow before promotion. Comparison
+is streamed, permits reversible type normalization, ignores field metadata, and
+preserves float sign bits through nested values. The writer stores the Arrow
+schema but makes no claim to preserve the Parquet VARIANT logical annotation.
+
+Row groups accumulate across IPC batches, capped by the recipe's row limit and
+checked every 1,024 rows against encoded bytes and estimated decoded bytes. Page
+rows and checksums-on are refused: Arrow Go exposes neither an exact page-row
+limit nor a checksum writer option. Other controls are listed above. Compression
+and statistics come from the recipe, and page indexes default on with statistics.

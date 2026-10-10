@@ -49,6 +49,25 @@ jobs:
       - name: Test (pytest)
         run: uv run pytest -q
 
+  go-sidecar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: sidecars/go/go.mod
+          cache-dependency-path: sidecars/go/go.sum
+      - name: Build Apache Arrow Go writer and reader
+        working-directory: sidecars/go
+        run: go build -o raincloud-parquet-go .
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --python 3.11 --extra dev --extra build --inexact
+      - name: Verify settings and read-back fidelity
+        env:
+          RAINCLOUD_SIDECAR_PARQUET_GO: ${{ github.workspace }}/sidecars/go/raincloud-parquet-go
+          RAINCLOUD_READER_PARQUET_GO: ${{ github.workspace }}/sidecars/go/raincloud-parquet-go
+        run: uv run --no-sync pytest -q tests/test_go_sidecar.py tests/test_parquet_options.py tests/test_reader_fidelity.py
+
   java-sidecars:
     # Validate the JVM conformance lanes: the parquet@java lane is a Gradle
     # composite build over the parquet-arrow-java git submodule, so this job

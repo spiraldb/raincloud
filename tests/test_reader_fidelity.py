@@ -39,12 +39,12 @@ def _cases():
 
 
 @pytest.mark.parametrize("got,expected,status", list(_cases()))
-@pytest.mark.parametrize("reader", ["python", "rust", "java"])
+@pytest.mark.parametrize("reader", ["python", "rust", "java", "go"])
 def test_reader_fidelity(tmp_path, got, expected, status, reader):
     canonical = pa.table({"x": expected})
     artifact = pa.table({"x": got})
     if reader != "python":
-        binary = sidecar({"rust": "parquet@rs", "java": "parquet@java"}[reader], "read")
+        binary = sidecar({"rust": "parquet@rs", "java": "parquet@java", "go": "parquet@go"}[reader], "read")
     ipc, parquet, report = (tmp_path / name for name in ("c.arrow.zstd", "a.parquet", "r.json"))
     write_ipc(ipc, canonical)
     pq.write_table(artifact, parquet)
