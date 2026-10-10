@@ -158,8 +158,9 @@ that export as a measurement rather than writing something else; `sidecars/READM
 tabulates which writer honours what, and the `/raincloud-write-settings` skill is the
 procedure (a setting changes only files this install writes, so an existing file must be
 re-exported or rebuilt to gain it). ORC, Avro, Lance and Vortex have the same kind of settings
-(`spec.FORMAT_SETTINGS`, `RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`, `RAINCLOUD_VORTEX_*`), read
-and refused the same way; their codec, unset, is the zstd raincloud has always written.
+(`spec.FORMAT_SETTINGS`, `RAINCLOUD_ORC_*`, `RAINCLOUD_AVRO_*`, `RAINCLOUD_LANCE_*`,
+`RAINCLOUD_VORTEX_*`), read and refused the same way. ORC, Avro and Vortex default to
+zstd; Lance leaves encoding to its structural encoder.
 
 `export.formats` lists the formats a dataset wants. When the planned writer cannot
 produce one for the dataset -- it raises, dies, reports a failed round-trip, or exceeds

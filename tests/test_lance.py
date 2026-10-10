@@ -3,11 +3,15 @@
 """Single-file Lance artifacts: streaming, settings, loader, and measured failures."""
 from __future__ import annotations
 
+import os
+from contextlib import ExitStack
+
 import pyarrow as pa
 import pytest
 
 import raincloud
 from raincloud import _builds
+from raincloud._readers import _lance_batches
 from raincloud._resolve import artifact_key
 from raincloud.catalogs import operation
 from raincloud.pipeline import build
@@ -21,6 +25,30 @@ from tests.test_pipeline_contracts import stages as stages  # noqa: F401
 
 pytest.importorskip("lance")
 from lance.file import LanceFileReader, LanceFileWriter  # noqa: E402
+
+
+@pytest.mark.parametrize("missing", [False, True])
+@pytest.mark.parametrize("columns", [None, ["x"]])
+def test_lance_access_errors_are_not_corruption(tmp_path, missing, columns):
+    if not missing and (os.name != "posix" or os.geteuid() == 0):
+        pytest.skip("needs file permissions that bind")
+    path = tmp_path / "access.lance"
+    with LanceFileWriter(str(path)) as writer:
+        writer.write_batch(pa.table({"x": [1]}))
+    if missing:
+        path.unlink()
+    else:
+        path.chmod(0)
+    try:
+        with pytest.raises(FileNotFoundError if missing else PermissionError) as error:
+            with raincloud._decoding(path, "lance"), ExitStack() as stack:
+                _, batches = _lance_batches(path, stack, columns=columns, batch_size=1,
+                                             check_columns=lambda schema: None)
+                list(batches)
+        assert error.value.filename == str(path)
+    finally:
+        if not missing:
+            path.chmod(0o644)
 
 
 @pytest.fixture(autouse=True)
