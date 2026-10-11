@@ -11,6 +11,9 @@ import pytest
 
 from raincloud.pipeline.export import get_exporter, get_reader
 from tests._helpers import sidecar, write_ipc
+from tests.test_compare_cases import CASES, _read
+from tests.test_java_reader_schema_compare import _cases as schema_cases
+from tests.test_java_reader_schema_compare import _fixed_list_cases as fixed_list_cases
 
 
 @pytest.mark.parametrize("rows", [0, 1, 31])
@@ -125,3 +128,73 @@ def test_go_decoded_guard_counts_skewed_slice_values(tmp_path, monkeypatch, dict
     # The writer checks after each 1024-row slice, allowing at most one slice of overshoot.
     assert max(file.read_row_group(i).cast(pa.schema([("x", pa.string())])).nbytes
                for i in range(file.num_row_groups)) < (5 << 20)
+
+
+@pytest.mark.parametrize("expected,got,status", [*schema_cases(), *fixed_list_cases()])
+def test_go_shared_schema_contract(tmp_path, expected, got, status):
+    sidecar("parquet@go", "read")
+    canonical = write_ipc(tmp_path / "canonical.arrow.zstd", expected)
+    artifact = tmp_path / "artifact.parquet"
+    pq.write_table(got, artifact)
+    verdict = get_reader("parquet@go").read_conformance(artifact, canonical)
+    assert verdict.status == status, verdict
+
+
+@pytest.mark.parametrize("case", json.loads((CASES / "cases.json").read_text())["cases"], ids=lambda c: c["name"])
+def test_go_shared_comparison_contract(tmp_path, case):
+    sidecar("parquet@go", "read")
+    got = _read(CASES / f"{case['name']}.got.arrow")
+    expected = _read(CASES / f"{case['name']}.expected.arrow")
+    # Parquet cannot store unions: the union representation belongs on the
+    # canonical side. Equality must be independent of which side normalizes.
+    if case["name"].startswith("union-"):
+        got, expected = expected, got
+    canonical = write_ipc(tmp_path / "canonical.arrow.zstd", expected)
+    artifact = tmp_path / "artifact.parquet"
+    pq.write_table(got, artifact)
+    verdict = get_reader("parquet@go").read_conformance(artifact, canonical)
+    assert verdict.status == ("pass" if case["verdict"] == "equal" else "fail"), verdict
+
+
+@pytest.mark.parametrize("nested", [False, True])
+def test_go_roundtrips_integer_dictionary(tmp_path, nested):
+    sidecar("parquet@go")
+    values = pa.array([1, None, 2]).dictionary_encode()
+    if nested:
+        values = pa.StructArray.from_arrays([values], names=["v"])
+    canonical = write_ipc(tmp_path / "dictionary.arrow.zstd", pa.table({"x": values}))
+    result = get_exporter("parquet@go").export({"slug": "dictionary"}, canonical, tmp_path / "dictionary.parquet")
+    assert result.compliance.roundtrip is True, result.compliance
+
+
+def test_go_encoded_target_is_codec_independent(tmp_path, monkeypatch):
+    sidecar("parquet@go")
+    monkeypatch.setenv("RAINCLOUD_ROW_GROUP_TARGET_ENCODED_BYTES", str(128 << 10))
+    monkeypatch.setenv("RAINCLOUD_ROW_GROUP_TARGET_BYTES", "0")
+    monkeypatch.setenv("RAINCLOUD_PARQUET_PAGE_BYTES", "1024")
+    monkeypatch.setenv("RAINCLOUD_PARQUET_DICTIONARY", "0")
+    table = pa.table({"x": ["x" * 256] * 16384})
+    canonical = write_ipc(tmp_path / "encoded.arrow.zstd", table)
+    boundaries = []
+    for codec in ("none", "zstd"):
+        result = get_exporter("parquet@go").export({"slug": "encoded", "write": {"compression": codec}},
+                                                  canonical, tmp_path / f"{codec}.parquet")
+        assert result.compliance.roundtrip is True, result.compliance
+        file = pq.ParquetFile(result.out_path)
+        assert file.read().equals(table)
+        boundaries.append([file.metadata.row_group(i).num_rows for i in range(file.num_row_groups)])
+    assert boundaries[0] == boundaries[1] == [1024] * 16
+
+
+@pytest.mark.parametrize("setting", ["RAINCLOUD_PARQUET_STATISTICS_COLUMNS", "RAINCLOUD_PARQUET_PAGE_INDEX_COLUMNS"])
+def test_go_refuses_ambiguous_selective_column_paths(tmp_path, monkeypatch, setting):
+    sidecar("parquet@go")
+    table = pa.table({"a.b": [1], "a": pa.array([{"b": 2}], pa.struct([("b", pa.int64())]))})
+    canonical = write_ipc(tmp_path / "ambiguous.arrow.zstd", table)
+    dest = tmp_path / "ambiguous.parquet"
+    dest.write_bytes(b"previous generation")
+    monkeypatch.setenv(setting, "1")
+    result = get_exporter("parquet@go").export({"slug": "ambiguous"}, canonical, dest)
+    assert result.compliance.roundtrip is False
+    assert "leaf path" in result.compliance.note and "ambiguous" in result.compliance.note
+    assert dest.read_bytes() == b"previous generation"

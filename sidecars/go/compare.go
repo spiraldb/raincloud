@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"math"
@@ -94,6 +95,53 @@ func logicalEqual(a, b arrow.Array) bool {
 	if ext, ok := b.(array.ExtensionArray); ok {
 		b = ext.Storage()
 	}
+	if a.Len() != b.Len() {
+		return false
+	}
+	for i := 0; i < a.Len(); i++ {
+		if logicalNull(a, i) != logicalNull(b, i) {
+			return false
+		}
+	}
+	// Compare dictionary values, not their index representation. Go has no
+	// general cast from primitive values back into a dictionary.
+	_, adict := a.(*array.Dictionary)
+	_, bdict := b.(*array.Dictionary)
+	_, aunion := a.(array.Union)
+	_, bunion := b.(array.Union)
+	if adict || bdict || aunion || bunion {
+		for i := 0; i < a.Len(); i++ {
+			if logicalNull(a, i) {
+				continue
+			}
+			x, y := valueSlice(a, i), valueSlice(b, i)
+			equal := logicalEqual(x, y)
+			x.Release()
+			y.Release()
+			if !equal {
+				return false
+			}
+		}
+		return true
+	}
+	// Nested and binary representations normalize without casting whole
+	// arrays. This also ignores arbitrary payload beneath null parents.
+	switch a.(type) {
+	case *array.Struct, listArray:
+		return exactEqual(a, b)
+	case interface{ Value(int) []byte }:
+		left := a.(interface{ Value(int) []byte })
+		right, ok := b.(interface{ Value(int) []byte })
+		if !ok {
+			return false
+		}
+		for i := 0; i < a.Len(); i++ {
+			if !a.IsNull(i) && !bytes.Equal(left.Value(i), right.Value(i)) {
+				return false
+			}
+		}
+		return true
+	}
 	if arrow.TypeEqual(a.DataType(), b.DataType()) {
 		return exactEqual(a, b)
 	}
@@ -108,6 +156,41 @@ func logicalEqual(a, b arrow.Array) bool {
 	}
 	defer back.Release()
 	return exactEqual(a, back) && exactEqual(cast, b)
+}
+
+func valueSlice(a arrow.Array, i int) arrow.Array {
+	if dict, ok := a.(*array.Dictionary); ok {
+		index := int64(dict.GetValueIndex(i))
+		return array.NewSlice(dict.Dictionary(), index, index+1)
+	}
+	if union, ok := a.(array.Union); ok {
+		index := int64(i)
+		if dense, ok := a.(*array.DenseUnion); ok {
+			index = int64(dense.ValueOffset(i))
+		}
+		return array.NewSlice(union.Field(union.ChildID(i)), index, index+1)
+	}
+	return array.NewSlice(a, int64(i), int64(i+1))
+}
+
+func logicalNull(a arrow.Array, i int) bool {
+	if a.DataType().ID() == arrow.NULL || a.IsNull(i) {
+		return true
+	}
+	if ext, ok := a.(array.ExtensionArray); ok {
+		return logicalNull(ext.Storage(), i)
+	}
+	if dict, ok := a.(*array.Dictionary); ok {
+		return logicalNull(dict.Dictionary(), dict.GetValueIndex(i))
+	}
+	if union, ok := a.(array.Union); ok {
+		index := i
+		if dense, ok := a.(*array.DenseUnion); ok {
+			index = int(dense.ValueOffset(i))
+		}
+		return logicalNull(union.Field(union.ChildID(i)), index)
+	}
+	return false
 }
 
 type listArray interface {
@@ -259,6 +342,12 @@ func compatibleTypes(a, b arrow.DataType) bool {
 	if ext, ok := b.(arrow.ExtensionType); ok {
 		b = ext.StorageType()
 	}
+	if member := nullableMember(a); member != nil {
+		return compatibleTypes(member, b)
+	}
+	if member := nullableMember(b); member != nil {
+		return compatibleTypes(a, member)
+	}
 	if arrow.TypeEqual(a, b) {
 		return true
 	}
@@ -314,6 +403,21 @@ func compatibleTypes(a, b arrow.DataType) bool {
 		}
 	}
 	return a.ID() == arrow.DURATION && b.ID() == arrow.DURATION
+}
+
+func nullableMember(t arrow.DataType) arrow.DataType {
+	if union, ok := t.(arrow.UnionType); ok {
+		fields := union.Fields()
+		if len(fields) == 2 {
+			if fields[0].Type.ID() == arrow.NULL {
+				return fields[1].Type
+			}
+			if fields[1].Type.ID() == arrow.NULL {
+				return fields[0].Type
+			}
+		}
+	}
+	return nil
 }
 
 func compatibleFields(a, b []arrow.Field) bool {

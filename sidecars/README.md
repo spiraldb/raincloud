@@ -432,7 +432,11 @@ preserves float sign bits through nested values. The writer stores the Arrow
 schema but makes no claim to preserve the Parquet VARIANT logical annotation.
 
 Row groups accumulate across IPC batches, capped by the recipe's row limit and
-checked every 1,024 rows against encoded bytes and estimated decoded bytes. Page
+checked every 1,024 rows against encoded bytes and estimated decoded bytes. An
+uncompressed planning encoder runs alongside the writer so compression does not
+move row-group boundaries; disabling the encoded-byte target skips that encoder.
+Selective statistics/index settings are refused when dotted field names create
+ambiguous leaf paths requiring different settings. Page
 rows and checksums-on are refused: Arrow Go exposes neither an exact page-row
 limit nor a checksum writer option. Other controls are listed above. Compression
 and statistics come from the recipe, and page indexes default on with statistics.

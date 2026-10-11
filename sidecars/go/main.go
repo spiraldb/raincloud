@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"regexp"
@@ -67,7 +68,7 @@ func refused(name string) error {
 	return fmt.Errorf("parquet@go cannot honour %s=%s", name, os.Getenv(name))
 }
 
-func properties(sc *arrow.Schema, rowCap int64) (*parquet.WriterProperties, error) {
+func properties(sc *arrow.Schema, rowCap int64, planning bool) (*parquet.WriterProperties, error) {
 	stats, err := switchValue("RAINCLOUD_PARQUET_STATISTICS", true)
 	if err != nil {
 		return nil, err
@@ -138,9 +139,21 @@ func properties(sc *arrow.Schema, rowCap int64) (*parquet.WriterProperties, erro
 	if err != nil {
 		return nil, err
 	}
+	type columnOptions struct{ stats, index bool }
+	paths := make(map[string]columnOptions)
 	for i := 0; i < schema.NumColumns(); i++ {
 		path := schema.Column(i).Path()
-		opts = append(opts, parquet.WithStatsFor(path, stats && int64(i) < statCols), parquet.WithPageIndexEnabledFor(path, index && int64(i) < statCols && int64(i) < indexCols))
+		selected := columnOptions{stats && int64(i) < statCols, index && int64(i) < statCols && int64(i) < indexCols}
+		if previous, exists := paths[path]; exists && previous != selected {
+			return nil, fmt.Errorf("parquet@go cannot honour selective statistics/page indexes: leaf path %q is ambiguous", path)
+		}
+		paths[path] = selected
+		opts = append(opts, parquet.WithStatsFor(path, selected.stats), parquet.WithPageIndexEnabledFor(path, selected.index))
+	}
+	if planning {
+		// RowGroupTotalBytesWritten counts compressed pages. An otherwise
+		// identical uncompressed encoder makes the boundary codec-independent.
+		opts = append(opts, parquet.WithCompression(compress.Codecs.Uncompressed))
 	}
 	return parquet.NewWriterProperties(opts...), nil
 }
@@ -168,7 +181,7 @@ func write(input, output string) error {
 	if err != nil {
 		return err
 	}
-	props, err := properties(reader.Schema(), cap)
+	props, err := properties(reader.Schema(), cap, false)
 	if err != nil {
 		return err
 	}
@@ -182,6 +195,18 @@ func write(input, output string) error {
 		return err
 	}
 	defer writer.Close()
+	var planner *pqarrow.FileWriter
+	if encoded < 1<<62 {
+		planningProps, err := properties(reader.Schema(), cap, true)
+		if err != nil {
+			return err
+		}
+		planner, err = pqarrow.NewFileWriter(reader.Schema(), io.Discard, planningProps, pqarrow.DefaultWriterProps())
+		if err != nil {
+			return err
+		}
+		defer planner.Close()
+	}
 	var rows, bytes int64
 	for i := 0; i < reader.NumRecords(); i++ {
 		batch, err := reader.RecordBatchAt(i)
@@ -191,9 +216,14 @@ func write(input, output string) error {
 		err = func() error {
 			defer batch.Release()
 			for offset := int64(0); offset < batch.NumRows(); {
-				if rows >= cap || bytes >= decoded || writer.RowGroupTotalBytesWritten() >= encoded {
+				if rows >= cap || bytes >= decoded || planner != nil && planner.RowGroupTotalBytesWritten() >= encoded {
 					if err := writer.NewBufferedRowGroupChecked(); err != nil {
 						return err
+					}
+					if planner != nil {
+						if err := planner.NewBufferedRowGroupChecked(); err != nil {
+							return err
+						}
 					}
 					rows, bytes = 0, 0
 				}
@@ -201,6 +231,9 @@ func write(input, output string) error {
 				n := min(cap-rows, batch.NumRows()-offset, 1024)
 				part := batch.NewSlice(offset, offset+n)
 				err := writer.WriteBuffered(part)
+				if err == nil && planner != nil {
+					err = planner.WriteBuffered(part)
+				}
 				for _, col := range part.Columns() {
 					bytes += decodedSize(col)
 				}
