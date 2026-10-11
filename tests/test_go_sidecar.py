@@ -4,7 +4,9 @@
 import json
 import struct
 import subprocess
+from decimal import Decimal
 
+import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
@@ -198,3 +200,66 @@ def test_go_refuses_ambiguous_selective_column_paths(tmp_path, monkeypatch, sett
     assert result.compliance.roundtrip is False
     assert "leaf path" in result.compliance.note and "ambiguous" in result.compliance.note
     assert dest.read_bytes() == b"previous generation"
+
+
+@pytest.mark.parametrize("empty", [False, True])
+@pytest.mark.parametrize("dense", [False, True])
+def test_go_union_of_two_null_members_is_not_plain_null(tmp_path, empty, dense):
+    sidecar("parquet@go", "read")
+    codes = pa.array([0, 1], pa.int8())
+    children = [pa.nulls(2), pa.nulls(2)]
+    if dense:
+        union = pa.UnionArray.from_dense(codes, pa.array([0, 0], pa.int32()), children, ["left", "right"])
+    else:
+        union = pa.UnionArray.from_sparse(codes, children, ["left", "right"])
+    if empty:
+        union = union.slice(0, 0)
+    canonical = write_ipc(tmp_path / "null-union.arrow.zstd", pa.table({"x": union}))
+    artifact = tmp_path / "null.parquet"
+    pq.write_table(pa.table({"x": pa.nulls(len(union))}), artifact)
+    result = get_reader("parquet@go").read_conformance(artifact, canonical)
+    assert result.status == "fail", result
+    assert "incompatible types" in result.note
+
+
+@pytest.mark.parametrize("dtype", [pa.decimal32(8, 0), pa.decimal64(16, 0),
+                                   pa.decimal32(8, 2), pa.decimal64(16, 2)])
+def test_go_reads_narrow_decimal_canonicals(tmp_path, dtype):
+    sidecar("parquet@go", "read")
+    table = pa.table({"x": pa.array([Decimal("-123"), None, Decimal("456")], dtype)})
+    canonical = write_ipc(tmp_path / "decimal.arrow.zstd", table)
+    artifact = tmp_path / "decimal.parquet"
+    pq.write_table(table, artifact)
+    result = get_reader("parquet@go").read_conformance(artifact, canonical)
+    assert result.status == "pass", result
+
+
+@pytest.mark.parametrize("reverse", [False, True])
+def test_go_compares_every_finite_half_float_across_widths(tmp_path, reverse):
+    sidecar("parquet@go", "read")
+    bits = np.arange(65536, dtype=np.uint16)
+    bits = bits[(bits & 0x7c00) != 0x7c00]  # all finite values, including both signs of zero and subnormals
+    half = bits.view(np.float16)
+    expected, got = pa.table({"x": half}), pa.table({"x": half.astype(np.float32)})
+    if reverse:
+        expected, got = got, expected
+    canonical = write_ipc(tmp_path / "half.arrow.zstd", expected, max_chunksize=333)
+    artifact = tmp_path / "half.parquet"
+    pq.write_table(got, artifact, row_group_size=511)
+    result = get_reader("parquet@go").read_conformance(artifact, canonical)
+    assert result.status == "pass", result
+
+
+@pytest.mark.parametrize("expected,got", [
+    (pa.array([Decimal("1.23")], pa.decimal32(8, 2)), pa.array([Decimal("1.24")], pa.decimal128(20, 2))),
+    (pa.array([Decimal("1")], pa.decimal64(16, 0)), pa.array([Decimal("1.01")], pa.decimal128(20, 2))),
+    (pa.array([1.1], pa.float16()), pa.array([1.1], pa.float32())),
+    (pa.array([-0.0], pa.float16()), pa.array([0.0], pa.float32())),
+])
+def test_go_numeric_widening_preserves_differences(tmp_path, expected, got):
+    sidecar("parquet@go", "read")
+    canonical = write_ipc(tmp_path / "different.arrow.zstd", pa.table({"x": expected}))
+    artifact = tmp_path / "different.parquet"
+    pq.write_table(pa.table({"x": got}), artifact)
+    result = get_reader("parquet@go").read_conformance(artifact, canonical)
+    assert result.status == "fail", result

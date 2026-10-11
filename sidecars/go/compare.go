@@ -11,7 +11,9 @@ import (
 	"github.com/apache/arrow-go/v18/arrow"
 	"github.com/apache/arrow-go/v18/arrow/array"
 	"github.com/apache/arrow-go/v18/arrow/compute"
+	"github.com/apache/arrow-go/v18/arrow/decimal128"
 	"github.com/apache/arrow-go/v18/arrow/ipc"
+	"github.com/apache/arrow-go/v18/arrow/memory"
 	"github.com/apache/arrow-go/v18/parquet/pqarrow"
 )
 
@@ -145,6 +147,16 @@ func logicalEqual(a, b arrow.Array) bool {
 	if arrow.TypeEqual(a.DataType(), b.DataType()) {
 		return exactEqual(a, b)
 	}
+	// Go's cast kernels omit half floats and narrow decimals. Widen these
+	// losslessly before using the reversible primitive comparison below.
+	if wide := widenPrimitive(a); wide != nil {
+		defer wide.Release()
+		return logicalEqual(wide, b)
+	}
+	if wide := widenPrimitive(b); wide != nil {
+		defer wide.Release()
+		return logicalEqual(a, wide)
+	}
 	cast, err := compute.CastArray(context.Background(), a, compute.SafeCastOptions(b.DataType()))
 	if err != nil {
 		return false
@@ -156,6 +168,51 @@ func logicalEqual(a, b arrow.Array) bool {
 	}
 	defer back.Release()
 	return exactEqual(a, back) && exactEqual(cast, b)
+}
+
+func widenPrimitive(a arrow.Array) arrow.Array {
+	if half, ok := a.(*array.Float16); ok {
+		builder := array.NewFloat32Builder(memory.DefaultAllocator)
+		defer builder.Release()
+		builder.Reserve(a.Len())
+		for i := 0; i < a.Len(); i++ {
+			if a.IsNull(i) {
+				builder.AppendNull()
+			} else {
+				value := half.Value(i)
+				wide := value.Float32()
+				bits := value.Uint16()
+				if bits&0x7c00 == 0 && bits&0x03ff != 0 {
+					// The pinned Float32 helper does not normalize subnormals.
+					wide = float32(math.Ldexp(float64(bits&0x03ff), -24))
+					wide = math.Float32frombits(math.Float32bits(wide) | uint32(bits&0x8000)<<16)
+				}
+				builder.Append(wide)
+			}
+		}
+		return builder.NewArray()
+	}
+	var value func(int) int64
+	switch narrow := a.(type) {
+	case *array.Decimal32:
+		value = func(i int) int64 { return int64(narrow.Value(i)) }
+	case *array.Decimal64:
+		value = func(i int) int64 { return int64(narrow.Value(i)) }
+	default:
+		return nil
+	}
+	dtype := a.DataType().(arrow.DecimalType)
+	builder := array.NewDecimal128Builder(memory.DefaultAllocator, &arrow.Decimal128Type{Precision: dtype.GetPrecision(), Scale: dtype.GetScale()})
+	defer builder.Release()
+	builder.Reserve(a.Len())
+	for i := 0; i < a.Len(); i++ {
+		if a.IsNull(i) {
+			builder.AppendNull()
+		} else {
+			builder.Append(decimal128.FromI64(value(i)))
+		}
+	}
+	return builder.NewArray()
 }
 
 func valueSlice(a arrow.Array, i int) arrow.Array {
@@ -409,10 +466,10 @@ func nullableMember(t arrow.DataType) arrow.DataType {
 	if union, ok := t.(arrow.UnionType); ok {
 		fields := union.Fields()
 		if len(fields) == 2 {
-			if fields[0].Type.ID() == arrow.NULL {
+			if fields[0].Type.ID() == arrow.NULL && fields[1].Type.ID() != arrow.NULL {
 				return fields[1].Type
 			}
-			if fields[1].Type.ID() == arrow.NULL {
+			if fields[1].Type.ID() == arrow.NULL && fields[0].Type.ID() != arrow.NULL {
 				return fields[0].Type
 			}
 		}
