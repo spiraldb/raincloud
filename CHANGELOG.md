@@ -7,6 +7,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-12
+
+The committed compliance ledger remains the 0.3.0 measurement; the new writers
+and changed encoder defaults have not been remeasured across the dataset catalog.
+
 ### Added
 
 - `lance@py`: single-file Lance 2.2 artifacts using optional `raincloud[lance]`
@@ -21,6 +26,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
   checksum and page-row-limit requests fail because the library cannot write them.
 
 ### Changed
+
+- Contributions use DCO sign-offs; the separate CLA requirement has been removed.
 
 - **`parquet@py` writes a page index and page checksums by default.** With
   `RAINCLOUD_PARQUET_PAGE_INDEX` and `RAINCLOUD_PARQUET_PAGE_CHECKSUMS` unset, pyarrow
