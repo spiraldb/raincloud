@@ -429,7 +429,8 @@ For PATH discovery, install the binary as both `raincloud-export-parquet-go` and
 to prefer it. It reads its own output through pqarrow before promotion. Comparison
 is streamed, permits reversible type normalization, ignores field metadata, and
 preserves float sign bits through nested values. The writer stores the Arrow
-schema but makes no claim to preserve the Parquet VARIANT logical annotation.
+schema and preserves native Parquet VARIANT, including null rows; its verdict
+checks both the Parquet logical annotation and the Arrow extension on read.
 
 Row groups accumulate across IPC batches, capped by the recipe's row limit and
 checked every 1,024 rows against encoded bytes and estimated decoded bytes. An

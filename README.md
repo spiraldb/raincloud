@@ -323,6 +323,13 @@ its own. To try again with nothing changed, pass `--retry-errors`
 (`raincloud build <slug> --retry-errors`, `raincloud load <slug> --retry-errors`,
 or `load(..., retry_errors=True)`).
 
+### Apache Arrow Go Parquet writer
+
+The optional `parquet@go` sidecar writes and verifies Parquet with Apache Arrow Go's
+`pqarrow`. It accepts the shared writer settings, enables page indexes with
+statistics, and refuses requests to write page checksums or enforce an exact page-row limit. See
+[the build instructions and option matrix](sidecars/README.md#apache-arrow-go).
+
 ## Licensing and redistribution
 
 Each entry carries an SPDX identifier, a source URL, and an explicit
@@ -340,10 +347,3 @@ are the upstream licenses; the catalog records them but does not grant them.
 - [`SKILLS.md`](SKILLS.md) — task-by-task procedures
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`SECURITY.md`](SECURITY.md) · [`DISCLAIMER.md`](DISCLAIMER.md)
 - [`CITATION.cff`](CITATION.cff) — how to cite this work
-
-### Apache Arrow Go Parquet writer
-
-The optional `parquet@go` sidecar writes and verifies Parquet with Apache Arrow Go's
-`pqarrow`. It accepts the shared writer settings, enables page indexes with
-statistics, and refuses page-checksum and exact page-row-limit requests. See
-[the build instructions and option matrix](sidecars/README.md#apache-arrow-go).
