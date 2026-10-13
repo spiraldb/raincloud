@@ -97,3 +97,5 @@ docs/snapshot.json
 /clients/c/build/
 # profile promotion lock beside tracked profiles
 docs/**/.profiles-write.lock
+
+/sidecars/go/raincloud-parquet-go

@@ -7,6 +7,13 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- `parquet@go`: Apache Arrow Go 18.8.0's `pqarrow` writer and reader sidecars,
+  with streaming IPC input, shared Parquet settings, page indexes on with
+  statistics, and read-back verification before publication. Explicit page
+  checksum and page-row-limit requests fail because the library cannot write them.
+
 ### Changed
 
 - **`parquet@py` writes a page index and page checksums by default.** With

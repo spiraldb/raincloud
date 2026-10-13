@@ -198,7 +198,7 @@ def _write(tmp_path, cell: str, spec: dict = SPEC):
     return result.compliance.roundtrip, result.compliance.note, dest
 
 
-CELLS = ("parquet@py", "parquet@rs", "parquet@java", "parquet@hardwood")
+CELLS = ("parquet@go", "parquet@py", "parquet@rs", "parquet@java", "parquet@hardwood")
 
 
 @pytest.mark.parametrize("cell", CELLS)
@@ -245,7 +245,7 @@ def test_page_indexes_and_checksums_default_on_where_supported(tmp_path, cell):
             assert chunk.has_offset_index == (cell != "parquet@hardwood")
             pages = _pages(dest, c, g)
             assert pages
-            assert all((4 in page) == (cell != "parquet@rs") for page in pages)  # crc
+            assert all((4 in page) == (cell not in ("parquet@rs", "parquet@go")) for page in pages)  # crc
 
 
 @pytest.mark.parametrize("cell", CELLS)
@@ -333,6 +333,11 @@ SETTINGS = {
                          lambda f: not any(4 in page for page in _data_pages(f))),
          "parquet@hardwood": REFUSED}),
 }
+
+
+# Apache Arrow Go supports the same controls as arrow-rs here, including per-column indexes.
+for _env, _checks in SETTINGS.values():
+    _checks["parquet@go"] = _checks["parquet@rs"]
 
 
 @pytest.mark.parametrize("cell", CELLS)
