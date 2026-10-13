@@ -297,6 +297,22 @@ class VortexPyReader:
         return _guarded(self.reader_id, _run)
 
 
+class LancePyReader:
+    """Single-file Lance reader; one batch in flight during verification."""
+
+    reader_id = "lance@py"
+    formats = {"lance"}
+
+    def read_conformance(self, artifact: Path, canonical: Path) -> Verdict:
+        def run() -> Verdict:
+            from lance.file import LanceFileReader
+
+            file = LanceFileReader(str(artifact))
+            with file.read_all(batch_size=1024, batch_readahead=1).to_batches() as batches:
+                return stream_verdict(self.reader_id, (batches.schema, file.num_rows(), batches), canonical)
+        return _guarded(self.reader_id, run)
+
+
 class PyarrowOrcReader:
     """In-process `orc@py` reader — pyarrow's ORC stripes vs the canonical's batches, streamed."""
 
@@ -472,6 +488,7 @@ def run_reader(
 register_reader(PyarrowParquetReader())
 register_reader(VortexPyReader())
 register_reader(PyarrowOrcReader())
+register_reader(LancePyReader())
 register_reader(SidecarReader("parquet@go", {"parquet"}, "raincloud-read-parquet-go"))
 register_reader(SidecarReader("parquet@rs", {"parquet"}, "raincloud-read-parquet-rs"))
 register_reader(SidecarReader("vortex@rs", {"vortex"}, "raincloud-read-vortex-rs"))

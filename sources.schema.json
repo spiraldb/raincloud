@@ -712,6 +712,7 @@
               "parquet",
               "vortex",
               "orc",
+              "lance",
               "avro",
               "nimble"
             ]
@@ -791,6 +792,7 @@
               "parquet",
               "vortex",
               "orc",
+              "lance",
               "avro",
               "nimble"
             ]

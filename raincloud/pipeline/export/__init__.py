@@ -194,7 +194,8 @@ def _error_text(text: str) -> str:
 
 
 # The Python distributions an in-process writer runs.
-_DISTRIBUTIONS = {"parquet@py": ("pyarrow",), "vortex@py": ("vortex-data", "pyarrow"), "orc@py": ("pyarrow",)}
+_DISTRIBUTIONS = {"parquet@py": ("pyarrow",), "vortex@py": ("vortex-data", "pyarrow"), "orc@py": ("pyarrow",),
+                  "lance@py": ("pylance", "pyarrow")}
 
 
 def writer_toolchain(exporter: Exporter) -> dict[str, str]:
