@@ -57,6 +57,7 @@ def _settings(config: Config | str | Path | None) -> Config:
 # How vortex-data reports an operating-system failure: its Rust io::Error,
 # surfaced as a RuntimeError ("Io: Permission denied (os error 13)").
 _VORTEX_OS_ERROR = re.compile(r"Io: (.*) \(os error (\d+)\)")
+_LANCE_OS_ERROR = re.compile(r"\(os error (\d+)\)")
 
 
 @contextmanager
@@ -90,9 +91,15 @@ def _decoding(path, fmt: str):
     except OSError as exc:
         if exc.errno is not None:
             raise
+        if fmt == "lance" and (system := _LANCE_OS_ERROR.search(str(exc))):
+            raise OSError(int(system.group(1)), str(exc), str(path)) from exc
         raise corrupt(exc) from exc
     except pa.ArrowInvalid as exc:
         raise corrupt(exc) from exc
+    except ValueError as exc:
+        if fmt == "lance" and str(exc).startswith("Not found:"):
+            raise FileNotFoundError(2, str(exc), str(path)) from exc
+        raise
     except RuntimeError as exc:
         if fmt != "vortex":
             raise

@@ -554,6 +554,64 @@ class OrcExporter:
         )
 
 
+class LanceExporter:
+    """A single Lance data file, streamed from canonical IPC (not a dataset directory)."""
+
+    format_id = "lance"
+    cell_id = "lance@py"
+    # Lance owns runtime threads and explicitly warns against fork.
+    process_start_method = "spawn"
+
+    def unavailable(self) -> str | None:
+        if importlib.util.find_spec("lance") is not None:
+            return None
+        return "needs pylance; install `raincloud[lance]`"
+
+    def out_path(self, slug: str) -> Path:
+        return prepared_artifact(slug, self.format_id)
+
+    def export(self, spec: dict, canonical: Path, dest: Path | None = None) -> ExportResult:
+        missing = self.unavailable()
+        if missing:
+            from raincloud.exceptions import BuildToolingMissing
+            raise BuildToolingMissing(f"{self.cell_id} {missing}")
+        from lance.file import LanceFileWriter
+
+        settings = write_settings("lance")
+        if settings["page_bytes"] is not None:
+            raise UnsupportedOption(
+                f"lance@py cannot honour RAINCLOUD_LANCE_PAGE_BYTES={settings['page_bytes']}: "
+                "pylance's structural encoder does not enforce max_page_bytes in formats 2.1/2.2; "
+                "RAINCLOUD_LANCE_DATA_CACHE_BYTES controls column buffering")
+        options = {"version": settings["file_version"] or "2.2"}
+        if settings["data_cache_bytes"] is not None:
+            options["data_cache_bytes"] = settings["data_cache_bytes"]
+        dest = dest or self.out_path(slug_from_canonical(canonical))
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        tmp = tmp_path(dest)
+        print(f"[export:{self.cell_id}] {display_path(dest)}")
+        try:
+            with pa.ipc.open_file(str(canonical)) as reader:
+                variant = has_variant(reader.schema)
+                with LanceFileWriter(str(tmp), schema=reader.schema, **options) as writer:
+                    for i in range(reader.num_record_batches):
+                        writer.write_batch(reader.get_batch(i))
+            roundtrip, why = read_back(self.cell_id, tmp, canonical)
+            nbytes, sha = tmp.stat().st_size, sha256_file(tmp)
+            if not roundtrip:
+                raise RuntimeError(why)
+            tmp.replace(dest)
+        finally:
+            tmp.unlink(missing_ok=True)
+        note = "VARIANT column stored as its shredded struct — Lance has no Parquet VARIANT logical type" if variant else ""
+        return ExportResult(
+            format_id=self.cell_id, out_path=dest, nbytes=nbytes, sha256=sha,
+            compliance=Compliance(roundtrip=roundtrip, variant_faithful=not variant,
+                                  note="; ".join(n for n in (why, note) if n)),
+        )
+
+
 register(ParquetExporter())
 register(VortexExporter())
 register(OrcExporter())
+register(LanceExporter())

@@ -63,6 +63,9 @@ def open_dataset(fmt: str, path):
     """A lazy pyarrow Dataset over the open file at `path`."""
     import pyarrow as pa
     import pyarrow.dataset as pads
+    if fmt == "lance":
+        from .exceptions import UnsupportedType
+        raise UnsupportedType("Single-file Lance has no PyArrow Dataset adapter; use batches() or to_arrow()")
     if fmt == "vortex":
         import vortex
         return vortex.open(str(path)).to_dataset()
@@ -126,5 +129,26 @@ def _orc_batches(path, stack, *, columns, batch_size, check_columns):
     return schema, (file.read_stripe(i, columns=columns) for i in range(file.nstripes))
 
 
+def _lance_batches(path, stack, *, columns, batch_size, check_columns):
+    from lance.file import LanceFileReader
+
+    try:
+        file = LanceFileReader(str(path), columns=columns or None)
+    except OSError:
+        if columns is not None:
+            # The constructor validates projection. Recover the full schema
+            # only on this error path to report UnknownColumn consistently.
+            check_columns(LanceFileReader(str(path)).metadata().schema)
+        raise
+    if columns is not None:
+        check_columns(file.metadata().schema)
+    reader = stack.enter_context(file.read_all(batch_size=batch_size, batch_readahead=1).to_batches())
+    if columns == []:
+        # Lance treats no columns as all columns; preserve the loader's empty projection.
+        import pyarrow as pa
+        return pa.schema([], metadata=reader.schema.metadata), (batch.select([]) for batch in reader)
+    return reader.schema, reader
+
+
 _BATCHES = {"parquet": _parquet_batches, "arrow": _arrow_batches, "vortex": _vortex_batches,
-            "orc": _orc_batches}
+            "orc": _orc_batches, "lance": _lance_batches}

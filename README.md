@@ -304,7 +304,7 @@ served as it is, and `build=True` builds only what is missing, so rebuild (or re
 from a kept canonical, `python -m raincloud.pipeline.export uci-iris --format parquet`) to
 rewrite one. A writer that cannot do what a setting asks refuses it, and the format is
 recorded unavailable with the reason. Every setting, its default, and which writer honours
-it: the `RAINCLOUD_PARQUET_*`, `_ORC_*`, `_AVRO_*` and `_VORTEX_*` rows of
+it: the `RAINCLOUD_PARQUET_*`, `_ORC_*`, `_AVRO_*`, `_LANCE_*` and `_VORTEX_*` rows of
 [AGENTS.md](AGENTS.md#data-locations) and [`sidecars/README.md`](sidecars/README.md).
 
 A build does not fail because one format's writer cannot handle a dataset. Every
@@ -329,6 +329,31 @@ The optional `parquet@go` sidecar writes and verifies Parquet with Apache Arrow 
 `pqarrow`. It accepts the shared writer settings, enables page indexes with
 statistics, and refuses requests to write page checksums or enforce an exact page-row limit. See
 [the build instructions and option matrix](sidecars/README.md#apache-arrow-go).
+
+### Single-file Lance
+
+Install `raincloud[lance]` (`uv sync --extra lance --extra build --inexact` in a
+checkout), then export an existing canonical with:
+
+```bash
+python -m raincloud.pipeline.export <slug> --format lance
+```
+
+This writes `lance/<slug>.lance`, a single Lance data file in format version 2.2,
+using `pylance` 13.0.0. It is read back before publication and available through
+`raincloud.load(slug, format="lance")`, `batches()`, `to_arrow()` and `to_pandas()`.
+Projected batches read only requested columns. The single-file API has no lazy
+PyArrow Dataset adapter, so `dataset()` raises `UnsupportedType`; this is not a
+Lance dataset directory for `lance.dataset()`.
+
+Lance is opt-in (included by `formats=all` when installed) and does not change
+`auto` selection. `RAINCLOUD_LANCE_FILE_VERSION` chooses `2.1` or `2.2`,
+`RAINCLOUD_LANCE_DATA_CACHE_BYTES` sets the total column buffer budget (unset:
+8 MiB per top-level column). `RAINCLOUD_LANCE_PAGE_BYTES` is explicitly refused:
+the pinned structural encoder ignores the library's `max_page_bytes` option.
+Parquet settings do not apply to Lance.
+Unsupported data types become recorded export failures, as for every format.
+
 
 ## Licensing and redistribution
 

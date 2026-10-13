@@ -93,7 +93,9 @@ class Exporter(Protocol):
     that is a subprocess already sets `bounds_itself = True` and applies
     `bounded.export_timeout()` itself, and may define `toolchain()` -> the
     versions that identify it, recorded when it cannot produce a format
-    (`export.writer_toolchain` names an in-process writer's libraries).
+    (`export.writer_toolchain` names an in-process writer's libraries). A native
+    library that is not fork-safe sets `process_start_method = "spawn"`; that
+    choice also applies to read-back of files written earlier.
     """
 
     format_id: str

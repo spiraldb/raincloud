@@ -18,7 +18,8 @@ A sidecar writer is already a subprocess and applies the ceiling to itself
 runs native code that a Python thread cannot interrupt, so it runs in a child
 process instead: forked on Linux, so the child shares the parent's imports,
 configuration and catalog selection and costs no interpreter start; spawned
-elsewhere (macOS cannot fork a threaded process safely). The child writes into
+elsewhere (macOS cannot fork a threaded process safely). A writer may require
+spawn on every platform (`lance@py`, whose native runtime is not fork-safe). The child writes into
 a private directory beside the destination, and the parent moves the file into
 place only after the child reports success: a child that is killed, crashes
 or raises leaves nothing at the destination, and the caller's `Publication`
@@ -81,7 +82,7 @@ def run_bounded(exporter, spec: dict, canonical: Path, dest: Path) -> ExportResu
     written = work / dest.name
     try:
         result = _bounded_call(f"export {exporter.cell_id}", exporter.cell_id, exporter.export,
-                               (spec, canonical, written))
+                               (spec, canonical, written), start_method=getattr(exporter, "process_start_method", None))
         if result.out_path != written or not written.is_file():
             raise ExportFailed(f"{exporter.cell_id}: the writer reported {result.out_path}, "
                                f"not the file it was given")
@@ -109,15 +110,16 @@ def read_back_bounded(exporter, artifact: Path, canonical: Path) -> tuple[bool, 
     if missing is not None:
         raise BuildToolingMissing(f"{exporter.cell_id} {missing}")
     return _bounded_call(f"read back {exporter.cell_id}", exporter.cell_id, read_back,
-                         (exporter.cell_id, artifact, canonical))
+                         (exporter.cell_id, artifact, canonical),
+                         start_method=getattr(exporter, "process_start_method", None))
 
 
-def _bounded_call(name: str, cell: str, fn, args: tuple):
+def _bounded_call(name: str, cell: str, fn, args: tuple, *, start_method: str | None = None):
     """`fn(*args)` in a child process under the time and memory ceilings: its
     return value, or ExportFailed naming what ended it."""
     limit = export_timeout()
     memory = export_memory()
-    context = multiprocessing.get_context(_START_METHOD)
+    context = multiprocessing.get_context(start_method or _START_METHOD)
     receiver, sender = context.Pipe(duplex=False)
     child = context.Process(target=_call_in_child, name=name, args=(sender, fn, args, os.getpid()))
     started = reported = False
