@@ -167,8 +167,23 @@ jobs:
       # Also builds the Rust and Java sidecars and runs their conformance suites;
       # PYTEST_MODULES in the runner lists the pytest modules it covers. Needs
       # CMake and readelf (both preinstalled).
+      # The installed-CMake-package checks run in parallel in native-readers-cmake.
       - name: Verify Python, Rust, C, C++, and Java readers
-        run: uv run --no-sync python scripts/test_native_readers.py
+        run: uv run --no-sync python scripts/test_native_readers.py --only core
+
+  native-readers-cmake:
+    # The installed CMake package checks (Vortex on and off) from
+    # scripts/test_native_readers.py. They build their own release library and
+    # need no other artifact of native-readers, so they run alongside it.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install fixture and test dependencies
+        run: uv sync --python 3.11 --extra dev --extra build --extra http --inexact
+      - name: Verify the installed CMake package with C and C++ consumers
+        run: uv run --no-sync python scripts/test_native_readers.py --only cmake
 
   portable-base-wheel:
     strategy:
