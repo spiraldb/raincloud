@@ -19,7 +19,12 @@ Native clients, against one shared fixture (`tests/reader_fixture.py`):
 
 Sidecars: builds the Rust and Java conformance binaries, which the modules in
 `PYTEST_MODULES` then use.
+
+`--only cmake` runs just the installed CMake package checks, which build their own
+release library and need none of the other artifacts; `--only core` runs
+everything else. CI runs the two as parallel jobs; the default runs both.
 """
+import argparse
 import json
 import os
 import re
@@ -51,6 +56,12 @@ def dynamic_entries(path, kind):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--only", choices=("all", "core", "cmake"), default="all",
+                        help="run only the CMake package checks, or everything but them")
+    only = parser.parse_args().only
+    core, cmake = only in ("all", "core"), only in ("all", "cmake")
+
     import pyarrow as pa
 
     root = Path(__file__).resolve().parent.parent
@@ -67,41 +78,42 @@ def main():
                        check=True, **kwargs)
 
     client = ["--locked", "--manifest-path", "clients/rust/Cargo.toml"]
-    run(["cargo", "build", *client])
-    # Without Vortex, in its own target directory so neither build evicts the other.
-    no_vortex_target = target / "no-vortex"
-    run(["cargo", "build", *client, "--no-default-features", "--target-dir", no_vortex_target])
-    run(["cargo", "build", "--locked", "--manifest-path", "sidecars/rust/Cargo.toml",
-         "--bin", "parquet-read", "--bin", "vortex-read", "--bin", "parquet-write", "--bin", "vortex-write",
-         "--bin", "orc-read", "--bin", "orc-write", "--bin", "avro-read", "--bin", "avro-write"])
     lib = target / "debug"
-    for binary in ("parquet-read", "vortex-read", "parquet-write", "vortex-write", "orc-read", "orc-write",
-                   "avro-read", "avro-write"):
-        if not os.access(lib / binary, os.X_OK):
-            raise RuntimeError(f"required conformance reader is not executable: {lib / binary}")
-    if not env.get("JAVA_HOME") and shutil.which("java"):
-        env["JAVA_HOME"] = str(Path(shutil.which("java")).resolve().parent.parent)
-    # parquet-hardwood builds on a Java 21 toolchain (Gradle provisions one if none is
-    # installed); its launchers default to that JDK when JAVA_HOME names an older one.
-    run(["bash", "sidecars/java/gradlew", "-p", "sidecars/java", ":parquet-java:installDist",
-         ":parquet-hardwood:installDist", ":vortex-jni-reader:installDist", ":avro-java:installDist",
-         "--no-daemon"])
-    install = root / "sidecars/java"
-    parquet_java = install / "parquet-java/build/install/raincloud-export-parquet-java/bin"
-    hardwood = install / "parquet-hardwood/build/install/raincloud-export-parquet-hardwood/bin"
-    vortex_jni = install / "vortex-jni-reader/build/install/raincloud-read-vortex-jni/bin"
-    avro_java = install / "avro-java/build/install/raincloud-export-avro-java/bin"
-    env.update(
-        RAINCLOUD_SIDECAR_VORTEX_RS=str(lib / "vortex-write"),
-        RAINCLOUD_SIDECAR_PARQUET_JAVA=str(parquet_java / "raincloud-export-parquet-java"),
-        RAINCLOUD_READER_PARQUET_JAVA=str(parquet_java / "raincloud-read-parquet-java"),
-        RAINCLOUD_SIDECAR_PARQUET_HARDWOOD=str(hardwood / "raincloud-export-parquet-hardwood"),
-        RAINCLOUD_READER_PARQUET_HARDWOOD=str(hardwood / "raincloud-read-parquet-hardwood"),
-        RAINCLOUD_SIDECAR_VORTEX_JNI=str(vortex_jni / "raincloud-export-vortex-jni"),
-        RAINCLOUD_READER_VORTEX_JNI=str(vortex_jni / "raincloud-read-vortex-jni"),
-        RAINCLOUD_SIDECAR_AVRO_JAVA=str(avro_java / "raincloud-export-avro-java"),
-        RAINCLOUD_READER_AVRO_JAVA=str(avro_java / "raincloud-read-avro-java"),
-    )
+    no_vortex_target = target / "no-vortex"
+    if core:
+        run(["cargo", "build", *client])
+        # Without Vortex, in its own target directory so neither build evicts the other.
+        run(["cargo", "build", *client, "--no-default-features", "--target-dir", no_vortex_target])
+        run(["cargo", "build", "--locked", "--manifest-path", "sidecars/rust/Cargo.toml",
+             "--bin", "parquet-read", "--bin", "vortex-read", "--bin", "parquet-write", "--bin", "vortex-write",
+             "--bin", "orc-read", "--bin", "orc-write", "--bin", "avro-read", "--bin", "avro-write"])
+        for binary in ("parquet-read", "vortex-read", "parquet-write", "vortex-write", "orc-read", "orc-write",
+                       "avro-read", "avro-write"):
+            if not os.access(lib / binary, os.X_OK):
+                raise RuntimeError(f"required conformance reader is not executable: {lib / binary}")
+        if not env.get("JAVA_HOME") and shutil.which("java"):
+            env["JAVA_HOME"] = str(Path(shutil.which("java")).resolve().parent.parent)
+        # parquet-hardwood builds on a Java 21 toolchain (Gradle provisions one if none is
+        # installed); its launchers default to that JDK when JAVA_HOME names an older one.
+        run(["bash", "sidecars/java/gradlew", "-p", "sidecars/java", ":parquet-java:installDist",
+             ":parquet-hardwood:installDist", ":vortex-jni-reader:installDist", ":avro-java:installDist",
+             "--no-daemon"])
+        install = root / "sidecars/java"
+        parquet_java = install / "parquet-java/build/install/raincloud-export-parquet-java/bin"
+        hardwood = install / "parquet-hardwood/build/install/raincloud-export-parquet-hardwood/bin"
+        vortex_jni = install / "vortex-jni-reader/build/install/raincloud-read-vortex-jni/bin"
+        avro_java = install / "avro-java/build/install/raincloud-export-avro-java/bin"
+        env.update(
+            RAINCLOUD_SIDECAR_VORTEX_RS=str(lib / "vortex-write"),
+            RAINCLOUD_SIDECAR_PARQUET_JAVA=str(parquet_java / "raincloud-export-parquet-java"),
+            RAINCLOUD_READER_PARQUET_JAVA=str(parquet_java / "raincloud-read-parquet-java"),
+            RAINCLOUD_SIDECAR_PARQUET_HARDWOOD=str(hardwood / "raincloud-export-parquet-hardwood"),
+            RAINCLOUD_READER_PARQUET_HARDWOOD=str(hardwood / "raincloud-read-parquet-hardwood"),
+            RAINCLOUD_SIDECAR_VORTEX_JNI=str(vortex_jni / "raincloud-export-vortex-jni"),
+            RAINCLOUD_READER_VORTEX_JNI=str(vortex_jni / "raincloud-read-vortex-jni"),
+            RAINCLOUD_SIDECAR_AVRO_JAVA=str(avro_java / "raincloud-export-avro-java"),
+            RAINCLOUD_READER_AVRO_JAVA=str(avro_java / "raincloud-read-avro-java"),
+        )
     (root / ".tmp").mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="raincloud-reader-", dir=root / ".tmp") as temp:
         temp = Path(temp)
@@ -123,53 +135,56 @@ def main():
                    RAINCLOUD_SIDECAR_AVRO_RS=str(lib / "avro-write"),
                    # nimble@cpp is built by sidecars/nimble/build.sh, not here: absent.
                    RAINCLOUD_READER_AVRO_RS=str(lib / "avro-read"))
-        run(["cargo", "test", *client])
-        run(["cargo", "test", *client, "--no-default-features", "--target-dir", no_vortex_target])
-        run([sys.executable, "-m", "pytest", *PYTEST_MODULES, "-q"])
-
         include = root / "clients/c/include"
         arrow_dir = Path(pa.get_library_dirs()[0])
         arrow_lib = sorted(arrow_dir.glob("libarrow.so*"), key=lambda p: len(p.name))[0]
-        run(["cc", "-std=c11", "-Wall", "-Wextra", "-Werror", "clients/c/tests/read.c", f"-I{include}", f"-L{lib}", "-lraincloud_reader", f"-Wl,-rpath,{lib}", "-o", temp / "read-c"])
-        run(["c++", "-std=c++20", "-Wall", "-Wextra", "-Werror", "clients/c/tests/read.cpp", f"-I{include}", "-isystem", pa.get_include(), f"-L{lib}", "-lraincloud_reader", f"-Wl,-rpath,{lib}", arrow_lib, f"-Wl,-rpath,{arrow_dir}", "-o", temp / "read-cpp"])
-        for exe in ("read-c", "read-cpp"):
-            run([temp / exe, temp / "options.json", missing], env={**env, "PATH": "/nonexistent"})
+        if core:
+            run(["cargo", "test", *client])
+            run(["cargo", "test", *client, "--no-default-features", "--target-dir", no_vortex_target])
+            run([sys.executable, "-m", "pytest", *PYTEST_MODULES, "-q"])
 
-        # The installed CMake package, as a downstream project consumes it. A
-        # Release consumer build proves the checks do not depend on assert().
-        from raincloud import __version__
-        version = re.match(r"\d+\.\d+\.\d+", __version__).group()
-        for vortex in ("ON", "OFF"):
-            build, prefix, consumer = (temp / f"cmake-{vortex}-{part}" for part in ("build", "prefix", "consumer"))
-            run(["cmake", "-S", "clients/c", "-B", build, f"-DCMAKE_INSTALL_PREFIX={prefix}",
-                 f"-DRAINCLOUD_VORTEX={vortex}", f"-DRAINCLOUD_CARGO_TARGET={target / f'cmake-{vortex}'}"])
-            run(["cmake", "--build", build])
-            run(["cmake", "--install", build])
-            run(["cmake", "-S", "clients/c/tests", "-B", consumer, "-DCMAKE_BUILD_TYPE=Release",
-                 f"-DCMAKE_PREFIX_PATH={prefix}", f"-DARROW_INCLUDE={pa.get_include()}",
-                 f"-DARROW_LIBRARY={arrow_lib}", f"-DRAINCLOUD_EXPECTED_VERSION={version}"])
-            run(["cmake", "--build", consumer])
-            # The build tree's run path finds the library either way; only the
-            # bare name keeps a consumer working once the install moves.
-            installed = sorted(prefix.glob(f"lib*/{LIBRARY}"))
-            if len(installed) != 1 or dynamic_entries(installed[0], "SONAME") != [LIBRARY]:
-                raise RuntimeError(f"installed {installed} does not carry SONAME {LIBRARY}")
+            run(["cc", "-std=c11", "-Wall", "-Wextra", "-Werror", "clients/c/tests/read.c", f"-I{include}", f"-L{lib}", "-lraincloud_reader", f"-Wl,-rpath,{lib}", "-o", temp / "read-c"])
+            run(["c++", "-std=c++20", "-Wall", "-Wextra", "-Werror", "clients/c/tests/read.cpp", f"-I{include}", "-isystem", pa.get_include(), f"-L{lib}", "-lraincloud_reader", f"-Wl,-rpath,{lib}", arrow_lib, f"-Wl,-rpath,{arrow_dir}", "-o", temp / "read-cpp"])
             for exe in ("read-c", "read-cpp"):
-                if LIBRARY not in dynamic_entries(consumer / exe, "NEEDED"):
-                    raise RuntimeError(f"{consumer / exe} does not record {LIBRARY} by its bare name")
-            extra = [] if vortex == "ON" else ["no-vortex"]
-            for exe in ("read-c", "read-cpp"):
-                run([consumer / exe, temp / "options.json", missing, *extra], env={**env, "PATH": "/nonexistent"})
+                run([temp / exe, temp / "options.json", missing], env={**env, "PATH": "/nonexistent"})
 
-        run(["bash", "sidecars/java/gradlew", "-p", "clients/java", "test", "installDist", "--rerun-tasks",
-             "--no-daemon", f"-Draincloud.native.path={lib}", f"-Draincloud.fixture={temp}",
-             f"-PraincloudNativeLibrary={lib / 'libraincloud_reader.so'}"])
-        # The installed distribution, compiled against and run as a user would.
-        dist = root / "clients/java/build/install/raincloud-reader"
-        classes = temp / "read-java"
-        run(["javac", "-cp", f"{dist}/lib/*", "-d", classes, "clients/java/examples/Read.java"])
-        run(["java", "--add-opens=java.base/java.nio=ALL-UNNAMED", f"-Djna.library.path={dist}/native",
-             "-cp", f"{classes}:{dist}/lib/*", "Read", temp / "options.json"])
+        if cmake:
+            # The installed CMake package, as a downstream project consumes it. A
+            # Release consumer build proves the checks do not depend on assert().
+            from raincloud import __version__
+            version = re.match(r"\d+\.\d+\.\d+", __version__).group()
+            for vortex in ("ON", "OFF"):
+                build, prefix, consumer = (temp / f"cmake-{vortex}-{part}" for part in ("build", "prefix", "consumer"))
+                run(["cmake", "-S", "clients/c", "-B", build, f"-DCMAKE_INSTALL_PREFIX={prefix}",
+                     f"-DRAINCLOUD_VORTEX={vortex}", f"-DRAINCLOUD_CARGO_TARGET={target / f'cmake-{vortex}'}"])
+                run(["cmake", "--build", build])
+                run(["cmake", "--install", build])
+                run(["cmake", "-S", "clients/c/tests", "-B", consumer, "-DCMAKE_BUILD_TYPE=Release",
+                     f"-DCMAKE_PREFIX_PATH={prefix}", f"-DARROW_INCLUDE={pa.get_include()}",
+                     f"-DARROW_LIBRARY={arrow_lib}", f"-DRAINCLOUD_EXPECTED_VERSION={version}"])
+                run(["cmake", "--build", consumer])
+                # The build tree's run path finds the library either way; only the
+                # bare name keeps a consumer working once the install moves.
+                installed = sorted(prefix.glob(f"lib*/{LIBRARY}"))
+                if len(installed) != 1 or dynamic_entries(installed[0], "SONAME") != [LIBRARY]:
+                    raise RuntimeError(f"installed {installed} does not carry SONAME {LIBRARY}")
+                for exe in ("read-c", "read-cpp"):
+                    if LIBRARY not in dynamic_entries(consumer / exe, "NEEDED"):
+                        raise RuntimeError(f"{consumer / exe} does not record {LIBRARY} by its bare name")
+                extra = [] if vortex == "ON" else ["no-vortex"]
+                for exe in ("read-c", "read-cpp"):
+                    run([consumer / exe, temp / "options.json", missing, *extra], env={**env, "PATH": "/nonexistent"})
+
+        if core:
+            run(["bash", "sidecars/java/gradlew", "-p", "clients/java", "test", "installDist", "--rerun-tasks",
+                 "--no-daemon", f"-Draincloud.native.path={lib}", f"-Draincloud.fixture={temp}",
+                 f"-PraincloudNativeLibrary={lib / 'libraincloud_reader.so'}"])
+            # The installed distribution, compiled against and run as a user would.
+            dist = root / "clients/java/build/install/raincloud-reader"
+            classes = temp / "read-java"
+            run(["javac", "-cp", f"{dist}/lib/*", "-d", classes, "clients/java/examples/Read.java"])
+            run(["java", "--add-opens=java.base/java.nio=ALL-UNNAMED", f"-Djna.library.path={dist}/native",
+                 "-cp", f"{classes}:{dist}/lib/*", "Read", temp / "options.json"])
 
 
 if __name__ == "__main__":
